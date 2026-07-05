@@ -2998,7 +2998,7 @@
                         <i class="fa-solid fa-location-dot"></i>
                     </button>
                     <div class="flex-1 min-w-0">
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-0.5">Vị trí (Check-in)</label>
+                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-0.5">Vị trí </label>
                         <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn icon để định vị..." class="w-full bg-transparent border-none text-xs font-bold text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0 truncate">
                     </div>
                 </div>
@@ -3526,7 +3526,7 @@
         document.getElementById("global-modal").classList.add("hidden");
         currentEditId = null;
       }
-      // Hàm để bấm vào giao dịch gần đây trên Dashboard
+
       function openEditTransaction(id) {
         openModal("transaction", id);
       }
