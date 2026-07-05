@@ -970,23 +970,77 @@
           <div
             class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
           >
-            <h4 class="font-bold text-lg mb-6 flex items-center gap-2">
-              <i class="fa-solid fa-database text-primary-500"></i> Dữ liệu hệ
-              thống
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-database text-primary-500"></i>
+              </div>
+              <span>Dữ liệu hệ thống</span>
             </h4>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Excel -->
               <button
                 onclick="exportToExcel()"
-                class="flex items-center justify-center gap-2 p-4 bg-success-50 dark:bg-success-500/10 text-success-600 dark:text-success-400 rounded-2xl hover:bg-success-100 font-bold transition-colors border border-success-200 dark:border-success-700/50"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 hover:bg-green-100 dark:hover:bg-green-500/20 transition-all"
               >
-                <i class="fa-solid fa-file-excel text-xl"></i> Tải xuống Excel
+                <div
+                  class="w-10 h-10 rounded-full bg-green-200 text-white flex items-center justify-center shadow-md"
+                >
+                  <i class="fa-solid fa-file-excel text-green-700"></i>
+                </div>
+
+                <div class="text-left">
+                  <p class="font-bold text-green-700 dark:text-green-400">
+                    Xuất Excel
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Tải dữ liệu về máy
+                  </p>
+                </div>
               </button>
+
+              <!-- Xóa toàn bộ -->
               <button
                 onclick="clearAllData()"
-                class="flex items-center justify-center gap-2 p-4 bg-danger-50 dark:bg-danger-500/10 text-danger-600 dark:text-danger-400 rounded-2xl hover:bg-danger-100 font-bold transition-colors border border-danger-200 dark:border-danger-700/50"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all"
               >
-                <i class="fa-solid fa-trash-can text-xl"></i> Xóa toàn bộ dữ
-                liệu
+                <div
+                  class="w-10 h-10 rounded-full bg-red-200 text-white flex items-center justify-center shadow-md"
+                >
+                  <i class="fa-solid fa-database text-red-700"></i>
+                </div>
+
+                <div class="text-left">
+                  <p class="font-bold text-red-700 dark:text-red-400">
+                    Xóa toàn bộ
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Xóa tất cả dữ liệu
+                  </p>
+                </div>
+              </button>
+
+              <!-- Xóa ảnh -->
+              <button
+                onclick="cleanOldImages()"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 hover:bg-orange-100 dark:hover:bg-orange-500/20 transition-all"
+              >
+                <div
+                  class="w-10 h-10 rounded-full bg-orange-300 text-white flex items-center justify-center shadow-md"
+                >
+                  <i class="fa-solid fa-images text-orange-700"></i>
+                </div>
+
+                <div class="text-left">
+                  <p class="font-bold text-orange-700 dark:text-orange-400">
+                    Xóa ảnh cũ
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Dọn ảnh không sử dụng
+                  </p>
+                </div>
               </button>
             </div>
           </div>
@@ -1420,11 +1474,11 @@
       function renderNav() {
         document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
           (item) => `
-                <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white font-bold" : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
-                  <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
-                  <span>${item.label}</span>
-                </button>
-              `,
+                      <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white font-bold" : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
+                        <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+                        <span>${item.label}</span>
+                      </button>
+                    `,
         ).join("");
 
         const pillItems = [
@@ -1441,9 +1495,9 @@
           const isActive = state.currentView === item.id;
           // w-12 và shrink-0 giúp icon nằm dàn hàng ngang mà không bị bóp méo khi lướt
           pillHtml += `
-    <button onclick="switchView('${item.id}')" class="flex flex-col items-center justify-center w-12 h-full shrink-0 transition-transform active:scale-90">
-      <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6]" : "text-[#283143] dark:text-gray-400"}"></i>
-    </button>`;
+          <button onclick="switchView('${item.id}')" class="flex flex-col items-center justify-center w-12 h-full shrink-0 transition-transform active:scale-90">
+            <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6]" : "text-[#283143] dark:text-gray-400"}"></i>
+          </button>`;
         });
         const navPill = document.getElementById("mobile-nav-pill");
         if (navPill) navPill.innerHTML = pillHtml;
@@ -1485,18 +1539,23 @@
         document.getElementById("header-balance").innerText = bal;
       }
 
-      function updateAvatar(e) {
+      // Thêm chữ async vào trước hàm để dùng được await
+      async function updateAvatar(e) {
         const file = e.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          state.userProfile.avatar = event.target.result;
-          document.getElementById("header-avatar").src = event.target.result;
-          saveData();
-          renderSettings();
-          playSound("success");
-        };
-        reader.readAsDataURL(file);
+
+        // Dùng luôn hàm nén ảnh thần thánh vừa viết
+        const compressedAvatar = await compressImage(file);
+
+        // Lưu ảnh đã nén vào state
+        state.userProfile.avatar = compressedAvatar;
+
+        // Cập nhật giao diện
+        document.getElementById("header-avatar").src = compressedAvatar;
+
+        saveData();
+        renderSettings();
+        playSound("success");
       }
 
       function renderSettings() {
@@ -1514,29 +1573,29 @@
           state.categories
             .map(
               (c) => `
-          <div class="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 swipe-item bg-white dark:bg-gray-800">
-            <div class="absolute inset-y-0 right-0 flex items-center z-0">
-              <button onclick="openModal('category', '${c.id}')" class="w-16 h-full bg-blue-50 text-blue-500 hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="deleteCategory('${c.id}')" class="w-16 h-full bg-danger-50 text-danger-500 hover:bg-danger-100"><i class="fa-solid fa-trash"></i></button>
-            </div>
+                <div class="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 swipe-item bg-white dark:bg-gray-800">
+                  <div class="absolute inset-y-0 right-0 flex items-center z-0">
+                    <button onclick="openModal('category', '${c.id}')" class="w-16 h-full bg-blue-50 text-blue-500 hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="deleteCategory('${c.id}')" class="w-16 h-full bg-danger-50 text-danger-500 hover:bg-danger-100"><i class="fa-solid fa-trash"></i></button>
+                  </div>
 
-            <div class="relative p-4 bg-white dark:bg-gray-800 flex items-center gap-3 transition-transform duration-200 swipe-content z-10">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm ${c.color}">${c.icon}</div>
-              <div class="flex-1">
-                <p class="font-bold text-gray-800 dark:text-gray-100 text-sm">${c.name}</p>
-                <p class="text-[11px] font-medium text-gray-400">
-                  ${
-                    c.type === "income"
-                      ? '<span class="text-emerald-500"><i class="fa-solid fa-arrow-down"></i> Thu</span>'
-                      : c.type === "expense"
-                        ? '<span class="text-rose-500"><i class="fa-solid fa-arrow-up"></i> Chi</span>'
-                        : "Thu & Chi"
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
-          `,
+                  <div class="relative p-4 bg-white dark:bg-gray-800 flex items-center gap-3 transition-transform duration-200 swipe-content z-10">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm ${c.color}">${c.icon}</div>
+                    <div class="flex-1">
+                      <p class="font-bold text-gray-800 dark:text-gray-100 text-sm">${c.name}</p>
+                      <p class="text-[11px] font-medium text-gray-400">
+                        ${
+                          c.type === "income"
+                            ? '<span class="text-emerald-500"><i class="fa-solid fa-arrow-down"></i> Thu</span>'
+                            : c.type === "expense"
+                              ? '<span class="text-rose-500"><i class="fa-solid fa-arrow-up"></i> Chi</span>'
+                              : "Thu & Chi"
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                `,
             )
             .join("");
 
@@ -1597,32 +1656,32 @@
                   const pct = Math.min((paid / d.amount) * 100, 100).toFixed(0);
 
                   return `
-        <div class="p-4 bg-white dark:bg-gray-800 border rounded-2xl border-gray-100 dark:border-gray-700 shadow-sm mb-3">
-          <div class="flex items-center justify-between mb-2">
-            <div>
-              <p class="font-black text-sm text-gray-900 dark:text-white">${d.person}</p>
-              <p class="text-[10px] font-bold mt-0.5 ${d.type === "lend" ? "text-primary-500" : "text-orange-500"}">
-                ${d.type === "lend" ? "👉 Ông cho mượn" : "👈 Ông đi vay"}
-              </p>
-            </div>
-            <div class="text-right">
-               <span class="text-sm font-black text-gray-900 dark:text-white">${formatMoney(d.amount)}</span>
-            </div>
-          </div>
-          
-          <div class="flex justify-between text-[11px] mb-1 font-medium text-gray-500">
-             <span>Đã trả: <b class="${d.type === "lend" ? "text-success-500" : "text-danger-500"}">${formatMoney(paid)}</b></span>
-             <span>Còn lại: <b class="text-gray-800 dark:text-gray-200">${formatMoney(remain)}</b></span>
-          </div>
-          <div class="h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
-             <div class="h-full ${d.type === "lend" ? "bg-success-500" : "bg-danger-500"} transition-all" style="width: ${pct}%"></div>
-          </div>
-          
-          <button onclick="openModal('debtPayment', '${d.id}')" class="w-full py-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-xs font-black rounded-xl transition-colors">
-            Thanh toán
-          </button>
-        </div>
-      `;
+              <div class="p-4 bg-white dark:bg-gray-800 border rounded-2xl border-gray-100 dark:border-gray-700 shadow-sm mb-3">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <p class="font-black text-sm text-gray-900 dark:text-white">${d.person}</p>
+                    <p class="text-[10px] font-bold mt-0.5 ${d.type === "lend" ? "text-primary-500" : "text-orange-500"}">
+                      ${d.type === "lend" ? "👉 Ông cho mượn" : "👈 Ông đi vay"}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                     <span class="text-sm font-black text-gray-900 dark:text-white">${formatMoney(d.amount)}</span>
+                  </div>
+                </div>
+
+                <div class="flex justify-between text-[11px] mb-1 font-medium text-gray-500">
+                   <span>Đã trả: <b class="${d.type === "lend" ? "text-success-500" : "text-danger-500"}">${formatMoney(paid)}</b></span>
+                   <span>Còn lại: <b class="text-gray-800 dark:text-gray-200">${formatMoney(remain)}</b></span>
+                </div>
+                <div class="h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
+                   <div class="h-full ${d.type === "lend" ? "bg-success-500" : "bg-danger-500"} transition-all" style="width: ${pct}%"></div>
+                </div>
+
+                <button onclick="openModal('debtPayment', '${d.id}')" class="w-full py-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-xs font-black rounded-xl transition-colors">
+                  Thanh toán
+                </button>
+              </div>
+            `;
                 })
                 .join("");
 
@@ -1632,14 +1691,14 @@
             : settleds
                 .map(
                   (d) => `
-        <div class="p-3 bg-gray-100/50 dark:bg-gray-800/40 rounded-xl flex items-center justify-between text-xs mb-2">
-          <div>
-            <span class="font-bold text-gray-700 dark:text-gray-300">${d.person}</span>
-            <span class="text-gray-400 dark:text-gray-500 ml-1">(${d.type === "lend" ? "Đã thu hồi" : "Đã trả xong"})</span>
-          </div>
-          <span class="font-bold line-through text-gray-400">${formatMoney(d.amount)}</span>
-        </div>
-      `,
+              <div class="p-3 bg-gray-100/50 dark:bg-gray-800/40 rounded-xl flex items-center justify-between text-xs mb-2">
+                <div>
+                  <span class="font-bold text-gray-700 dark:text-gray-300">${d.person}</span>
+                  <span class="text-gray-400 dark:text-gray-500 ml-1">(${d.type === "lend" ? "Đã thu hồi" : "Đã trả xong"})</span>
+                </div>
+                <span class="font-bold line-through text-gray-400">${formatMoney(d.amount)}</span>
+              </div>
+            `,
                 )
                 .join("");
       }
@@ -1911,8 +1970,8 @@
           document.getElementById("view-dashboard").insertAdjacentHTML(
             "afterbegin",
             `
-      <div id="dash-insight-box" class="p-4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 text-xs font-bold text-gray-500 dark:text-gray-400"></div>
-    `,
+            <div id="dash-insight-box" class="p-4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 text-xs font-bold text-gray-500 dark:text-gray-400"></div>
+          `,
           );
           insightBox = document.getElementById("dash-insight-box");
         }
@@ -2202,7 +2261,21 @@
               const color = isInc ? "text-success-500" : "text-danger-500";
               const sign = isInc ? "+" : "-";
 
-              popupContent += `<div class="border-l-2 ${isInc ? "border-success-500" : "border-danger-500"} pl-2"><div class="font-bold flex items-center gap-1.5 text-gray-800 dark:text-gray-100 text-sm"><span>${cat.icon}</span> <span class="truncate">${cat.name}</span></div><div class="font-black text-base tracking-tight ${color} mt-0.5">${sign}${formatMoney(tx.amount)}</div><div class="text-gray-400 dark:text-gray-500 text-[10px] font-medium mt-1"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</div></div>`;
+              popupContent += `
+          <div class="border-l-2 ${isInc ? "border-success-500" : "border-danger-500"} pl-2 flex justify-between items-center gap-2 mb-2">
+              <div class="flex-1 min-w-0">
+                  <div class="font-bold flex items-center gap-1.5 text-gray-800 dark:text-gray-100 text-sm">
+                      <span>${cat.icon}</span> <span class="truncate">${cat.name}</span>
+                  </div>
+                  <div class="font-black text-base tracking-tight ${color} mt-0.5">
+                      ${sign}${formatMoney(tx.amount)}
+                  </div>
+                  <div class="text-gray-400 dark:text-gray-500 text-[10px] font-medium mt-1">
+                      <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
+                  </div>
+              </div>
+              ${tx.image ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm">` : ""}
+          </div>`;
             });
 
             popupContent += `</div><a href="https://www.google.com/maps/dir/?api=1&destination=${repTx.lat},${repTx.lng}" target="_blank" class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold text-sm rounded-xl shadow-md active:scale-95 transition-all no-underline"><i class="fa-solid fa-diamond-turn-right group-hover:translate-x-0.5 transition-transform text-white"></i> <span class="text-white">Chỉ đường</span></a></div>`;
@@ -2487,25 +2560,31 @@
                 color: "bg-gray-100 text-gray-600",
               };
               return `
-        <div class="relative overflow-hidden border-b border-gray-50 dark:border-gray-800/50 swipe-item">
-          <div class="absolute inset-y-0 right-0 flex items-center z-0">
-            <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
-          </div>
-          <div class="relative bg-white dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 shadow-sm">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 ${cat.color}">${cat.icon}</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-sm text-gray-900 dark:text-white truncate">${cat.name}</p>
-              <p class="text-[11px] text-gray-400 font-medium">${formatDateTime(tx.date)}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-black text-sm ${isInc ? "text-success-500" : "text-gray-900 dark:text-white"}">
-                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
-              </p>
-            </div>
-          </div>
-        </div>
-      `;
+  <div class="relative overflow-hidden border-b border-gray-50 dark:border-gray-800/50 swipe-item">
+    <div class="absolute inset-y-0 right-0 flex items-center z-0">
+      <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
+      <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
+    </div>
+    
+    <div class="relative bg-white dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 shadow-sm">
+      
+      <!-- ĐÂY LÀ CHỖ HIỂN THỊ ẢNH HOẶC ICON CHUẨN NÀY -->
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} overflow-hidden shrink-0">
+          ${tx.image ? `<img src="${tx.image}" class="w-full h-full object-cover">` : cat.icon}
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <p class="font-bold text-sm text-gray-900 dark:text-white truncate">${cat.name}</p>
+        <p class="text-[11px] text-gray-400 font-medium">${formatDateTime(tx.date)}</p>
+      </div>
+      <div class="text-right">
+        <p class="font-black text-sm ${isInc ? "text-success-500" : "text-gray-900 dark:text-white"}">
+          ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+        </p>
+      </div>
+    </div>
+  </div>
+`;
             })
             .join("");
           if (typeof initSwipeActions === "function") initSwipeActions();
@@ -2582,35 +2661,35 @@
               saveData();
             }
             return `
-      <div class="relative overflow-hidden rounded-3xl ${isDeletable ? "swipe-item" : ""} border ${w.color} shadow-md transition-all hover:shadow-lg">
-        ${
-          isDeletable
-            ? `
-          <div class="absolute inset-y-0 right-0 flex items-center z-0">
-            <button onclick="deleteWallet('${w.id}')" class="w-20 h-full bg-danger-500 text-white flex items-center justify-center hover:bg-danger-600 transition-colors">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>`
-            : ""
-        }
+            <div class="relative overflow-hidden rounded-3xl ${isDeletable ? "swipe-item" : ""} border ${w.color} shadow-md transition-all hover:shadow-lg">
+              ${
+                isDeletable
+                  ? `
+                <div class="absolute inset-y-0 right-0 flex items-center z-0">
+                  <button onclick="deleteWallet('${w.id}')" class="w-20 h-full bg-danger-500 text-white flex items-center justify-center hover:bg-danger-600 transition-colors">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>`
+                  : ""
+              }
 
-        <div class="relative p-6 w-full h-full transition-transform duration-200 swipe-content z-10 flex flex-col justify-between ${w.color.split(" ")[0]} dark:bg-gray-800">
-          <div class="flex justify-between items-start mb-6">
-            <div class="w-12 h-12 rounded-2xl bg-white/50 dark:bg-gray-700 flex items-center justify-center text-2xl shadow-inner border border-gray-200 dark:border-gray-600">
-              ${w.icon}
+              <div class="relative p-6 w-full h-full transition-transform duration-200 swipe-content z-10 flex flex-col justify-between ${w.color.split(" ")[0]} dark:bg-gray-800">
+                <div class="flex justify-between items-start mb-6">
+                  <div class="w-12 h-12 rounded-2xl bg-white/50 dark:bg-gray-700 flex items-center justify-center text-2xl shadow-inner border border-gray-200 dark:border-gray-600">
+                    ${w.icon}
+                  </div>
+                  ${w.isShared ? `<span class="text-[10px] font-black bg-pink-100 text-pink-600 px-2 py-1 rounded-lg"><i class="fa-solid fa-heart mr-1"></i> Quỹ chung</span>` : ""}
+                </div>
+
+                <div>
+                  <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">${w.name}</p>
+                  <h3 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white ${w.balance < 0 ? "text-rose-500" : ""}">
+                    ${formatMoney(w.balance)}
+                  </h3>
+                </div>
+              </div>
             </div>
-            ${w.isShared ? `<span class="text-[10px] font-black bg-pink-100 text-pink-600 px-2 py-1 rounded-lg"><i class="fa-solid fa-heart mr-1"></i> Quỹ chung</span>` : ""}
-          </div>
-
-          <div>
-            <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">${w.name}</p>
-            <h3 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white ${w.balance < 0 ? "text-rose-500" : ""}">
-              ${formatMoney(w.balance)}
-            </h3>
-          </div>
-        </div>
-      </div>
-      `;
+            `;
           })
           .join("");
         if (typeof initSwipeActions === "function") initSwipeActions();
@@ -2747,41 +2826,84 @@
           };
 
           body.innerHTML = `
-          <form id="frm-tx" class="space-y-5">
+          <form id="frm-tx" class="space-y-4">
             <input type="hidden" id="m-type" value="${tx.type}">
-            <div class="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-2xl text-gray-800">
-              <button type="button" id="btn-exp" onclick="setType('expense')" class="flex-1 py-3 font-bold rounded-xl transition-all ${tx.type === "expense" ? "bg-white shadow text-danger-900" : "text-gray-500"}">Chi tiền</button>
-              <button type="button" id="btn-inc" onclick="setType('income')" class="flex-1 py-3 font-bold rounded-xl transition-all ${tx.type === "income" ? "bg-white shadow text-success-600" : "text-gray-500"}">Thu tiền</button>
-            </div>
-            <div><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Số tiền</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="m-amt" required value="${formattedAmt}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl text-3xl font-black text-center focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0"></div>
-            <div class="flex gap-4">
-              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Danh mục</label><select id="m-cat" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none"></select></div>
-              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ví</label><select id="m-wal" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none">${state.wallets.map((w) => `<option value="${w.id}" ${w.id === tx.walletId ? "selected" : ""}>${w.name}</option>`).join("")}</select></div>
-            </div>
-            <div class="flex gap-4">
-              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Thời gian</label><input type="text" id="m-date" required value="${tx.date}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none text-gray-900 dark:text-white"></div>
-              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ghi chú</label><input type="text" id="m-note" value="${tx.note}" placeholder="..." class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none"></div>
-            </div>
-            <!-- Dán đoạn này ngay dưới ô input Ghi chú -->
-<div class="flex items-center gap-2 mt-2">
-  <input type="checkbox" id="m-recurring" ${tx.isRecurring ? "checked" : ""} class="w-4 h-4 accent-primary-500 cursor-pointer">
-  <label for="m-recurring" class="text-xs font-bold text-gray-500 uppercase cursor-pointer select-none">Lặp lại hàng tháng</label>
-</div>
             
-            <div class="flex gap-3 items-end">
-                <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-14 h-14 shrink-0 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center text-xl hover:bg-primary-100 transition-colors">
-                    <i class="fa-solid fa-location-crosshairs"></i>
-                </button>
-                <div class="flex-1">
-                    
-                    <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn nút lấy vị trí..." class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none">
-                </div>
-                <input type="hidden" id="frm-lat" value="${tx.lat || ""}">
-                <input type="hidden" id="frm-lng" value="${tx.lng || ""}">
+            <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl text-gray-800 mb-2">
+              <button type="button" id="btn-exp" onclick="setType('expense')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all ${tx.type === "expense" ? "bg-white shadow-sm text-danger-500" : "text-gray-500 hover:text-gray-700"}">Chi tiền</button>
+              <button type="button" id="btn-inc" onclick="setType('income')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all ${tx.type === "income" ? "bg-white shadow-sm text-success-500" : "text-gray-500 hover:text-gray-700"}">Thu tiền</button>
             </div>
-            <p id="loc-hint" class="text-xs text-success-500 hidden mt-1"><i class="fa-solid fa-check"></i> Đã tự động chọn danh mục gợi ý!</p>
 
-            <button type="submit" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-lg shadow-xl mt-4">${id ? "Cập Nhật" : "Lưu Giao Dịch"}</button>
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-700/50 flex flex-col items-center">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Số tiền (VNĐ)</label>
+                <div class="w-full flex items-center justify-center">
+                    <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="m-amt" required value="${formattedAmt}" class="w-full bg-transparent border-none text-4xl font-black text-center text-primary-600 dark:text-primary-400 focus:ring-0 outline-none p-0 placeholder-gray-300 dark:placeholder-gray-600" placeholder="0">
+                </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden divide-y divide-gray-100 dark:divide-gray-700/50">
+                <div class="flex divide-x divide-gray-100 dark:divide-gray-700/50">
+                    <div class="flex-1 p-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Danh mục</label>
+                        <select id="m-cat" class="w-full bg-transparent border-none text-sm font-bold text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0 truncate"></select>
+                    </div>
+                    <div class="flex-1 p-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Ví giao dịch</label>
+                        <select id="m-wal" class="w-full bg-transparent border-none text-sm font-bold text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0 truncate">${state.wallets.map((w) => `<option value="${w.id}" ${w.id === tx.walletId ? "selected" : ""}>${w.name}</option>`).join("")}</select>
+                    </div>
+                </div>
+                <div class="flex divide-x divide-gray-100 dark:divide-gray-700/50">
+                    <div class="flex-1 p-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Thời gian</label>
+                        <input type="text" id="m-date" required value="${tx.date}" class="w-full bg-transparent border-none text-sm font-bold text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0">
+                    </div>
+                    <div class="flex-1 p-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Ghi chú</label>
+                        <input type="text" id="m-note" value="${tx.note}" placeholder="Tùy chọn..." class="w-full bg-transparent border-none text-sm font-medium text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0 placeholder-gray-400">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <label for="m-img-input" class="w-14 h-14 shrink-0 flex flex-col items-center justify-center border-2 border-dashed border-primary-200 dark:border-primary-800/50 rounded-2xl bg-primary-50 dark:bg-primary-900/20 text-primary-500 hover:bg-primary-100 transition-colors cursor-pointer relative overflow-hidden active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-camera text-xl"></i>
+                    <input type="file" id="m-img-input" accept="image/*" capture="environment" class="hidden"
+                           onchange="document.getElementById('m-img-preview').src = window.URL.createObjectURL(this.files[0]); document.getElementById('m-img-preview').classList.remove('hidden');">
+                    <img id="m-img-preview" src="${tx.image || ""}" class="${tx.image ? "" : "hidden"} absolute inset-0 w-full h-full object-cover z-10 bg-white">
+                </label>
+
+                <div class="flex-1 flex items-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-2 pr-3 shadow-sm">
+                    <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-10 h-10 shrink-0 bg-white dark:bg-gray-700 text-blue-500 rounded-xl flex items-center justify-center text-lg shadow-sm hover:bg-blue-50 transition-colors mr-2 active:scale-90">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </button>
+                    <div class="flex-1 min-w-0">
+                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-0.5">Vị trí (Check-in)</label>
+                        <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn icon để định vị..." class="w-full bg-transparent border-none text-xs font-bold text-gray-800 dark:text-gray-200 focus:ring-0 outline-none p-0 truncate">
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" id="frm-lat" value="${tx.lat || ""}">
+            <input type="hidden" id="frm-lng" value="${tx.lng || ""}">
+            <p id="loc-hint" class="text-[10px] text-success-500 hidden text-center font-bold -mt-2"><i class="fa-solid fa-check"></i> Đã tự động chọn danh mục!</p>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200">Giao dịch định kỳ</p>
+                        <p class="text-[10px] text-gray-500 font-medium mt-0.5">Tự động lặp lại vào tháng sau</p>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                  <input type="checkbox" id="m-recurring" ${tx.isRecurring ? "checked" : ""} class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-primary-500"></div>
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-base shadow-xl shadow-gray-900/20 dark:shadow-white/10 mt-6 active:scale-95 transition-transform">
+              ${id ? "Lưu Cập Nhật" : "Thêm Giao Dịch"}
+            </button>
           </form>
         `;
 
@@ -2795,10 +2917,17 @@
             requestLocation();
           }
 
-          document.getElementById("frm-tx").onsubmit = (e) => {
+          document.getElementById("frm-tx").onsubmit = async (e) => {
             e.preventDefault();
             const amt = getRawNumber(document.getElementById("m-amt").value);
             if (amt <= 0) return alert("Sai số tiền");
+            const fileInput = document.getElementById("m-img-input");
+            let compressedImg = document.getElementById("m-img-preview").src; // Lấy ảnh cũ nếu đang sửa
+
+            // 2. Nếu có ảnh mới được chọn thì nén
+            if (fileInput.files && fileInput.files[0]) {
+              compressedImg = await compressImage(fileInput.files[0]);
+            }
 
             // SỬA: Lấy tọa độ từ các thẻ input ẩn thay vì biến tx cũ bị trống
             const data = {
@@ -2810,6 +2939,7 @@
               note: document.getElementById("m-note").value,
               lat: document.getElementById("frm-lat").value,
               lng: document.getElementById("frm-lng").value,
+              image: compressedImg,
               locationName: document.getElementById("frm-loc-name").value,
               isRecurring: document.getElementById("m-recurring").checked,
             };
@@ -2851,34 +2981,34 @@
           title.innerText = isEdit ? "Sửa Danh Mục" : "Thêm Danh Mục";
 
           body.innerHTML = `
-                  <form id="frm-cat" class="space-y-5">
-                    <div class="flex gap-4">
-                      <div class="w-1/4"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Icon</label><input type="text" id="cat-i" value="${cat.icon}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-xl outline-none focus:ring-2 focus:ring-primary-500"></div>
-                      <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tên Danh Mục</label><input type="text" id="cat-n" required value="${cat.name}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500"></div>
-                    </div>
-                    <div>
-                      <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Loại</label>
-                      <select id="cat-t" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
-                        <option value="expense" ${cat.type === "expense" ? "selected" : ""}>Chỉ Chi tiêu</option>
-                        <option value="income" ${cat.type === "income" ? "selected" : ""}>Chỉ Thu nhập</option>
-                        <option value="both" ${cat.type === "both" ? "selected" : ""}>Dùng cho cả hai</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Màu sắc</label>
-                      <select id="cat-c" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
-                        <option value="bg-blue-100 text-blue-500" ${cat.color.includes("blue") ? "selected" : ""}>Xanh dương</option>
-                        <option value="bg-red-100 text-red-500" ${cat.color.includes("red") ? "selected" : ""}>Đỏ</option>
-                        <option value="bg-green-100 text-green-500" ${cat.color.includes("green") || cat.color.includes("emerald") ? "selected" : ""}>Xanh lá</option>
-                        <option value="bg-yellow-100 text-yellow-500" ${cat.color.includes("yellow") || cat.color.includes("orange") ? "selected" : ""}>Vàng cam</option>
-                        <option value="bg-purple-100 text-purple-500" ${cat.color.includes("purple") ? "selected" : ""}>Tím</option>
-                        <option value="bg-pink-100 text-pink-500" ${cat.color.includes("pink") ? "selected" : ""}>Hồng</option>
-                        <option value="bg-gray-100 text-gray-600" ${cat.color.includes("gray") ? "selected" : ""}>Xám nhạt</option>
-                      </select>
-                    </div>
-                    <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary-500/30 mt-4">${isEdit ? "Cập Nhật" : "Lưu Danh Mục"}</button>
-                  </form>
-                `;
+                        <form id="frm-cat" class="space-y-5">
+                          <div class="flex gap-4">
+                            <div class="w-1/4"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Icon</label><input type="text" id="cat-i" value="${cat.icon}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-xl outline-none focus:ring-2 focus:ring-primary-500"></div>
+                            <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tên Danh Mục</label><input type="text" id="cat-n" required value="${cat.name}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500"></div>
+                          </div>
+                          <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Loại</label>
+                            <select id="cat-t" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
+                              <option value="expense" ${cat.type === "expense" ? "selected" : ""}>Chỉ Chi tiêu</option>
+                              <option value="income" ${cat.type === "income" ? "selected" : ""}>Chỉ Thu nhập</option>
+                              <option value="both" ${cat.type === "both" ? "selected" : ""}>Dùng cho cả hai</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Màu sắc</label>
+                            <select id="cat-c" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
+                              <option value="bg-blue-100 text-blue-500" ${cat.color.includes("blue") ? "selected" : ""}>Xanh dương</option>
+                              <option value="bg-red-100 text-red-500" ${cat.color.includes("red") ? "selected" : ""}>Đỏ</option>
+                              <option value="bg-green-100 text-green-500" ${cat.color.includes("green") || cat.color.includes("emerald") ? "selected" : ""}>Xanh lá</option>
+                              <option value="bg-yellow-100 text-yellow-500" ${cat.color.includes("yellow") || cat.color.includes("orange") ? "selected" : ""}>Vàng cam</option>
+                              <option value="bg-purple-100 text-purple-500" ${cat.color.includes("purple") ? "selected" : ""}>Tím</option>
+                              <option value="bg-pink-100 text-pink-500" ${cat.color.includes("pink") ? "selected" : ""}>Hồng</option>
+                              <option value="bg-gray-100 text-gray-600" ${cat.color.includes("gray") ? "selected" : ""}>Xám nhạt</option>
+                            </select>
+                          </div>
+                          <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary-500/30 mt-4">${isEdit ? "Cập Nhật" : "Lưu Danh Mục"}</button>
+                        </form>
+                      `;
           document.getElementById("frm-cat").onsubmit = (e) => {
             e.preventDefault();
             const newData = {
@@ -2909,16 +3039,16 @@
             .join("");
 
           body.innerHTML = `
-    <form id="frm-debt" class="space-y-4">
-      <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Đối tượng</label><input type="text" id="d-person" required placeholder="Tên người nợ/cho vay" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium"></div>
-      <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số tiền (VND)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600"></div>
-      <div class="flex gap-4">
-        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loại nợ</label><select id="d-type" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold"><option value="lend">Tôi cho vay (Rút ví)</option><option value="borrow">Tôi đi vay (Nhận tiền)</option></select></div>
-        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label><select id="d-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select></div>
-      </div>
-      <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg shadow-xl shadow-primary-500/20 mt-4">Lưu khoản nợ</button>
-    </form>
-  `;
+          <form id="frm-debt" class="space-y-4">
+            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Đối tượng</label><input type="text" id="d-person" required placeholder="Tên người nợ/cho vay" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium"></div>
+            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số tiền (VND)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600"></div>
+            <div class="flex gap-4">
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loại nợ</label><select id="d-type" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold"><option value="lend">Tôi cho vay (Rút ví)</option><option value="borrow">Tôi đi vay (Nhận tiền)</option></select></div>
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label><select id="d-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select></div>
+            </div>
+            <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg shadow-xl shadow-primary-500/20 mt-4">Lưu khoản nợ</button>
+          </form>
+        `;
           document.getElementById("frm-debt").onsubmit = addDebt;
         } else if (type === "debtPayment") {
           const debt = state.debts.find((d) => d.id === id);
@@ -2939,22 +3069,22 @@
             .join("");
 
           body.innerHTML = `
-    <form id="frm-debt-payment" class="space-y-4">
-      <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl flex justify-between items-center text-sm font-bold border border-gray-100 dark:border-gray-700">
-          <span class="text-gray-500">Số tiền còn nợ:</span>
-          <span class="text-xl font-black text-danger-500">${formatMoney(remain)}</span>
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Thanh toán đợt này</label>
-        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="dp-amount" required placeholder="${remain.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600">
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label>
-        <select id="dp-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select>
-      </div>
-      <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg mt-4 shadow-xl shadow-primary-500/20">Xác nhận thanh toán</button>
-    </form>
-  `;
+          <form id="frm-debt-payment" class="space-y-4">
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl flex justify-between items-center text-sm font-bold border border-gray-100 dark:border-gray-700">
+                <span class="text-gray-500">Số tiền còn nợ:</span>
+                <span class="text-xl font-black text-danger-500">${formatMoney(remain)}</span>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Thanh toán đợt này</label>
+              <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="dp-amount" required placeholder="${remain.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label>
+              <select id="dp-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select>
+            </div>
+            <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg mt-4 shadow-xl shadow-primary-500/20">Xác nhận thanh toán</button>
+          </form>
+        `;
           document.getElementById("frm-debt-payment").onsubmit = (e) =>
             processDebtPayment(e, id, remain);
         } else if (type === "goal") {
@@ -2986,19 +3116,19 @@
         } else if (type === "buffer") {
           title.innerText = "Khoanh vùng phân tích";
           body.innerHTML = `
-        <div class="space-y-4">
-            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Bán kính (mét)</label>
-                <input type="number" id="buffer-radius" value="500" class="w-full p-3 bg-white dark:bg-gray-800 rounded-xl font-black text-lg outline-none border">
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="pickBufferCenter('gps')" class="py-3 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-lg">Lấy GPS hiện tại</button>
-                <button onclick="pickBufferCenter('map')" class="py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold">Chạm trên bản đồ</button>
-            </div>
-            <p id="buffer-hint" class="text-xs text-gray-400 italic text-center hidden">Đang chờ ông chạm vào bản đồ...</p>
-        </div>
-    `;
+              <div class="space-y-4">
+                  <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                      <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Bán kính (mét)</label>
+                      <input type="number" id="buffer-radius" value="500" class="w-full p-3 bg-white dark:bg-gray-800 rounded-xl font-black text-lg outline-none border">
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                      <button onclick="pickBufferCenter('gps')" class="py-3 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-lg">Lấy GPS hiện tại</button>
+                      <button onclick="pickBufferCenter('map')" class="py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold">Chạm trên bản đồ</button>
+                  </div>
+                  <p id="buffer-hint" class="text-xs text-gray-400 italic text-center hidden">Đang chờ ông chạm vào bản đồ...</p>
+              </div>
+          `;
         } else if (type === "budget") {
           title.innerText = "Thiết Lập Ngân Sách";
           const expCats = state.categories
@@ -3491,14 +3621,14 @@
         title.innerText = "Đổi mã PIN";
 
         body.innerHTML = `
-          <div class="space-y-4">
-            <p class="text-sm text-gray-500">Nhập mã PIN mới (nhập số):</p>
-            <input type="password" id="new-pin-input" inputmode="numeric" pattern="[0-9]*"
-                   class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-2xl font-black outline-none border-2 border-primary-500"
-                   placeholder="Nhập PIN mới">
-            <button onclick="saveNewPin()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black">Xác nhận</button>
-          </div>
-        `;
+                <div class="space-y-4">
+                  <p class="text-sm text-gray-500">Nhập mã PIN mới (nhập số):</p>
+                  <input type="password" id="new-pin-input" inputmode="numeric" pattern="[0-9]*"
+                         class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-2xl font-black outline-none border-2 border-primary-500"
+                         placeholder="Nhập PIN mới">
+                  <button onclick="saveNewPin()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black">Xác nhận</button>
+                </div>
+              `;
       }
 
       function saveNewPin() {
@@ -3603,15 +3733,15 @@
             }).addTo(poiLayerGroup);
 
             marker.bindPopup(`
-        <div class="font-sans min-w-[180px]">
-          <div class="font-black text-sm text-gray-900 dark:text-white mb-1">${name}</div>
-          <div class="text-[10px] font-bold text-gray-500 uppercase mb-3">${conf.label}</div>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${node.lat},${node.lon}" target="_blank" 
-             class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-xs rounded-lg shadow-md active:scale-95">
-             <i class="fa-solid fa-diamond-turn-right  text-white"></i> <span class="text-white">Chỉ đường</span>
-          </a>
-        </div>
-      `);
+              <div class="font-sans min-w-[180px]">
+                <div class="font-black text-sm text-gray-900 dark:text-white mb-1">${name}</div>
+                <div class="text-[10px] font-bold text-gray-500 uppercase mb-3">${conf.label}</div>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${node.lat},${node.lon}" target="_blank"
+                   class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-xs rounded-lg shadow-md active:scale-95">
+                   <i class="fa-solid fa-diamond-turn-right  text-white"></i> <span class="text-white">Chỉ đường</span>
+                </a>
+              </div>
+            `);
           });
           playSound("success");
         } catch (error) {
@@ -3637,6 +3767,84 @@
               console.error("Lỗi đăng ký Service Worker:", err);
             });
         });
+      }
+
+      // Hàm nén ảnh về khoảng 50KB
+      // Hàm nén ảnh về khoảng 50KB và log ra Console
+      async function compressImage(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              // Resize xuống tối đa 800px để giảm dung lượng
+              const MAX_WIDTH = 800;
+              const scaleSize = MAX_WIDTH / img.width;
+              canvas.width = MAX_WIDTH;
+              canvas.height = img.height * scaleSize;
+
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+              // Chất lượng 0.5 (50%) thường cho ra ảnh rất nhẹ (~50kb)
+              const dataUrl = canvas.toDataURL("image/jpeg", 0.2);
+
+              // TÍNH TOÁN VÀ IN RA CONSOLE
+              const originalKB = (file.size / 1024).toFixed(2);
+              // Công thức tính dung lượng của chuỗi Base64
+              const compressedKB = ((dataUrl.length * 3) / 4 / 1024).toFixed(2);
+
+              console.log(`📸 Ảnh gốc: ${originalKB} KB`);
+              console.log(`📉 Sau khi ép (Quality 0.5): ${compressedKB} KB`);
+
+              resolve(dataUrl);
+            };
+          };
+        });
+      }
+
+      async function cleanOldImages() {
+        if (
+          !confirm(
+            "Hành động này sẽ xóa vĩnh viễn hình ảnh của các giao dịch từ tháng trước trở về trước. Ông có chắc chắn?",
+          )
+        ) {
+          return;
+        }
+
+        const now = new Date();
+        // Lấy ngày đầu tháng này
+        const firstDayOfThisMonth = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          1,
+        );
+
+        let deletedCount = 0;
+
+        // Duyệt qua tất cả giao dịch
+        state.transactions.forEach((tx) => {
+          const txDate = new Date(tx.date);
+
+          // Nếu giao dịch cũ hơn ngày đầu tháng này và có ảnh
+          if (txDate < firstDayOfThisMonth && tx.image) {
+            tx.image = null; // Xóa ảnh
+            deletedCount++;
+          }
+        });
+
+        if (deletedCount > 0) {
+          saveData(); // Lưu lại state đã mất ảnh
+          renderTransactions(); // Vẽ lại danh sách để ẩn ảnh
+          alert(
+            `Đã dọn dẹp xong! Đã xóa ảnh của ${deletedCount} giao dịch cũ.`,
+          );
+        } else {
+          alert("Không tìm thấy ảnh cũ nào để xóa.");
+        }
       }
     </script>
   </body>
