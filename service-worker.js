@@ -3,7 +3,7 @@ const CACHE_NAME = 'finmaster-v1';
 // CHỈ CHỨA CÁC FILE LOCAL NẰM TRONG MÁY CỦA ÔNG
 const ASSETS = [
   '/',
-  './1.html',
+  './index.html',
   './manifest.json',
   // Nếu ông có file CSS hay JS tự viết, thêm vào đây
   // './style.css', 
