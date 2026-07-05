@@ -2117,17 +2117,46 @@
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              layout: { padding: { top: 30 } }, // Chừa chỗ cho icon trên đỉnh cột
               plugins: {
-                legend: {
-                  display: chartType === "doughnut",
-                  position: "right",
-                  labels: {
-                    color: state.darkMode ? "#cbd5e1" : "#475569",
-                    font: { family: "inherit" },
-                  },
-                },
+                legend: { display: false }, // Tắt legend để biểu đồ thoáng
               },
             },
+            // THÊM CÁC PLUGIN VÀO ĐÂY
+            plugins: [
+              {
+                id: "iconPlugin",
+                afterDraw: (chart) => {
+                  const { ctx, data } = chart;
+                  const meta = chart.getDatasetMeta(0);
+
+                  meta.data.forEach((element, index) => {
+                    const label = data.labels[index];
+                    const cat = state.categories.find((c) => c.name === label);
+                    if (!cat || !cat.icon) return;
+
+                    let x, y;
+                    if (chart.config.type === "doughnut") {
+                      // Cấu hình cho Doughnut (tâm miếng bánh)
+                      const center = element.getCenterPoint();
+                      x = center.x;
+                      y = center.y;
+                    } else if (chart.config.type === "bar") {
+                      // Cấu hình cho Bar (đỉnh cột)
+                      x = element.x;
+                      y = element.y - 10; // Đẩy icon lên trên đỉnh 10px
+                    } else {
+                      return;
+                    }
+
+                    ctx.font = "20px serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(cat.icon, x, y);
+                  });
+                },
+              },
+            ],
           };
 
           if (chartType === "doughnut") {
@@ -2601,7 +2630,7 @@
                   playSound("success");
                 }
               } catch (e) {
-                nameEl.value = "Lỗi khi giải mã địa chỉ";
+                nameEl.value = "Tính năng không sử dụng được khi offline";
               }
             },
             () => {
