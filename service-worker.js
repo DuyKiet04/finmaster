@@ -1,72 +1,72 @@
-const CACHE_NAME = 'finmaster-v3'; 
+const CACHE_NAME = 'finmaster-v4'; // Tăng version để ép trình duyệt cập nhật
 
-// Chỉ lưu những file nội bộ chắc chắn 100% không bị lỗi CORS
+// Các file nằm ngay trên máy của ông
 const STATIC_ASSETS = [
     './',
     './index.html',
     './manifest.json'
 ];
 
-// Sự kiện Cài đặt: Lưu các file nội bộ
+// Danh sách TOÀN BỘ thư viện bên ngoài ông đang xài trong HTML
+const CDN_ASSETS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js',
+    'https://cdn.tailwindcss.com',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+    'https://cdn.jsdelivr.net/npm/chart.js',
+    'https://unpkg.com/leaflet/dist/leaflet.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css',
+    'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
+    'https://npmcdn.com/flatpickr/dist/themes/dark.css',
+    'https://cdn.jsdelivr.net/npm/flatpickr',
+    'https://unpkg.com/leaflet/dist/leaflet.js',
+    'https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'
+];
+
 self.addEventListener('install', (e) => {
-    self.skipWaiting(); // Ép nó cập nhật ngay bản mới
+    self.skipWaiting(); // Ép kích hoạt ngay lập tức
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Đang lưu trữ file tĩnh...');
-            return cache.addAll(STATIC_ASSETS);
+            // Lưu file nội bộ
+            cache.addAll(STATIC_ASSETS);
+            
+            // Ép lưu các file CDN (bỏ qua lỗi CORS bằng mode: 'no-cors')
+            CDN_ASSETS.forEach((url) => {
+                fetch(url, { mode: 'no-cors' })
+                    .then((response) => cache.put(url, response))
+                    .catch((err) => console.log('Lỗi lưu CDN:', url, err));
+            });
         })
     );
 });
 
-// Sự kiện Kích hoạt: Dọn rác bản cũ
 self.addEventListener('activate', (e) => {
+    // Xóa sạch các bộ nhớ đệm đời cũ (v1, v2)
     e.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then((keys) => {
             return Promise.all(
-                cacheNames.map((cache) => {
-                    if (cache !== CACHE_NAME) {
-                        console.log('[Service Worker] Xóa cache cũ:', cache);
-                        return caches.delete(cache);
-                    }
-                })
+                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
             );
         })
     );
 });
 
-// Sự kiện Fetch: Tự động lưu những file tải từ mạng (CSS, JS, Icon...)
 self.addEventListener('fetch', (e) => {
+    // Bỏ qua các đường dẫn không hợp lệ (như extension của Chrome)
+    if (!e.request.url.startsWith('http')) return;
+
     e.respondWith(
-        caches.match(e.request).then((cachedResponse) => {
-            // 1. Nếu có trong cache rồi thì lấy ra dùng luôn (Cực nhanh, offline vẫn có)
-            if (cachedResponse) {
-                return cachedResponse;
-            }
+        caches.match(e.request).then((cachedRes) => {
+            // Lấy từ kho ra xài luôn nếu có
+            if (cachedRes) return cachedRes;
 
-            // 2. Nếu chưa có, thì phi ra mạng tải về
-            return fetch(e.request).then((networkResponse) => {
-                // Kiểm tra xem phản hồi có hợp lệ không
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                    // Nếu là file từ CDN (như Tailwind, FontAwesome có type là 'opaque'), vẫn ráng lưu lại
-                    if(networkResponse && networkResponse.type === 'opaque') {
-                        const responseToCache = networkResponse.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(e.request, responseToCache);
-                        });
-                    }
-                    return networkResponse;
-                }
-
-                // Copy 1 bản để lưu vào kho, 1 bản trả về cho trình duyệt
-                const responseToCache = networkResponse.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(e.request, responseToCache);
-                });
-
-                return networkResponse;
-            }).catch((err) => {
-                console.error('[Service Worker] Mất mạng và không có cache cho:', e.request.url);
-                // Nếu rớt mạng mà file không có trong cache, nó sẽ báo lỗi ở đây
+            // Nếu chưa có thì tải từ mạng, tải xong cất vào kho luôn
+            return fetch(e.request).then((networkRes) => {
+                const resClone = networkRes.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
+                return networkRes;
+            }).catch(() => {
+                console.log('Mất mạng và file này chưa được cache:', e.request.url);
             });
         })
     );
