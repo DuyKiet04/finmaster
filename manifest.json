@@ -1,0 +1,17 @@
+{
+  "id": "/1.html",
+  "name": "FinMaster Pro",
+  "short_name": "FinMaster",
+  "start_url": "1.html",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "https://duykiet04.github.io/anh/logo2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

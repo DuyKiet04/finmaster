@@ -1,0 +1,3643 @@
+<!doctype html>
+<html lang="vi" class="antialiased">
+  <head>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://duykiet04.github.io/anh/logo.jpg"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>💳 FinMaster Pro</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: { 500: "#6366f1", 600: "#4f46e5" },
+              success: { 500: "#10b981" },
+              danger: { 500: "#f43f5e" },
+            },
+            animation: {
+              fadeIn: "fadeIn 0.2s ease-out forwards",
+              slideUpSheet:
+                "slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+              popIn: "popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: "0", transform: "scale(0.98)" },
+                "100%": { opacity: "1", transform: "scale(1)" },
+              },
+              slideUpSheet: {
+                "0%": { transform: "translateY(100%)" },
+                "100%": { transform: "translateY(0)" },
+              },
+              popIn: {
+                "0%": { opacity: "0", transform: "scale(0.9)" },
+                "100%": { opacity: "1", transform: "scale(1)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="icon" href="data:," />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
+    />
+
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      body {
+        overscroll-behavior-y: none;
+      }
+
+      .view-section:not(.active) {
+        display: none !important;
+      }
+      .view-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+
+      .leaflet-container {
+        z-index: 10;
+        border-radius: 1rem;
+        font-family: inherit;
+      }
+      .dark .leaflet-popup-content-wrapper,
+      .dark .leaflet-popup-tip {
+        background: #1f2937;
+        color: #f3f4f6;
+      }
+      /* Ép popup Leaflet nhỏ gọn lại theo chuẩn UI */
+      .leaflet-popup-content {
+        margin: 14px 16px 12px 16px !important;
+        width: max-content !important;
+      }
+      .leaflet-popup-content p {
+        margin: 0 !important;
+      }
+      .leaflet-container a.leaflet-popup-close-button {
+        color: #9ca3af !important;
+        padding: 4px 6px 0 0 !important;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans text-gray-800 dark:text-gray-100 h-screen w-screen overflow-hidden flex"
+  >
+    <div
+      id="login-overlay"
+      class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center hidden"
+    >
+      <h2 class="text-white text-xl font-medium mb-12">Nhập mật mã</h2>
+
+      <!-- Hiển thị các chấm mật mã -->
+      <div id="pin-dots" class="flex gap-4 mb-12">
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+      </div>
+
+      <!-- Bàn phím số -->
+      <div class="grid grid-cols-3 gap-6 mb-8">
+        <button
+          onclick="pressPin(1)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          1
+        </button>
+        <button
+          onclick="pressPin(2)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          2
+        </button>
+        <button
+          onclick="pressPin(3)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          3
+        </button>
+        <button
+          onclick="pressPin(4)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          4
+        </button>
+        <button
+          onclick="pressPin(5)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          5
+        </button>
+        <button
+          onclick="pressPin(6)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          6
+        </button>
+        <button
+          onclick="pressPin(7)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          7
+        </button>
+        <button
+          onclick="pressPin(8)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          8
+        </button>
+        <button
+          onclick="pressPin(9)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          9
+        </button>
+        <div class="w-20 h-20"></div>
+        <button
+          onclick="pressPin(0)"
+          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
+        >
+          0
+        </button>
+      </div>
+    </div>
+    <div
+      id="splash-screen"
+      class="fixed inset-0 z-[999] bg-gradient-to-br from-primary-600 to-purple-800 flex flex-col items-center justify-center transition-opacity duration-500"
+    >
+      <div
+        class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-primary-600 text-5xl shadow-[0_10px_40px_rgba(0,0,0,0.3)] mb-6 animate-bounce"
+      >
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+      <h1 class="text-4xl font-black text-white tracking-tight shadow-sm">
+        FinMaster
+      </h1>
+      <div class="mt-8 flex gap-2">
+        <div class="w-3 h-3 bg-white rounded-full animate-ping"></div>
+        <div
+          class="w-3 h-3 bg-white rounded-full animate-ping"
+          style="animation-delay: 0.2s"
+        ></div>
+        <div
+          class="w-3 h-3 bg-white rounded-full animate-ping"
+          style="animation-delay: 0.4s"
+        ></div>
+      </div>
+    </div>
+
+    <aside
+      class="hidden md:flex w-72 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-800 flex-col z-30 shadow-sm"
+    >
+      <div class="p-8 flex items-center gap-3 shrink-0">
+        <div
+          class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/30"
+        >
+          <i class="fa-solid fa-wallet text-xl"></i>
+        </div>
+        <h1
+          class="text-2xl font-black bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent"
+        >
+          FinMaster
+        </h1>
+      </div>
+      <nav class="flex-1 px-4 space-y-1 overflow-y-auto" id="desktop-nav"></nav>
+      <div class="p-6 shrink-0">
+        <button
+          onclick="handleFabClick()"
+          class="absolute -top-16 right-2 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg flex items-center justify-center text-xl transition-transform active:scale-90"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
+      <header
+        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-20 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0"
+      >
+        <div>
+          <h2 id="header-title" class="text-2xl font-black tracking-tight">
+            Tổng quan
+          </h2>
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5"
+            id="header-date"
+          ></p>
+        </div>
+        <div class="flex items-center gap-3">
+          <input
+            type="month"
+            id="global-month"
+            onchange="updateAllViews()"
+            class="py-2 px-3 bg-gray-100 dark:bg-gray-800 border-none rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 font-medium outline-none text-sm w-36 sm:w-40"
+          />
+          <div class="hidden sm:flex flex-col items-end mr-2">
+            <span
+              class="text-xs text-gray-500 font-medium uppercase tracking-wider"
+              >Tổng tài sản</span
+            >
+            <span
+              id="header-balance"
+              class="text-primary-600 dark:text-primary-400 font-black text-lg"
+              >0 ₫</span
+            >
+          </div>
+          <img
+            id="header-avatar"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm2Q8HDZlI4wJw4xVePqZy9ZoMdB1A71AdLjLGT8Qn1w&s=10"
+            onclick="switchView('settings')"
+            class="w-10 h-10 rounded-full object-cover aspect-square border-2 border-primary-200 dark:border-gray-700 cursor-pointer shadow-sm"
+            alt="Avatar"
+          />
+        </div>
+      </header>
+
+      <div
+        class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8 relative"
+        id="main-scroll-area"
+      >
+        <div
+          id="view-dashboard"
+          class="view-section active space-y-6 max-w-7xl mx-auto"
+        >
+          <div
+            class="md:hidden bg-gradient-to-br from-gray-900 to-gray-800 dark:from-primary-600 dark:to-purple-700 rounded-3xl p-6 text-white shadow-xl shadow-gray-900/20 dark:shadow-primary-500/20 relative overflow-hidden"
+          >
+            <div
+              class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl"
+            ></div>
+            <p class="text-white/70 text-sm font-medium mb-1">
+              Thực dư trong thời gian này
+            </p>
+            <h3
+              id="dash-balance-mobile"
+              class="text-4xl font-black mb-6 tracking-tight"
+            >
+              0 ₫
+            </h3>
+            <div class="flex gap-4">
+              <div
+                class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/10"
+              >
+                <p class="text-white/60 text-xs mb-1 flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-trend-down text-success-500"></i>
+                  Thu
+                </p>
+                <p id="dash-income-mobile" class="font-bold text-sm">0 ₫</p>
+              </div>
+              <div
+                class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/10"
+              >
+                <p class="text-white/60 text-xs mb-1 flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-trend-up text-danger-500"></i> Chi
+                </p>
+                <p id="dash-expense-mobile" class="font-bold text-sm">0 ₫</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hidden md:grid grid-cols-3 gap-6">
+            <div
+              class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800"
+            >
+              <div
+                class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex items-center justify-center text-xl mb-4"
+              >
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <p class="text-sm text-gray-500 font-medium">Thực dư trong kỳ</p>
+              <h3 id="dash-balance" class="text-3xl font-black mt-1">0 ₫</h3>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800"
+            >
+              <div
+                class="w-12 h-12 rounded-2xl bg-success-50 dark:bg-success-500/10 text-success-500 flex items-center justify-center text-xl mb-4"
+              >
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+              <p class="text-sm text-gray-500 font-medium">Tổng thu nhập</p>
+              <h3
+                id="dash-income"
+                class="text-3xl font-black mt-1 text-success-500"
+              >
+                0 ₫
+              </h3>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800"
+            >
+              <div
+                class="w-12 h-12 rounded-2xl bg-danger-50 dark:bg-danger-500/10 text-danger-500 flex items-center justify-center text-xl mb-4"
+              >
+                <i class="fa-solid fa-arrow-up"></i>
+              </div>
+              <p class="text-sm text-gray-500 font-medium">Tổng chi tiêu</p>
+              <h3
+                id="dash-expense"
+                class="text-3xl font-black mt-1 text-danger-500"
+              >
+                0 ₫
+              </h3>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div
+              class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">Cơ cấu chi tiêu</h3>
+                <!-- Đưa 3 nút chọn loại biểu đồ lên ngang hàng với Tiêu đề -->
+                <div class="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
+                  <button
+                    onclick="setChartType('doughnut')"
+                    id="btn-chart-doughnut"
+                    class="p-1.5 rounded-lg text-gray-500 transition-colors"
+                  >
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('bar')"
+                    id="btn-chart-bar"
+                    class="p-1.5 rounded-lg text-gray-500 transition-colors"
+                  >
+                    <i class="fa-solid fa-chart-simple"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('line')"
+                    id="btn-chart-line"
+                    class="p-1.5 rounded-lg text-gray-500 transition-colors"
+                  >
+                    <i class="fa-solid fa-chart-line"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- Đưa 4 nút thời gian xuống dòng dưới, kéo giãn đều ra (flex-1) -->
+              <div
+                class="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-xl mb-4 w-full"
+              >
+                <button
+                  onclick="setDashTime('day')"
+                  id="btn-time-day"
+                  class="flex-1 py-1.5 rounded-lg text-sm font-bold text-gray-500 transition-colors"
+                >
+                  Ngày
+                </button>
+                <button
+                  onclick="setDashTime('week')"
+                  id="btn-time-week"
+                  class="flex-1 py-1.5 rounded-lg text-sm font-bold text-gray-500 transition-colors"
+                >
+                  Tuần
+                </button>
+                <button
+                  onclick="setDashTime('month')"
+                  id="btn-time-month"
+                  class="flex-1 py-1.5 rounded-lg text-sm font-bold text-gray-500 transition-colors"
+                >
+                  Tháng
+                </button>
+                <button
+                  onclick="setDashTime('year')"
+                  id="btn-time-year"
+                  class="flex-1 py-1.5 rounded-lg text-sm font-bold text-gray-500 transition-colors"
+                >
+                  Năm
+                </button>
+              </div>
+              <div class="h-64 relative w-full" id="chart-container">
+                <canvas id="expenseChart"></canvas>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col"
+            >
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg">Giao dịch gần đây</h3>
+                <button
+                  onclick="switchView('transactions')"
+                  class="text-sm text-primary-500 font-medium hover:underline"
+                >
+                  Xem tất cả
+                </button>
+              </div>
+              <div
+                id="dash-recent-tx"
+                class="space-y-5 flex-1 overflow-y-auto"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="view-transactions"
+          class="view-section space-y-6 max-w-5xl mx-auto"
+        >
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1 flex items-center">
+              <i
+                class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400"
+              ></i>
+              <input
+                type="text"
+                id="filter-search"
+                oninput="renderTransactions()"
+                placeholder="Tìm..."
+                class="w-full pl-11 pr-12 py-3.5 bg-white dark:bg-gray-800 border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-primary-500 font-medium outline-none"
+              />
+
+              <button
+                id="filter-btn"
+                onclick="
+                  document
+                    .getElementById('filter-dropdown')
+                    .classList.toggle('hidden')
+                "
+                class="absolute right-3 p-2 text-gray-400 hover:text-primary-500"
+              >
+                <i class="fa-solid fa-filter"></i>
+              </button>
+
+              <div
+                id="filter-dropdown"
+                class="hidden absolute right-0 top-14 w-36 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 p-2"
+              >
+                <button
+                  onclick="setTxFilter('all')"
+                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold"
+                >
+                  Tất cả
+                </button>
+                <button
+                  onclick="setTxFilter('today')"
+                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold"
+                >
+                  Hôm nay
+                </button>
+                <button
+                  onclick="setTxFilter('yesterday')"
+                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold"
+                >
+                  Hôm qua
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="tx-summary" class="grid grid-cols-2 gap-3 mb-1">
+            <div
+              class="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-2xl border border-emerald-100 dark:border-emerald-800 shadow-sm"
+            >
+              <p
+                class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider"
+              >
+                <i class="fa-solid fa-arrow-trend-down mr-0.5"></i> Thu
+              </p>
+              <p
+                id="sum-inc"
+                class="font-black text-lg text-emerald-700 dark:text-emerald-300"
+              >
+                0 ₫
+              </p>
+            </div>
+
+            <div
+              class="bg-rose-50 dark:bg-rose-900/20 p-3 rounded-2xl border border-rose-100 dark:border-rose-800 shadow-sm"
+            >
+              <p
+                class="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wider"
+              >
+                <i class="fa-solid fa-arrow-trend-up mr-0.5"></i> Chi
+              </p>
+              <p
+                id="sum-exp"
+                class="font-black text-lg text-rose-700 dark:text-rose-300"
+              >
+                0 ₫
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-800"
+          >
+            <div
+              id="tx-list-container"
+              class="divide-y divide-gray-50 dark:divide-gray-800/50"
+            ></div>
+            <div id="tx-empty" class="hidden p-12 text-center text-gray-400">
+              <div class="text-5xl mb-4 opacity-50">👻</div>
+              <p class="font-medium">Không tìm thấy giao dịch nào.</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="view-map"
+          class="view-section absolute inset-0 z-10 overflow-hidden bg-gray-100 dark:bg-gray-900"
+        >
+          <div id="map-container" class="absolute inset-0 z-10"></div>
+
+          <div
+            class="absolute top-4 left-4 right-4 z-20 flex flex-col gap-3 pointer-events-none"
+          >
+            <div class="flex items-start gap-2 pointer-events-auto w-full">
+              <div
+                class="flex-1 overflow-x-auto flex gap-2 pb-2"
+                id="map-category-pills"
+              ></div>
+              <div class="shrink-0 relative">
+                <button
+                  onclick="
+                    document
+                      .getElementById('map-mode-menu')
+                      .classList.toggle('hidden')
+                  "
+                  class="w-10 h-10 rounded-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-lg border border-gray-100 dark:border-gray-700 flex items-center justify-center text-primary-600 active:scale-90 transition-transform"
+                >
+                  <i class="fa-solid fa-layer-group"></i>
+                </button>
+                <div
+                  id="map-mode-menu"
+                  class="hidden absolute top-12 right-0 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 p-3 w-32 z-50 max-h-[60vh] overflow-y-auto"
+                >
+                  <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button
+                      onclick="setMapMode('marker')"
+                      id="btn-mode-marker"
+                      class="p-3 rounded-2xl bg-primary-50 dark:bg-gray-700 text-primary-600 dark:text-primary-400 text-lg"
+                    >
+                      <i class="fa-solid fa-location-dot"></i>
+                    </button>
+                    <button
+                      onclick="setMapMode('heat')"
+                      id="btn-mode-heat"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-pink-500 hover:bg-gray-100 text-lg"
+                    >
+                      <i class="fa-solid fa-fire"></i>
+                    </button>
+                    <button
+                      onclick="setMapMode('route')"
+                      id="btn-mode-route"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-yellow-500 hover:bg-gray-100 text-lg"
+                    >
+                      <i class="fa-solid fa-route"></i>
+                    </button>
+                    <button
+                      onclick="setMapMode('stats')"
+                      id="btn-mode-stats"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-green-500 hover:bg-gray-100 text-lg"
+                    >
+                      <i class="fa-solid fa-chart-pie"></i>
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2">
+                    <button
+                      onclick="togglePOILayer('atm')"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-blue-500 hover:bg-blue-50 transition-colors text-lg"
+                      title="ATM"
+                    >
+                      <i class="fa-solid fa-money-bill-transfer"></i>
+                    </button>
+                    <button
+                      onclick="togglePOILayer('fuel')"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-orange-500 hover:bg-orange-50 transition-colors text-lg"
+                      title="Cây xăng"
+                    >
+                      <i class="fa-solid fa-gas-pump"></i>
+                    </button>
+                    <button
+                      onclick="togglePOILayer('restaurant')"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-red-500 hover:bg-red-50 transition-colors text-lg"
+                      title="Quán ăn"
+                    >
+                      <i class="fa-solid fa-utensils"></i>
+                    </button>
+                    <button
+                      onclick="togglePOILayer('university')"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-purple-500 hover:bg-purple-50 transition-colors text-lg"
+                      title="Trường ĐH"
+                    >
+                      <i class="fa-solid fa-graduation-cap"></i>
+                    </button>
+                    <button
+                      onclick="togglePOILayer('convenience')"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-green-500 hover:bg-green-50 transition-colors text-lg"
+                      title="Cửa hàng tiện lợi"
+                    >
+                      <i class="fa-solid fa-store"></i>
+                    </button>
+                    <button
+                      onclick="clearPOIs()"
+                      class="p-3 rounded-2xl dark:bg-gray-700 text-danger-500 hover:bg-danger-50 transition-colors text-lg"
+                      title="Xóa lớp"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="btn-spatial-query"
+            onclick="openModal('buffer')"
+            class="absolute top-20 right-4 w-10 h-10 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-full shadow-lg border border-gray-100 dark:border-gray-700 flex items-center justify-center text-primary-600 dark:text-primary-400 text-sm z-20 active:scale-90 transition-all pointer-events-auto"
+          >
+            <i class="fa-solid fa-draw-polygon"></i>
+          </button>
+
+          <div
+            id="spatial-result"
+            class="hidden absolute bottom-40 lg:bottom-16 left-4 right-20 lg:w-80 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border-l-4 border-primary-500 z-30 pointer-events-auto"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-bold text-gray-500 dark:text-gray-400">
+                  Tổng chi tiêu vùng khoanh
+                </p>
+                <h4
+                  id="spatial-sum"
+                  class="text-2xl font-black text-danger-500 mt-1"
+                >
+                  0 ₫
+                </h4>
+                <p id="spatial-count" class="text-xs text-gray-500 mt-1">
+                  <i class="fa-solid fa-hashtag"></i> 0 giao dịch
+                </p>
+              </div>
+              <button
+                onclick="closeSpatialQuery()"
+                class="text-gray-400 hover:text-danger-500 bg-gray-100 dark:bg-gray-700 w-6 h-6 rounded-full flex items-center justify-center"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="btn-satellite"
+            onclick="toggleSatellite()"
+            class="absolute bottom-60 right-6 w-12 h-12 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 flex items-center justify-center text-primary-600 dark:text-primary-400 text-xl z-20 active:scale-90 transition-all pointer-events-auto"
+          >
+            <i class="fa-solid fa-earth-asia"></i>
+          </button>
+          <button
+            onclick="myMap.locate({ setView: true, maxZoom: 15 })"
+            class="absolute bottom-40 right-6 w-12 h-12 bg-primary-600 text-white rounded-full shadow-[0_8px_30px_rgba(99,102,241,0.5)] flex items-center justify-center text-lg z-20 active:scale-90 transition-transform pointer-events-auto"
+          >
+            <i class="fa-solid fa-location-crosshairs"></i>
+          </button>
+
+          <div
+            id="map-stats-panel"
+            class="hidden absolute bottom-28 lg:bottom-8 left-4 right-4 lg:right-auto lg:w-80 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md p-5 rounded-3xl shadow-2xl border border-white/40 dark:border-gray-700/50 z-30 pointer-events-auto flex-col max-h-[35vh] lg:max-h-[40vh]"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-primary-500"></i> Thống kê
+                khu vực
+              </h3>
+              <button
+                onclick="setMapMode('marker')"
+                class="text-gray-400 hover:text-danger-500 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex justify-center items-center"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div
+              id="map-area-stats"
+              class="space-y-4 overflow-y-auto flex-1 custom-scrollbar pb-2"
+            ></div>
+          </div>
+        </div>
+
+        <div id="view-budgets" class="view-section space-y-6 max-w-5xl mx-auto">
+          <div
+            id="budgets-container"
+            class="grid grid-cols-1 md:grid-cols-2 gap-5"
+          ></div>
+        </div>
+
+        <div id="view-goals" class="view-section space-y-6 max-w-5xl mx-auto">
+          <div
+            id="goals-container"
+            class="grid grid-cols-1 md:grid-cols-2 gap-5"
+          ></div>
+        </div>
+
+        <div id="view-wallets" class="view-section space-y-6 max-w-6xl mx-auto">
+          <div
+            id="wallets-container"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          ></div>
+        </div>
+
+        <!-- VIEW QUẢN LÝ NỢ -->
+        <div
+          id="view-debts"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden"
+        >
+          <!-- Form thêm khoản nợ nhanh -->
+
+          <!-- Danh sách các khoản nợ -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4
+                class="font-black text-sm text-gray-400 uppercase tracking-wider mb-3"
+              >
+                🚨 Khoản nợ chưa xử lý
+              </h4>
+              <div id="active-debts-list" class="space-y-3"></div>
+            </div>
+            <div>
+              <h4
+                class="font-black text-sm text-gray-400 uppercase tracking-wider mb-3"
+              >
+                ✅ Nhật ký đã tất toán
+              </h4>
+              <div id="settled-debts-list" class="space-y-3 opacity-60"></div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="view-settings"
+          class="view-section max-w-3xl mx-auto space-y-6"
+        >
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
+          >
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+              <i class="fa-solid fa-user-astronaut text-primary-500"></i> Hồ sơ
+              cá nhân
+            </h4>
+            <div class="flex items-center gap-6">
+              <div class="relative shrink-0">
+                <img
+                  id="profile-img"
+                  src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff"
+                  class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover aspect-square border-4 border-primary-100 dark:border-primary-900/30 shadow-md"
+                />
+                <button
+                  onclick="document.getElementById('avatar-input').click()"
+                  class="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 hover:bg-primary-700 text-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90 border-2 border-white dark:border-gray-800"
+                >
+                  <i class="fa-solid fa-camera text-xs"></i>
+                </button>
+                <input
+                  type="file"
+                  id="avatar-input"
+                  accept="image/*"
+                  capture="user"
+                  class="hidden"
+                  onchange="updateAvatar(event)"
+                />
+              </div>
+              <div>
+                <h3
+                  class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white"
+                  id="profile-name-disp"
+                >
+                  Người dùng
+                </h3>
+                <p
+                  class="text-sm text-gray-500 font-medium mt-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md inline-block"
+                >
+                  FinMaster
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <h4 class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-tags text-primary-500"></i> Quản lý danh
+                mục
+              </h4>
+              <button
+                onclick="openModal('category')"
+                class="bg-primary-50 dark:bg-primary-900/30 w-8 h-8 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg flex items-center justify-center text-xl transition-transform active:scale-90 text-primary-600 px-4 py-2 font-bold text-sm hover:bg-primary-100 transition-colors"
+              >
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <div
+              id="settings-cat-list"
+              class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar"
+            ></div>
+          </div>
+
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
+          >
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+              <i class="fa-solid fa-layer-group text-primary-500"></i> Dịch vụ
+              khác
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onclick="openService('https://tkb04.blogspot.com/', 'Random')"
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg shadow-sm"
+                  >
+                    <i class="fa-solid fa-dice"></i>
+                  </div>
+                  <span class="font-bold text-gray-800 dark:text-gray-200"
+                    >Random Số</span
+                  >
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400"></i>
+              </button>
+
+              <button
+                onclick="
+                  openService(
+                    'https://profileduykiet04.blogspot.com/',
+                    'Tác Giả',
+                  )
+                "
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-lg shadow-sm"
+                  >
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <span class="font-bold text-gray-800 dark:text-gray-200"
+                    >Tác giả</span
+                  >
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400"></i>
+              </button>
+
+              <button
+                onclick="toggleDarkMode()"
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 flex items-center justify-center text-lg shadow-sm"
+                  >
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                  </div>
+                  <span class="font-bold text-gray-800 dark:text-gray-200"
+                    >Giao diện Tối/Sáng</span
+                  >
+                </div>
+                <i class="fa-solid fa-circle-half-stroke text-gray-400"></i>
+              </button>
+              <button
+                onclick="openChangePassword()"
+                class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-lg"
+                  >
+                    <i class="fa-solid fa-key"></i>
+                  </div>
+                  <span class="font-bold text-gray-800 dark:text-gray-200"
+                    >Đổi mã PIN</span
+                  >
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400"></i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
+          >
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+              <i class="fa-solid fa-database text-primary-500"></i> Dữ liệu hệ
+              thống
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onclick="exportToExcel()"
+                class="flex items-center justify-center gap-2 p-4 bg-success-50 dark:bg-success-500/10 text-success-600 dark:text-success-400 rounded-2xl hover:bg-success-100 font-bold transition-colors border border-success-200 dark:border-success-700/50"
+              >
+                <i class="fa-solid fa-file-excel text-xl"></i> Tải xuống Excel
+              </button>
+              <button
+                onclick="clearAllData()"
+                class="flex items-center justify-center gap-2 p-4 bg-danger-50 dark:bg-danger-500/10 text-danger-600 dark:text-danger-400 rounded-2xl hover:bg-danger-100 font-bold transition-colors border border-danger-200 dark:border-danger-700/50"
+              >
+                <i class="fa-solid fa-trash-can text-xl"></i> Xóa toàn bộ dữ
+                liệu
+              </button>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-100 dark:border-gray-800"
+          >
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-primary-500"></i>
+              Nhật ký hoạt động
+            </h4>
+            <div
+              id="logs-container"
+              class="max-h-80 overflow-y-auto space-y-4 pr-2 text-sm"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      class="md:hidden fixed bottom-6 left-4 right-4 z-40 flex items-center gap-2"
+    >
+      <nav
+        class="flex-1 bg-white dark:bg-gray-800 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+        id="mobile-nav-pill"
+      ></nav>
+
+      <button
+        onclick="handleFabClick()"
+        class="absolute -top-16 right-2 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg flex items-center justify-center text-xl shrink-0"
+      >
+        <i class="fa-solid fa-plus"></i>
+      </button>
+
+      <button
+        onclick="switchView('settings')"
+        class="w-14 h-14 bg-white dark:bg-gray-800 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0"
+      >
+        <i class="fa-solid fa-gear text-gray-500 dark:text-gray-400"></i>
+      </button>
+    </div>
+
+    <div
+      id="global-modal"
+      class="hidden fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity"
+    >
+      <div class="absolute inset-0" onclick="closeModal()"></div>
+      <div
+        class="relative bg-white dark:bg-gray-900 w-full max-w-lg md:rounded-3xl rounded-t-[2rem] shadow-2xl flex flex-col max-h-[90vh] md:max-h-[85vh] animate-slideUpSheet md:animate-popIn"
+      >
+        <div class="w-full flex justify-center pt-3 pb-1 md:hidden">
+          <div
+            class="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"
+          ></div>
+        </div>
+        <div
+          class="flex justify-between items-center px-6 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0"
+        >
+          <h3 id="modal-title" class="font-black text-xl"></h3>
+          <button
+            onclick="closeModal()"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="modal-body" class="p-6 overflow-y-auto custom-scrollbar"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <script>
+      const DEFAULT_CATEGORIES = [
+        {
+          id: "c1",
+          name: "Ăn uống",
+          type: "expense",
+          icon: "🍔",
+          color: "bg-orange-100 text-orange-500",
+        },
+        {
+          id: "c2",
+          name: "Di chuyển",
+          type: "expense",
+          icon: "🚗",
+          color: "bg-blue-100 text-blue-500",
+        },
+        {
+          id: "c3",
+          name: "Mua sắm",
+          type: "expense",
+          icon: "🛍️",
+          color: "bg-pink-100 text-pink-500",
+        },
+        {
+          id: "c4",
+          name: "Giải trí",
+          type: "expense",
+          icon: "🎬",
+          color: "bg-purple-100 text-purple-500",
+        },
+        {
+          id: "c5",
+          name: "Y tế",
+          type: "expense",
+          icon: "💊",
+          color: "bg-red-100 text-red-500",
+        },
+        {
+          id: "c6",
+          name: "Học tập",
+          type: "expense",
+          icon: "📚",
+          color: "bg-indigo-100 text-indigo-500",
+        },
+        {
+          id: "c7",
+          name: "Lương",
+          type: "income",
+          icon: "💰",
+          color: "bg-emerald-100 text-emerald-500",
+        },
+        {
+          id: "c8",
+          name: "Thưởng",
+          type: "income",
+          icon: "🎁",
+          color: "bg-teal-100 text-teal-500",
+        },
+        {
+          id: "c9",
+          name: "Khác",
+          type: "both",
+          icon: "📦",
+          color: "bg-gray-200 text-gray-600",
+        },
+      ];
+
+      const DEFAULT_WALLETS = [
+        { id: "w1", name: "Tiền mặt", balance: 0, icon: "💵", isShared: false },
+        {
+          id: "w2",
+          name: "Tài khoản NH",
+          balance: 0,
+          icon: "🏦",
+          isShared: false,
+        },
+      ];
+
+      const DEFAULT_GOALS = [
+        {
+          id: "g1",
+          name: "iPhone 16e 256GB",
+          targetAmount: 14490000,
+          savedAmount: 0,
+          targetDate: "2027-01-01",
+        },
+      ];
+
+      const walletColors = [
+        "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800",
+        "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800",
+        "bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-800",
+        "bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800",
+        "bg-violet-50 dark:bg-violet-900/20 border-violet-100 dark:border-violet-800",
+        "bg-cyan-50 dark:bg-cyan-900/20 border-cyan-100 dark:border-cyan-800",
+      ];
+
+      let state = {
+        transactions: [],
+        wallets: JSON.parse(JSON.stringify(DEFAULT_WALLETS)),
+        categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+        budgets: [],
+        goals: JSON.parse(JSON.stringify(DEFAULT_GOALS)),
+        debts: [],
+        logs: [],
+        darkMode: false,
+        currentView: "dashboard",
+        dashFilter: { time: "month", chart: "doughnut" },
+        userProfile: { name: "Nguyễn Duy Kiệt", avatar: "" },
+      };
+
+      let chartInstance = null;
+      let currentEditId = null;
+      let dateFilter = "all";
+      let myMap = null,
+        mapLayerGroup = null,
+        heatLayer = null,
+        drawLayerGroup = null,
+        poiLayerGroup = null;
+
+      let currentMapMode = "marker",
+        currentMapCategory = "all";
+
+      const generateId = () => Math.random().toString(36).substr(2, 9);
+      const getToday = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
+      };
+
+      const formatDateTime = (dateStr) => {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const days = [
+          "Chủ nhật",
+          "Thứ 2",
+          "Thứ 3",
+          "Thứ 4",
+          "Thứ 5",
+          "Thứ 6",
+          "Thứ 7",
+        ];
+        const dayName = days[d.getDay()];
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yyyy = d.getFullYear();
+        if (
+          dateStr.includes("T") ||
+          dateStr.includes(":") ||
+          dateStr.includes(" ")
+        ) {
+          const hh = String(d.getHours()).padStart(2, "0");
+          const min = String(d.getMinutes()).padStart(2, "0");
+          return `${dayName} ${hh}:${min} ${dd}/${mm}/${yyyy}`;
+        }
+        return `${dayName} ${dd}/${mm}/${yyyy}`;
+      };
+
+      const formatMoney = (amount) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount || 0);
+
+      function formatInputCurrency(e) {
+        let val = e.target.value.replace(/\D/g, "");
+        if (val !== "")
+          e.target.value = parseInt(val, 10)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        else e.target.value = "";
+      }
+      function getRawNumber(str) {
+        if (!str) return 0;
+        return parseInt(str.toString().replace(/\./g, ""), 10);
+      }
+
+      function getSelectedMonth() {
+        const globalMonth = document.getElementById("global-month");
+        if (globalMonth && globalMonth.value) {
+          const [year, month] = globalMonth.value.split("-");
+          return { m: parseInt(month) - 1, y: parseInt(year) };
+        }
+        const now = new Date();
+        return { m: now.getMonth(), y: now.getFullYear() };
+      }
+
+      function updateAllViews() {
+        if (state.currentView === "dashboard") renderDashboard();
+        if (state.currentView === "transactions") renderTransactions();
+        if (state.currentView === "budgets") renderBudgets();
+      }
+
+      window.setDashTime = (t) => {
+        state.dashFilter.time = t;
+        saveData();
+        renderDashboard();
+      };
+      window.setChartType = (c) => {
+        state.dashFilter.chart = c;
+        saveData();
+        renderDashboard();
+      };
+
+      async function initApp() {
+        const splash = document.getElementById("splash-screen");
+
+        try {
+          // --- 1. CHUYỂN NHÀ DỮ LIỆU (Migration) ---
+          // Kiểm tra xem máy ông còn dữ liệu cũ ở localStorage không, có thì bốc sang nhà mới
+          const oldData = localStorage.getItem("finmaster_data");
+          if (oldData) {
+            await localforage.setItem("finmaster_data", JSON.parse(oldData));
+            const oldSettings = localStorage.getItem("finmaster_settings");
+            if (oldSettings)
+              await localforage.setItem(
+                "finmaster_settings",
+                JSON.parse(oldSettings),
+              );
+
+            // Chuyển xong thì đốt nhà cũ cho nhẹ máy
+            localStorage.removeItem("finmaster_data");
+            localStorage.removeItem("finmaster_settings");
+            console.log("Đã di dời dữ liệu sang IndexedDB an toàn!");
+          }
+
+          // --- 2. ĐỌC DỮ LIỆU TỪ INDEXEDDB ---
+          const savedData = await localforage.getItem("finmaster_data");
+          if (savedData) {
+            state.debts = savedData.debts || [];
+            state.transactions = savedData.transactions || [];
+            state.wallets =
+              savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
+            state.categories =
+              savedData.categories ||
+              JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            state.budgets = savedData.budgets || [];
+            state.goals =
+              savedData.goals || JSON.parse(JSON.stringify(DEFAULT_GOALS));
+            state.logs = savedData.logs || [];
+            if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
+            if (savedData.userProfile)
+              state.userProfile = savedData.userProfile;
+          }
+
+          const savedSettings = await localforage.getItem("finmaster_settings");
+          if (savedSettings) state.darkMode = savedSettings.darkMode;
+        } catch (e) {
+          console.error("Lỗi khởi tạo hệ thống:", e);
+        }
+
+        // --- 3. KHỞI TẠO GIAO DIỆN CHỜ ---
+        document.getElementById("header-date").innerText =
+          new Date().toLocaleDateString("vi-VN", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+        const now = new Date();
+        const gm = document.getElementById("global-month");
+        if (gm)
+          gm.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+        applyTheme();
+        renderNav();
+        switchView("dashboard");
+
+        setTimeout(() => {
+          if (splash) {
+            splash.style.opacity = "0";
+            setTimeout(() => {
+              splash.classList.add("hidden");
+            }, 500);
+          }
+        }, 2000);
+
+        if (typeof processRecurringTransactions === "function") {
+          processRecurringTransactions();
+        }
+      }
+
+      function saveData() {
+        const dataToSave = {
+          transactions: state.transactions,
+          wallets: state.wallets,
+          categories: state.categories,
+          budgets: state.budgets,
+          goals: state.goals,
+          logs: state.logs,
+          dashFilter: state.dashFilter,
+          userProfile: state.userProfile,
+          debts: state.debts,
+        };
+
+        // localforage lưu ngầm dưới IndexedDB
+        localforage
+          .setItem("finmaster_data", dataToSave)
+          .catch((err) => console.error("Lỗi lưu dữ liệu:", err));
+        localforage
+          .setItem("finmaster_settings", { darkMode: state.darkMode })
+          .catch((err) => console.error("Lỗi lưu cài đặt:", err));
+
+        updateGlobalHeader();
+      }
+
+      function addLog(action, details) {
+        state.logs.unshift({
+          id: generateId(),
+          timestamp: new Date().toISOString(),
+          action,
+          details,
+        });
+        if (state.logs.length > 50) state.logs.pop();
+        saveData();
+      }
+
+      function toggleDarkMode() {
+        state.darkMode = !state.darkMode;
+        applyTheme();
+        saveData();
+        if (state.currentView === "dashboard") renderDashboard();
+      }
+
+      function applyTheme() {
+        if (state.darkMode) {
+          document.documentElement.classList.add("dark");
+          document.getElementById("theme-icon").className =
+            "fa-solid fa-sun text-yellow-400 text-lg";
+        } else {
+          document.documentElement.classList.remove("dark");
+          document.getElementById("theme-icon").className =
+            "fa-solid fa-moon text-lg text-gray-500";
+        }
+        if (typeof updateMapBaseLayer === "function") updateMapBaseLayer();
+      }
+
+      const NAV_ITEMS = [
+        { id: "dashboard", icon: "fa-chart-pie", label: "Tổng quan" },
+        { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
+        { id: "map", icon: "fa-map-location-dot", label: "Bản đồ" },
+        {
+          id: "budgets",
+          icon: "fa-bullseye",
+          label: "Ngân sách",
+          desktopOnly: true,
+        },
+        { id: "goals", icon: "fa-flag-checkered", label: "Mục tiêu" },
+        { id: "wallets", icon: "fa-wallet", label: "Ví", desktopOnly: true },
+        { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
+        { id: "settings", icon: "fa-gear", label: "Cài đặt" },
+      ];
+
+      function renderNav() {
+        document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
+          (item) => `
+                <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white font-bold" : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
+                  <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+                  <span>${item.label}</span>
+                </button>
+              `,
+        ).join("");
+
+        const pillItems = [
+          { id: "dashboard", icon: "fa-gauge-high" },
+          { id: "transactions", icon: "fa-receipt" },
+          { id: "map", icon: "fa-map-location-dot" },
+          { id: "budgets", icon: "fa-money-bill-wave" },
+          { id: "debts", icon: "fa-hand-holding-dollar" },
+          { id: "goals", icon: "fa-bullseye" },
+          { id: "wallets", icon: "fa-wallet" },
+        ];
+        let pillHtml = "";
+        pillItems.forEach((item) => {
+          const isActive = state.currentView === item.id;
+          // w-12 và shrink-0 giúp icon nằm dàn hàng ngang mà không bị bóp méo khi lướt
+          pillHtml += `
+    <button onclick="switchView('${item.id}')" class="flex flex-col items-center justify-center w-12 h-full shrink-0 transition-transform active:scale-90">
+      <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6]" : "text-[#283143] dark:text-gray-400"}"></i>
+    </button>`;
+        });
+        const navPill = document.getElementById("mobile-nav-pill");
+        if (navPill) navPill.innerHTML = pillHtml;
+
+        const circleBtn = document.getElementById("mobile-nav-circle");
+        if (circleBtn) {
+          const isSettings = state.currentView === "settings";
+          circleBtn.innerHTML = `<i class="fa-solid fa-gear text-[22px] transition-colors duration-200 ${isSettings ? "text-[#3b82f6]" : "text-[#283143] dark:text-gray-400"}"></i>`;
+        }
+      }
+
+      function switchView(viewId) {
+        state.currentView = viewId;
+        const targetNav = NAV_ITEMS.find((i) => i.id === viewId);
+        document.getElementById("header-title").innerText =
+          targetNav?.label || "FinMaster";
+        document
+          .querySelectorAll(".view-section")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById(`view-${viewId}`).classList.add("active");
+        document.getElementById("main-scroll-area").scrollTo(0, 0);
+        renderNav();
+
+        if (viewId === "dashboard") renderDashboard();
+        if (viewId === "debts") renderDebts();
+        if (viewId === "transactions") renderTransactions();
+        if (viewId === "map") initMap();
+        if (viewId === "budgets") renderBudgets();
+        if (viewId === "goals") renderGoals();
+        if (viewId === "wallets") renderWallets();
+        if (viewId === "settings") renderSettings();
+        updateGlobalHeader();
+      }
+
+      function updateGlobalHeader() {
+        const bal = formatMoney(
+          state.wallets.reduce((acc, w) => acc + w.balance, 0),
+        );
+        document.getElementById("header-balance").innerText = bal;
+      }
+
+      function updateAvatar(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          state.userProfile.avatar = event.target.result;
+          document.getElementById("header-avatar").src = event.target.result;
+          saveData();
+          renderSettings();
+          playSound("success");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderSettings() {
+        const hAvt = document.getElementById("header-avatar");
+        if (hAvt)
+          hAvt.src =
+            state.userProfile.avatar ||
+            "https://ui-avatars.com/api/?name=User&background=6366f1&color=fff";
+        document.getElementById("profile-name-disp").innerText =
+          state.userProfile.name;
+        if (state.userProfile.avatar)
+          document.getElementById("profile-img").src = state.userProfile.avatar;
+
+        document.getElementById("settings-cat-list").innerHTML =
+          state.categories
+            .map(
+              (c) => `
+          <div class="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-700 swipe-item bg-white dark:bg-gray-800">
+            <div class="absolute inset-y-0 right-0 flex items-center z-0">
+              <button onclick="openModal('category', '${c.id}')" class="w-16 h-full bg-blue-50 text-blue-500 hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteCategory('${c.id}')" class="w-16 h-full bg-danger-50 text-danger-500 hover:bg-danger-100"><i class="fa-solid fa-trash"></i></button>
+            </div>
+
+            <div class="relative p-4 bg-white dark:bg-gray-800 flex items-center gap-3 transition-transform duration-200 swipe-content z-10">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm ${c.color}">${c.icon}</div>
+              <div class="flex-1">
+                <p class="font-bold text-gray-800 dark:text-gray-100 text-sm">${c.name}</p>
+                <p class="text-[11px] font-medium text-gray-400">
+                  ${
+                    c.type === "income"
+                      ? '<span class="text-emerald-500"><i class="fa-solid fa-arrow-down"></i> Thu</span>'
+                      : c.type === "expense"
+                        ? '<span class="text-rose-500"><i class="fa-solid fa-arrow-up"></i> Chi</span>'
+                        : "Thu & Chi"
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+          `,
+            )
+            .join("");
+
+        // Đừng quên gọi lại hàm này sau khi render xong để nó nhận sự kiện vuốt
+        setTimeout(initSwipeActions, 100);
+
+        document.getElementById("logs-container").innerHTML =
+          state.logs.length === 0
+            ? '<p class="text-gray-500">Trống.</p>'
+            : state.logs
+                .map(
+                  (l) =>
+                    `<div class="flex gap-4"><div class="flex flex-col items-center"><div class="w-2 h-2 rounded-full bg-primary-500 mt-2"></div><div class="w-px h-full bg-gray-200 dark:bg-gray-700 my-1"></div></div><div class="pb-4"><p class="text-xs text-gray-400 font-medium">${new Date(l.timestamp).toLocaleString("vi-VN")}</p><p class="font-bold text-gray-900 dark:text-white mt-0.5">${l.action}</p><p class="text-gray-500 mt-0.5">${l.details}</p></div></div>`,
+                )
+                .join("");
+      }
+
+      function deleteCategory(id) {
+        if (
+          confirm(
+            'Bạn có chắc chắn muốn xóa danh mục này? Các giao dịch cũ của danh mục sẽ tự động được chuyển về "Khác".',
+          )
+        ) {
+          state.categories = state.categories.filter((c) => c.id !== id);
+          let checkC9 = state.categories.find((c) => c.id === "c9");
+          if (!checkC9) {
+            state.categories.push({
+              id: "c9",
+              name: "Khác",
+              type: "both",
+              icon: "📦",
+              color: "bg-gray-200 text-gray-600",
+            });
+          }
+          state.transactions.forEach((t) => {
+            if (t.category === id) t.category = "c9";
+          });
+          addLog("Xóa danh mục", "Đã dọn dẹp giao dịch liên quan");
+          saveData();
+          renderSettings();
+        }
+      }
+      function renderDebts() {
+        const activeContainer = document.getElementById("active-debts-list");
+        const settledContainer = document.getElementById("settled-debts-list");
+        if (!activeContainer || !settledContainer) return;
+
+        const actives = state.debts.filter((d) => d.status === "active");
+        const settleds = state.debts.filter((d) => d.status === "settled");
+
+        activeContainer.innerHTML =
+          actives.length === 0
+            ? '<p class="text-sm text-gray-400 bg-white dark:bg-gray-800 p-4 rounded-2xl text-center">Hết nợ nần, cuộc sống thảnh thơi! 😎</p>'
+            : actives
+                .map((d) => {
+                  const paid = d.paidAmount || 0;
+                  const remain = d.amount - paid;
+                  const pct = Math.min((paid / d.amount) * 100, 100).toFixed(0);
+
+                  return `
+        <div class="p-4 bg-white dark:bg-gray-800 border rounded-2xl border-gray-100 dark:border-gray-700 shadow-sm mb-3">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="font-black text-sm text-gray-900 dark:text-white">${d.person}</p>
+              <p class="text-[10px] font-bold mt-0.5 ${d.type === "lend" ? "text-primary-500" : "text-orange-500"}">
+                ${d.type === "lend" ? "👉 Ông cho mượn" : "👈 Ông đi vay"}
+              </p>
+            </div>
+            <div class="text-right">
+               <span class="text-sm font-black text-gray-900 dark:text-white">${formatMoney(d.amount)}</span>
+            </div>
+          </div>
+          
+          <div class="flex justify-between text-[11px] mb-1 font-medium text-gray-500">
+             <span>Đã trả: <b class="${d.type === "lend" ? "text-success-500" : "text-danger-500"}">${formatMoney(paid)}</b></span>
+             <span>Còn lại: <b class="text-gray-800 dark:text-gray-200">${formatMoney(remain)}</b></span>
+          </div>
+          <div class="h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
+             <div class="h-full ${d.type === "lend" ? "bg-success-500" : "bg-danger-500"} transition-all" style="width: ${pct}%"></div>
+          </div>
+          
+          <button onclick="openModal('debtPayment', '${d.id}')" class="w-full py-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-xs font-black rounded-xl transition-colors">
+            Thanh toán
+          </button>
+        </div>
+      `;
+                })
+                .join("");
+
+        settledContainer.innerHTML =
+          settleds.length === 0
+            ? '<p class="text-sm text-gray-400 text-center py-2">Chưa có lịch sử tất toán.</p>'
+            : settleds
+                .map(
+                  (d) => `
+        <div class="p-3 bg-gray-100/50 dark:bg-gray-800/40 rounded-xl flex items-center justify-between text-xs mb-2">
+          <div>
+            <span class="font-bold text-gray-700 dark:text-gray-300">${d.person}</span>
+            <span class="text-gray-400 dark:text-gray-500 ml-1">(${d.type === "lend" ? "Đã thu hồi" : "Đã trả xong"})</span>
+          </div>
+          <span class="font-bold line-through text-gray-400">${formatMoney(d.amount)}</span>
+        </div>
+      `,
+                )
+                .join("");
+      }
+
+      function addDebt(e) {
+        e.preventDefault();
+        const amt = getRawNumber(document.getElementById("d-amount").value);
+        if (amt <= 0) return alert("Số tiền không hợp lệ!");
+
+        const person = document.getElementById("d-person").value;
+        const type = document.getElementById("d-type").value;
+        const walletId = document.getElementById("d-wallet").value;
+
+        const newDebt = {
+          id: "debt-" + generateId(),
+          person: person,
+          amount: amt,
+          paidAmount: 0, // THÊM DÒNG NÀY: Khởi tạo đã trả = 0
+          type: type,
+          status: "active",
+          date: new Date().toISOString(),
+        };
+        state.debts.unshift(newDebt);
+
+        const txType = type === "borrow" ? "income" : "expense";
+        const txNote =
+          type === "borrow"
+            ? `Vay tiền của ${person}`
+            : `Cho ${person} mượn tiền`;
+
+        state.transactions.unshift({
+          id: generateId(),
+          type: txType,
+          amount: amt,
+          category: "c9",
+          walletId: walletId,
+          date: getToday().replace("T", " "),
+          note: txNote,
+        });
+
+        const w = state.wallets.find((x) => x.id === walletId);
+        if (w) w.balance += txType === "income" ? amt : -amt;
+
+        addLog("Sổ nợ", `Đã lưu khoản nợ với ${person}: ${formatMoney(amt)}`);
+        saveData();
+        closeModal();
+        updateGlobalHeader();
+        if (state.currentView === "debts") renderDebts();
+        playSound("success");
+      }
+
+      function processDebtPayment(e, debtId, remainAmount) {
+        e.preventDefault();
+        const payAmt = getRawNumber(document.getElementById("dp-amount").value);
+
+        if (payAmt <= 0) return alert("Số tiền không hợp lệ!");
+        if (payAmt > remainAmount)
+          return alert("Ông không thể nhập số tiền lớn hơn khoản còn nợ được!");
+
+        const walletId = document.getElementById("dp-wallet").value;
+        const debt = state.debts.find((d) => d.id === debtId);
+
+        // 1. Cập nhật số tiền đã trả
+        debt.paidAmount = (debt.paidAmount || 0) + payAmt;
+
+        // 2. Tạo giao dịch tương ứng
+        // Nếu cho vay (lend) -> Nhận tiền về (income). Nếu đi vay (borrow) -> Trả tiền đi (expense)
+        const txType = debt.type === "lend" ? "income" : "expense";
+        const txNote =
+          debt.type === "lend"
+            ? `Thu nợ một phần từ ${debt.person}`
+            : `Trả nợ một phần cho ${debt.person}`;
+
+        state.transactions.unshift({
+          id: generateId(),
+          type: txType,
+          amount: payAmt,
+          category: "c9", // Mục Khác
+          walletId: walletId,
+          date: getToday().replace("T", " "),
+          note: txNote,
+        });
+
+        // 3. Cộng/trừ ví
+        const w = state.wallets.find((x) => x.id === walletId);
+        if (w) w.balance += txType === "income" ? payAmt : -payAmt;
+
+        // 4. Nếu trả đủ -> Chuyển sang "Đã tất toán"
+        if (debt.paidAmount >= debt.amount) {
+          debt.status = "settled";
+          addLog(
+            "Tất toán nợ",
+            `Đã thanh toán xong khoản nợ với ${debt.person}`,
+          );
+        } else {
+          addLog(
+            "Thanh toán nợ",
+            `Đã trả/thu ${formatMoney(payAmt)} với ${debt.person}`,
+          );
+        }
+
+        saveData();
+        closeModal();
+        updateGlobalHeader();
+        if (state.currentView === "debts") renderDebts();
+        playSound("success");
+      }
+
+      function settleDebt(id) {
+        const debt = state.debts.find((d) => d.id === id);
+        if (!debt) return;
+
+        debt.status = "settled";
+
+        // Tự động tạo một giao dịch bù trừ vào ví Tiền mặt (hoặc ví mặc định w1) để cân đối dòng tiền trong thực tế
+        const automativeTx = {
+          id: generateId(),
+          type: debt.type === "lend" ? "income" : "expense", // Thu nợ về là Income, Trả nợ đi là Expense
+          amount: debt.amount,
+          category: "c9", // Gán tạm vào mục 'Khác'
+          walletId: "w1", // Chạy dòng tiền qua ví mặc định Tiền mặt
+          date: getToday().replace("T", " "),
+          note: `[Tất toán nợ] Đối tác: ${debt.person}`,
+        };
+
+        state.transactions.unshift(automativeTx);
+        const w = state.wallets.find((x) => x.id === "w1");
+        if (w)
+          w.balance +=
+            automativeTx.type === "income" ? debt.amount : -debt.amount;
+
+        addLog(
+          "Tất toán nợ",
+          `Đã xử lý xong khoản tiền ${formatMoney(debt.amount)} với ${debt.person}`,
+        );
+        saveData();
+        renderDebts();
+        playSound("success");
+      }
+
+      function renderDashboard() {
+        const { m: cm, y: cy } = getSelectedMonth();
+        const filterTime = state.dashFilter.time;
+        const now = new Date();
+
+        let filteredTx = [];
+
+        if (filterTime === "month") {
+          filteredTx = state.transactions.filter(
+            (t) =>
+              new Date(t.date).getMonth() === cm &&
+              new Date(t.date).getFullYear() === cy,
+          );
+        } else if (filterTime === "year") {
+          filteredTx = state.transactions.filter(
+            (t) => new Date(t.date).getFullYear() === cy,
+          );
+        } else if (filterTime === "day") {
+          const todayStr = now.toISOString().split("T")[0];
+          filteredTx = state.transactions.filter((t) =>
+            t.date.startsWith(todayStr),
+          );
+        } else if (filterTime === "week") {
+          const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          filteredTx = state.transactions.filter((t) => {
+            let dt = new Date(t.date);
+            return dt >= lastWeek && dt <= now;
+          });
+        }
+
+        ["day", "week", "month", "year"].forEach((t) => {
+          const el = document.getElementById("btn-time-" + t);
+          if (el)
+            el.className =
+              t === filterTime
+                ? "px-4 py-1.5 rounded-lg text-sm font-bold transition-colors bg-white dark:bg-gray-600 shadow text-primary-600 dark:text-primary-400"
+                : "px-4 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 transition-colors";
+        });
+        ["doughnut", "bar", "line"].forEach((c) => {
+          const el = document.getElementById("btn-chart-" + c);
+          if (el)
+            el.className =
+              c === state.dashFilter.chart
+                ? "p-1.5 rounded-lg transition-colors bg-white dark:bg-gray-600 shadow text-primary-600 dark:text-primary-400"
+                : "p-1.5 rounded-lg text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 transition-colors";
+        });
+
+        const inc = filteredTx
+          .filter((t) => t.type === "income" && t.category !== "transfer")
+          .reduce((a, b) => a + b.amount, 0);
+        const exp = filteredTx
+          .filter((t) => t.type === "expense" && t.category !== "transfer")
+          .reduce((a, b) => a + b.amount, 0);
+        const netBalance = inc - exp;
+
+        document.getElementById("dash-income").innerText = formatMoney(inc);
+        document.getElementById("dash-expense").innerText = formatMoney(exp);
+        document.getElementById("dash-balance").innerText =
+          formatMoney(netBalance);
+
+        if (document.getElementById("dash-balance-mobile")) {
+          document.getElementById("dash-income-mobile").innerText =
+            formatMoney(inc);
+          document.getElementById("dash-expense-mobile").innerText =
+            formatMoney(exp);
+          document.getElementById("dash-balance-mobile").innerText =
+            formatMoney(netBalance);
+        }
+
+        const expByCat = filteredTx
+          .filter((t) => t.type === "expense" && t.category !== "transfer")
+          .reduce((acc, c) => {
+            acc[c.category] = (acc[c.category] || 0) + c.amount;
+            return acc;
+          }, {});
+
+        const labels = Object.keys(expByCat).map(
+          (id) => state.categories.find((c) => c.id === id)?.name || "Khác",
+        );
+        const data = Object.values(expByCat);
+
+        // --- THÊM TÍNH NĂNG INSIGHT ANALYTICS ---
+        const thisMonthObj = new Date();
+        const curM = thisMonthObj.getMonth();
+        const curY = thisMonthObj.getFullYear();
+
+        // Chi tiêu tháng hiện tại
+        const curMonthExp = state.transactions
+          .filter(
+            (t) =>
+              t.type === "expense" &&
+              t.category !== "transfer" &&
+              new Date(t.date).getMonth() === curM &&
+              new Date(t.date).getFullYear() === curY,
+          )
+          .reduce((a, b) => a + b.amount, 0);
+
+        // Chi tiêu tháng trước
+        const prevM = curM === 0 ? 11 : curM - 1;
+        const prevY = curM === 0 ? curY - 1 : curY;
+        const prevMonthExp = state.transactions
+          .filter(
+            (t) =>
+              t.type === "expense" &&
+              t.category !== "transfer" &&
+              new Date(t.date).getMonth() === prevM &&
+              new Date(t.date).getFullYear() === prevY,
+          )
+          .reduce((a, b) => a + b.amount, 0);
+
+        let insightHtml = "";
+        if (prevMonthExp > 0) {
+          const diff = curMonthExp - prevMonthExp;
+          const pct = ((Math.abs(diff) / prevMonthExp) * 100).toFixed(0);
+          if (diff > 0) {
+            insightHtml = `<i class="fa-solid fa-triangle-exertion text-rose-500 mr-1"></i> Tháng này ông đã tiêu <span class="text-rose-500 font-black">nhiều hơn</span> tháng trước ${pct}% (↑ ${formatMoney(diff)})`;
+          } else if (diff < 0) {
+            insightHtml = `<i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Ngon! Tháng này ông đã tiết kiệm, tiêu <span class="text-emerald-500 font-black">ít hơn</span> tháng trước ${pct}% (↓ ${formatMoney(Math.abs(diff))})`;
+          } else {
+            insightHtml = `<i class="fa-solid fa-scale-balanced text-primary-500 mr-1"></i> Chi tiêu tháng này bằng khít khịt tháng trước luôn nha.`;
+          }
+        } else {
+          insightHtml = `<i class="fa-solid fa-circle-info text-gray-400 mr-1"></i> Chưa có dữ liệu chi tiêu tháng trước để so sánh phân tích.`;
+        }
+
+        // Tự động tiêm thông báo vào DOM mà không cần sửa HTML thô
+        let insightBox = document.getElementById("dash-insight-box");
+        if (!insightBox) {
+          document.getElementById("view-dashboard").insertAdjacentHTML(
+            "afterbegin",
+            `
+      <div id="dash-insight-box" class="p-4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 text-xs font-bold text-gray-500 dark:text-gray-400"></div>
+    `,
+          );
+          insightBox = document.getElementById("dash-insight-box");
+        }
+        insightBox.innerHTML = insightHtml;
+        // --- KẾT THÚC INSIGHT ANALYTICS ---
+
+        if (chartInstance) chartInstance.destroy();
+        const ctx = document.getElementById("expenseChart");
+
+        if (data.length > 0) {
+          const chartType = state.dashFilter.chart;
+          const bgColors = [
+            "#6366f1",
+            "#10b981",
+            "#f43f5e",
+            "#f59e0b",
+            "#8b5cf6",
+            "#14b8a6",
+            "#ec4899",
+            "#06b6d4",
+            "#84cc16",
+          ];
+
+          let config = {
+            type: chartType,
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Chi tiêu",
+                  data,
+                  backgroundColor:
+                    chartType === "line"
+                      ? "rgba(99, 102, 241, 0.15)"
+                      : bgColors,
+                  borderColor: chartType === "line" ? "#6366f1" : "transparent",
+                  borderWidth: chartType === "line" ? 3 : 0,
+                  fill: chartType === "line",
+                  tension: 0.4,
+                  borderRadius: chartType === "bar" ? 6 : 0,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: chartType === "doughnut",
+                  position: "right",
+                  labels: {
+                    color: state.darkMode ? "#cbd5e1" : "#475569",
+                    font: { family: "inherit" },
+                  },
+                },
+              },
+            },
+          };
+
+          if (chartType === "doughnut") {
+            config.options.cutout = "75%";
+          } else {
+            config.options.scales = {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  color: state.darkMode ? "#9ca3af" : "#6b7280",
+                  callback: function (value) {
+                    return value / 1000 + "k";
+                  },
+                },
+                grid: { color: state.darkMode ? "#374151" : "#f3f4f6" },
+              },
+              x: {
+                ticks: { color: state.darkMode ? "#9ca3af" : "#6b7280" },
+                grid: { display: false },
+              },
+            };
+          }
+          chartInstance = new Chart(ctx, config);
+        } else {
+          ctx.getContext("2d").clearRect(0, 0, ctx.width, ctx.height);
+          document.getElementById("chart-container").innerHTML =
+            '<canvas id="expenseChart"></canvas><div class="absolute inset-0 flex items-center justify-center text-gray-400 font-medium">Chưa có dữ liệu</div>';
+        }
+
+        const recent = state.transactions.slice(0, 5);
+        document.getElementById("dash-recent-tx").innerHTML =
+          recent.length === 0
+            ? '<p class="text-gray-400 text-center mt-4">Chưa có giao dịch.</p>'
+            : recent
+                .map((tx) => {
+                  const isInc = tx.type === "income";
+                  const cat = state.categories.find(
+                    (c) => c.id === tx.category,
+                  ) || {
+                    name: "Chuyển khoản",
+                    icon: "💸",
+                    color: "bg-gray-100",
+                  };
+                  return `<div class="flex items-center justify-between group cursor-pointer" onclick="openEditTransaction('${tx.id}')"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} group-hover:scale-110 transition-transform">${cat.icon}</div><div><p class="font-bold text-gray-800 dark:text-gray-100">${cat.name}</p><p class="text-xs text-gray-500 font-medium">${formatDateTime(tx.date)} ${tx.locationName ? `• <i class="fa-solid fa-location-dot"></i> ${tx.locationName.split(",")[0]}` : ""}</p></div></div><span class="font-black text-lg ${isInc ? "text-success-500" : "text-gray-800 dark:text-gray-200"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</span></div>`;
+                })
+                .join("");
+      }
+
+      let currentBaseLayer = null;
+      let isSatellite = false;
+
+      function renderMapCategoryPills() {
+        const container = document.getElementById("map-category-pills");
+        if (!container) return;
+
+        let html = `<button onclick="setMapCategory('all')" class="shrink-0 px-4 py-2.5 rounded-full font-bold text-sm shadow-md transition-transform active:scale-95 border ${currentMapCategory === "all" ? "bg-primary-600 text-white border-transparent" : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-md text-gray-700 dark:text-gray-200 border-gray-100 dark:border-gray-700"}">Tất cả</button>`;
+        state.categories.forEach((c) => {
+          const isActive = currentMapCategory === c.id;
+          html += `<button onclick="setMapCategory('${c.id}')" class="shrink-0 px-4 py-2.5 rounded-full font-bold text-sm shadow-md transition-transform active:scale-95 border flex items-center gap-1.5 ${isActive ? "bg-primary-600 text-white border-transparent" : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-md text-gray-700 dark:text-gray-200 border-gray-100 dark:border-gray-700"}"><span>${c.icon}</span> ${c.name}</button>`;
+        });
+        container.innerHTML = html;
+      }
+
+      function setMapCategory(catId) {
+        currentMapCategory = catId;
+        renderMapCategoryPills();
+        renderMapData();
+      }
+
+      function updateMapBaseLayer() {
+        if (!myMap) return;
+        if (currentBaseLayer) myMap.removeLayer(currentBaseLayer);
+
+        if (isSatellite) {
+          currentBaseLayer = L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            { attribution: "© Esri" },
+          );
+        } else {
+          if (state.darkMode) {
+            currentBaseLayer = L.tileLayer(
+              "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+              { attribution: "© CartoDB", subdomains: "abcd" },
+            );
+          } else {
+            currentBaseLayer = L.tileLayer(
+              "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+              { attribution: "© CartoDB", subdomains: "abcd" },
+            );
+          }
+        }
+
+        currentBaseLayer.addTo(myMap);
+        currentBaseLayer.bringToBack();
+      }
+
+      function toggleSatellite() {
+        isSatellite = !isSatellite;
+        const btn = document.getElementById("btn-satellite");
+        if (isSatellite) {
+          btn.className =
+            "absolute bottom-60 right-6 w-12 h-12 bg-primary-600 text-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-center text-xl z-20 active:scale-90 transition-all pointer-events-auto";
+        } else {
+          btn.className =
+            "absolute bottom-60 right-6 w-12 h-12 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-700 flex items-center justify-center text-primary-600 dark:text-primary-400 text-xl z-20 active:scale-90 transition-all pointer-events-auto";
+        }
+        updateMapBaseLayer();
+      }
+
+      function initMap() {
+        if (!myMap) {
+          myMap = L.map("map-container", {
+            zoomControl: false,
+            attributionControl: false,
+          }).setView([10.88, 106.772], 12);
+          updateMapBaseLayer();
+
+          mapLayerGroup = L.layerGroup().addTo(myMap);
+          poiLayerGroup = L.layerGroup().addTo(myMap);
+          drawLayerGroup = new L.FeatureGroup().addTo(myMap);
+
+          if (typeof renderMapCategoryPills === "function")
+            renderMapCategoryPills();
+        }
+        setTimeout(() => {
+          myMap.invalidateSize();
+          renderMapData();
+        }, 100);
+      }
+
+      function setMapMode(mode) {
+        currentMapMode = mode;
+        ["marker", "heat", "route", "stats"].forEach((b) => {
+          const el = document.getElementById(`btn-mode-${b}`);
+          if (!el) return;
+          if (b === mode) {
+            el.className =
+              "text-left px-3 py-2 text-sm font-bold rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400";
+          } else {
+            el.className =
+              "text-left px-3 py-2 text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300";
+          }
+        });
+
+        const menu = document.getElementById("map-mode-menu");
+        if (menu) menu.classList.add("hidden");
+
+        const statsPanel = document.getElementById("map-stats-panel");
+        if (statsPanel) {
+          if (mode === "stats") {
+            statsPanel.classList.remove("hidden");
+            statsPanel.classList.add("flex");
+          } else {
+            statsPanel.classList.add("hidden");
+            statsPanel.classList.remove("flex");
+          }
+        }
+        renderMapData();
+      }
+
+      function renderMapData() {
+        if (!myMap) return;
+        const catFilter = currentMapCategory;
+        let filteredTx = state.transactions.filter((t) => t.lat && t.lng);
+        if (catFilter !== "all")
+          filteredTx = filteredTx.filter((t) => t.category === catFilter);
+
+        if (mapLayerGroup) mapLayerGroup.clearLayers();
+        if (heatLayer) {
+          myMap.removeLayer(heatLayer);
+          heatLayer = null;
+        }
+
+        if (currentMapMode === "marker") {
+          const TOLERANCE_METERS = 50;
+          const clusteredGroups = [];
+
+          filteredTx.forEach((tx) => {
+            const txLatLng = L.latLng(tx.lat, tx.lng);
+            let foundGroup = false;
+
+            for (let i = 0; i < clusteredGroups.length; i++) {
+              const repTx = clusteredGroups[i][0];
+              const repLatLng = L.latLng(repTx.lat, repTx.lng);
+              if (txLatLng.distanceTo(repLatLng) <= TOLERANCE_METERS) {
+                clusteredGroups[i].push(tx);
+                foundGroup = true;
+                break;
+              }
+            }
+            if (!foundGroup) clusteredGroups.push([tx]);
+          });
+
+          clusteredGroups.forEach((group) => {
+            const repTx = group[0];
+            const count = group.length;
+            let markerHtml = "";
+
+            if (count === 1) {
+              const cat = state.categories.find(
+                (c) => c.id === repTx.category,
+              ) || {
+                name: "Khác",
+                icon: "📍",
+                color: "bg-gray-100 text-gray-600",
+              };
+              const isInc = repTx.type === "income";
+              markerHtml = `<div class="w-9 h-9 rounded-full shadow-lg border-2 border-danger-500 flex items-center justify-center text-base ${isInc ? "bg-success-100 text-success-600" : "bg-danger-100 text-danger-600"}">${cat.icon}</div>`;
+            } else {
+              markerHtml = `<div class="w-10 h-10 rounded-full shadow-xl border-2 border-white flex items-center justify-center bg-primary-600 text-white font-black text-base transition-transform hover:scale-110">${count}</div>`;
+            }
+
+            const icon = L.divIcon({
+              html: markerHtml,
+              className: "",
+              iconSize: [40, 40],
+              iconAnchor: [20, 20],
+            });
+            let popupContent = `<div class="font-sans min-w-[220px] relative"><div class="font-bold text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider mb-2 flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-2"><span><i class="fa-solid fa-map-pin"></i> ${count > 1 ? count + " Giao dịch" : "Chi tiết"}</span></div><div class="max-h-[180px] overflow-y-auto custom-scrollbar pr-1 space-y-3 mb-3">`;
+
+            group.forEach((tx) => {
+              const cat = state.categories.find(
+                (c) => c.id === tx.category,
+              ) || {
+                name: "Khác",
+                icon: "📍",
+                color: "bg-gray-100 text-gray-600",
+              };
+              const isInc = tx.type === "income";
+              const color = isInc ? "text-success-500" : "text-danger-500";
+              const sign = isInc ? "+" : "-";
+
+              popupContent += `<div class="border-l-2 ${isInc ? "border-success-500" : "border-danger-500"} pl-2"><div class="font-bold flex items-center gap-1.5 text-gray-800 dark:text-gray-100 text-sm"><span>${cat.icon}</span> <span class="truncate">${cat.name}</span></div><div class="font-black text-base tracking-tight ${color} mt-0.5">${sign}${formatMoney(tx.amount)}</div><div class="text-gray-400 dark:text-gray-500 text-[10px] font-medium mt-1"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</div></div>`;
+            });
+
+            popupContent += `</div><a href="https://www.google.com/maps/dir/?api=1&destination=${repTx.lat},${repTx.lng}" target="_blank" class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold text-sm rounded-xl shadow-md active:scale-95 transition-all no-underline"><i class="fa-solid fa-diamond-turn-right group-hover:translate-x-0.5 transition-transform text-white"></i> <span class="text-white">Chỉ đường</span></a></div>`;
+
+            L.marker([repTx.lat, repTx.lng], { icon })
+              .addTo(mapLayerGroup)
+              .bindPopup(popupContent);
+          });
+        } else if (currentMapMode === "heat") {
+          const maxAmt = Math.max(...filteredTx.map((t) => t.amount), 1);
+          const heatData = filteredTx.map((tx) => [
+            tx.lat,
+            tx.lng,
+            (tx.amount / maxAmt) * 10,
+          ]);
+          heatLayer = L.heatLayer(heatData, {
+            radius: 25,
+            blur: 15,
+            maxZoom: 15,
+          }).addTo(myMap);
+        } else if (currentMapMode === "route") {
+          const routePoints = [...filteredTx]
+            .reverse()
+            .map((tx) => [tx.lat, tx.lng]);
+          L.polyline(routePoints, {
+            color: "#6366f1",
+            weight: 4,
+            opacity: 0.8,
+            dashArray: "10, 10",
+          }).addTo(mapLayerGroup);
+          routePoints.forEach((p, i) =>
+            L.circleMarker(p, {
+              radius: 5,
+              color: "#4f46e5",
+              fillColor: "#fff",
+              fillOpacity: 1,
+            })
+              .addTo(mapLayerGroup)
+              .bindPopup(`Điểm #${i + 1}`),
+          );
+        }
+
+        renderAreaStats(filteredTx);
+      }
+
+      function renderAreaStats(txList) {
+        const stats = document.getElementById("map-area-stats");
+        const exps = txList.filter((t) => t.type === "expense");
+        if (exps.length === 0)
+          return (stats.innerHTML =
+            '<p class="text-gray-400 text-sm">Chưa có dữ liệu chi tiêu.</p>');
+
+        const grouped = exps.reduce((acc, tx) => {
+          let area = "Không xác định";
+          if (tx.locationName) {
+            const parts = tx.locationName.split(",");
+            area = parts.length > 1 ? parts[parts.length - 2].trim() : parts[0];
+          }
+          acc[area] = (acc[area] || 0) + tx.amount;
+          return acc;
+        }, {});
+
+        const sorted = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
+        const maxVal = sorted[0][1];
+
+        stats.innerHTML = sorted
+          .map(
+            ([area, amt]) =>
+              `<div><div class="flex justify-between text-sm mb-1.5 font-medium"><span class="truncate pr-2">${area}</span><span class="text-danger-500 font-bold">${formatMoney(amt)}</span></div><div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-danger-400 rounded-full" style="width: ${(amt / maxVal) * 100}%"></div></div></div>`,
+          )
+          .join("");
+      }
+
+      function enableSpatialQuery() {
+        playSound("click");
+
+        // 1. Nếu chưa có map, khởi tạo ngay
+        if (!myMap) initMap();
+
+        // 2. Nếu sau khi init mà vẫn null (do lỗi load thư viện), chặn lại ngay
+        if (!myMap) {
+          alert("Bản đồ chưa load xong, đợi 1 chút rồi thử lại nhé!");
+          return;
+        }
+
+        // 3. ĐẢM BẢO drawLayerGroup tồn tại trước khi dùng
+        if (!drawLayerGroup) {
+          drawLayerGroup = new L.FeatureGroup().addTo(myMap);
+        }
+
+        alert("Chế độ khoanh vùng: Vẽ vòng tròn để tính tổng chi tiêu.");
+
+        const circleDrawer = new L.Draw.Circle(myMap, {
+          shapeOptions: { color: "#f43f5e", weight: 2, fillOpacity: 0.2 },
+        });
+
+        // Bắt sự kiện vẽ
+        myMap.off(L.Draw.Event.CREATED); // Xóa sự kiện cũ để tránh chạy đè
+        myMap.on(L.Draw.Event.CREATED, function (e) {
+          if (!drawLayerGroup) return; // Bảo hiểm an toàn
+
+          drawLayerGroup.clearLayers();
+          const layer = e.layer;
+          drawLayerGroup.addLayer(layer);
+          playSound("success");
+
+          const center = layer.getLatLng();
+          const radius = layer.getRadius();
+          let sum = 0;
+          let count = 0;
+
+          state.transactions.forEach((tx) => {
+            if (tx.lat && tx.lng && tx.type === "expense") {
+              const distance = center.distanceTo(L.latLng(tx.lat, tx.lng));
+              if (distance <= radius) {
+                sum += tx.amount;
+                count++;
+              }
+            }
+          });
+
+          document.getElementById("spatial-result").classList.remove("hidden");
+          document.getElementById("spatial-sum").innerText = formatMoney(sum);
+          document.getElementById("spatial-count").innerHTML =
+            `<i class="fa-solid fa-hashtag"></i> ${count} giao dịch trong bán kính ${Math.round(radius)}m`;
+        });
+
+        circleDrawer.enable();
+      }
+
+      function closeSpatialQuery() {
+        document.getElementById("spatial-result").classList.add("hidden");
+        if (drawLayerGroup) drawLayerGroup.clearLayers();
+      }
+
+      function requestLocation() {
+        const btn = document.getElementById("btn-get-loc");
+        const latEl = document.getElementById("frm-lat");
+        const lngEl = document.getElementById("frm-lng");
+        const nameEl = document.getElementById("frm-loc-name");
+        const hintEl = document.getElementById("loc-hint");
+
+        if (!btn || !nameEl) return;
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        nameEl.placeholder = "Đang tự động định vị...";
+
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              latEl.value = lat;
+              lngEl.value = lng;
+              btn.innerHTML =
+                '<i class="fa-solid fa-check text-success-500"></i>';
+
+              try {
+                const res = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+                );
+                const data = await res.json();
+                const addr = data.address;
+
+                // LỌC ĐỊA CHỈ: Chỉ lấy Đường và Phường
+                const road = addr.road || addr.pedestrian || "";
+                // Ở VN, OpenStreetMap thường lưu 'phường' ở thẻ suburb, quarter hoặc neighbourhood
+                const ward =
+                  addr.suburb || addr.quarter || addr.neighbourhood || "";
+
+                let locStr = "";
+                if (road && ward) locStr = `${road}, ${ward}`;
+                else if (road) locStr = road;
+                else if (ward) locStr = ward;
+                else locStr = addr.amenity || addr.village || "Vị trí hiện tại";
+
+                nameEl.value = locStr;
+
+                // Vẫn giữ logic tự động nhận diện danh mục (Cafe, y tế...)
+                const catSelect = document.getElementById("m-cat");
+                let detected = false;
+                if (
+                  addr.amenity === "cafe" ||
+                  addr.amenity === "restaurant" ||
+                  addr.amenity === "fast_food"
+                ) {
+                  catSelect.value = "c1";
+                  detected = true;
+                } else if (
+                  addr.amenity === "hospital" ||
+                  addr.amenity === "pharmacy"
+                ) {
+                  catSelect.value = "c5";
+                  detected = true;
+                } else if (
+                  addr.amenity === "cinema" ||
+                  addr.amenity === "theatre"
+                ) {
+                  catSelect.value = "c4";
+                  detected = true;
+                }
+
+                if (detected && hintEl) {
+                  hintEl.classList.remove("hidden");
+                  playSound("success");
+                }
+              } catch (e) {
+                nameEl.value = "Lỗi khi giải mã địa chỉ";
+              }
+            },
+            () => {
+              btn.innerHTML =
+                '<i class="fa-solid fa-location-crosshairs text-danger-500"></i>';
+              nameEl.placeholder = "Chưa bật định vị GPS!";
+            },
+          );
+        }
+      }
+      function setTxFilter(val) {
+        dateFilter = val;
+        renderTransactions();
+        document.getElementById("filter-dropdown").classList.add("hidden");
+      }
+
+      function renderTransactions() {
+        const search = document
+          .getElementById("filter-search")
+          .value.toLowerCase();
+        const month = document.getElementById("global-month").value;
+        const today = new Date().toISOString().split("T")[0];
+        const yesterday = new Date(Date.now() - 86400000)
+          .toISOString()
+          .split("T")[0];
+
+        // Lọc dữ liệu: Bỏ qua 'transfer' và áp dụng điều kiện tìm kiếm
+        const filteredTx = state.transactions.filter((t) => {
+          if (t.category === "transfer") return false; // Loại bỏ giao dịch chuyển ví
+
+          const catName =
+            state.categories
+              .find((c) => c.id === t.category)
+              ?.name.toLowerCase() || "";
+          const matchS =
+            (t.note || "").toLowerCase().includes(search) ||
+            catName.includes(search);
+          const matchMonth = month ? t.date.startsWith(month) : true;
+
+          let matchDate = true;
+          if (dateFilter === "today") matchDate = t.date.startsWith(today);
+          else if (dateFilter === "yesterday")
+            matchDate = t.date.startsWith(yesterday);
+
+          return matchS && matchMonth && matchDate;
+        });
+
+        // Tính toán Thu/Chi từ danh sách đã lọc (không bao gồm transfer)
+        const inc = filteredTx
+          .filter((t) => t.type === "income")
+          .reduce((a, b) => a + b.amount, 0);
+        const exp = filteredTx
+          .filter((t) => t.type === "expense")
+          .reduce((a, b) => a + b.amount, 0);
+
+        // Cập nhật UI
+        document.getElementById("sum-inc").innerText = formatMoney(inc);
+        document.getElementById("sum-exp").innerText = formatMoney(exp);
+
+        const container = document.getElementById("tx-list-container");
+        if (filteredTx.length === 0) {
+          container.innerHTML = "";
+          document.getElementById("tx-empty").classList.remove("hidden");
+        } else {
+          document.getElementById("tx-empty").classList.add("hidden");
+          container.innerHTML = filteredTx
+            .map((tx) => {
+              const isInc = tx.type === "income";
+              const cat = state.categories.find(
+                (c) => c.id === tx.category,
+              ) || {
+                name: "Khác",
+                icon: "📦",
+                color: "bg-gray-100 text-gray-600",
+              };
+              return `
+        <div class="relative overflow-hidden border-b border-gray-50 dark:border-gray-800/50 swipe-item">
+          <div class="absolute inset-y-0 right-0 flex items-center z-0">
+            <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="relative bg-white dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 shadow-sm">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 ${cat.color}">${cat.icon}</div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm text-gray-900 dark:text-white truncate">${cat.name}</p>
+              <p class="text-[11px] text-gray-400 font-medium">${formatDateTime(tx.date)}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-black text-sm ${isInc ? "text-success-500" : "text-gray-900 dark:text-white"}">
+                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+            })
+            .join("");
+          if (typeof initSwipeActions === "function") initSwipeActions();
+        }
+      }
+
+      function renderBudgets() {
+        const cont = document.getElementById("budgets-container");
+        if (state.budgets.length === 0)
+          return (cont.innerHTML =
+            '<p class="col-span-full text-center text-gray-500 mt-10">Chưa có ngân sách.</p>');
+        const { m: cm, y: cy } = getSelectedMonth();
+        cont.innerHTML = state.budgets
+          .map((b) => {
+            const cat = state.categories.find((c) => c.id === b.categoryId);
+            const spent = state.transactions
+              .filter(
+                (t) =>
+                  t.category === b.categoryId &&
+                  t.type === "expense" &&
+                  new Date(t.date).getMonth() === cm &&
+                  new Date(t.date).getFullYear() === cy,
+              )
+              .reduce((a, t) => a + t.amount, 0);
+            const pct = Math.min((spent / b.amount) * 100, 100).toFixed(1);
+            const color =
+              pct >= 100
+                ? "bg-danger-500"
+                : pct >= 80
+                  ? "bg-orange-500"
+                  : "bg-primary-500";
+            return `<div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 swipe-item bg-danger-50 dark:bg-danger-900/20"><div class="absolute inset-y-0 right-0 flex items-center z-0"><button onclick="deleteBudget('${b.id}')" class="w-20 h-full bg-danger-100 text-danger-600 dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button></div><div class="relative bg-white dark:bg-gray-800 p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full"><div class="flex justify-between items-center mb-4"><div class="flex items-center gap-3 font-bold text-lg"><div class="w-10 h-10 rounded-xl ${cat?.color || "bg-gray-200"} flex items-center justify-center">${cat?.icon || ""}</div>${cat?.name || "Khác"}</div></div><div class="flex justify-between text-sm mb-2 font-medium"><span class="text-gray-500">${formatMoney(spent)}</span><span>${formatMoney(b.amount)}</span></div><div class="h-3 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-700 ${color}" style="width: ${pct}%"></div></div><p class="text-xs mt-2 text-right text-gray-500 font-medium">Đã dùng ${pct}%</p></div></div>`;
+          })
+          .join("");
+        if (typeof initSwipeActions === "function") initSwipeActions();
+      }
+
+      function renderGoals() {
+        const cont = document.getElementById("goals-container");
+        if (state.goals.length === 0)
+          return (cont.innerHTML =
+            '<p class="col-span-full text-center text-gray-500 mt-10">Chưa có mục tiêu.</p>');
+        cont.innerHTML = state.goals
+          .map((g) => {
+            const linkedWallet = state.wallets.find((w) => w.id === g.walletId);
+            const currentBalance = linkedWallet
+              ? linkedWallet.balance
+              : g.savedAmount || 0;
+            const pct = Math.min(
+              (currentBalance / g.targetAmount) * 100,
+              100,
+            ).toFixed(1);
+            const today = new Date();
+            const targetDate = new Date(g.targetDate || "2026-12-31");
+            const daysLeft = Math.ceil(
+              (targetDate - today) / (1000 * 60 * 60 * 24),
+            );
+            const amountLeft = g.targetAmount - currentBalance;
+            const dailyNeeded =
+              daysLeft > 0 && amountLeft > 0 ? amountLeft / daysLeft : 0;
+            return `<div class="relative overflow-hidden rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 swipe-item bg-danger-50 dark:bg-danger-900/20"><div class="absolute inset-y-0 right-0 flex items-center z-0"><button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-100 text-danger-600 dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button></div><div class="relative bg-white dark:bg-gray-800 p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center"><div class="flex justify-between items-start mb-4"><div><h3 class="text-xl font-black flex items-center gap-2">${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500"></i>' : "🎯"} ${g.name}</h3><p class="text-sm text-gray-500 mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 bg-primary-50 dark:bg-primary-900/30 inline-block px-2 py-1 rounded-md"><i class="fa-solid fa-link"></i> Nguồn tiền: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}</div></div><div class="flex justify-between text-sm mb-2 font-black"><span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span><span>${pct}%</span></div><div class="h-4 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden p-0.5"><div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000" style="width: ${pct}%"></div></div>${daysLeft > 0 ? `<div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700"><p class="text-xs font-bold text-gray-500 mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}</div>` : ""}</div></div>`;
+          })
+          .join("");
+        if (typeof initSwipeActions === "function") initSwipeActions();
+      }
+
+      function renderWallets() {
+        document.getElementById("wallets-container").innerHTML = state.wallets
+          .map((w) => {
+            const isDeletable = !["w1", "w2"].includes(w.id);
+            if (!w.color) {
+              w.color =
+                walletColors[Math.floor(Math.random() * walletColors.length)];
+              saveData();
+            }
+            return `
+      <div class="relative overflow-hidden rounded-3xl ${isDeletable ? "swipe-item" : ""} border ${w.color} shadow-md transition-all hover:shadow-lg">
+        ${
+          isDeletable
+            ? `
+          <div class="absolute inset-y-0 right-0 flex items-center z-0">
+            <button onclick="deleteWallet('${w.id}')" class="w-20 h-full bg-danger-500 text-white flex items-center justify-center hover:bg-danger-600 transition-colors">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>`
+            : ""
+        }
+
+        <div class="relative p-6 w-full h-full transition-transform duration-200 swipe-content z-10 flex flex-col justify-between ${w.color.split(" ")[0]} dark:bg-gray-800">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-white/50 dark:bg-gray-700 flex items-center justify-center text-2xl shadow-inner border border-gray-200 dark:border-gray-600">
+              ${w.icon}
+            </div>
+            ${w.isShared ? `<span class="text-[10px] font-black bg-pink-100 text-pink-600 px-2 py-1 rounded-lg"><i class="fa-solid fa-heart mr-1"></i> Quỹ chung</span>` : ""}
+          </div>
+
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">${w.name}</p>
+            <h3 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white ${w.balance < 0 ? "text-rose-500" : ""}">
+              ${formatMoney(w.balance)}
+            </h3>
+          </div>
+        </div>
+      </div>
+      `;
+          })
+          .join("");
+        if (typeof initSwipeActions === "function") initSwipeActions();
+      }
+
+      function deleteTransaction(id) {
+        if (confirm("Xóa giao dịch này?")) {
+          const idx = state.transactions.findIndex((t) => t.id === id);
+          if (idx > -1) {
+            const tx = state.transactions[idx];
+            state.transactions.splice(idx, 1);
+            const w = state.wallets.find((w) => w.id === tx.walletId);
+            if (w) w.balance -= tx.type === "income" ? tx.amount : -tx.amount;
+            addLog("Xóa giao dịch", formatMoney(tx.amount));
+            saveData();
+            switchView(state.currentView);
+          }
+        }
+      }
+
+      function deleteBudget(id) {
+        if (confirm("Xóa ngân sách này?")) {
+          state.budgets = state.budgets.filter((b) => b.id !== id);
+          addLog("Xóa", "Đã xóa 1 ngân sách");
+          saveData();
+          renderBudgets();
+        }
+      }
+      function deleteGoal(id) {
+        if (confirm("Xóa mục tiêu này?")) {
+          state.goals = state.goals.filter((g) => g.id !== id);
+          addLog("Xóa", "Đã xóa 1 mục tiêu");
+          saveData();
+          renderGoals();
+        }
+      }
+      function deleteWallet(id) {
+        if (confirm("Xóa ví này?")) {
+          state.wallets = state.wallets.filter((w) => w.id !== id);
+          addLog("Xóa", "Đã xóa 1 ví");
+          saveData();
+          renderWallets();
+        }
+      }
+      function clearAllData() {
+        if (
+          confirm(
+            "Cảnh báo: Hành động này sẽ XÓA VĨNH VIỄN toàn bộ dữ liệu. Bạn có chắc chắn?",
+          )
+        ) {
+          // Xóa sạch bách dữ liệu ở IndexedDB
+          localforage.clear().then(() => {
+            localStorage.removeItem("finmaster_pass"); // Tiện tay xóa luôn mật mã
+            location.reload();
+          });
+        }
+      }
+      function exportToExcel() {
+        if (state.transactions.length === 0)
+          return alert("Không có giao dịch nào để xuất!");
+        let csvContent = "Ngày,Loại,Danh mục,Số tiền,Ví,Vị trí,Ghi chú\n";
+        state.transactions.forEach((tx) => {
+          const type = tx.type === "income" ? "Thu" : "Chi";
+          const cat =
+            state.categories.find((c) => c.id === tx.category)?.name || "Khác";
+          const wallet =
+            state.wallets.find((w) => w.id === tx.walletId)?.name || "";
+          csvContent += `${tx.date},${type},${cat},${tx.amount},${wallet},"${(tx.locationName || "").replace(/"/g, '""')}","${(tx.note || "").replace(/"/g, '""')}"\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        link.setAttribute("href", URL.createObjectURL(blob));
+        link.setAttribute("download", `FinMaster_DuLieu_${getToday()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        addLog("Tải dữ liệu", "Xuất file Excel thành công");
+      }
+
+      function handleFabClick() {
+        if (state.currentView === "budgets") openModal("budget");
+        else if (state.currentView === "goals") openModal("goal");
+        else if (state.currentView === "wallets") openModal("walletAction");
+        else if (state.currentView === "debts") openModal("debt");
+        else openModal("transaction");
+      }
+
+      // THÊM & SỬA MODAL (Hỗ trợ Modal Category Mới)
+      function openModal(type, id = null) {
+        const modal = document.getElementById("global-modal");
+        const title = document.getElementById("modal-title");
+        const body = document.getElementById("modal-body");
+        modal.classList.remove("hidden");
+        void modal.offsetWidth;
+
+        if (type === "transaction") {
+          currentEditId = id;
+          let tx = id
+            ? state.transactions.find((t) => t.id === id)
+            : {
+                type: "expense",
+                amount: "",
+                category: state.categories[0].id,
+                walletId: state.wallets[0].id,
+                date: getToday(),
+                note: "",
+                lat: "",
+                lng: "",
+                locationName: "",
+              };
+          title.innerText = id ? "Sửa Giao Dịch" : "Thêm Giao Dịch";
+          const formattedAmt = tx.amount
+            ? tx.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            : "";
+
+          window.updateCatOpts = (tType) => {
+            document.getElementById("m-cat").innerHTML = state.categories
+              .filter((c) => c.type === tType || c.type === "both")
+              .map(
+                (c) =>
+                  `<option value="${c.id}" ${c.id === tx.category ? "selected" : ""}>${c.icon} ${c.name}</option>`,
+              )
+              .join("");
+          };
+          window.setType = (tType) => {
+            document.getElementById("m-type").value = tType;
+            document.getElementById("btn-exp").className =
+              `flex-1 py-3 font-bold rounded-xl transition-all ${tType === "expense" ? "bg-white shadow text-danger-600" : "text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`;
+            document.getElementById("btn-inc").className =
+              `flex-1 py-3 font-bold rounded-xl transition-all ${tType === "income" ? "bg-white shadow text-success-600" : "text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`;
+            updateCatOpts(tType);
+          };
+
+          body.innerHTML = `
+          <form id="frm-tx" class="space-y-5">
+            <input type="hidden" id="m-type" value="${tx.type}">
+            <div class="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-2xl text-gray-800">
+              <button type="button" id="btn-exp" onclick="setType('expense')" class="flex-1 py-3 font-bold rounded-xl transition-all ${tx.type === "expense" ? "bg-white shadow text-danger-900" : "text-gray-500"}">Chi tiền</button>
+              <button type="button" id="btn-inc" onclick="setType('income')" class="flex-1 py-3 font-bold rounded-xl transition-all ${tx.type === "income" ? "bg-white shadow text-success-600" : "text-gray-500"}">Thu tiền</button>
+            </div>
+            <div><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Số tiền</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="m-amt" required value="${formattedAmt}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl text-3xl font-black text-center focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0"></div>
+            <div class="flex gap-4">
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Danh mục</label><select id="m-cat" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none"></select></div>
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ví</label><select id="m-wal" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none">${state.wallets.map((w) => `<option value="${w.id}" ${w.id === tx.walletId ? "selected" : ""}>${w.name}</option>`).join("")}</select></div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Thời gian</label><input type="text" id="m-date" required value="${tx.date}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none text-gray-900 dark:text-white"></div>
+              <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ghi chú</label><input type="text" id="m-note" value="${tx.note}" placeholder="..." class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none"></div>
+            </div>
+            <!-- Dán đoạn này ngay dưới ô input Ghi chú -->
+<div class="flex items-center gap-2 mt-2">
+  <input type="checkbox" id="m-recurring" ${tx.isRecurring ? "checked" : ""} class="w-4 h-4 accent-primary-500 cursor-pointer">
+  <label for="m-recurring" class="text-xs font-bold text-gray-500 uppercase cursor-pointer select-none">Lặp lại hàng tháng</label>
+</div>
+            
+            <div class="flex gap-3 items-end">
+                <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-14 h-14 shrink-0 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center text-xl hover:bg-primary-100 transition-colors">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                </button>
+                <div class="flex-1">
+                    
+                    <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn nút lấy vị trí..." class="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl font-medium focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <input type="hidden" id="frm-lat" value="${tx.lat || ""}">
+                <input type="hidden" id="frm-lng" value="${tx.lng || ""}">
+            </div>
+            <p id="loc-hint" class="text-xs text-success-500 hidden mt-1"><i class="fa-solid fa-check"></i> Đã tự động chọn danh mục gợi ý!</p>
+
+            <button type="submit" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-lg shadow-xl mt-4">${id ? "Cập Nhật" : "Lưu Giao Dịch"}</button>
+          </form>
+        `;
+
+          updateCatOpts(tx.type);
+          flatpickr("#m-date", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+          });
+          if (!id) {
+            requestLocation();
+          }
+
+          document.getElementById("frm-tx").onsubmit = (e) => {
+            e.preventDefault();
+            const amt = getRawNumber(document.getElementById("m-amt").value);
+            if (amt <= 0) return alert("Sai số tiền");
+
+            // SỬA: Lấy tọa độ từ các thẻ input ẩn thay vì biến tx cũ bị trống
+            const data = {
+              type: document.getElementById("m-type").value,
+              amount: amt,
+              category: document.getElementById("m-cat").value,
+              walletId: document.getElementById("m-wal").value,
+              date: document.getElementById("m-date").value,
+              note: document.getElementById("m-note").value,
+              lat: document.getElementById("frm-lat").value,
+              lng: document.getElementById("frm-lng").value,
+              locationName: document.getElementById("frm-loc-name").value,
+              isRecurring: document.getElementById("m-recurring").checked,
+            };
+
+            if (!currentEditId) {
+              data.id = generateId();
+              state.transactions.unshift(data);
+              const w = state.wallets.find((x) => x.id === data.walletId);
+              if (w) w.balance += data.type === "income" ? amt : -amt;
+            } else {
+              const idx = state.transactions.findIndex(
+                (t) => t.id === currentEditId,
+              );
+              const old = state.transactions[idx];
+              data.id = currentEditId;
+              state.transactions[idx] = data;
+              const wO = state.wallets.find((x) => x.id === old.walletId);
+              if (wO)
+                wO.balance -= old.type === "income" ? old.amount : -old.amount;
+              const wN = state.wallets.find((x) => x.id === data.walletId);
+              if (wN) wN.balance += data.type === "income" ? amt : -amt;
+            }
+            saveData();
+            closeModal();
+            switchView(state.currentView);
+          };
+        }
+        // THÊM: Modal Tạo / Sửa Danh mục
+        else if (type === "category") {
+          const isEdit = id != null;
+          const cat = isEdit
+            ? state.categories.find((c) => c.id === id)
+            : {
+                name: "",
+                icon: "🌟",
+                type: "expense",
+                color: "bg-blue-100 text-blue-500",
+              };
+          title.innerText = isEdit ? "Sửa Danh Mục" : "Thêm Danh Mục";
+
+          body.innerHTML = `
+                  <form id="frm-cat" class="space-y-5">
+                    <div class="flex gap-4">
+                      <div class="w-1/4"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Icon</label><input type="text" id="cat-i" value="${cat.icon}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-xl outline-none focus:ring-2 focus:ring-primary-500"></div>
+                      <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tên Danh Mục</label><input type="text" id="cat-n" required value="${cat.name}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500"></div>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Loại</label>
+                      <select id="cat-t" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
+                        <option value="expense" ${cat.type === "expense" ? "selected" : ""}>Chỉ Chi tiêu</option>
+                        <option value="income" ${cat.type === "income" ? "selected" : ""}>Chỉ Thu nhập</option>
+                        <option value="both" ${cat.type === "both" ? "selected" : ""}>Dùng cho cả hai</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Màu sắc</label>
+                      <select id="cat-c" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">
+                        <option value="bg-blue-100 text-blue-500" ${cat.color.includes("blue") ? "selected" : ""}>Xanh dương</option>
+                        <option value="bg-red-100 text-red-500" ${cat.color.includes("red") ? "selected" : ""}>Đỏ</option>
+                        <option value="bg-green-100 text-green-500" ${cat.color.includes("green") || cat.color.includes("emerald") ? "selected" : ""}>Xanh lá</option>
+                        <option value="bg-yellow-100 text-yellow-500" ${cat.color.includes("yellow") || cat.color.includes("orange") ? "selected" : ""}>Vàng cam</option>
+                        <option value="bg-purple-100 text-purple-500" ${cat.color.includes("purple") ? "selected" : ""}>Tím</option>
+                        <option value="bg-pink-100 text-pink-500" ${cat.color.includes("pink") ? "selected" : ""}>Hồng</option>
+                        <option value="bg-gray-100 text-gray-600" ${cat.color.includes("gray") ? "selected" : ""}>Xám nhạt</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary-500/30 mt-4">${isEdit ? "Cập Nhật" : "Lưu Danh Mục"}</button>
+                  </form>
+                `;
+          document.getElementById("frm-cat").onsubmit = (e) => {
+            e.preventDefault();
+            const newData = {
+              id: isEdit ? id : "c" + generateId(),
+              name: document.getElementById("cat-n").value,
+              icon: document.getElementById("cat-i").value || "🌟",
+              type: document.getElementById("cat-t").value,
+              color: document.getElementById("cat-c").value,
+            };
+            if (isEdit) {
+              const idx = state.categories.findIndex((c) => c.id === id);
+              state.categories[idx] = newData;
+            } else {
+              state.categories.push(newData);
+            }
+            saveData();
+            closeModal();
+            renderSettings();
+          };
+        } else if (type === "debt") {
+          title.innerText = "Thêm khoản nợ mới";
+          // Sinh ra danh sách ví
+          const walletOptions = state.wallets
+            .map(
+              (w) =>
+                `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
+            )
+            .join("");
+
+          body.innerHTML = `
+    <form id="frm-debt" class="space-y-4">
+      <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Đối tượng</label><input type="text" id="d-person" required placeholder="Tên người nợ/cho vay" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium"></div>
+      <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số tiền (VND)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600"></div>
+      <div class="flex gap-4">
+        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loại nợ</label><select id="d-type" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold"><option value="lend">Tôi cho vay (Rút ví)</option><option value="borrow">Tôi đi vay (Nhận tiền)</option></select></div>
+        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label><select id="d-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select></div>
+      </div>
+      <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg shadow-xl shadow-primary-500/20 mt-4">Lưu khoản nợ</button>
+    </form>
+  `;
+          document.getElementById("frm-debt").onsubmit = addDebt;
+        } else if (type === "debtPayment") {
+          const debt = state.debts.find((d) => d.id === id);
+          if (!debt) return;
+
+          const paid = debt.paidAmount || 0;
+          const remain = debt.amount - paid;
+
+          title.innerText =
+            debt.type === "lend"
+              ? "Thu nợ từ " + debt.person
+              : "Trả nợ cho " + debt.person;
+          const walletOptions = state.wallets
+            .map(
+              (w) =>
+                `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
+            )
+            .join("");
+
+          body.innerHTML = `
+    <form id="frm-debt-payment" class="space-y-4">
+      <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl flex justify-between items-center text-sm font-bold border border-gray-100 dark:border-gray-700">
+          <span class="text-gray-500">Số tiền còn nợ:</span>
+          <span class="text-xl font-black text-danger-500">${formatMoney(remain)}</span>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Thanh toán đợt này</label>
+        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="dp-amount" required placeholder="${remain.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl text-primary-600">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ví giao dịch</label>
+        <select id="dp-wallet" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-bold">${walletOptions}</select>
+      </div>
+      <button type="submit" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl text-lg mt-4 shadow-xl shadow-primary-500/20">Xác nhận thanh toán</button>
+    </form>
+  `;
+          document.getElementById("frm-debt-payment").onsubmit = (e) =>
+            processDebtPayment(e, id, remain);
+        } else if (type === "goal") {
+          title.innerText = "Thêm Mục Tiêu";
+          const walletOptions = state.wallets
+            .map(
+              (w) =>
+                `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
+            )
+            .join("");
+          body.innerHTML = `<form id="frm-g" class="space-y-5"><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tên mục tiêu</label><input type="text" id="g-n" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 font-medium"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Số tiền cần đạt (VNĐ)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="g-a" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 font-black text-xl" placeholder="0"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Ngày dự kiến hoàn thành</label><input type="date" id="g-d" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Nguồn tiền (Liên kết Ví)</label><select id="g-w" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500">${walletOptions}</select></div><button type="submit" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-lg mt-2">Tạo Mục Tiêu</button></form>`;
+          document.getElementById("frm-g").onsubmit = (e) => {
+            e.preventDefault();
+            state.goals.push({
+              id: generateId(),
+              name: document.getElementById("g-n").value,
+              targetAmount: getRawNumber(document.getElementById("g-a").value),
+              targetDate: document.getElementById("g-d").value,
+              walletId: document.getElementById("g-w").value,
+            });
+            addLog(
+              "Tạo mục tiêu",
+              `Tên: ${document.getElementById("g-n").value}`,
+            );
+            saveData();
+            closeModal();
+            renderGoals();
+          };
+        } else if (type === "buffer") {
+          title.innerText = "Khoanh vùng phân tích";
+          body.innerHTML = `
+        <div class="space-y-4">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Bán kính (mét)</label>
+                <input type="number" id="buffer-radius" value="500" class="w-full p-3 bg-white dark:bg-gray-800 rounded-xl font-black text-lg outline-none border">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="pickBufferCenter('gps')" class="py-3 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-lg">Lấy GPS hiện tại</button>
+                <button onclick="pickBufferCenter('map')" class="py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold">Chạm trên bản đồ</button>
+            </div>
+            <p id="buffer-hint" class="text-xs text-gray-400 italic text-center hidden">Đang chờ ông chạm vào bản đồ...</p>
+        </div>
+    `;
+        } else if (type === "budget") {
+          title.innerText = "Thiết Lập Ngân Sách";
+          const expCats = state.categories
+            .filter((c) => c.type === "expense")
+            .map((c) => `<option value="${c.id}">${c.icon} ${c.name}</option>`)
+            .join("");
+          body.innerHTML = `<form id="frm-b" class="space-y-5"><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Danh mục</label><select id="b-c" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium">${expCats}</select></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Ngân sách (VNĐ/Tháng)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="b-a" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl" placeholder="0"></div><button type="submit" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-lg">Lưu Ngân Sách</button></form>`;
+          document.getElementById("frm-b").onsubmit = (e) => {
+            e.preventDefault();
+            const cId = document.getElementById("b-c").value;
+            const amt = getRawNumber(document.getElementById("b-a").value);
+            if (state.budgets.some((b) => b.categoryId === cId))
+              return alert("Danh mục này đã có ngân sách!");
+            state.budgets.push({
+              id: generateId(),
+              categoryId: cId,
+              amount: amt,
+            });
+            addLog(
+              "Tạo ngân sách",
+              `${state.categories.find((c) => c.id === cId)?.name}: ${formatMoney(amt)}/tháng`,
+            );
+            saveData();
+            closeModal();
+            renderBudgets();
+          };
+        } else if (type === "walletAction") {
+          title.innerText = "Chuyển Tiền / Thêm Ví";
+          const options = state.wallets
+            .map(
+              (w) =>
+                `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
+            )
+            .join("");
+          window.switchWalletTab = (tab) => {
+            const tabT = document.getElementById("tab-transfer"),
+              tabA = document.getElementById("tab-add");
+            const formT = document.getElementById("form-transfer-container"),
+              formA = document.getElementById("form-add-container");
+            if (tab === "transfer") {
+              tabT.className =
+                "flex-1 py-3 font-bold rounded-xl transition-all bg-white shadow text-primary-600 dark:bg-gray-700 dark:text-primary-400";
+              tabA.className =
+                "flex-1 py-3 font-bold rounded-xl transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600";
+              formT.classList.remove("hidden");
+              formA.classList.add("hidden");
+              document.getElementById("modal-title").innerText = "Chuyển Tiền";
+            } else {
+              tabA.className =
+                "flex-1 py-3 font-bold rounded-xl transition-all bg-white shadow text-primary-600 dark:bg-gray-700 dark:text-primary-400";
+              tabT.className =
+                "flex-1 py-3 font-bold rounded-xl transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600";
+              formA.classList.remove("hidden");
+              formT.classList.add("hidden");
+              document.getElementById("modal-title").innerText = "Thêm Ví Mới";
+            }
+          };
+          body.innerHTML = `<div class="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-2xl text-gray-800 mb-6"><button type="button" id="tab-transfer" onclick="switchWalletTab('transfer')" class="flex-1 py-3 font-bold rounded-xl transition-all bg-white shadow text-primary-600 dark:bg-gray-700 dark:text-primary-400">Chuyển tiền</button><button type="button" id="tab-add" onclick="switchWalletTab('add')" class="flex-1 py-3 font-bold rounded-xl transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600">Thêm ví</button></div><div id="form-transfer-container"><form id="frm-transfer" class="space-y-5"><div class="flex gap-4 items-center"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Từ ví</label><select id="tr-from" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500">${options}</select></div><i class="fa-solid fa-arrow-right text-gray-400 mt-6"></i><div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Đến ví</label><select id="tr-to" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500">${options}</select></div></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Số tiền (VNĐ)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="tr-amt" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl focus:ring-2 focus:ring-primary-500" placeholder="0"></div><button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-primary-600/30">Xác Nhận Chuyển</button></form></div><div id="form-add-container" class="hidden"><form id="frm-w" class="space-y-5"><div class="flex gap-4"><div class="w-1/4"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Icon</label><input type="text" id="w-i" value="💳" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-xl outline-none focus:ring-2 focus:ring-primary-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tên Ví</label><input type="text" id="w-n" required class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-medium focus:ring-2 focus:ring-primary-500"></div></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-2">Số dư ban đầu (VNĐ)</label><input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl outline-none font-black text-xl focus:ring-2 focus:ring-primary-500" placeholder="0"></div><div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-900/30"><input type="checkbox" id="w-shared" class="w-5 h-5 accent-pink-500 cursor-pointer"><label for="w-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none"><i class="fa-solid fa-heart"></i> Là quỹ chung (Split Bill)</label></div><button type="submit" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black text-lg shadow-xl shadow-gray-900/20">Lưu Ví Mới</button></form></div>`;
+
+          document.getElementById("frm-transfer").onsubmit = (e) => {
+            e.preventDefault();
+            const from = document.getElementById("tr-from").value,
+              to = document.getElementById("tr-to").value;
+            const amt = getRawNumber(document.getElementById("tr-amt").value);
+            if (from === to)
+              return alert("Lỗi: Không thể chuyển vào cùng 1 ví!");
+            if (amt <= 0) return alert("Số tiền không hợp lệ!");
+            const wF = state.wallets.find((w) => w.id === from),
+              wT = state.wallets.find((w) => w.id === to);
+            if (wF.balance < amt) return alert("Số dư không đủ!");
+            wF.balance -= amt;
+            wT.balance += amt;
+            const d = getToday(),
+              gid = generateId();
+            state.transactions.unshift({
+              id: gid + "-out",
+              type: "expense",
+              amount: amt,
+              walletId: from,
+              category: "transfer",
+              date: d,
+              note: `Chuyển tới ${wT.name}`,
+            });
+            state.transactions.unshift({
+              id: gid + "-in",
+              type: "income",
+              amount: amt,
+              walletId: to,
+              category: "transfer",
+              date: d,
+              note: `Nhận từ ${wF.name}`,
+            });
+            saveData();
+            closeModal();
+            switchView(state.currentView);
+          };
+          document.getElementById("frm-w").onsubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById("w-n").value;
+            state.wallets.push({
+              id: generateId(),
+              icon: document.getElementById("w-i").value || "💳",
+              name: name,
+              balance: getRawNumber(
+                document.getElementById("w-b").value || "0",
+              ),
+              isShared: document.getElementById("w-shared").checked,
+            });
+            saveData();
+            closeModal();
+            renderWallets();
+          };
+        }
+      }
+
+      function executeBuffer() {
+        const radius = document.getElementById("buffer-radius").value;
+        const center = myMap.getCenter(); // Lấy tâm bản đồ làm tâm buffer
+
+        // Xóa layer cũ
+        drawLayerGroup.clearLayers();
+
+        // Vẽ vòng tròn Buffer
+        const circle = L.circle([center.lat, center.lng], {
+          radius: parseInt(radius),
+          color: "#6366f1",
+          weight: 2,
+          fillColor: "#6366f1",
+          fillOpacity: 0.2,
+        }).addTo(drawLayerGroup);
+
+        // Logic thống kê
+        let sum = 0;
+        let count = 0;
+
+        state.transactions.forEach((tx) => {
+          if (tx.lat && tx.lng && tx.type === "expense") {
+            const distance = center.distanceTo(L.latLng(tx.lat, tx.lng));
+            if (distance <= radius) {
+              sum += tx.amount;
+              count++;
+            }
+          }
+        });
+
+        // Hiển thị kết quả vào cái Spatial Result sẵn có của ông
+        document.getElementById("spatial-result").classList.remove("hidden");
+        document.getElementById("spatial-sum").innerText = formatMoney(sum);
+        document.getElementById("spatial-count").innerHTML =
+          `<i class="fa-solid fa-hashtag"></i> ${count} giao dịch trong bán kính ${radius}m`;
+
+        closeModal();
+        playSound("success");
+      }
+
+      // Biến lưu trữ tọa độ tạm
+      let tempBufferCenter = null;
+
+      function pickBufferCenter(method) {
+        if (method === "gps") {
+          navigator.geolocation.getCurrentPosition((pos) => {
+            tempBufferCenter = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            };
+            alert("Đã lấy vị trí GPS!");
+            // Tự động đóng modal hoặc chuyển sang bước nhập bán kính xác nhận
+            confirmAndExecuteBuffer();
+          });
+        } else {
+          // Chế độ chạm bản đồ
+          closeModal(); // Đóng modal để hiện bản đồ
+          document.getElementById("buffer-hint").classList.remove("hidden");
+          myMap.once("click", (e) => {
+            tempBufferCenter = e.latlng;
+            confirmAndExecuteBuffer();
+          });
+        }
+      }
+
+      function confirmAndExecuteBuffer() {
+        const radius = document.getElementById("buffer-radius").value;
+        if (!tempBufferCenter) return alert("Chưa chọn được điểm tâm!");
+
+        // Vẽ vùng đệm
+        drawLayerGroup.clearLayers();
+        L.circle([tempBufferCenter.lat, tempBufferCenter.lng], {
+          radius: parseInt(radius),
+          color: "#6366f1",
+          weight: 2,
+          fillColor: "#6366f1",
+          fillOpacity: 0.2,
+        }).addTo(drawLayerGroup);
+
+        // Thống kê
+        let sum = 0;
+        let count = 0;
+        const center = L.latLng(tempBufferCenter.lat, tempBufferCenter.lng);
+
+        state.transactions.forEach((tx) => {
+          if (tx.lat && tx.lng && tx.type === "expense") {
+            if (center.distanceTo(L.latLng(tx.lat, tx.lng)) <= radius) {
+              sum += tx.amount;
+              count++;
+            }
+          }
+        });
+
+        // Show kết quả
+        document.getElementById("spatial-result").classList.remove("hidden");
+        document.getElementById("spatial-sum").innerText = formatMoney(sum);
+        document.getElementById("spatial-count").innerHTML =
+          `<i class="fa-solid fa-hashtag"></i> ${count} giao dịch trong bán kính ${radius}m`;
+      }
+
+      function processRecurringTransactions() {
+        const now = new Date();
+        const thisMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        let changed = false;
+
+        // Lọc ra các giao dịch gốc được đánh dấu là định kỳ
+        const recurringTemplates = state.transactions.filter(
+          (t) => t.isRecurring,
+        );
+
+        recurringTemplates.forEach((template) => {
+          // Kiểm tra xem tháng này bản sao tự động của giao dịch đó đã được tạo chưa
+          const alreadyRan = state.transactions.some(
+            (t) =>
+              t.id !== template.id &&
+              t.category === template.category &&
+              t.amount === template.amount &&
+              t.date.startsWith(thisMonthStr),
+          );
+
+          if (!alreadyRan) {
+            const templateDate = new Date(template.date);
+            // Nếu hôm nay đã đến hoặc qua ngày hẹn của tháng này
+            if (now.getDate() >= templateDate.getDate()) {
+              const newTx = {
+                id: generateId(),
+                type: template.type,
+                amount: template.amount,
+                category: template.category,
+                walletId: template.walletId,
+                date: `${thisMonthStr}-${String(templateDate.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
+                note: `[Định kỳ] ${template.note || ""}`,
+                lat: template.lat || "",
+                lng: template.lng || "",
+                locationName: template.locationName || "",
+                isRecurring: false, // Bản sao này không lặp tiếp, chỉ thằng template gốc lặp
+              };
+              state.transactions.unshift(newTx);
+              const w = state.wallets.find((x) => x.id === newTx.walletId);
+              if (w)
+                w.balance +=
+                  newTx.type === "income" ? newTx.amount : -newTx.amount;
+              addLog(
+                "Hệ thống",
+                `Tự động tạo giao dịch định kỳ: ${formatMoney(newTx.amount)}`,
+              );
+              changed = true;
+            }
+          }
+        });
+
+        if (changed) {
+          saveData();
+          updateAllViews();
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("global-modal").classList.add("hidden");
+        currentEditId = null;
+      }
+
+      function initSwipeActions() {
+        const swipeItems = document.querySelectorAll(".swipe-item");
+        swipeItems.forEach((item) => {
+          const content = item.querySelector(".swipe-content");
+          if (!content) return;
+          let startX = 0,
+            currentX = 0,
+            isDragging = false;
+          const threshold = -60,
+            maxOpen = -128;
+          item.addEventListener(
+            "touchstart",
+            (e) => {
+              startX = e.touches[0].clientX;
+              isDragging = true;
+              content.classList.remove("transition-transform", "duration-200");
+            },
+            { passive: true },
+          );
+          item.addEventListener(
+            "touchmove",
+            (e) => {
+              if (!isDragging) return;
+              currentX = e.touches[0].clientX;
+              let diffX = currentX - startX;
+              if (diffX < 0) {
+                content.style.transform = `translateX(${Math.max(diffX, maxOpen - 20)}px)`;
+              } else {
+                content.style.transform = `translateX(0px)`;
+              }
+            },
+            { passive: true },
+          );
+          item.addEventListener("touchend", () => {
+            if (!isDragging) return;
+            isDragging = false;
+            content.classList.add("transition-transform", "duration-200");
+            let diffX = currentX - startX;
+            if (diffX < threshold) {
+              content.style.transform = `translateX(${maxOpen}px)`;
+            } else {
+              content.style.transform = `translateX(0px)`;
+            }
+          });
+        });
+      }
+
+      function openService(url, title) {
+        const overlay = document.createElement("div");
+        overlay.id = "service-overlay";
+        overlay.className =
+          "fixed inset-0 z-[100] bg-gray-50 dark:bg-gray-900 flex flex-col transition-transform duration-300 transform translate-y-full";
+        overlay.innerHTML = `<div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)] shrink-0 z-10"><button onclick="closeService()" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button><h3 class="font-black text-lg text-gray-900 dark:text-white truncate flex-1">${title}</h3><button onclick="document.getElementById('service-frame').src = '${url}'" class="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:text-primary-500 transition-colors"><i class="fa-solid fa-rotate-right"></i></button></div><iframe id="service-frame" src="${url}" class="w-full flex-1 border-none bg-white"></iframe>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => {
+          overlay.classList.remove("translate-y-full");
+          overlay.classList.add("translate-y-0");
+        });
+      }
+      function closeService() {
+        const overlay = document.getElementById("service-overlay");
+        if (overlay) {
+          overlay.classList.remove("translate-y-0");
+          overlay.classList.add("translate-y-full");
+          setTimeout(() => overlay.remove(), 300);
+        }
+      }
+
+      // ÂM THANH UI
+      const UI_SOUNDS = {
+        click: [
+          { type: "sine", freq: 600, endFreq: 200, duration: 0.05, vol: 0.05 },
+        ],
+        pop: [
+          { type: "sine", freq: 400, endFreq: 800, duration: 0.08, vol: 0.05 },
+        ],
+        trash: [
+          {
+            type: "sawtooth",
+            freq: 150,
+            endFreq: 50,
+            duration: 0.2,
+            vol: 0.03,
+          },
+        ],
+        success: [
+          { type: "sine", freq: 523.25, duration: 0.1, vol: 0.05 },
+          { type: "sine", freq: 659.25, duration: 0.2, vol: 0.05, delay: 0.1 },
+        ],
+      };
+      let audioCtx;
+      // ÂM THANH UI - LUÔN TO HẾT CỠ
+      function playSound(soundName) {
+        if (!audioCtx)
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+
+        const notes = UI_SOUNDS[soundName] || UI_SOUNDS.click;
+        notes.forEach((note) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = note.type;
+          osc.frequency.setValueAtTime(
+            note.freq,
+            audioCtx.currentTime + (note.delay || 0),
+          );
+
+          // Ép volume về 1.0 (Max volume), không nhân với bất kỳ biến volume nào nữa
+          gain.gain.setValueAtTime(
+            note.vol * 10,
+            audioCtx.currentTime + (note.delay || 0),
+          );
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + (note.delay || 0));
+          osc.stop(audioCtx.currentTime + (note.delay || 0) + note.duration);
+        });
+      }
+
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        if (btn.innerHTML.includes("fa-trash")) playSound("trash");
+        else if (
+          btn.innerHTML.includes("fa-plus") ||
+          btn.innerHTML.includes("fa-pen") ||
+          btn.innerHTML.includes("fa-draw-polygon")
+        )
+          playSound("pop");
+        else playSound("click");
+      });
+      document.addEventListener("submit", () => {
+        playSound("success");
+      });
+      document.addEventListener("DOMContentLoaded", initApp);
+      // --- LOGIC MẬT KHẨU ---
+      const PASS_KEY = "finmaster_pass";
+
+      let currentPin = "";
+      const CORRECT_PIN = localStorage.getItem(PASS_KEY) || "0000"; // Mặc định là 0000 nếu chưa set
+
+      function pressPin(num) {
+        const savedPass = localStorage.getItem(PASS_KEY) || "0000"; // Mặc định 4 số nếu mới
+        const requiredLength = savedPass.length;
+
+        if (currentPin.length < requiredLength) {
+          currentPin += num;
+          updateDots();
+        }
+
+        if (currentPin.length === requiredLength) {
+          if (currentPin === savedPass) {
+            runSplashSequence();
+          } else {
+            alert("Sai mã PIN!");
+            currentPin = "";
+            updateDots();
+          }
+          currentPin = "";
+          updateDots();
+        }
+      }
+
+      function updateDots() {
+        const container = document.getElementById("pin-dots");
+        if (!container) return; // QUAN TRỌNG: Ngăn lỗi nếu phần tử chưa tồn tại
+
+        const savedPass = localStorage.getItem(PASS_KEY) || "0000";
+        const requiredLength = savedPass.length;
+
+        container.innerHTML = "";
+        for (let i = 0; i < requiredLength; i++) {
+          const dot = document.createElement("div");
+          dot.className =
+            i < currentPin.length
+              ? "w-4 h-4 rounded-full bg-white"
+              : "w-4 h-4 rounded-full border border-white/50";
+          container.appendChild(dot);
+        }
+      }
+
+      function runSplashSequence() {
+        document.getElementById("login-overlay").classList.add("hidden");
+
+        const splash = document.getElementById("splash-screen");
+        if (!splash) return; // Kiểm tra an toàn
+
+        splash.classList.remove("hidden");
+        splash.style.opacity = "1";
+
+        setTimeout(() => {
+          splash.style.opacity = "0";
+          setTimeout(() => {
+            splash.classList.add("hidden");
+          }, 500);
+        }, 2000);
+      }
+
+      // Gọi kiểm tra khi load trang
+      document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem(PASS_KEY)) {
+          document.getElementById("login-overlay").classList.remove("hidden");
+        }
+      });
+
+      function openChangePassword() {
+        const modal = document.getElementById("global-modal");
+        const title = document.getElementById("modal-title");
+        const body = document.getElementById("modal-body");
+
+        modal.classList.remove("hidden");
+        title.innerText = "Đổi mã PIN";
+
+        body.innerHTML = `
+          <div class="space-y-4">
+            <p class="text-sm text-gray-500">Nhập mã PIN mới (nhập số):</p>
+            <input type="password" id="new-pin-input" inputmode="numeric" pattern="[0-9]*"
+                   class="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-center text-2xl font-black outline-none border-2 border-primary-500"
+                   placeholder="Nhập PIN mới">
+            <button onclick="saveNewPin()" class="w-full py-4 bg-primary-600 text-white rounded-2xl font-black">Xác nhận</button>
+          </div>
+        `;
+      }
+
+      function saveNewPin() {
+        const newPass = document.getElementById("new-pin-input").value;
+        if (newPass && /^\d+$/.test(newPass)) {
+          localStorage.setItem(PASS_KEY, newPass);
+          alert("Đã đổi mã PIN thành công!");
+          closeModal();
+          location.reload(); // Reload để cập nhật độ dài PIN và số chấm
+        } else {
+          alert("Chỉ được nhập số thôi cha nội!");
+        }
+      }
+
+      document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("filter-dropdown");
+        const filterBtn = document.getElementById("filter-btn");
+
+        // Nếu menu tồn tại, ông bấm ra ngoài menu VÀ ông không bấm vào cái nút lọc
+        if (
+          dropdown &&
+          !dropdown.contains(e.target) &&
+          e.target !== filterBtn &&
+          !filterBtn.contains(e.target)
+        ) {
+          dropdown.classList.add("hidden");
+        }
+      });
+
+      // Khởi tạo layer nhóm cho POI
+      poiLayerGroup = L.layerGroup().addTo(myMap);
+
+      async function togglePOILayer(type) {
+        const poiConfig = {
+          atm: {
+            tag: "amenity",
+            label: "Cây ATM",
+            icon: "🏧",
+            color: "bg-blue-600",
+          },
+          fuel: {
+            tag: "amenity",
+            label: "Cây xăng",
+            icon: "⛽",
+            color: "bg-orange-600",
+          },
+          restaurant: {
+            tag: "amenity",
+            label: "Quán ăn",
+            icon: "🍴",
+            color: "bg-red-500",
+          },
+          university: {
+            tag: "amenity",
+            label: "Trường ĐH",
+            icon: "🎓",
+            color: "bg-purple-600",
+          },
+          convenience: {
+            tag: "shop",
+            label: "Cửa hàng tiện lợi",
+            icon: "🛒",
+            color: "bg-green-600",
+          },
+        };
+
+        const conf = poiConfig[type];
+        if (!conf) return alert("Loại này chưa được cấu hình!");
+
+        const bounds = myMap.getBounds();
+
+        // Logic: Nếu là cửa hàng tiện lợi thì thêm bộ lọc Regex cho 4 tên kia
+        let queryPart = `["${conf.tag}"="${type}"]`;
+        if (type === "convenience") {
+          queryPart = `["shop"="convenience"]["name"~"GS25|Circle K|FamilyMart|Ministop",i]`;
+        }
+
+        const url = `https://overpass-api.de/api/interpreter?data=[out:json];node${queryPart}(${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()});out;`;
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok)
+            throw new Error("Server đang quá tải, đợi chút nhé!");
+
+          const textData = await response.text();
+          if (textData.trim().startsWith("<"))
+            throw new Error("Server trả về lỗi, thử lại sau!");
+
+          const data = JSON.parse(textData);
+          if (data.elements.length === 0)
+            return alert("Không tìm thấy " + conf.label + " nào ở đây!");
+
+          data.elements.forEach((node) => {
+            const name =
+              node.tags && node.tags.name ? node.tags.name : conf.label;
+            const marker = L.marker([node.lat, node.lon], {
+              icon: L.divIcon({
+                html: `<div class="${conf.color} text-white w-7 h-7 rounded-full flex items-center justify-center text-[12px] shadow-md">${conf.icon}</div>`,
+                className: "",
+                iconSize: [28, 28],
+              }),
+            }).addTo(poiLayerGroup);
+
+            marker.bindPopup(`
+        <div class="font-sans min-w-[180px]">
+          <div class="font-black text-sm text-gray-900 dark:text-white mb-1">${name}</div>
+          <div class="text-[10px] font-bold text-gray-500 uppercase mb-3">${conf.label}</div>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${node.lat},${node.lon}" target="_blank" 
+             class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-xs rounded-lg shadow-md active:scale-95">
+             <i class="fa-solid fa-diamond-turn-right  text-white"></i> <span class="text-white">Chỉ đường</span>
+          </a>
+        </div>
+      `);
+          });
+          playSound("success");
+        } catch (error) {
+          console.error("Lỗi API GIS:", error);
+          alert(error.message);
+        }
+      }
+
+      function clearPOIs() {
+        poiLayerGroup.clearLayers();
+        playSound("trash");
+      }
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .then((reg) => {
+              console.log("Service Worker đã đăng ký thành công!");
+            })
+            .catch((err) => {
+              console.error("Lỗi đăng ký Service Worker:", err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
