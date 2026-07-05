@@ -3526,6 +3526,10 @@
         document.getElementById("global-modal").classList.add("hidden");
         currentEditId = null;
       }
+      // Hàm để bấm vào giao dịch gần đây trên Dashboard
+      function openEditTransaction(id) {
+        openModal("transaction", id);
+      }
 
       function initSwipeActions() {
         const swipeItems = document.querySelectorAll(".swipe-item");
