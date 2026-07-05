@@ -2142,9 +2142,8 @@
                       x = center.x;
                       y = center.y;
                     } else if (chart.config.type === "bar") {
-                      // Cấu hình cho Bar (đỉnh cột)
                       x = element.x;
-                      y = element.y - 10; // Đẩy icon lên trên đỉnh 10px
+                      y = element.y - 10;
                     } else {
                       return;
                     }
@@ -4157,6 +4156,25 @@
           localStorage.setItem("last_notified_date", today);
         }
       }
+
+      navigator.serviceWorker.register("./service-worker.js").then((reg) => {
+        reg.onupdatefound = () => {
+          const installingWorker = reg.installing;
+          installingWorker.onstatechange = () => {
+            if (
+              installingWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              // Có bản update mới, ông có thể hiện cái toast thông báo: "Đã có bản cập nhật, nhấn để tải lại"
+              if (
+                confirm("App đã có phiên bản mới, nhấn OK để cập nhật nhé!")
+              ) {
+                window.location.reload();
+              }
+            }
+          };
+        };
+      });
     </script>
     <dialog
       id="imageModal"
