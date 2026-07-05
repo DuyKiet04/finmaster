@@ -964,6 +964,22 @@
                 </div>
                 <i class="fa-solid fa-chevron-right text-gray-400"></i>
               </button>
+              <button
+                onclick="requestNotificationPermission()"
+                class="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-900/30 rounded-2xl hover:bg-primary-100 transition-colors border border-primary-100 dark:border-primary-800"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-lg shadow-sm"
+                  >
+                    <i class="fa-solid fa-bell"></i>
+                  </div>
+                  <span class="font-bold text-gray-800 dark:text-gray-200"
+                    >Bật thông báo</span
+                  >
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400"></i>
+              </button>
             </div>
           </div>
           <div
@@ -977,6 +993,60 @@
               </div>
               <span>Dữ liệu hệ thống</span>
             </h4>
+
+            <div
+              id="storage-container"
+              class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 mt-3 mb-3"
+            >
+              <h4 class="font-bold text-lg mb-4">Dung lượng sử dụng</h4>
+
+              <div
+                class="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex mb-4"
+              >
+                <div
+                  id="bar-images"
+                  class="h-full bg-orange-500 transition-all duration-500"
+                  style="width: 0%"
+                ></div>
+                <div
+                  id="bar-data"
+                  class="h-full bg-blue-500 transition-all duration-500"
+                  style="width: 0%"
+                ></div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"
+                    ></div>
+                    <span class="text-sm font-medium">Còn trống</span>
+                  </div>
+                  <span
+                    id="text-free-size"
+                    class="font-bold text-sm text-gray-500"
+                    >0 MB</span
+                  >
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <span class="text-sm font-medium">Hình ảnh</span>
+                  </div>
+                  <span id="text-img-size" class="font-bold text-sm">0 MB</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="text-sm font-medium">Dữ liệu (Số/Chữ)</span>
+                  </div>
+                  <span id="text-data-size" class="font-bold text-sm"
+                    >0 MB</span
+                  >
+                </div>
+              </div>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Excel -->
@@ -1397,6 +1467,9 @@
         if (typeof processRecurringTransactions === "function") {
           processRecurringTransactions();
         }
+        if (typeof updateStorageStats === "function") updateStorageStats();
+        if (typeof checkAllNotifications === "function")
+          checkAllNotifications();
       }
 
       function saveData() {
@@ -1610,6 +1683,33 @@
                     `<div class="flex gap-4"><div class="flex flex-col items-center"><div class="w-2 h-2 rounded-full bg-primary-500 mt-2"></div><div class="w-px h-full bg-gray-200 dark:bg-gray-700 my-1"></div></div><div class="pb-4"><p class="text-xs text-gray-400 font-medium">${new Date(l.timestamp).toLocaleString("vi-VN")}</p><p class="font-bold text-gray-900 dark:text-white mt-0.5">${l.action}</p><p class="text-gray-500 mt-0.5">${l.details}</p></div></div>`,
                 )
                 .join("");
+
+        updateStorageUI();
+
+        const stats = getAppStorageDetails();
+        const img = parseFloat(stats.images);
+        const data = parseFloat(stats.data);
+        const total = parseFloat(stats.total);
+
+        // Tính % thực tế
+        let imgPercent = (img / total) * 100;
+        let dataPercent = (data / total) * 100;
+
+        // "Hack" hiển thị: Nếu có dữ liệu (total > 0) thì ép tối thiểu mỗi phần 5% để nhìn thấy được
+        if (total > 0) {
+          if (img > 0 && imgPercent < 5) imgPercent = 5;
+          if (data > 0 && dataPercent < 5) dataPercent = 5;
+        }
+
+        // Cập nhật style
+        document.getElementById("bar-images").style.width = imgPercent + "%";
+        document.getElementById("bar-data").style.width = dataPercent + "%";
+
+        // Cập nhật chữ (Hiển thị 3 số thập phân nếu số quá nhỏ)
+        document.getElementById("text-img-size").innerText =
+          img > 0 ? img.toFixed(3) + " MB" : "0 MB";
+        document.getElementById("text-data-size").innerText =
+          data > 0 ? data.toFixed(3) + " MB" : "0 MB";
       }
 
       function deleteCategory(id) {
@@ -2071,7 +2171,26 @@
                     icon: "💸",
                     color: "bg-gray-100",
                   };
-                  return `<div class="flex items-center justify-between group cursor-pointer" onclick="openEditTransaction('${tx.id}')"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} group-hover:scale-110 transition-transform">${cat.icon}</div><div><p class="font-bold text-gray-800 dark:text-gray-100">${cat.name}</p><p class="text-xs text-gray-500 font-medium">${formatDateTime(tx.date)} ${tx.locationName ? `• <i class="fa-solid fa-location-dot"></i> ${tx.locationName.split(",")[0]}` : ""}</p></div></div><span class="font-black text-lg ${isInc ? "text-success-500" : "text-gray-800 dark:text-gray-200"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</span></div>`;
+                  return `
+    <div class="flex items-center justify-between group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
+        <div class="flex items-center gap-4">
+            
+            
+<div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} overflow-hidden shrink-0">
+    ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover  cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+</div>
+            <div>
+                <p class="font-bold text-gray-800 dark:text-gray-100">${cat.name}</p>
+                <p class="text-xs text-gray-500 font-medium">
+                    ${formatDateTime(tx.date)} 
+                    ${tx.locationName ? `• <i class="fa-solid fa-location-dot"></i> ${tx.locationName.split(",")[0]}` : ""}
+                </p>
+            </div>
+        </div>
+        <span class="font-black text-lg ${isInc ? "text-success-500" : "text-gray-800 dark:text-gray-200"}">
+            ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+        </span>
+    </div>`;
                 })
                 .join("");
       }
@@ -2273,7 +2392,7 @@
                       <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
                   </div>
               </div>
-              ${tx.image ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm">` : ""}
+              ${tx.image && tx.image.length > 50 ? `<img src="${tx.image}" class="w-12 h-12 object-cover cursor-pointer rounded-xl shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm" onclick="openImageModal(this.src)">` : ""}
           </div>`;
             });
 
@@ -2567,10 +2686,11 @@
     
     <div class="relative bg-white dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 shadow-sm">
       
-      <!-- ĐÂY LÀ CHỖ HIỂN THỊ ẢNH HOẶC ICON CHUẨN NÀY -->
-      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} overflow-hidden shrink-0">
-          ${tx.image ? `<img src="${tx.image}" class="w-full h-full object-cover">` : cat.icon}
-      </div>
+      
+
+<div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${cat.color} overflow-hidden shrink-0">
+    ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer " onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+</div>
 
       <div class="flex-1 min-w-0">
         <p class="font-bold text-sm text-gray-900 dark:text-white truncate">${cat.name}</p>
@@ -2868,7 +2988,9 @@
                     <i class="fa-solid fa-camera text-xl"></i>
                     <input type="file" id="m-img-input" accept="image/*" capture="environment" class="hidden"
                            onchange="document.getElementById('m-img-preview').src = window.URL.createObjectURL(this.files[0]); document.getElementById('m-img-preview').classList.remove('hidden');">
-                    <img id="m-img-preview" src="${tx.image || ""}" class="${tx.image ? "" : "hidden"} absolute inset-0 w-full h-full object-cover z-10 bg-white">
+                    <img id="m-img-preview" 
+     src="${tx.image && tx.image.length > 50 ? tx.image : ""}" 
+     class="${tx.image && tx.image.length > 50 ? "" : "hidden"} w-20 h-20 rounded-xl object-cover border border-gray-200 dark:border-gray-700 shadow-sm shrink-0">
                 </label>
 
                 <div class="flex-1 flex items-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-2 pr-3 shadow-sm">
@@ -3845,6 +3967,174 @@
           alert("Không tìm thấy ảnh cũ nào để xóa.");
         }
       }
+
+      // ĐỔI TÊN HÀM NÀY
+      function openImageModal(src) {
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImg");
+        modalImg.src = src;
+        modal.showModal();
+      }
+      // Hàm phụ để tự động chuyển đổi MB sang GB nếu cần
+      function formatStorage(bytes) {
+        const mb = bytes / (1024 * 1024);
+        if (mb >= 1024) {
+          return (mb / 1024).toFixed(2) + " GB";
+        }
+        return mb.toFixed(2) + " MB";
+      }
+
+      // Hàm này thay thế cho cái cũ, nó xử lý cả Text và cả Thanh bar (progress bar)
+      async function updateStorageUI() {
+        const stats = getAppStorageDetails();
+        const statsEl = document.getElementById("text-free-size");
+        const barImages = document.getElementById("bar-images");
+        const barData = document.getElementById("bar-data");
+
+        if (!statsEl || !barImages || !barData) return;
+
+        if (navigator.storage && navigator.storage.estimate) {
+          const estimate = await navigator.storage.estimate();
+          const totalQuotaMB = estimate.quota / (1024 * 1024);
+          const usedMB = parseFloat(stats.total);
+          const freeMB = totalQuotaMB - usedMB;
+
+          // 1. Cập nhật chữ Còn trống
+          statsEl.innerText =
+            freeMB >= 1024
+              ? (freeMB / 1024).toFixed(2) + " GB"
+              : freeMB.toFixed(2) + " MB";
+
+          // 2. Cập nhật chữ Ảnh và Dữ liệu
+          document.getElementById("text-img-size").innerText =
+            parseFloat(stats.images).toFixed(3) + " MB";
+          document.getElementById("text-data-size").innerText =
+            parseFloat(stats.data).toFixed(3) + " MB";
+
+          // 3. Cập nhật thanh màu (Dùng 5% tối thiểu để hiện màu)
+          const imgPct = Math.max(
+            5,
+            (parseFloat(stats.images) / totalQuotaMB) * 100,
+          );
+          const dataPct = Math.max(
+            5,
+            (parseFloat(stats.data) / totalQuotaMB) * 100,
+          );
+
+          barImages.style.width =
+            (parseFloat(stats.images) > 0 ? imgPct : 0) + "%";
+          barData.style.width =
+            (parseFloat(stats.data) > 0 ? dataPct : 0) + "%";
+        } else {
+          statsEl.innerText = "Trình duyệt không hỗ trợ xem dung lượng";
+        }
+      }
+      function getAppStorageDetails() {
+        const dataString = JSON.stringify(state); // Chuyển toàn bộ state thành chuỗi để tính size
+
+        // 1. Tính tổng dung lượng
+        const totalBytes = new Blob([dataString]).size;
+
+        // 2. Tính dung lượng ảnh (tổng độ dài các chuỗi base64)
+        const totalImageBytes = state.transactions.reduce((sum, tx) => {
+          return sum + (tx.image ? tx.image.length : 0);
+        }, 0);
+
+        // 3. Tính dung lượng dữ liệu văn bản (còn lại)
+        const dataBytes = totalBytes - totalImageBytes;
+
+        return {
+          total: (totalBytes / 1024 / 1024).toFixed(2),
+          images: (totalImageBytes / 1024 / 1024).toFixed(2),
+          data: (dataBytes / 1024 / 1024).toFixed(2),
+          percentImg: ((totalImageBytes / totalBytes) * 100).toFixed(1),
+        };
+      }
+      // 1. Hàm xin quyền
+      function requestNotificationPermission() {
+        if (!("Notification" in window))
+          return alert("Trình duyệt không hỗ trợ thông báo!");
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            alert("Đã bật! App sẽ tự động nhắc ông khi có vấn đề tài chính.");
+            checkAllNotifications();
+          } else {
+            alert(
+              "Ông cần cho phép thông báo trong cài đặt trình duyệt để tính năng này hoạt động.",
+            );
+          }
+        });
+      }
+
+      // 2. "Bộ não" thông báo
+      function checkAllNotifications() {
+        if (Notification.permission !== "granted") return;
+
+        const today = new Date().toDateString();
+        if (localStorage.getItem("last_notified_date") === today) return;
+
+        let title = "💳 FinMaster Pro";
+        let body = "";
+
+        // A. Kiểm tra Nợ (Ưu tiên 1)
+        const activeDebts = state.debts.filter((d) => d.status === "active");
+        if (activeDebts.length > 0) {
+          body = `Ông đang có ${activeDebts.length} khoản nợ chưa tất toán. Hãy kiểm tra ngay!`;
+        }
+        // B. Kiểm tra Ngân sách (Ưu tiên 2)
+        else {
+          const { m: cm, y: cy } = getSelectedMonth();
+          const overBudget = state.budgets.filter((b) => {
+            const spent = state.transactions
+              .filter(
+                (t) =>
+                  t.category === b.categoryId &&
+                  t.type === "expense" &&
+                  new Date(t.date).getMonth() === cm &&
+                  new Date(t.date).getFullYear() === cy,
+              )
+              .reduce((a, t) => a + t.amount, 0);
+            return spent >= b.amount * 0.9;
+          });
+
+          if (overBudget.length > 0) {
+            const catName =
+              state.categories.find((c) => c.id === overBudget[0].categoryId)
+                ?.name || "Danh mục";
+            body = `Cảnh báo: Chi tiêu cho "${catName}" đã vượt 90% ngân sách tháng này!`;
+          }
+          // C. Kiểm tra Mục tiêu (Ưu tiên 3)
+          else {
+            const completedGoals = state.goals.filter((g) => {
+              const w = state.wallets.find((w) => w.id === g.walletId);
+              return w && w.balance >= g.targetAmount;
+            });
+            if (completedGoals.length > 0) {
+              body = `🎉 Chúc mừng! Ông đã hoàn thành mục tiêu: ${completedGoals[0].name}.`;
+            }
+          }
+        }
+
+        // Nếu có message thì hiện thông báo
+        if (body) {
+          new Notification(title, {
+            body,
+            icon: "https://duykiet04.github.io/anh/logo.jpg",
+          });
+          localStorage.setItem("last_notified_date", today);
+        }
+      }
     </script>
+    <dialog
+      id="imageModal"
+      class="p-0 bg-transparent backdrop:bg-black/80 rounded-2xl overflow-hidden shadow-2xl border-0"
+      onclick="this.close()"
+    >
+      <img
+        id="modalImg"
+        src=""
+        class="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl cursor-pointer"
+      />
+    </dialog>
   </body>
 </html>
