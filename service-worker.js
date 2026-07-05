@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v2'; // Đổi tên cache để nó làm mới
+const CACHE_NAME = 'finmaster-v3'; 
 
 // Chỉ lưu những file nội bộ chắc chắn 100% không bị lỗi CORS
 const STATIC_ASSETS = [
