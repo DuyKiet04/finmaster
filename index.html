@@ -108,15 +108,62 @@
         animation: fadeIn 0.3s;
       }
 
+      /* -- ÁP DỤNG MÀU CHO TOÀN BỘ LỚP BẢN ĐỒ (CẢ NỀN LẪN CHỮ) -- */
+      .leaflet-container {
+        transition: filter 0.5s ease;
+      }
+
+      /* Áp dụng filter cho cái "Map Pane" - nó bao trùm cả ảnh nền và nhãn tên đường */
+      .leaflet-map-pane {
+        transition: filter 0.5s ease;
+        /* Cấu hình filter chuẩn cho việc đổi màu toàn bộ bản đồ */
+        filter: invert(0.9) hue-rotate(calc(var(--primary-hue) * 1deg + 180deg))
+          contrast(1.2);
+      }
+
+      /* Tinh chỉnh riêng cho Dark Mode để tên đường không bị chói */
+      .dark .leaflet-map-pane {
+        /* brightness cao hơn để bù lại nền tối */
+        filter: brightness(1.2) invert(0.9)
+          hue-rotate(calc(var(--primary-hue) * 1deg + 180deg)) contrast(1.2);
+      }
+
+      /* Đảm bảo các lớp chồng lên nhau không bị lỗi hiển thị */
+      .leaflet-tile-pane,
+      .leaflet-overlay-pane,
+      .leaflet-marker-pane {
+        will-change: filter;
+      }
+
       .leaflet-container {
         z-index: 10;
-        border-radius: 1rem;
+
         font-family: inherit;
       }
+      /* --- ÉP MÀU CHO CÁI BAO BÊN NGOÀI POPUP --- */
+      .leaflet-popup-content-wrapper {
+        background-color: var(--bg-card, #ffffff) !important;
+        border-radius: 1.25rem !important; /* Bo tròn đều cho giống form của app */
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      /* Cái mũi tên nhọn trỏ xuống */
+      .leaflet-popup-tip {
+        background-color: var(--bg-card, #ffffff) !important;
+      }
+
+      /* Tự động ngả màu xám đen khi bật Dark Mode */
       .dark .leaflet-popup-content-wrapper,
       .dark .leaflet-popup-tip {
-        background: #1f2937;
-        color: #f3f4f6;
+        background-color: #1f2937 !important; /* bg-gray-800 */
+        border: 1px solid #374151 !important; /* Viền mỏng cho sang */
+        color: #f3f4f6 !important;
+      }
+
+      /* Căn chỉnh lại cái nút X tắt popup cho cân đối */
+      .leaflet-container a.leaflet-popup-close-button {
+        color: #9ca3af !important;
+        padding: 12px 12px 0 0 !important;
       }
       .leaflet-popup-content {
         margin: 14px 16px 12px 16px !important;
@@ -313,7 +360,7 @@
         id="main-scroll-area"
         class="flex-1 overflow-y-auto px-4 pb-32 md:px-8 md:pb-8 relative w-full h-full"
       >
-        <div class="h-28 w-full shrink-0"></div>
+        <div id="header-spacer" class="h-28 w-full shrink-0"></div>
         <div
           id="view-dashboard"
           class="view-section active space-y-6 max-w-7xl mx-auto"
@@ -802,21 +849,30 @@
           </div>
         </div>
 
-        <div id="view-budgets" class="view-section space-y-6 max-w-5xl mx-auto">
+        <div
+          id="view-budgets"
+          class="view-section space-y-6 max-w-5xl mx-auto pt-10"
+        >
           <div
             id="budgets-container"
             class="grid grid-cols-1 md:grid-cols-2 gap-5"
           ></div>
         </div>
 
-        <div id="view-goals" class="view-section space-y-6 max-w-5xl mx-auto">
+        <div
+          id="view-goals"
+          class="view-section space-y-6 max-w-5xl mx-auto pt-10"
+        >
           <div
             id="goals-container"
             class="grid grid-cols-1 md:grid-cols-2 gap-5"
           ></div>
         </div>
 
-        <div id="view-wallets" class="view-section space-y-6 max-w-6xl mx-auto">
+        <div
+          id="view-wallets"
+          class="view-section space-y-6 max-w-6xl mx-auto pt-10"
+        >
           <div
             id="wallets-container"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
@@ -825,7 +881,7 @@
 
         <div
           id="view-debts"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-10"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -1762,6 +1818,27 @@
         const targetNav = NAV_ITEMS.find((i) => i.id === viewId);
         document.getElementById("header-title").innerText =
           targetNav?.label || "FinMaster";
+
+        // --- LOGIC ẨN/HIỆN HEADER TẠI ĐÂY ---
+        const header = document.getElementById("main-header");
+        const spacer = document.getElementById("header-spacer");
+
+        // Khai báo các view muốn ẩn header
+        const noHeaderViews = ["map", "budgets", "debts", "goals", "wallets"];
+
+        if (noHeaderViews.includes(viewId)) {
+          // Ẩn Header & Spacer
+          header.classList.add("hidden");
+          header.classList.remove("flex");
+          if (spacer) spacer.classList.add("hidden");
+        } else {
+          // Hiện lại bình thường cho các tab khác
+          header.classList.remove("hidden");
+          header.classList.add("flex");
+          if (spacer) spacer.classList.remove("hidden");
+        }
+        // -----------------------------------
+
         document
           .querySelectorAll(".view-section")
           .forEach((el) => el.classList.remove("active"));
@@ -2603,7 +2680,7 @@
           </div>`;
             });
 
-            popupContent += `</div><a href="https://www.google.com/maps/dir/?api=1&destination=${repTx.lat},${repTx.lng}" target="_blank" class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold text-sm rounded-xl shadow-md active:scale-95 transition-all no-underline"><i class="fa-solid fa-diamond-turn-right group-hover:translate-x-0.5 transition-transform text-white"></i> <span class="text-white">Chỉ đường</span></a></div>`;
+            popupContent += `</div><a href="https://www.google.com/maps/dir/?api=1&destination=${repTx.lat},${repTx.lng}" target="_blank" class="w-full flex items-center justify-center gap-2 py-2 custom-primary text-white font-semibold text-sm rounded-xl shadow-md active:scale-95 transition-all no-underline"><i class="fa-solid fa-diamond-turn-right group-hover:translate-x-0.5 transition-transform text-white"></i> <span class="text-white">Chỉ đường</span></a></div>`;
 
             L.marker([repTx.lat, repTx.lng], { icon })
               .addTo(mapLayerGroup)
@@ -2935,7 +3012,10 @@
             return `
 <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
     <div class="absolute inset-y-0 right-0 flex items-center z-0">
-        <button onclick="deleteBudget('${b.id}')" class="w-20 h-full bg-red-100 text-red-600 hover:bg-red-200 flex flex-col items-center justify-center transition-colors">
+        <button onclick="openModal('budget', '${b.id}')" class="w-16 h-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-pen text-xl"></i>
+        </button>
+        <button onclick="deleteBudget('${b.id}')" class="w-16 h-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-colors">
             <i class="fa-solid fa-trash text-xl"></i>
         </button>
     </div>
@@ -3514,56 +3594,90 @@
               </div>
           `;
         } else if (type === "budget") {
-          title.innerText = "Thiết Lập Ngân Sách";
+          // Xác định xem là thêm mới hay sửa
+          const isEdit = id != null;
+          const bData = isEdit
+            ? state.budgets.find((b) => b.id === id)
+            : { categoryId: "", amount: "" };
+
+          title.innerText = isEdit ? "Sửa Ngân Sách" : "Thiết Lập Ngân Sách";
+
           const expCats = state.categories
-            .filter((c) => c.type === "expense")
-            .map((c) => `<option value="${c.id}">${c.icon} ${c.name}</option>`)
+            .filter((c) => c.type === "expense" || c.type === "both")
+            .map(
+              (c) =>
+                `<option value="${c.id}" ${c.id === bData.categoryId ? "selected" : ""}>${c.icon} ${c.name}</option>`,
+            )
             .join("");
+
+          const formattedAmt = bData.amount
+            ? bData.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            : "";
+
           body.innerHTML = `
-  <form id="frm-b" class="space-y-5">
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Danh mục</label>
-      <select id="b-c" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text custom-border border custom-focus">
-        ${expCats}
-      </select>
-    </div>
+    <form id="frm-b" class="space-y-5">
+        <div>
+            <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Danh mục</label>
+            <select id="b-c" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text custom-border border custom-focus">
+                ${expCats}
+            </select>
+        </div>
 
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Ngân sách (VNĐ/Tháng)</label>
-      <input 
-        type="text" 
-        inputmode="numeric" 
-        oninput="formatInputCurrency(event)" 
-        id="b-a" 
-        required 
-        class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text custom-border border custom-focus custom-placeholder" 
-        placeholder="0"
-      >
-    </div>
+        <div>
+            <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Ngân sách (VNĐ/Tháng)</label>
+            <input 
+                type="text" 
+                inputmode="numeric" 
+                oninput="formatInputCurrency(event)" 
+                id="b-a" 
+                value="${formattedAmt}"
+                required 
+                class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text custom-border border custom-focus custom-placeholder" 
+                placeholder="0"
+            >
+        </div>
 
-    <button 
-      type="submit" 
-      class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all"
-    >
-      Lưu Ngân Sách
-    </button>
-  </form>
-`;
+        <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">
+            ${isEdit ? "Cập Nhật Ngân Sách" : "Lưu Ngân Sách"}
+        </button>
+    </form>
+    `;
+
           document.getElementById("frm-b").onsubmit = (e) => {
             e.preventDefault();
             const cId = document.getElementById("b-c").value;
             const amt = getRawNumber(document.getElementById("b-a").value);
-            if (state.budgets.some((b) => b.categoryId === cId))
-              return alert("Danh mục này đã có ngân sách!");
-            state.budgets.push({
-              id: generateId(),
-              categoryId: cId,
-              amount: amt,
-            });
-            addLog(
-              "Tạo ngân sách",
-              `${state.categories.find((c) => c.id === cId)?.name}: ${formatMoney(amt)}/tháng`,
-            );
+
+            if (isEdit) {
+              // Kiểm tra trùng lặp khi sửa
+              if (
+                state.budgets.some((b) => b.categoryId === cId && b.id !== id)
+              ) {
+                return alert("Danh mục này đã có ngân sách rồi ông giáo ạ!");
+              }
+              const b = state.budgets.find((b) => b.id === id);
+              b.categoryId = cId;
+              b.amount = amt;
+              addLog(
+                "Sửa ngân sách",
+                `${state.categories.find((c) => c.id === cId)?.name}: ${formatMoney(amt)}/tháng`,
+              );
+            } else {
+              // Kiểm tra trùng lặp khi thêm mới
+              if (state.budgets.some((b) => b.categoryId === cId)) {
+                return alert("Danh mục này đã có ngân sách!");
+              }
+              state.budgets.push({
+                id: generateId(),
+                categoryId: cId,
+                amount: amt,
+              });
+              addLog(
+                "Tạo ngân sách",
+                `${state.categories.find((c) => c.id === cId)?.name}: ${formatMoney(amt)}/tháng`,
+              );
+            }
+
             saveData();
             closeModal();
             renderBudgets();
@@ -4183,15 +4297,15 @@
             }).addTo(poiLayerGroup);
 
             marker.bindPopup(`
-              <div class="font-sans min-w-[180px]">
-                <div class="font-black text-sm custom-text dark:text-white mb-1">${name}</div>
-                <div class="text-[10px] font-bold custom-text-secondary uppercase mb-3">${conf.label}</div>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=${node.lat},${node.lon}" target="_blank"
-                   class="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-xs rounded-lg shadow-md active:scale-95 no-underline">
-                   <i class="fa-solid fa-diamond-turn-right  text-white"></i> <span class="text-white">Chỉ đường</span>
-                </a>
-              </div>
-            `);
+  <div class="font-sans min-w-[180px]">
+    <div class="font-black text-sm custom-text dark:text-white mb-1">${name}</div>
+    <div class="text-[10px] font-bold custom-text-secondary uppercase mb-3">${conf.label}</div>
+    <a href="https://www.google.com/maps/dir/?api=1&destination=${node.lat},${node.lon}" target="_blank"
+       class="w-full flex items-center justify-center gap-2 py-2 custom-primary text-white font-black text-xs rounded-lg shadow-md active:scale-95 no-underline">
+       <i class="fa-solid fa-diamond-turn-right text-white"></i> <span class="text-white">Chỉ đường</span>
+    </a>
+  </div>
+`);
           });
           playSound("success");
         } catch (error) {

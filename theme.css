@@ -239,7 +239,7 @@
 .custom-bg-primary-soft { background: var(--bg-primary-soft); }
 
 .custom-border {
-  border: 1px solid var(--border-color); /* Added '1px solid' to make border helper work intuitively if it didn't have it */
+   border: 1px solid var(--bg-card); 
 }
 /* If you only want to change color and keep border-width elsewhere, use this instead: */
 /* .custom-border { border-color: var(--border-color); } */
