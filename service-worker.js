@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v6'; // Tăng version để ép trình duyệt cập nhật
+const CACHE_NAME = 'finmaster-v7'; // Tăng version để ép trình duyệt cập nhật
 
 // Các file nằm ngay trên máy của ông
 const STATIC_ASSETS = [
