@@ -266,7 +266,8 @@
 
     <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
       <header
-        class="custom-bg-header dark:bg-gray-900/80 backdrop-blur-md z-20 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0"
+        id="main-header"
+        class="custom-bg-header dark:bg-gray-900/80 backdrop-blur-md z-20 px-6 py-4 flex items-center justify-between absolute top-0 left-0 right-0 transition-transform duration-300"
       >
         <div>
           <h2
@@ -309,9 +310,10 @@
       </header>
 
       <div
-        class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8 relative"
         id="main-scroll-area"
+        class="flex-1 overflow-y-auto px-4 pb-32 md:px-8 md:pb-8 relative w-full h-full"
       >
+        <div class="h-28 w-full shrink-0"></div>
         <div
           id="view-dashboard"
           class="view-section active space-y-6 max-w-7xl mx-auto"
@@ -508,7 +510,10 @@
           id="view-transactions"
           class="view-section space-y-6 max-w-5xl mx-auto"
         >
-          <div class="flex flex-col sm:flex-row gap-3">
+          <div
+            id="tx-search-bar"
+            class="flex flex-col sm:flex-row gap-3 transition-all duration-300 z-[15] pb-1"
+          >
             <div class="relative flex-1 flex items-center">
               <i
                 class="fa-solid fa-magnifying-glass absolute left-4 custom-icon"
@@ -1213,7 +1218,8 @@
     </main>
 
     <div
-      class="md:hidden fixed bottom-6 left-4 right-4 z-40 flex items-center gap-2"
+      id="mobile-bottom-bar"
+      class="md:hidden fixed bottom-6 left-4 right-4 z-40 flex items-center gap-2 transition-transform duration-300"
     >
       <nav
         class="flex-1 custom-bg-navbar dark:bg-gray-800 rounded-full custom-shadow border custom-border dark:border-gray-700 flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
@@ -1478,6 +1484,71 @@
         renderDashboard();
       };
 
+      function initScrollHideUI() {
+        let lastScrollTop = 0;
+        const scrollArea = document.getElementById("main-scroll-area");
+        const header = document.getElementById("main-header");
+        const bottomBar = document.getElementById("mobile-bottom-bar");
+
+        if (!scrollArea) return;
+
+        scrollArea.addEventListener(
+          "scroll",
+          () => {
+            const st = scrollArea.scrollTop;
+            const searchBar = document.getElementById("tx-search-bar");
+
+            // Xử lý khi cuộn lên sát trên cùng
+            if (st <= 0) {
+              header?.classList.remove("-translate-y-full");
+              bottomBar?.classList.remove("translate-y-24");
+              if (searchBar) {
+                searchBar.classList.remove("sticky", "top-4", "drop-shadow-xl");
+              }
+              lastScrollTop = st;
+              return;
+            }
+
+            // Lướt xuống (Nội dung trượt lên trên)
+            if (st > lastScrollTop && st > 50) {
+              // 1. Ẩn Header và Bottom Nav
+              header?.classList.add("-translate-y-full");
+              bottomBar?.classList.add("translate-y-24");
+
+              // 2. Ép thanh tìm kiếm dính lên trên cùng làm Header mới
+              if (searchBar && state.currentView === "transactions") {
+                searchBar.classList.add(
+                  "sticky",
+                  "top-2",
+
+                  "z-50",
+                );
+              }
+            }
+            // Lướt lên (Nội dung trượt xuống dưới)
+            else if (st < lastScrollTop) {
+              // 1. Hiện lại Header và Bottom Nav
+              header?.classList.remove("-translate-y-full");
+              bottomBar?.classList.remove("translate-y-24");
+
+              // 2. Gỡ dính, trả thanh tìm kiếm về vị trí cũ trong danh sách
+              if (searchBar) {
+                searchBar.classList.remove(
+                  "sticky",
+                  "top-2",
+                  "drop-shadow-xl",
+                  "z-50",
+                  "custom-bg-body",
+                );
+              }
+            }
+
+            lastScrollTop = st;
+          },
+          { passive: true },
+        );
+      }
+
       async function initApp() {
         const splash = document.getElementById("splash-screen");
 
@@ -1516,6 +1587,9 @@
             if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
             if (savedData.userProfile)
               state.userProfile = savedData.userProfile;
+            if (savedData.currentTheme)
+              state.currentTheme = savedData.currentTheme;
+            if (savedData.primaryHue) state.primaryHue = savedData.primaryHue;
           }
 
           const savedSettings = await localforage.getItem("finmaster_settings");
@@ -1557,6 +1631,8 @@
         if (typeof updateStorageStats === "function") updateStorageStats();
         if (typeof checkAllNotifications === "function")
           checkAllNotifications();
+
+        initScrollHideUI();
       }
 
       function saveData() {
@@ -1570,6 +1646,8 @@
           dashFilter: state.dashFilter,
           userProfile: state.userProfile,
           debts: state.debts,
+          currentTheme: state.currentTheme, // Thêm dòng này
+          primaryHue: state.primaryHue,
         };
 
         // localforage lưu ngầm dưới IndexedDB
@@ -1610,6 +1688,24 @@
           document.documentElement.classList.remove("dark");
           document.getElementById("theme-icon").className =
             "fa-solid fa-moon text-lg text-gray-500";
+        }
+
+        if (state.primaryHue) {
+          document.documentElement.style.setProperty(
+            "--primary-hue",
+            state.primaryHue,
+          );
+        }
+        document.body.classList.remove(
+          "theme-red",
+          "theme-green",
+          "theme-orange",
+          "theme-pink",
+          "theme-cyan",
+          "theme-purple",
+        );
+        if (state.currentTheme && state.currentTheme !== "default") {
+          document.body.classList.add(state.currentTheme);
         }
         if (typeof updateMapBaseLayer === "function") updateMapBaseLayer();
       }
@@ -1689,6 +1785,12 @@
           state.wallets.reduce((acc, w) => acc + w.balance, 0),
         );
         document.getElementById("header-balance").innerText = bal;
+        const hAvt = document.getElementById("header-avatar");
+        if (hAvt) {
+          hAvt.src =
+            state.userProfile.avatar ||
+            "https://ui-avatars.com/api/?name=User&background=6366f1&color=fff";
+        }
       }
 
       async function updateAvatar(e) {
@@ -2210,6 +2312,10 @@
 
                     let x, y;
                     if (chart.config.type === "doughnut") {
+                      // element.circumference là độ rộng của miếng bánh (tính bằng radian)
+                      // Giới hạn ẩn icon nếu miếng bánh nhỏ hơn ~4.5% (tương đương 0.28 radian)
+                      if (element.circumference < 0.28) return;
+
                       const center = element.getCenterPoint();
                       x = center.x;
                       y = center.y;
@@ -2884,7 +2990,7 @@
             const amountLeft = g.targetAmount - currentBalance;
             const dailyNeeded =
               daysLeft > 0 && amountLeft > 0 ? amountLeft / daysLeft : 0;
-            return `<div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft"><div class="absolute inset-y-0 right-0 flex items-center z-0"><button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-100 text-danger-600 dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button></div><div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center"><div class="flex justify-between items-start mb-4"><div><h3 class="text-xl font-black flex items-center gap-2 custom-text">${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500"></i>' : "🎯"} ${g.name}</h3><p class="text-sm custom-text-secondary mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 custom-bg-primary-soft inline-block px-2 py-1 rounded-md border custom-border"><i class="fa-solid fa-link"></i> Nguồn tiền: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}</div></div><div class="flex justify-between text-sm mb-2 font-black"><span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span><span class="custom-text">${pct}%</span></div><div class="h-4 w-full custom-bg-body border custom-border rounded-full overflow-hidden p-0.5"><div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000" style="width: ${pct}%"></div></div>${daysLeft > 0 ? `<div class="mt-4 p-3 custom-bg-input rounded-xl border custom-border"><p class="text-xs font-bold custom-text-secondary mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}</div>` : ""}</div></div>`;
+            return `<div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft"><div class="absolute inset-y-0 right-0 flex items-center z-0"><button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-500 text-white dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button></div><div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center"><div class="flex justify-between items-start mb-4"><div><h3 class="text-xl font-black flex items-center gap-2 custom-text">${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500"></i>' : "🎯"} ${g.name}</h3><p class="text-sm custom-text-secondary mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 custom-bg-primary-soft inline-block px-2 py-1 rounded-md border custom-border"><i class="fa-solid fa-link"></i> Nguồn tiền: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}</div></div><div class="flex justify-between text-sm mb-2 font-black"><span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span><span class="custom-text">${pct}%</span></div><div class="h-4 w-full custom-bg-body border custom-border rounded-full overflow-hidden p-0.5"><div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000" style="width: ${pct}%"></div></div>${daysLeft > 0 ? `<div class="mt-4 p-3 custom-bg-input rounded-xl border custom-border"><p class="text-xs font-bold custom-text-secondary mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}</div>` : ""}</div></div>`;
           })
           .join("");
         if (typeof initSwipeActions === "function") initSwipeActions();
