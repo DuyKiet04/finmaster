@@ -8,6 +8,7 @@
     />
     <link rel="manifest" href="manifest.json" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -175,6 +176,38 @@
       .leaflet-container a.leaflet-popup-close-button {
         color: #9ca3af !important;
         padding: 4px 6px 0 0 !important;
+      }
+
+      /* Tút lại giao diện cục gộp điểm (Cluster) */
+      .marker-cluster-small,
+      .marker-cluster-medium,
+      .marker-cluster-large {
+        background-color: transparent !important;
+      }
+      .marker-cluster div {
+        background: linear-gradient(
+          135deg,
+          var(--primary-hue, #4f46e5),
+          #8b5cf6
+        ) !important;
+        color: white !important;
+        font-weight: 900 !important;
+        font-size: 14px !important;
+        border: 3px solid white;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important;
+        width: 36px !important;
+        height: 36px !important;
+        margin-left: 2px;
+        margin-top: 2px;
+      }
+      .dark .marker-cluster div {
+        border-color: #1f2937; /* Đổi viền trắng thành đen xám khi Dark mode */
       }
     </style>
   </head>
@@ -3294,6 +3327,9 @@
             <input type="file" id="m-img-input" accept="image/*" capture="environment" class="hidden" onchange="document.getElementById('m-img-preview').src = window.URL.createObjectURL(this.files[0]); document.getElementById('m-img-preview').classList.remove('hidden');">
             <img id="m-img-preview" src="${tx.image && tx.image.length > 50 ? tx.image : ""}" class="${tx.image && tx.image.length > 50 ? "" : "hidden"} w-full h-full object-cover shrink-0 absolute inset-0 z-10 bg-white">
         </label>
+        <button type="button" id="btn-scan-bill" onclick="scanBill()" class="hidden w-14 py-1 text-[10px] font-bold text-white bg-blue-500 rounded-lg shadow-sm">
+            Quét Bill
+        </button>
 
         <div class="flex-1 flex items-center custom-bg-card rounded-2xl border custom-border p-2 pr-3 custom-shadow-sm">
             <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-10 h-10 shrink-0 custom-bg-primary-soft custom-icon-active rounded-xl flex items-center justify-center text-lg hover:brightness-95 transition-colors mr-2 active:scale-90 border custom-border">
@@ -4576,6 +4612,80 @@
         saveData();
 
         if (state.currentView === "dashboard") renderDashboard();
+      }
+
+      // Hàm hiển thị nút Quét sau khi chọn ảnh xong
+      function previewAndScanImage(input) {
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("m-img-preview").src = e.target.result;
+            document.getElementById("m-img-preview").classList.remove("hidden");
+            // Hiện nút quét bill
+            document.getElementById("btn-scan-bill").classList.remove("hidden");
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      // Hàm chạy OCR
+      async function scanBill() {
+        const imgEl = document.getElementById("m-img-preview");
+        const btnScan = document.getElementById("btn-scan-bill");
+        const amtInput = document.getElementById("m-amt");
+
+        if (!imgEl.src || imgEl.src.length < 50)
+          return alert("Chưa có ảnh để quét!");
+
+        // Đổi trạng thái nút thành đang loading
+        btnScan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        btnScan.classList.replace("bg-blue-500", "bg-gray-400");
+        btnScan.disabled = true;
+
+        try {
+          // Gọi Tesseract, dùng ngôn ngữ Tiếng Việt + Tiếng Anh
+          const result = await Tesseract.recognize(imgEl.src, "vie+eng", {
+            logger: (m) => console.log(m), // Xem tiến độ trong console
+          });
+
+          const text = result.data.text.toLowerCase();
+          console.log("Text quét được:\n", text);
+
+          // Regex tìm số tiền gần các chữ "tổng", "thanh toán", "total"
+          // Tìm các cụm từ này, theo sau là bất kỳ ký tự nào, rồi đến các con số (có thể chứa dấu phẩy hoặc chấm)
+          const regex =
+            /(tổng|tổng cộng|thanh toán|total|tổng tiền)[\s\S]*?(\d{1,3}([,.]\d{3})*)/i;
+          const match = text.match(regex);
+
+          if (match && match[2]) {
+            // Lấy được chuỗi số, lọc bỏ dấu chấm/phẩy để lấy số thuần
+            const amountStr = match[2].replace(/[.,]/g, "");
+            const amount = parseInt(amountStr, 10);
+
+            if (amount > 0) {
+              // Đập thẳng số vào Input
+              amtInput.value = amount
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+              playSound("success");
+              alert(`Đã tìm thấy số tiền: ${amtInput.value}đ`);
+            } else {
+              alert("Quét được nhưng không tìm thấy số tiền hợp lệ!");
+            }
+          } else {
+            alert(
+              "Không tìm thấy chữ 'Tổng cộng' hoặc 'Thanh toán' trên bill.",
+            );
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Lỗi khi quét ảnh!");
+        } finally {
+          // Trả lại nút như cũ
+          btnScan.innerHTML = "Quét Bill";
+          btnScan.classList.replace("bg-gray-400", "bg-blue-500");
+          btnScan.disabled = false;
+        }
       }
     </script>
     <dialog
