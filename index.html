@@ -2958,7 +2958,7 @@
       <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
     </div>
     
-    <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
+    <div class="relative  custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
       
       
 
@@ -3581,7 +3581,7 @@
           title.innerText = "Khoanh vùng phân tích";
           body.innerHTML = `
               <div class="space-y-4">
-                  <div class="custom-bg-primary-soft p-4 rounded-xl border custom-border">
+                  <div class="custom-bg-card p-4 rounded-xl border custom-border">
                       <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Bán kính (mét)</label>
                       <input type="number" id="buffer-radius" value="500" class="w-full p-3 custom-bg-input rounded-xl font-black text-lg outline-none border custom-border custom-text custom-focus">
                   </div>
@@ -4355,9 +4355,6 @@
               const originalKB = (file.size / 1024).toFixed(2);
               const compressedKB = ((dataUrl.length * 3) / 4 / 1024).toFixed(2);
 
-              console.log(`📸 Ảnh gốc: ${originalKB} KB`);
-              console.log(`📉 Sau khi ép (Quality 0.5): ${compressedKB} KB`);
-
               resolve(dataUrl);
             };
           };
@@ -4496,7 +4493,7 @@
         const today = new Date().toDateString();
         if (localStorage.getItem("last_notified_date") === today) return;
 
-        let title = "💳 FinMaster Pro";
+        let title = "FinMaster ";
         let body = "";
 
         const activeDebts = state.debts.filter((d) => d.status === "active");
@@ -4589,7 +4586,7 @@
       <img
         id="modalImg"
         src=""
-        class="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl cursor-pointer"
+        class="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl cursor-pointer border custom-border"
       />
     </dialog>
   </body>
