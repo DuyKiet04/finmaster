@@ -2248,7 +2248,6 @@
             (t) => new Date(t.date).getFullYear() === cy,
           );
         } else if (filterTime === "day") {
-          // Lấy chính xác ngày ông đang chọn ở Header, nếu trống thì lấy hôm nay
           const todayStr =
             document.getElementById("global-date").value ||
             getToday().split("T")[0];
