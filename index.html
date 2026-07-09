@@ -364,8 +364,8 @@
         </div>
         <div class="flex items-center gap-3">
           <input
-            type="month"
-            id="global-month"
+            type="date"
+            id="global-date"
             onchange="updateAllViews()"
             class="py-2 px-3 custom-bg-input dark:bg-gray-800 border custom-border rounded-xl custom-shadow-sm custom-focus font-medium outline-none text-sm w-36 sm:w-40 custom-text"
           />
@@ -1556,13 +1556,18 @@
       }
 
       function getSelectedMonth() {
-        const globalMonth = document.getElementById("global-month");
-        if (globalMonth && globalMonth.value) {
-          const [year, month] = globalMonth.value.split("-");
-          return { m: parseInt(month) - 1, y: parseInt(year) };
+        const globalDate = document.getElementById("global-date");
+        if (globalDate && globalDate.value) {
+          const [year, month, day] = globalDate.value.split("-");
+          // Vẫn trả về m, y để không làm hỏng tính năng Thống kê Ngân sách (Budgets)
+          return {
+            d: parseInt(day),
+            m: parseInt(month) - 1,
+            y: parseInt(year),
+          };
         }
         const now = new Date();
-        return { m: now.getMonth(), y: now.getFullYear() };
+        return { d: now.getDate(), m: now.getMonth(), y: now.getFullYear() };
       }
 
       function updateAllViews() {
@@ -1706,10 +1711,9 @@
             day: "numeric",
           });
 
-        const now = new Date();
-        const gm = document.getElementById("global-month");
-        if (gm)
-          gm.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        // THAY BẰNG ĐOẠN NÀY
+        const gd = document.getElementById("global-date");
+        if (gd) gd.value = getToday().split("T")[0]; // Điền mặc định ngày hiện tại (YYYY-MM-DD)
 
         applyTheme();
         renderNav();
@@ -2244,7 +2248,10 @@
             (t) => new Date(t.date).getFullYear() === cy,
           );
         } else if (filterTime === "day") {
-          const todayStr = now.toISOString().split("T")[0];
+          // Lấy chính xác ngày ông đang chọn ở Header, nếu trống thì lấy hôm nay
+          const todayStr =
+            document.getElementById("global-date").value ||
+            getToday().split("T")[0];
           filteredTx = state.transactions.filter((t) =>
             t.date.startsWith(todayStr),
           );
@@ -2943,7 +2950,8 @@
         const search = document
           .getElementById("filter-search")
           .value.toLowerCase();
-        const month = document.getElementById("global-month").value;
+        // THAY BẰNG ĐOẠN NÀY
+        const selectedDate = document.getElementById("global-date").value; // Giá trị lúc này là YYYY-MM-DD
         const today = new Date().toISOString().split("T")[0];
         const yesterday = new Date(Date.now() - 86400000)
           .toISOString()
@@ -2959,14 +2967,18 @@
           const matchS =
             (t.note || "").toLowerCase().includes(search) ||
             catName.includes(search);
-          const matchMonth = month ? t.date.startsWith(month) : true;
+
+          // Lọc theo ngày được chọn ở Header
+          const matchSelectedDate = selectedDate
+            ? t.date.startsWith(selectedDate)
+            : true;
 
           let matchDate = true;
           if (dateFilter === "today") matchDate = t.date.startsWith(today);
           else if (dateFilter === "yesterday")
             matchDate = t.date.startsWith(yesterday);
 
-          return matchS && matchMonth && matchDate;
+          return matchS && matchSelectedDate && matchDate;
         });
 
         const inc = filteredTx
