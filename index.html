@@ -9,6 +9,7 @@
     <link rel="manifest" href="manifest.json" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -896,6 +897,14 @@
           id="view-goals"
           class="view-section space-y-6 max-w-5xl mx-auto pt-10"
         >
+          <div class="flex justify-between items-center px-2">
+            <button
+              onclick="openTrophyRoom()"
+              class="px-4 py-2 custom-gradient w-full flex items-center justify-center from-amber-400 to-orange-500 text-white font-bold rounded-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <i class="fa-solid fa-trophy"></i>
+            </button>
+          </div>
           <div
             id="goals-container"
             class="grid grid-cols-1 md:grid-cols-2 gap-5"
@@ -1663,6 +1672,7 @@
           const savedData = await localforage.getItem("finmaster_data");
           if (savedData) {
             state.debts = savedData.debts || [];
+            state.badges = savedData.badges || [];
             state.transactions = savedData.transactions || [];
             state.wallets =
               savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
@@ -1731,6 +1741,7 @@
           categories: state.categories,
           budgets: state.budgets,
           goals: state.goals,
+          badges: state.badges || [],
           logs: state.logs,
           dashFilter: state.dashFilter,
           userProfile: state.userProfile,
@@ -3085,6 +3096,7 @@
         if (state.goals.length === 0)
           return (cont.innerHTML =
             '<p class="col-span-full text-center custom-text-secondary mt-10">Chưa có mục tiêu.</p>');
+
         cont.innerHTML = state.goals
           .map((g) => {
             const linkedWallet = state.wallets.find((w) => w.id === g.walletId);
@@ -3103,10 +3115,56 @@
             const amountLeft = g.targetAmount - currentBalance;
             const dailyNeeded =
               daysLeft > 0 && amountLeft > 0 ? amountLeft / daysLeft : 0;
-            return `<div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft"><div class="absolute inset-y-0 right-0 flex items-center z-0"><button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-500 text-white dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button></div><div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center"><div class="flex justify-between items-start mb-4"><div><h3 class="text-xl font-black flex items-center gap-2 custom-text">${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500"></i>' : "🎯"} ${g.name}</h3><p class="text-sm custom-text-secondary mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 custom-bg-primary-soft inline-block px-2 py-1 rounded-md border custom-border"><i class="fa-solid fa-link"></i> Nguồn tiền: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}</div></div><div class="flex justify-between text-sm mb-2 font-black"><span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span><span class="custom-text">${pct}%</span></div><div class="h-4 w-full custom-bg-body border custom-border rounded-full overflow-hidden p-0.5"><div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000" style="width: ${pct}%"></div></div>${daysLeft > 0 ? `<div class="mt-4 p-3 custom-bg-input rounded-xl border custom-border"><p class="text-xs font-bold custom-text-secondary mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}</div>` : ""}</div></div>`;
+
+            return `
+      <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
+        <div class="absolute inset-y-0 right-0 flex items-center z-0">
+          <button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-500 text-white dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors">
+            <i class="fa-solid fa-trash text-xl"></i>
+          </button>
+        </div>
+        <div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-black flex items-center gap-2 custom-text">
+                ${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded-full"></i>' : "🎯"} ${g.name}
+              </h3>
+              <p class="text-sm custom-text-secondary mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>
+              ${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 custom-bg-primary-soft inline-block px-2 py-1 rounded-md border custom-border"><i class="fa-solid fa-link"></i> Nguồn: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}
+            </div>
+          </div>
+          <div class="flex justify-between text-sm mb-2 font-black">
+            <span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span>
+            <span class="custom-text">${pct}%</span>
+          </div>
+          
+          <!-- Thanh tiến trình có vạch chia Cột mốc -->
+          <div class="h-4 w-full custom-bg-body border custom-border rounded-full p-0.5 relative">
+            <div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000 relative z-0" style="width: ${pct}%"></div>
+            <!-- Các vạch đánh dấu 25%, 50%, 75% -->
+            <div class="absolute top-0 bottom-0 left-[25%] w-[1.5px] bg-gray-400/40 z-10"></div>
+            <div class="absolute top-0 bottom-0 left-[50%] w-[1.5px] bg-gray-400/40 z-10"></div>
+            <div class="absolute top-0 bottom-0 left-[75%] w-[1.5px] bg-gray-400/40 z-10"></div>
+          </div>
+          
+          ${
+            daysLeft > 0
+              ? `
+          <div class="mt-4 p-3 custom-bg-input rounded-xl border custom-border">
+            <p class="text-xs font-bold custom-text-secondary mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>
+            ${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}
+          </div>`
+              : ""
+          }
+        </div>
+      </div>`;
           })
           .join("");
+
         if (typeof initSwipeActions === "function") initSwipeActions();
+
+        // Gọi hàm kiểm tra pháo hoa & huy hiệu sau khi render xong
+        checkGoalMilestones();
       }
 
       function renderWallets() {
@@ -4633,7 +4691,7 @@
           statusEl.className =
             "text-[10px] font-bold text-blue-500 text-center w-full mt-1";
           statusEl.innerHTML =
-            '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu OCR...';
+            '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu';
         }
 
         // 3. Kiểm tra xem thằng Tesseract có tồn tại không
@@ -4653,7 +4711,7 @@
         try {
           if (statusEl)
             statusEl.innerHTML =
-              '<i class="fa-solid fa-spinner fa-spin"></i> Đang quét chữ (Hơi lâu nhé)...';
+              '<i class="fa-solid fa-spinner fa-spin"></i> Đang quét';
 
           const result = await Tesseract.recognize(imgEl.src, "vie+eng");
           const text = result.data.text.toLowerCase();
@@ -4703,16 +4761,135 @@
               statusEl.classList.replace("text-blue-500", "text-success-500");
             }
           } else {
-            throw new Error("Không bắt được số tiền hợp lệ");
+            throw new Error("số tiền ko có");
           }
         } catch (err) {
           console.error("OCR Error: ", err);
           if (statusEl) {
-            statusEl.innerHTML =
-              '<i class="fa-solid fa-image"></i> Lưu ảnh thành công (Không quét được chữ)';
+            statusEl.innerHTML = '<i class="fa-solid fa-image"></i> Thành công';
             statusEl.classList.replace("text-blue-500", "text-gray-500");
           }
         }
+      }
+      function checkGoalMilestones() {
+        let changed = false;
+        const todayStr = getToday().split("T")[0];
+        const today = new Date();
+
+        state.goals.forEach((g) => {
+          const linkedWallet = state.wallets.find((w) => w.id === g.walletId);
+          const currentBalance = linkedWallet
+            ? linkedWallet.balance
+            : g.savedAmount || 0;
+          const pct = (currentBalance / g.targetAmount) * 100;
+
+          // Khởi tạo bộ theo dõi mốc nếu chưa có
+          if (!g.milestones)
+            g.milestones = { m25: false, m50: false, m75: false, m100: false };
+
+          const fire = (intensity) => {
+            if (typeof confetti === "function") {
+              confetti({
+                particleCount: 100 * intensity,
+                spread: 70 * intensity,
+                origin: { y: 0.6 },
+                zIndex: 99999,
+              });
+              playSound("success");
+            }
+          };
+
+          if (pct >= 25 && !g.milestones.m25) {
+            g.milestones.m25 = true;
+            changed = true;
+            fire(0.5);
+            addLog("Mục tiêu", `🎉 "${g.name}" đạt 25%`);
+          }
+          if (pct >= 50 && !g.milestones.m50) {
+            g.milestones.m50 = true;
+            changed = true;
+            fire(1);
+            addLog("Mục tiêu", `🔥 Nửa đường rổi! "${g.name}" đạt 50%`);
+          }
+          if (pct >= 75 && !g.milestones.m75) {
+            g.milestones.m75 = true;
+            changed = true;
+            fire(1.5);
+            addLog("Mục tiêu", `🚀 Chạy nước rút! "${g.name}" đạt 75%`);
+          }
+
+          if (pct >= 100 && !g.milestones.m100) {
+            g.milestones.m100 = true;
+            changed = true;
+            fire(2.5);
+            addLog("Mục tiêu", `🏆 HOÀN THÀNH: "${g.name}"`);
+
+            // Kiểm tra xem có hoàn thành sớm không để tặng Huy hiệu
+            const targetDate = new Date(g.targetDate);
+            if (today < targetDate) {
+              const daysEarly = Math.ceil(
+                (targetDate - today) / (1000 * 60 * 60 * 24),
+              );
+              if (!state.badges) state.badges = [];
+
+              const existingBadge = state.badges.find((b) => b.goalId === g.id);
+              if (!existingBadge) {
+                state.badges.unshift({
+                  id: generateId(),
+                  goalId: g.id,
+                  name: g.name,
+                  daysEarly: daysEarly,
+                  dateEarned: todayStr,
+                });
+                alert(
+                  `Tuyệt vời! Ông hoàn thành sớm ${daysEarly} ngày. Huy hiệu Kẻ Hủy Diệt Mục Tiêu đã được thêm vào Phòng truyền thống!`,
+                );
+              }
+            } else {
+              alert(`Chúc mừng ông đã hoàn thành mục tiêu: ${g.name} 🥳`);
+            }
+          }
+        });
+
+        if (changed) saveData();
+      }
+
+      function openTrophyRoom() {
+        const modal = document.getElementById("global-modal");
+        const title = document.getElementById("modal-title");
+        const body = document.getElementById("modal-body");
+
+        modal.classList.remove("hidden");
+        title.innerHTML =
+          '<i class="fa-solid fa-trophy text-amber-500"></i> Huy hiệu';
+
+        if (!state.badges || state.badges.length === 0) {
+          body.innerHTML = `
+      <div class="text-center py-10 opacity-70">
+        <div class="text-6xl mb-4">👻</div>
+        <p class="font-medium custom-text-secondary">Trống trơn! Hãy hoàn thành mục tiêu trước hạn để săn huy hiệu nhé.</p>
+      </div>`;
+          return;
+        }
+
+        const badgesHtml = state.badges
+          .map(
+            (b) => `
+    <div class="flex items-center gap-4 p-4 rounded-2xl custom-bg-card border custom-border shadow-sm mb-3">
+        <div class="w-14 h-14 shrink-0 rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(245,158,11,0.5)] border-2 border-white dark:border-gray-800">
+            🦅
+        </div>
+        <div custom-bg-card>
+            <h4 class="font-black text-orange-500 text-sm mb-0.5">Kẻ Hủy Diệt Mục Tiêu</h4>
+            <p class="text-xs font-bold custom-text dark:text-gray-100">${b.name}</p>
+            <p class="text-[10px] custom-text-secondary mt-1 font-medium custom-bg-card dark:bg-gray-700 inline-block px-2 py-0.5 rounded">Về đích sớm ${b.daysEarly} ngày • ${formatDateTime(b.dateEarned)}</p>
+        </div>
+    </div>
+  `,
+          )
+          .join("");
+
+        body.innerHTML = `<div class="space-y-2 pb-6">${badgesHtml}</div>`;
       }
     </script>
     <dialog
