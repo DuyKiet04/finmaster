@@ -15,7 +15,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>💳 FinMaster Pro</title>
+    <title>FinMaster</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -2949,8 +2949,8 @@
         const search = document
           .getElementById("filter-search")
           .value.toLowerCase();
-        // THAY BẰNG ĐOẠN NÀY
-        const selectedDate = document.getElementById("global-date").value; // Giá trị lúc này là YYYY-MM-DD
+
+        const selectedDate = document.getElementById("global-date").value; // Định dạng YYYY-MM-DD
         const today = new Date().toISOString().split("T")[0];
         const yesterday = new Date(Date.now() - 86400000)
           .toISOString()
@@ -2963,21 +2963,32 @@
             state.categories
               .find((c) => c.id === t.category)
               ?.name.toLowerCase() || "";
+
           const matchS =
             (t.note || "").toLowerCase().includes(search) ||
             catName.includes(search);
 
-          // Lọc theo ngày được chọn ở Header
-          const matchSelectedDate = selectedDate
-            ? t.date.startsWith(selectedDate)
-            : true;
-
+          // XỬ LÝ LÔ-GÍC LỌC NGÀY THÔNG MINH, TRÁNH XUNG ĐỘT:
           let matchDate = true;
-          if (dateFilter === "today") matchDate = t.date.startsWith(today);
-          else if (dateFilter === "yesterday")
-            matchDate = t.date.startsWith(yesterday);
 
-          return matchS && matchSelectedDate && matchDate;
+          if (dateFilter === "today") {
+            // Bấm chọn lọc "Hôm nay" ở dropdown
+            matchDate = t.date.startsWith(today);
+          } else if (dateFilter === "yesterday") {
+            // Bấm chọn lọc "Hôm qua" ở dropdown
+            matchDate = t.date.startsWith(yesterday);
+          } else if (dateFilter === "all") {
+            // Nếu bộ lọc dropdown là "Tất cả"
+            if (selectedDate && selectedDate !== today) {
+              // Nếu ông chủ động chọn một ngày cụ thể khác trên Header -> Lọc chuẩn theo ngày đó
+              matchDate = t.date.startsWith(selectedDate);
+            } else {
+              // Nếu ô ngày vẫn là mặc định (Hôm nay) -> Hiện TOÀN BỘ lịch sử để không bị trống trải khi qua ngày mới
+              matchDate = true;
+            }
+          }
+
+          return matchS && matchDate;
         });
 
         const inc = filteredTx
@@ -3007,32 +3018,29 @@
                 color: "bg-gray-100 text-gray-600",
               };
               return `
-  <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
-    <div class="absolute inset-y-0 right-0 flex items-center z-0">
-      <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
-      <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
-    </div>
-    
-    <div class="relative  custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
-      
-      
+          <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
+            <div class="absolute inset-y-0 right-0 flex items-center z-0">
+              <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            
+            <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
+                ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+              </div>
 
-<div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
-    ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer " onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
-</div>
-
-      <div class="flex-1 min-w-0">
-        <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
-        <p class="text-[11px] custom-text-secondary font-medium">${formatDateTime(tx.date)}</p>
-      </div>
-      <div class="text-right">
-        <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">
-          ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
-        </p>
-      </div>
-    </div>
-  </div>
-`;
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
+                <p class="text-[11px] custom-text-secondary font-medium">${formatDateTime(tx.date)}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">
+                  ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
             })
             .join("");
           if (typeof initSwipeActions === "function") initSwipeActions();
