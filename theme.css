@@ -226,6 +226,188 @@
   --icon-active: #f472b6;
 }
 
+
+/* "theme-spring",
+          "theme-neon",
+          "theme-ocean",
+          "theme-sunset",
+          "theme-lavender",
+          "theme-rosegold",
+          "theme-emerald", */
+/* ================= SPRING (Mùa Xuân Pastel Rất Nhẹ) ================= */
+.theme-spring {
+  --primary-hue: 85;
+  --bg-body: #f9fff0;
+  --bg-card: #fffff7;
+  --bg-header: #f4ffe6;
+  --bg-navbar: #fdfff0;
+  --bg-modal: #fffff7;
+  --bg-input: #fcffe8;
+
+  --bg-primary-soft: #ecfccb;
+  --bg-primary: #84cc16;
+
+  --gradient-primary: linear-gradient(135deg, #bef575 0%, #84cc16 50%, #4d7c0f 100%);
+  --gradient-soft: linear-gradient(135deg, #ecfccb 0%, #fefce8 100%);
+
+  --border-color: #bef575;
+  --text-primary: #365314;
+  --text-secondary: #4d7c0f;
+  --text-placeholder: #a3e635;
+
+  --icon-color: #84cc16;
+  --icon-active: #65a30d;
+}
+
+/* ================= NEON (Cyber Neon Siêu Rực) ================= */
+.theme-neon {
+  --primary-hue: 300;
+  --bg-body: #0d0208;
+  --bg-card: #1a0520;
+  --bg-header: #14031a;
+  --bg-navbar: #0a010f;
+  --bg-modal: #1a0520;
+  --bg-input: #2a0a35;
+
+  --bg-primary-soft: #3b0764;
+  --bg-primary: #e100ff;
+
+  --gradient-primary: linear-gradient(135deg, #00f5ff 0%, #e100ff 45%, #ff00aa 100%);
+  --gradient-soft: linear-gradient(135deg, #3b0764 0%, #0d0208 100%);
+
+  --border-color: #00f5ff;
+  --text-primary: #f0abfc;
+  --text-secondary: #67e8f9;
+  --text-placeholder: #ff00aa;
+
+  --icon-color: #00f5ff;
+  --icon-active: #ff00aa;
+}
+
+/* ================= GALAXY (Không Gian Sâu) ================= */
+.theme-ocean {
+  --primary-hue: 250;
+  --bg-body: #0b011f;
+  --bg-card: #1c0f3d;
+  --bg-header: #150a32;
+  --bg-navbar: #0a011a;
+  --bg-modal: #1c0f3d;
+  --bg-input: #2a1a4f;
+
+  --bg-primary-soft: #4c1d95;
+  --bg-primary: #7c3aed;
+
+  --gradient-primary: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #4f46e5 100%);
+  --gradient-soft: linear-gradient(135deg, #2e1065 0%, #0b011f 100%);
+
+  --border-color: #c4b5fd;
+  --text-primary: #e0d2fe;
+  --text-secondary: #c4b5fd;
+  --text-placeholder: #a78bfa;
+
+  --icon-color: #c4b5fd;
+  --icon-active: #a855f7;
+}
+
+/* ================= FIRE (Lửa Nóng) ================= */
+.theme-sunset {
+  --primary-hue: 18;
+  --bg-body: #2c0f00;
+  --bg-card: #441a05;
+  --bg-header: #3a1503;
+  --bg-navbar: #1f0a00;
+  --bg-modal: #441a05;
+  --bg-input: #55240a;
+
+  --bg-primary-soft: #fed7aa;
+  --bg-primary: #f97316;
+
+  --gradient-primary: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #c2410c 100%);
+  --gradient-soft: linear-gradient(135deg, #fed7aa 0%, #2c0f00 100%);
+
+  --border-color: #fb923c;
+  --text-primary: #ffedd5;
+  --text-secondary: #fed7aa;
+  --text-placeholder: #fb923c;
+
+  --icon-color: #fb923c;
+  --icon-active: #f59e0b;
+}
+
+/* ================= ICE (Băng Lạnh) ================= */
+.theme-lavender {
+  --primary-hue: 195;
+  --bg-body: #f0f9ff;
+  --bg-card: #e0f2fe;
+  --bg-header: #e6f4ff;
+  --bg-navbar: #f0f9ff;
+  --bg-modal: #e0f2fe;
+  --bg-input: #dbeafe;
+
+  --bg-primary-soft: #bae6fd;
+  --bg-primary: #0284c8;
+
+  --gradient-primary: linear-gradient(135deg, #67e8f9 0%, #0284c8 50%, #0c4a6e 100%);
+  --gradient-soft: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+
+  --border-color: #67e8f9;
+  --text-primary: #0c4a6e;
+  --text-secondary: #0369a1;
+  --text-placeholder: #22d3ee;
+
+  --icon-color: #67e8f9;
+  --icon-active: #0284c8;
+}
+
+/* ================= CANDY (Kẹo Ngọt Pop) ================= */
+.theme-rosegold {
+  --primary-hue: 315;
+  --bg-body: #fff0f7;
+  --bg-card: #fff5fa;
+  --bg-header: #ffe4f0;
+  --bg-navbar: #fff0f7;
+  --bg-modal: #fff5fa;
+  --bg-input: #ffe4f0;
+
+  --bg-primary-soft: #fce7f3;
+  --bg-primary: #ec4899;
+
+  --gradient-primary: linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #db2777 100%);
+  --gradient-soft: linear-gradient(135deg, #fce7f3 0%, #fff0f7 100%);
+
+  --border-color: #f9a8d4;
+  --text-primary: #831843;
+  --text-secondary: #be185d;
+  --text-placeholder: #f472b6;
+
+  --icon-color: #f472b6;
+  --icon-active: #db2777;
+}
+
+.theme-emerald {
+  --primary-hue: 38;
+  --bg-body: #f5f0e6;
+  --bg-card: #ede4d4;
+  --bg-header: #f2e9db;
+  --bg-navbar: #f5f0e6;
+  --bg-modal: #ede4d4;
+  --bg-input: #e6d9c2;
+
+  --bg-primary-soft: #fef3c7;
+  --bg-primary: #b45309;
+
+  --gradient-primary: linear-gradient(135deg, #fbbf24 0%, #d97706 60%, #92400e 100%);
+  --gradient-soft: linear-gradient(135deg, #fef3c7 0%, #f5f0e6 100%);
+
+  --border-color: #fcd34d;
+  --text-primary: #451a03;
+  --text-secondary: #78350f;
+  --text-placeholder: #fbbf24;
+
+  --icon-color: #d97706;
+  --icon-active: #b45309;
+}
+
 /* ===========================================================
    Helpers (DO NOT CHANGE CLASS NAMES)
 =========================================================== */

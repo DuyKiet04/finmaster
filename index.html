@@ -682,10 +682,7 @@
           <div
             class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm overflow-hidden border custom-border dark:border-gray-800"
           >
-            <div
-              id="tx-list-container"
-              class="divide-y divide-gray-50 dark:divide-gray-800/50 custom-border"
-            ></div>
+            <div id="tx-list-container" class="border custom-border"></div>
             <div
               id="tx-empty"
               class="hidden p-12 text-center custom-text-secondary"
@@ -1065,7 +1062,7 @@
                 <i class="fa-solid fa-chevron-right custom-icon"></i>
               </button>
 
-              <button
+              <!-- <button
                 onclick="toggleDarkMode()"
                 class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
               >
@@ -1080,7 +1077,7 @@
                   >
                 </div>
                 <i class="fa-solid fa-circle-half-stroke custom-icon"></i>
-              </button>
+              </button> -->
               <button
                 onclick="openChangePassword()"
                 class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
@@ -1117,40 +1114,166 @@
               <div
                 class="p-6 border-t custom-border dark:border-gray-800 col-span-full"
               >
-                <h4 class="font-bold text-lg mb-4 custom-text">
-                  Chủ đề giao diện
+                <h4 class="font-bold text-lg mb-5 custom-text">
+                  🎨 Chủ đề giao diện
                 </h4>
-                <div class="flex gap-4">
+
+                <div
+                  class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-4 place-items-center"
+                >
+                  <!-- Default -->
                   <button
                     onclick="changeThemeColor('default', '240')"
-                    class="w-10 h-10 rounded-full bg-indigo-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-indigo-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-indigo-500/50 shrink-0"
+                    title="Default"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Red -->
                   <button
                     onclick="changeThemeColor('theme-red', '0')"
-                    class="w-10 h-10 rounded-full bg-red-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-red-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-red-500/50 shrink-0"
+                    title="Red"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Green -->
                   <button
                     onclick="changeThemeColor('theme-green', '160')"
-                    class="w-10 h-10 rounded-full bg-emerald-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-emerald-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-emerald-500/50 shrink-0"
+                    title="Green"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Orange -->
                   <button
                     onclick="changeThemeColor('theme-orange', '40')"
-                    class="w-10 h-10 rounded-full bg-amber-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-500/50 shrink-0"
+                    title="Orange"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Purple -->
                   <button
                     onclick="changeThemeColor('theme-purple', '271')"
-                    class="w-10 h-10 rounded-full bg-purple-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-purple-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-purple-500/50 shrink-0"
+                    title="Purple"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
 
+                  <!-- Cyan -->
                   <button
                     onclick="changeThemeColor('theme-cyan', '188')"
-                    class="w-10 h-10 rounded-full bg-cyan-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-cyan-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-cyan-500/50 shrink-0"
+                    title="Cyan"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
 
+                  <!-- Pink -->
                   <button
                     onclick="changeThemeColor('theme-pink', '326')"
-                    class="w-10 h-10 rounded-full bg-pink-500 custom-shadow-sm border-2 border-white dark:border-gray-800"
-                  ></button>
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50 shrink-0"
+                    title="Pink"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Spring -->
+                  <button
+                    onclick="changeThemeColor('theme-spring', '85')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-lime-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-lime-500/50 shrink-0"
+                    title="Spring"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Neon -->
+                  <button
+                    onclick="changeThemeColor('theme-neon', '300')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-fuchsia-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-fuchsia-500/50 shrink-0"
+                    title="Neon"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Ocean -->
+                  <button
+                    onclick="changeThemeColor('theme-ocean', '250')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-violet-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-violet-600/50 shrink-0"
+                    title="Ocean"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Sunset -->
+                  <button
+                    onclick="changeThemeColor('theme-sunset', '18')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-orange-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-orange-600/50 shrink-0"
+                    title="Sunset"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Lavender -->
+                  <button
+                    onclick="changeThemeColor('theme-lavender', '195')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-sky-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-sky-600/50 shrink-0"
+                    title="Lavender"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Rose Gold -->
+                  <button
+                    onclick="changeThemeColor('theme-rosegold', '315')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50 shrink-0"
+                    title="Rose Gold"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
+
+                  <!-- Emerald -->
+                  <button
+                    onclick="changeThemeColor('theme-emerald', '38')"
+                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50 shrink-0"
+                    title="Emerald"
+                  >
+                    <span
+                      class="absolute inset-2 rounded-full border border-white/40"
+                    ></span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1784,14 +1907,20 @@
       }
 
       function applyTheme() {
+        const themeIcon = document.getElementById("theme-icon");
+
         if (state.darkMode) {
           document.documentElement.classList.add("dark");
-          document.getElementById("theme-icon").className =
-            "fa-solid fa-sun text-yellow-400 text-lg";
+          // Kiểm tra xem có icon không rồi mới đổi
+          if (themeIcon) {
+            themeIcon.className = "fa-solid fa-sun text-yellow-400 text-lg";
+          }
         } else {
           document.documentElement.classList.remove("dark");
-          document.getElementById("theme-icon").className =
-            "fa-solid fa-moon text-lg text-gray-500";
+          // Kiểm tra xem có icon không rồi mới đổi
+          if (themeIcon) {
+            themeIcon.className = "fa-solid fa-moon text-lg text-gray-500";
+          }
         }
 
         if (state.primaryHue) {
@@ -1800,6 +1929,7 @@
             state.primaryHue,
           );
         }
+
         document.body.classList.remove(
           "theme-red",
           "theme-green",
@@ -1807,10 +1937,19 @@
           "theme-pink",
           "theme-cyan",
           "theme-purple",
+          "theme-spring",
+          "theme-neon",
+          "theme-ocean",
+          "theme-sunset",
+          "theme-lavender",
+          "theme-rosegold",
+          "theme-emerald",
         );
+
         if (state.currentTheme && state.currentTheme !== "default") {
           document.body.classList.add(state.currentTheme);
         }
+
         if (typeof updateMapBaseLayer === "function") updateMapBaseLayer();
       }
 
@@ -3018,13 +3157,13 @@
                 color: "bg-gray-100 text-gray-600",
               };
               return `
-          <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
+          <div class="relative overflow-hidden swipe-item">
             <div class="absolute inset-y-0 right-0 flex items-center z-0">
               <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
               <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
             </div>
             
-            <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
+            <div class="relative custom-bg-card dark:bg-gray-800  p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
               <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
                 ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
               </div>
@@ -4680,6 +4819,13 @@
           "theme-pink",
           "theme-cyan",
           "theme-purple",
+          "theme-spring",
+          "theme-neon",
+          "theme-ocean",
+          "theme-sunset",
+          "theme-lavender",
+          "theme-rosegold",
+          "theme-emerald",
         );
         if (themeClass !== "default") {
           document.body.classList.add(themeClass);
