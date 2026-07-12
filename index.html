@@ -1062,22 +1062,6 @@
                 <i class="fa-solid fa-chevron-right custom-icon"></i>
               </button>
 
-              <!-- <button
-                onclick="toggleDarkMode()"
-                class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
-              >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 flex items-center justify-center text-lg custom-shadow-sm"
-                  >
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                  </div>
-                  <span class="font-bold custom-text dark:text-gray-200"
-                    >Giao diện Tối/Sáng</span
-                  >
-                </div>
-                <i class="fa-solid fa-circle-half-stroke custom-icon"></i>
-              </button> -->
               <button
                 onclick="openChangePassword()"
                 class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
@@ -1111,6 +1095,49 @@
                 <i class="fa-solid fa-chevron-right custom-icon"></i>
               </button>
 
+              <!-- Nút cài đặt Hình nền -->
+              <div
+                class="mt-6 border-t custom-border dark:border-gray-700 pt-6"
+              >
+                <h4
+                  class="font-bold text-lg mb-4 custom-text flex items-center justify-between"
+                >
+                  🖼️ Hình nền ứng dụng
+                  <button
+                    id="btn-remove-bg"
+                    onclick="removeBackgroundImage()"
+                    class="hidden text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded-lg active:scale-95 transition-transform font-medium"
+                  >
+                    <i class="fa-solid fa-trash"></i> Xóa nền
+                  </button>
+                </h4>
+                <button
+                  onclick="document.getElementById('bg-image-input').click()"
+                  class="flex items-center gap-4 p-4 w-full rounded-2xl custom-bg-input dark:bg-gray-700/50 border custom-border dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 transition-all"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-md"
+                  >
+                    <i class="fa-solid fa-image text-lg"></i>
+                  </div>
+                  <div class="text-left flex-1">
+                    <p class="font-bold custom-text dark:text-gray-200">
+                      Đổi ảnh nền
+                    </p>
+                    <p class="text-xs custom-text-secondary dark:text-gray-400">
+                      Chọn ảnh từ thiết bị
+                    </p>
+                  </div>
+                  <i class="fa-solid fa-chevron-right custom-icon"></i>
+                </button>
+                <input
+                  type="file"
+                  id="bg-image-input"
+                  accept="image/*"
+                  class="hidden"
+                  onchange="updateBackgroundImage(event)"
+                />
+              </div>
               <div
                 class="p-6 border-t custom-border dark:border-gray-800 col-span-full"
               >
@@ -1859,6 +1886,7 @@
           checkAllNotifications();
 
         initScrollHideUI();
+        applyBackgroundImage();
       }
 
       function saveData() {
@@ -1902,6 +1930,7 @@
       function toggleDarkMode() {
         state.darkMode = !state.darkMode;
         applyTheme();
+        applyBackgroundImage();
         saveData();
         if (state.currentView === "dashboard") renderDashboard();
       }
@@ -5055,6 +5084,76 @@
           .join("");
 
         body.innerHTML = `<div class="space-y-2 pb-6">${badgesHtml}</div>`;
+      }
+
+      // 1. Hàm nhận file ảnh và lưu vào State
+      async function updateBackgroundImage(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+          playSound("pop");
+          // Tận dụng luôn hàm nén ảnh ông viết sẵn để app không bị phình to
+          const compressedBg = await compressImage(file);
+
+          // Tạo object userProfile nếu chưa có
+          if (!state.userProfile) state.userProfile = {};
+          state.userProfile.bgImage = compressedBg;
+
+          saveData();
+          applyBackgroundImage();
+          playSound("success");
+        } catch (err) {
+          alert("Lỗi khi xử lý ảnh nền!");
+        }
+      }
+
+      // 2. Hàm xóa ảnh nền
+      function removeBackgroundImage() {
+        if (
+          confirm(
+            "Ông có chắc muốn xóa hình nền hiện tại về giao diện mặc định không?",
+          )
+        ) {
+          if (state.userProfile) state.userProfile.bgImage = null;
+          saveData();
+          applyBackgroundImage();
+          playSound("trash");
+        }
+      }
+
+      // 3. Hàm áp dụng ảnh làm nền (Render)
+      function applyBackgroundImage() {
+        // Tìm hoặc tạo một div chuyên làm hình nền nằm dưới cùng
+        let bgDiv = document.getElementById("app-custom-bg");
+        if (!bgDiv) {
+          bgDiv = document.createElement("div");
+          bgDiv.id = "app-custom-bg";
+          // Z-index âm để chìm xuống dưới, cover toàn màn hình
+          bgDiv.className =
+            "fixed inset-0 z-[-1] pointer-events-none transition-all duration-500 bg-cover bg-center bg-no-repeat";
+          document.body.prepend(bgDiv);
+        }
+
+        const rmvBtn = document.getElementById("btn-remove-bg");
+
+        if (state.userProfile && state.userProfile.bgImage) {
+          bgDiv.style.backgroundImage = `url(${state.userProfile.bgImage})`;
+          bgDiv.style.opacity = "1";
+
+          // Tự động làm tối ảnh mờ đi một chút để ông vẫn đọc được chữ trên các Panel
+          bgDiv.style.filter = state.darkMode
+            ? "brightness(0.3) blur(2px)"
+            : "brightness(0.7) blur(2px)";
+
+          if (rmvBtn) rmvBtn.classList.remove("hidden");
+        } else {
+          // Nếu không có ảnh thì ẩn cái div này đi
+          bgDiv.style.backgroundImage = "none";
+          bgDiv.style.opacity = "0";
+
+          if (rmvBtn) rmvBtn.classList.add("hidden");
+        }
       }
     </script>
     <dialog
