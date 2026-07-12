@@ -503,9 +503,8 @@
               class="lg:col-span-2 custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800"
             >
               <div class="flex justify-between items-center mb-4">
-                <div class="flex items-center justify-around w-full">
-                  <!-- Lọc ngày mới: Vuông vức, ngang hàng với icon chart -->
-                  <div
+                <div class="flex items-center justify-center w-full">
+                  <!-- <div
                     class="relative custom-bg-input dark:bg-gray-700 p-1 rounded-xl border custom-border items-center"
                   >
                     <input
@@ -514,15 +513,33 @@
                       onchange="updateAllViews()"
                       class="bg-transparent text-xs font-bold custom-text-secondary outline-none w-[105px] h-full"
                     />
-                  </div>
+                  </div> -->
                   <!-- Các nút chart cũ của ông -->
+
+                  <!-- <div class="flex custom-bg-input dark:bg-gray-700 p-1 rounded-xl custom-border border">
+                    <button onclick="setChartType('doughnut')" id="btn-chart-doughnut" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-pie"></i></button>
+                    <button onclick="setChartType('bar')" id="btn-chart-bar" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-simple"></i></button>
+                    <button onclick="setChartType('line')" id="btn-chart-line" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-line"></i></button>
+                    <button onclick="setChartType('line')" id="btn-chart-line" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-line"></i></button>
+                    <button onclick="setChartType('line')" id="btn-chart-line" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-line"></i></button>
+                    <button onclick="setChartType('line')" id="btn-chart-line" class="p-1.5 rounded-lg custom-text-secondary transition-colors"><i class="fa-solid fa-chart-line"></i></button>
+                  </div> -->
                   <div
-                    class="custom-bg-input dark:bg-gray-700 p-1 rounded-xl custom-border border"
+                    class="flex custom-bg-input dark:bg-gray-700 p-1 rounded-xl gap-3 custom-border border"
                   >
                     <button
                       onclick="setChartType('doughnut')"
                       id="btn-chart-doughnut"
                       class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Doughnut"
+                    >
+                      <i class="fa-solid fa-circle-notch"></i>
+                    </button>
+                    <button
+                      onclick="setChartType('pie')"
+                      id="btn-chart-pie"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Pie"
                     >
                       <i class="fa-solid fa-chart-pie"></i>
                     </button>
@@ -530,6 +547,7 @@
                       onclick="setChartType('bar')"
                       id="btn-chart-bar"
                       class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Bar"
                     >
                       <i class="fa-solid fa-chart-simple"></i>
                     </button>
@@ -537,8 +555,25 @@
                       onclick="setChartType('line')"
                       id="btn-chart-line"
                       class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Line"
                     >
                       <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                    <button
+                      onclick="setChartType('polarArea')"
+                      id="btn-chart-polarArea"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Polar Area"
+                    >
+                      <i class="fa-solid fa-bullseye"></i>
+                    </button>
+                    <button
+                      onclick="setChartType('radar')"
+                      id="btn-chart-radar"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                      title="Radar"
+                    >
+                      <i class="fa-solid fa-draw-polygon"></i>
                     </button>
                   </div>
                 </div>
@@ -663,8 +698,6 @@
                   <div
                     class="flex items-center gap-2 custom-bg-input border custom-border rounded-xl px-3 py-2"
                   >
-                    <i class="fa-regular fa-calendar-days text-gray-400"></i>
-
                     <input
                       type="date"
                       id="tx-date-picker"
@@ -2651,12 +2684,22 @@
       }
 
       function renderDashboard() {
-        const { m: cm, y: cy } = getSelectedMonth();
         const filterTime = state.dashFilter.time;
-        const now = new Date();
+
+        // 1. Lấy mốc thời gian chuẩn từ ô Date Picker mới trên Dashboard
+        const dashDatePicker = document.getElementById("dash-date-picker");
+        const selectedDateStr =
+          dashDatePicker && dashDatePicker.value
+            ? dashDatePicker.value
+            : getToday().split("T")[0];
+
+        const refDate = new Date(selectedDateStr);
+        const cm = refDate.getMonth();
+        const cy = refDate.getFullYear();
 
         let filteredTx = [];
 
+        // 2. Lọc dữ liệu bám sát 100% vào ngày ông chọn trên lịch
         if (filterTime === "month") {
           filteredTx = state.transactions.filter(
             (t) =>
@@ -2668,17 +2711,20 @@
             (t) => new Date(t.date).getFullYear() === cy,
           );
         } else if (filterTime === "day") {
-          const todayStr =
-            document.getElementById("global-date").value ||
-            getToday().split("T")[0];
           filteredTx = state.transactions.filter((t) =>
-            t.date.startsWith(todayStr),
+            t.date.startsWith(selectedDateStr),
           );
         } else if (filterTime === "week") {
-          const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          // Tính 7 ngày lùi lại tính từ ngày ông đang chọn
+          const lastWeek = new Date(
+            refDate.getTime() - 7 * 24 * 60 * 60 * 1000,
+          );
+          refDate.setHours(23, 59, 59, 999);
+          lastWeek.setHours(0, 0, 0, 0);
+
           filteredTx = state.transactions.filter((t) => {
             let dt = new Date(t.date);
-            return dt >= lastWeek && dt <= now;
+            return dt >= lastWeek && dt <= refDate;
           });
         }
 
@@ -2690,14 +2736,16 @@
                 ? "px-4 py-1.5 rounded-lg text-sm font-bold transition-colors custom-bg-card dark:bg-gray-600 custom-shadow-sm text-primary-600 dark:text-primary-400"
                 : "px-4 py-1.5 rounded-lg text-sm font-bold custom-text-secondary hover:text-gray-800 dark:hover:text-gray-300 transition-colors";
         });
-        ["doughnut", "bar", "line"].forEach((c) => {
-          const el = document.getElementById("btn-chart-" + c);
-          if (el)
-            el.className =
-              c === state.dashFilter.chart
-                ? "p-1.5 rounded-lg transition-colors custom-bg-card dark:bg-gray-600 custom-shadow-sm text-primary-600 dark:text-primary-400"
-                : "p-1.5 rounded-lg custom-text-secondary hover:text-gray-800 dark:hover:text-gray-300 transition-colors";
-        });
+        ["doughnut", "pie", "bar", "line", "polarArea", "radar"].forEach(
+          (c) => {
+            const el = document.getElementById("btn-chart-" + c);
+            if (el)
+              el.className =
+                c === state.dashFilter.chart
+                  ? "p-1.5 rounded-lg transition-colors custom-bg-card dark:bg-gray-600 custom-shadow-sm text-primary-600 dark:text-primary-400 shrink-0"
+                  : "p-1.5 rounded-lg custom-text-secondary hover:text-gray-800 dark:hover:text-gray-300 transition-colors shrink-0";
+          },
+        );
 
         const inc = filteredTx
           .filter((t) => t.type === "income" && t.category !== "transfer")
@@ -2825,6 +2873,9 @@
             "#84cc16",
           ];
 
+          // Radar và Line có chung đặc điểm là dùng dạng "đường/mạng nhện"
+          const isLineType = chartType === "line" || chartType === "radar";
+
           let config = {
             type: chartType,
             data: {
@@ -2833,13 +2884,19 @@
                 {
                   label: "Chi tiêu",
                   data,
-                  // 3. SET MÀU CHO BIỂU ĐỒ THEO THEME
-                  backgroundColor:
-                    chartType === "line" ? themePrimarySoft : bgColors,
+                  // Đổi nền: Line/Radar dùng màu nhạt, còn lại dùng bảng nhiều màu
+                  backgroundColor: isLineType ? themePrimarySoft : bgColors,
+                  // Đổi viền: Phù hợp cho Line, Radar và PolarArea
                   borderColor:
-                    chartType === "line" ? themePrimary : "transparent",
-                  borderWidth: chartType === "line" ? 3 : 0,
-                  fill: chartType === "line",
+                    isLineType || chartType === "polarArea"
+                      ? themePrimary
+                      : "transparent",
+                  borderWidth: isLineType
+                    ? 3
+                    : chartType === "polarArea"
+                      ? 1
+                      : 0,
+                  fill: isLineType,
                   tension: 0.4,
                   borderRadius: chartType === "bar" ? 6 : 0,
                 },
@@ -2866,19 +2923,24 @@
                     if (!cat || !cat.icon) return;
 
                     let x, y;
-                    if (chart.config.type === "doughnut") {
-                      // element.circumference là độ rộng của miếng bánh (tính bằng radian)
-                      // Giới hạn ẩn icon nếu miếng bánh nhỏ hơn ~4.5% (tương đương 0.28 radian)
-                      if (element.circumference < 0.28) return;
+                    // Phân loại cách định vị icon cho Biểu đồ tròn vs Biểu đồ góc vuông
+                    if (
+                      ["doughnut", "pie", "polarArea"].includes(
+                        chart.config.type,
+                      )
+                    ) {
+                      if (
+                        element.circumference !== undefined &&
+                        element.circumference < 0.28
+                      )
+                        return;
 
-                      const center = element.getCenterPoint();
+                      const center = element.tooltipPosition();
                       x = center.x;
                       y = center.y;
-                    } else if (chart.config.type === "bar") {
+                    } else {
                       x = element.x;
                       y = element.y - 10;
-                    } else {
-                      return;
                     }
 
                     ctx.font = "20px serif";
@@ -2891,10 +2953,10 @@
             ],
           };
 
+          // Tùy chỉnh cấu hình riêng cho từng nhóm biểu đồ
           if (chartType === "doughnut") {
             config.options.cutout = "75%";
-          } else {
-            // 4. ĐỒNG BỘ MÀU CHỮ VÀ KẺ LƯỚI CHO BIỂU ĐỒ BAR / LINE
+          } else if (chartType === "bar" || chartType === "line") {
             config.options.scales = {
               y: {
                 beginAtZero: true,
@@ -2911,7 +2973,16 @@
                 grid: { display: false },
               },
             };
+          } else if (chartType === "radar" || chartType === "polarArea") {
+            config.options.scales = {
+              r: {
+                ticks: { display: false, backdropColor: "transparent" },
+                grid: { color: themeGrid },
+                angleLines: { color: themeGrid },
+              },
+            };
           }
+
           chartInstance = new Chart(ctx, config);
         } else {
           ctx.getContext("2d").clearRect(0, 0, ctx.width, ctx.height);
@@ -3001,6 +3072,27 @@
         currentMapCategory = catId;
         renderMapCategoryPills();
         renderMapData();
+
+        // --- TÍNH NĂNG TỰ ĐỘNG FOCUS MÀN HÌNH ---
+        if (catId !== "all" && myMap) {
+          // Lọc các giao dịch có tọa độ thuộc danh mục vừa chọn
+          let filteredTx = state.transactions.filter(
+            (t) => t.lat && t.lng && t.category === catId,
+          );
+
+          if (filteredTx.length > 0) {
+            // Gom tất cả tọa độ lại để đóng khung
+            const bounds = L.latLngBounds(
+              filteredTx.map((t) => [t.lat, t.lng]),
+            );
+            // Tự động tính toán góc nhìn và bay mượt mà đến vùng chứa các marker
+            myMap.flyToBounds(bounds, {
+              padding: [50, 50],
+              maxZoom: 15,
+              duration: 0.8,
+            });
+          }
+        }
       }
 
       function updateMapBaseLayer() {
@@ -3185,9 +3277,23 @@
 
             popupContent += `</div><a href="https://www.google.com/maps/dir/?api=1&destination=${repTx.lat},${repTx.lng}" target="_blank" class="w-full flex items-center justify-center gap-2 py-2 custom-primary text-white font-semibold text-sm rounded-xl shadow-md active:scale-95 transition-all no-underline"><i class="fa-solid fa-diamond-turn-right group-hover:translate-x-0.5 transition-transform text-white"></i> <span class="text-white">Chỉ đường</span></a></div>`;
 
-            L.marker([repTx.lat, repTx.lng], { icon })
-              .addTo(mapLayerGroup)
-              .bindPopup(popupContent);
+            const marker = L.marker([repTx.lat, repTx.lng], { icon }).addTo(
+              mapLayerGroup,
+            );
+
+            marker.bindPopup(popupContent);
+
+            marker.on("click", function (e) {
+              // 2. Nếu đang nhìn từ xa (Zoom < 15)
+              if (myMap.getZoom() < 15) {
+                // Ép tắt ngay cái popup nó vừa định bung ra
+                marker.closePopup();
+                // Xong rồi bay lại gần
+                myMap.flyTo(e.latlng, 16, { duration: 0.5 });
+              }
+              // 3. Nếu đã zoom gần (>= 15), ông không cần viết lệnh gì cả.
+              // Thằng Leaflet sẽ tự động bung cái Popup đã gắn sẵn ra cực kỳ mượt!
+            });
           });
         } else if (currentMapMode === "heat") {
           const maxAmt = Math.max(...filteredTx.map((t) => t.amount), 1);
