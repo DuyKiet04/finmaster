@@ -348,8 +348,9 @@
     <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
       <header
         id="main-header"
-        class="custom-bg-header dark:bg-gray-900/80 backdrop-blur-md z-20 px-6 py-4 flex items-center justify-between absolute top-0 left-0 right-0 transition-transform duration-300"
+        class="custom-bg-header dark:bg-gray-900/80 backdrop-blur-md z-20 px-6 py-4 hidden md:flex items-center justify-between absolute top-0 left-0 right-0 transition-transform duration-300"
       >
+        <!-- Giữ nguyên nội dung bên trong header cũ của ông (chỉ ẩn trên mobile nhờ class hidden md:flex) -->
         <div>
           <h2
             id="header-title"
@@ -363,12 +364,6 @@
           ></p>
         </div>
         <div class="flex items-center gap-3">
-          <input
-            type="date"
-            id="global-date"
-            onchange="updateAllViews()"
-            class="py-2 px-3 custom-bg-input dark:bg-gray-800 border custom-border rounded-xl custom-shadow-sm custom-focus font-medium outline-none text-sm w-36 sm:w-40 custom-text"
-          />
           <div class="hidden sm:flex flex-col items-end mr-2">
             <span
               class="text-xs custom-text-secondary font-medium uppercase tracking-wider"
@@ -382,10 +377,9 @@
           </div>
           <img
             id="header-avatar"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm2Q8HDZlI4wJw4xVePqZy9ZoMdB1A71AdLjLGT8Qn1w&s=10"
+            src="https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80"
             onclick="switchView('settings')"
             class="w-10 h-10 rounded-full object-cover aspect-square border-2 border-primary-200 dark:border-gray-700 cursor-pointer custom-shadow-sm"
-            alt="Avatar"
           />
         </div>
       </header>
@@ -394,7 +388,12 @@
         id="main-scroll-area"
         class="flex-1 overflow-y-auto px-4 pb-32 md:px-8 md:pb-8 relative w-full h-full"
       >
-        <div id="header-spacer" class="h-28 w-full shrink-0"></div>
+        <!-- Spacer cho desktop (h-28), Spacer cho mobile (h-6 cho đỡ sát lề trên) -->
+        <div
+          id="header-spacer"
+          class="hidden md:block h-28 w-full shrink-0"
+        ></div>
+        <div class="md:hidden h-8 w-full shrink-0"></div>
         <div
           id="view-dashboard"
           class="view-section active space-y-6 max-w-7xl mx-auto"
@@ -504,35 +503,48 @@
               class="lg:col-span-2 custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800"
             >
               <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg custom-text">Cơ cấu chi tiêu</h3>
-                <div
-                  class="flex custom-bg-input dark:bg-gray-700 p-1 rounded-xl custom-border border"
-                >
-                  <button
-                    onclick="setChartType('doughnut')"
-                    id="btn-chart-doughnut"
-                    class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                <div class="flex items-center justify-around w-full">
+                  <!-- Lọc ngày mới: Vuông vức, ngang hàng với icon chart -->
+                  <div
+                    class="relative custom-bg-input dark:bg-gray-700 p-1 rounded-xl border custom-border items-center"
                   >
-                    <i class="fa-solid fa-chart-pie"></i>
-                  </button>
-                  <button
-                    onclick="setChartType('bar')"
-                    id="btn-chart-bar"
-                    class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                    <input
+                      type="date"
+                      id="dash-date-picker"
+                      onchange="updateAllViews()"
+                      class="bg-transparent text-xs font-bold custom-text-secondary outline-none w-[105px] h-full"
+                    />
+                  </div>
+                  <!-- Các nút chart cũ của ông -->
+                  <div
+                    class="custom-bg-input dark:bg-gray-700 p-1 rounded-xl custom-border border"
                   >
-                    <i class="fa-solid fa-chart-simple"></i>
-                  </button>
-                  <button
-                    onclick="setChartType('line')"
-                    id="btn-chart-line"
-                    class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                  >
-                    <i class="fa-solid fa-chart-line"></i>
-                  </button>
+                    <button
+                      onclick="setChartType('doughnut')"
+                      id="btn-chart-doughnut"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                    >
+                      <i class="fa-solid fa-chart-pie"></i>
+                    </button>
+                    <button
+                      onclick="setChartType('bar')"
+                      id="btn-chart-bar"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                    >
+                      <i class="fa-solid fa-chart-simple"></i>
+                    </button>
+                    <button
+                      onclick="setChartType('line')"
+                      id="btn-chart-line"
+                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
+                    >
+                      <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div
-                class="flex custom-bg-input dark:bg-gray-700 p-1 rounded-xl mb-4 w-full border custom-border"
+                class="flex items-center w-full justify-center custom-bg-input dark:bg-gray-700 p-1 rounded-xl mb-4 border custom-border"
               >
                 <button
                   onclick="setDashTime('day')"
@@ -597,16 +609,24 @@
           >
             <div class="relative flex-1 flex items-center">
               <i
-                class="fa-solid fa-magnifying-glass absolute left-4 custom-icon"
+                class="fa-solid fa-magnifying-glass absolute left-4 custom-icon z-20 pointer-events-none"
               ></i>
               <input
                 type="text"
                 id="filter-search"
-                oninput="renderTransactions()"
-                placeholder="Tìm..."
-                class="w-full pl-11 pr-12 py-3.5 custom-bg-card dark:bg-gray-800 border custom-border rounded-2xl custom-shadow-sm custom-focus font-medium outline-none custom-text"
+                oninput="handleSearchInput(this.value)"
+                onfocus="
+                  if (this.value)
+                    document
+                      .getElementById('search-autocomplete')
+                      .classList.remove('hidden');
+                "
+                placeholder="Tìm giao dịch, thu, chi..."
+                autocomplete="off"
+                class="w-full pl-11 pr-12 py-3.5 custom-bg-card dark:bg-gray-800 border custom-border rounded-2xl custom-shadow-sm custom-focus font-medium outline-none custom-text relative z-10"
               />
 
+              <!-- Nút Phễu Lọc Ngày Cũ -->
               <button
                 id="filter-btn"
                 onclick="
@@ -614,38 +634,84 @@
                     .getElementById('filter-dropdown')
                     .classList.toggle('hidden')
                 "
-                class="absolute right-3 p-2 custom-icon hover:text-primary-500"
+                class="absolute right-3 p-2 custom-icon hover:text-primary-500 z-10"
               >
                 <i class="fa-solid fa-filter"></i>
               </button>
 
+              <!-- BẢNG KẾT QUẢ GỢI Ý (GIỐNG YOUTUBE) -->
+              <div
+                id="search-autocomplete"
+                class="hidden absolute top-16 left-0 right-0 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-2xl border custom-border dark:border-gray-700 z-[60] max-h-[60vh] overflow-y-auto p-2"
+              ></div>
+
               <div
                 id="filter-dropdown"
-                class="hidden absolute right-0 top-14 w-36 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-xl border custom-border dark:border-gray-700 z-50 p-2"
+                class="hidden absolute right-0 top-14 w-52 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-xl border custom-border dark:border-gray-700 z-50 p-2"
               >
-                <button
-                  onclick="setTxFilter('all')"
-                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold custom-text"
-                >
-                  Tất cả
-                </button>
-                <button
-                  onclick="setTxFilter('today')"
-                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold custom-text"
-                >
-                  Hôm nay
-                </button>
-                <button
-                  onclick="setTxFilter('yesterday')"
-                  class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm font-bold custom-text"
-                >
-                  Hôm qua
-                </button>
+                <!-- Header -->
+
+                <!-- Date Picker -->
+                <div class="px-3 py-3">
+                  <label
+                    class="text-[10px] font-bold text-gray-400 uppercase flex items-center gap-1 mb-2"
+                  >
+                    <i class="fa-regular fa-calendar"></i>
+                    Chọn ngày
+                  </label>
+
+                  <div
+                    class="flex items-center gap-2 custom-bg-input border custom-border rounded-xl px-3 py-2"
+                  >
+                    <i class="fa-regular fa-calendar-days text-gray-400"></i>
+
+                    <input
+                      type="date"
+                      id="tx-date-picker"
+                      onchange="setTxFilter('date')"
+                      class="w-full bg-transparent text-sm font-bold custom-text outline-none"
+                    />
+                  </div>
+                </div>
+
+                <!-- Divider -->
+                <div
+                  class="border-t custom-border dark:border-gray-700 my-1"
+                ></div>
+
+                <!-- Quick Filter -->
+                <div class="space-y-1">
+                  <button
+                    onclick="setTxFilter('all')"
+                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                  >
+                    <i class="fa-solid fa-layer-group w-5 text-blue-500"></i>
+                    <span>Tất cả</span>
+                  </button>
+
+                  <button
+                    onclick="setTxFilter('today')"
+                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                  >
+                    <i class="fa-solid fa-sun w-5 text-amber-500"></i>
+                    <span>Hôm nay</span>
+                  </button>
+
+                  <button
+                    onclick="setTxFilter('yesterday')"
+                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                  >
+                    <i
+                      class="fa-solid fa-clock-rotate-left w-5 text-violet-500"
+                    ></i>
+                    <span>Hôm qua</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div id="tx-summary" class="grid grid-cols-2 gap-3 mb-1">
+          <div id="tx-summary" class="grid grid-cols-2 gap-3 mb-0.5">
             <div
               class="bg-emerald-300 dark:bg-emerald-900/20 p-3 rounded-2xl border border-emerald-100 dark:border-emerald-800 custom-shadow-sm"
             >
@@ -687,7 +753,11 @@
               id="tx-empty"
               class="hidden p-12 text-center custom-text-secondary"
             >
-              <div class="text-5xl mb-4 opacity-50">👻</div>
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/7466/7466073.png"
+                alt="Không có dữ liệu"
+                class="w-24 h-24 mx-auto mb-3 opacity-70 select-none pointer-events-none"
+              />
               <p class="font-medium">Không tìm thấy giao dịch nào.</p>
             </div>
           </div>
@@ -920,26 +990,37 @@
 
         <div
           id="view-debts"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-10"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
         >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4
-                class="font-black text-sm custom-text-secondary uppercase tracking-wider mb-3"
-              >
-                🚨 Khoản nợ chưa xử lý
-              </h4>
-              <div id="active-debts-list" class="space-y-3"></div>
-            </div>
-            <div>
-              <h4
-                class="font-black text-sm custom-text-secondary uppercase tracking-wider mb-3"
-              >
-                ✅ Nhật ký đã tất toán
-              </h4>
-              <div id="settled-debts-list" class="space-y-3 opacity-60"></div>
-            </div>
+          <!-- Thanh điều hướng Tab -->
+          <div
+            class="flex custom-bg-input dark:bg-gray-700 p-1.5 rounded-2xl mb-2 border custom-border"
+          >
+            <button
+              id="tab-debt-lend"
+              onclick="switchDebtTab('lend')"
+              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-primary custom-shadow-sm text-white"
+            >
+              Cho vay
+            </button>
+            <button
+              id="tab-debt-borrow"
+              onclick="switchDebtTab('borrow')"
+              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
+            >
+              Đi vay
+            </button>
+            <button
+              id="tab-debt-history"
+              onclick="switchDebtTab('history')"
+              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
+            >
+              Lịch sử
+            </button>
           </div>
+
+          <!-- Khu vực hiển thị danh sách nợ -->
+          <div id="debts-content-list" class="space-y-4 pb-10"></div>
         </div>
 
         <div
@@ -958,7 +1039,7 @@
               <div class="relative shrink-0">
                 <img
                   id="profile-img"
-                  src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff"
+                  src="https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80"
                   class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover aspect-square border-4 border-primary-100 dark:border-primary-900/30 custom-shadow-sm"
                 />
                 <button
@@ -1022,24 +1103,27 @@
               <i class="fa-solid fa-layer-group text-primary-500"></i> Dịch vụ
               khác
             </h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <!-- Grid nút dịch vụ + đổi nền -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
+              <!-- Random Số -->
               <button
                 onclick="openService('https://tkb04.blogspot.com/', 'Random')"
-                class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                title="Random Số"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg custom-shadow-sm"
-                  >
-                    <i class="fa-solid fa-dice"></i>
-                  </div>
-                  <span class="font-bold custom-text dark:text-gray-200"
-                    >Random Số</span
-                  >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-dice"></i>
                 </div>
-                <i class="fa-solid fa-chevron-right custom-icon"></i>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Random</span
+                >
               </button>
 
+              <!-- Tác Giả -->
               <button
                 onclick="
                   openService(
@@ -1047,261 +1131,240 @@
                     'Tác Giả',
                   )
                 "
-                class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                title="Tác Giả"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-lg custom-shadow-sm"
-                  >
-                    <i class="fa-solid fa-user"></i>
-                  </div>
-                  <span class="font-bold custom-text dark:text-gray-200"
-                    >Tác giả</span
-                  >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-user"></i>
                 </div>
-                <i class="fa-solid fa-chevron-right custom-icon"></i>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Tác giả</span
+                >
               </button>
 
+              <!-- Đổi mã PIN -->
               <button
                 onclick="openChangePassword()"
-                class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 dark:hover:bg-gray-700 transition-colors border custom-border dark:border-gray-700"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                title="Đổi mã PIN"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-lg"
-                  >
-                    <i class="fa-solid fa-key"></i>
-                  </div>
-                  <span class="font-bold custom-text dark:text-gray-200"
-                    >Đổi mã PIN</span
-                  >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-key"></i>
                 </div>
-                <i class="fa-solid fa-chevron-right custom-icon"></i>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >PIN</span
+                >
               </button>
+
+              <!-- Bật thông báo -->
               <button
                 onclick="requestNotificationPermission()"
-                class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-700/50 rounded-2xl hover:brightness-95 transition-colors border custom-border dark:border-primary-800"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                title="Bật thông báo"
               >
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg custom-shadow-sm"
-                  >
-                    <i class="fa-solid fa-bell"></i>
-                  </div>
-                  <span class="font-bold custom-text dark:text-gray-200"
-                    >Bật thông báo</span
-                  >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-bell"></i>
                 </div>
-                <i class="fa-solid fa-chevron-right custom-icon"></i>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Thông báo</span
+                >
               </button>
 
-              <!-- Nút cài đặt Hình nền -->
-              <div
-                class="mt-6 border-t custom-border dark:border-gray-700 pt-6"
+              <!-- Đổi ảnh nền -->
+              <button
+                onclick="document.getElementById('bg-image-input').click()"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700 col-span-1"
+                title="Đổi ảnh nền"
               >
-                <h4
-                  class="font-bold text-lg mb-4 custom-text flex items-center justify-between"
-                >
-                  🖼️ Hình nền ứng dụng
-                  <button
-                    id="btn-remove-bg"
-                    onclick="removeBackgroundImage()"
-                    class="hidden text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded-lg active:scale-95 transition-transform font-medium"
-                  >
-                    <i class="fa-solid fa-trash"></i> Xóa nền
-                  </button>
-                </h4>
-                <button
-                  onclick="document.getElementById('bg-image-input').click()"
-                  class="flex items-center gap-4 p-4 w-full rounded-2xl custom-bg-input dark:bg-gray-700/50 border custom-border dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 transition-all"
-                >
-                  <div
-                    class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-md"
-                  >
-                    <i class="fa-solid fa-image text-lg"></i>
-                  </div>
-                  <div class="text-left flex-1">
-                    <p class="font-bold custom-text dark:text-gray-200">
-                      Đổi ảnh nền
-                    </p>
-                    <p class="text-xs custom-text-secondary dark:text-gray-400">
-                      Chọn ảnh từ thiết bị
-                    </p>
-                  </div>
-                  <i class="fa-solid fa-chevron-right custom-icon"></i>
-                </button>
-                <input
-                  type="file"
-                  id="bg-image-input"
-                  accept="image/*"
-                  class="hidden"
-                  onchange="updateBackgroundImage(event)"
-                />
-              </div>
-              <div
-                class="p-6 border-t custom-border dark:border-gray-800 col-span-full"
-              >
-                <h4 class="font-bold text-lg mb-5 custom-text">
-                  🎨 Chủ đề giao diện
-                </h4>
-
                 <div
-                  class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-4 place-items-center"
+                  class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
                 >
-                  <!-- Default -->
-                  <button
-                    onclick="changeThemeColor('default', '240')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-indigo-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-indigo-500/50 shrink-0"
-                    title="Default"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Red -->
-                  <button
-                    onclick="changeThemeColor('theme-red', '0')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-red-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-red-500/50 shrink-0"
-                    title="Red"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Green -->
-                  <button
-                    onclick="changeThemeColor('theme-green', '160')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-emerald-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-emerald-500/50 shrink-0"
-                    title="Green"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Orange -->
-                  <button
-                    onclick="changeThemeColor('theme-orange', '40')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-500/50 shrink-0"
-                    title="Orange"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Purple -->
-                  <button
-                    onclick="changeThemeColor('theme-purple', '271')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-purple-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-purple-500/50 shrink-0"
-                    title="Purple"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Cyan -->
-                  <button
-                    onclick="changeThemeColor('theme-cyan', '188')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-cyan-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-cyan-500/50 shrink-0"
-                    title="Cyan"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Pink -->
-                  <button
-                    onclick="changeThemeColor('theme-pink', '326')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50 shrink-0"
-                    title="Pink"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Spring -->
-                  <button
-                    onclick="changeThemeColor('theme-spring', '85')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-lime-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-lime-500/50 shrink-0"
-                    title="Spring"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Neon -->
-                  <button
-                    onclick="changeThemeColor('theme-neon', '300')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-fuchsia-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-fuchsia-500/50 shrink-0"
-                    title="Neon"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Ocean -->
-                  <button
-                    onclick="changeThemeColor('theme-ocean', '250')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-violet-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-violet-600/50 shrink-0"
-                    title="Ocean"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Sunset -->
-                  <button
-                    onclick="changeThemeColor('theme-sunset', '18')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-orange-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-orange-600/50 shrink-0"
-                    title="Sunset"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Lavender -->
-                  <button
-                    onclick="changeThemeColor('theme-lavender', '195')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-sky-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-sky-600/50 shrink-0"
-                    title="Lavender"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Rose Gold -->
-                  <button
-                    onclick="changeThemeColor('theme-rosegold', '315')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50 shrink-0"
-                    title="Rose Gold"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
-
-                  <!-- Emerald -->
-                  <button
-                    onclick="changeThemeColor('theme-emerald', '38')"
-                    class="group relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50 shrink-0"
-                    title="Emerald"
-                  >
-                    <span
-                      class="absolute inset-2 rounded-full border border-white/40"
-                    ></span>
-                  </button>
+                  <i class="fa-solid fa-image"></i>
                 </div>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Hình nền</span
+                >
+              </button>
+            </div>
+
+            <input
+              type="file"
+              id="bg-image-input"
+              accept="image/*"
+              class="hidden"
+              onchange="updateBackgroundImage(event)"
+            />
+
+            <!-- Nút Xóa nền -->
+            <div class="flex justify-center mt-4">
+              <button
+                id="btn-remove-bg"
+                onclick="removeBackgroundImage()"
+                class="hidden text-xs bg-red-100 hover:bg-red-200 text-red-600 px-5 py-2 rounded-2xl active:scale-95 transition-all font-medium items-center gap-2"
+              >
+                <i class="fa-solid fa-trash"></i> Xóa nền
+              </button>
+            </div>
+
+            <!-- Chủ đề giao diện -->
+            <div class="mt-8 border-t custom-border dark:border-gray-700 pt-6">
+              <h4 class="font-bold text-lg mb-5 custom-text">
+                🎨 Chủ đề giao diện
+              </h4>
+
+              <div
+                class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-7 gap-4 place-items-center"
+              >
+                <!-- Các nút màu giữ nguyên -->
+                <button
+                  onclick="changeThemeColor('default', '240')"
+                  class="group relative w-14 h-14 rounded-full bg-indigo-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-indigo-500/50"
+                  title="Default"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-red', '0')"
+                  class="group relative w-14 h-14 rounded-full bg-red-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-red-500/50"
+                  title="Red"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-green', '160')"
+                  class="group relative w-14 h-14 rounded-full bg-emerald-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-emerald-500/50"
+                  title="Green"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-orange', '40')"
+                  class="group relative w-14 h-14 rounded-full bg-amber-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-500/50"
+                  title="Orange"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-purple', '271')"
+                  class="group relative w-14 h-14 rounded-full bg-purple-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-purple-500/50"
+                  title="Purple"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-cyan', '188')"
+                  class="group relative w-14 h-14 rounded-full bg-cyan-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-cyan-500/50"
+                  title="Cyan"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-pink', '326')"
+                  class="group relative w-14 h-14 rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50"
+                  title="Pink"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-spring', '85')"
+                  class="group relative w-14 h-14 rounded-full bg-lime-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-lime-500/50"
+                  title="Spring"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-neon', '300')"
+                  class="group relative w-14 h-14 rounded-full bg-fuchsia-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-fuchsia-500/50"
+                  title="Neon"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-ocean', '250')"
+                  class="group relative w-14 h-14 rounded-full bg-violet-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-violet-600/50"
+                  title="Ocean"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-sunset', '18')"
+                  class="group relative w-14 h-14 rounded-full bg-orange-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-orange-600/50"
+                  title="Sunset"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-lavender', '195')"
+                  class="group relative w-14 h-14 rounded-full bg-sky-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-sky-600/50"
+                  title="Lavender"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-rosegold', '315')"
+                  class="group relative w-14 h-14 rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50"
+                  title="Rose Gold"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
+
+                <button
+                  onclick="changeThemeColor('theme-emerald', '38')"
+                  class="group relative w-14 h-14 rounded-full bg-amber-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50"
+                  title="Emerald"
+                >
+                  <span
+                    class="absolute inset-2 rounded-full border border-white/40"
+                  ></span>
+                </button>
               </div>
             </div>
           </div>
@@ -1483,9 +1546,15 @@
 
       <button
         onclick="switchView('settings')"
-        class="w-14 h-14 custom-bg-navbar dark:bg-gray-800 rounded-full custom-shadow border custom-border dark:border-gray-700 flex items-center justify-center shrink-0"
+        class="w-14 h-14 custom-bg-navbar dark:bg-gray-800 rounded-full custom-shadow border custom-border dark:border-gray-700 flex items-center justify-center shrink-0 p-1"
       >
-        <i class="fa-solid fa-gear custom-icon dark:text-gray-400"></i>
+        <!-- Thay icon bánh răng bằng ảnh Avatar -->
+        <img
+          id="nav-avatar"
+          src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff"
+          class="w-full h-full rounded-full object-cover border-2 border-transparent active:border-primary-500 transition-all"
+          alt="Cài đặt"
+        />
       </button>
     </div>
 
@@ -1706,10 +1775,10 @@
       }
 
       function getSelectedMonth() {
-        const globalDate = document.getElementById("global-date");
-        if (globalDate && globalDate.value) {
-          const [year, month, day] = globalDate.value.split("-");
-          // Vẫn trả về m, y để không làm hỏng tính năng Thống kê Ngân sách (Budgets)
+        // Lấy ngày từ ô Date Picker mới của Dashboard
+        const dashDate = document.getElementById("dash-date-picker");
+        if (dashDate && dashDate.value) {
+          const [year, month, day] = dashDate.value.split("-");
           return {
             d: parseInt(day),
             m: parseInt(month) - 1,
@@ -1802,6 +1871,82 @@
         );
       }
 
+      function initGlobalSwipe() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        // Sắp xếp thứ tự các tab đúng y như trên thanh điều hướng để vuốt cho mượt
+        const SWIPE_VIEWS = [
+          "dashboard",
+          "transactions",
+          "map",
+          "budgets",
+          "debts",
+          "goals",
+          "wallets",
+          "settings",
+        ];
+
+        document.addEventListener(
+          "touchstart",
+          (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+          },
+          { passive: true },
+        );
+
+        document.addEventListener(
+          "touchend",
+          (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleGlobalSwipe(e);
+          },
+          { passive: true },
+        );
+
+        function handleGlobalSwipe(e) {
+          // 1. Chặn: Nếu đang mở Modal nhập liệu hoặc Frame dịch vụ thì không cho vuốt
+          const modal = document.getElementById("global-modal");
+          if (modal && !modal.classList.contains("hidden")) return;
+          const overlay = document.getElementById("service-overlay");
+          if (overlay && !overlay.classList.contains("translate-y-full"))
+            return;
+
+          // 2. Chặn: Nếu đang ở tab Bản đồ hoặc ngón tay đang đè lên bản đồ
+          if (state.currentView === "map" || e.target.closest("#map-container"))
+            return;
+
+          // 3. Chặn: Nếu ngón tay đang đè lên thẻ có tính năng "Vuốt để xóa" (.swipe-item)
+          if (e.target.closest(".swipe-item")) return;
+
+          // Tính toán độ dài của cú vuốt
+          const diffX = touchStartX - touchEndX;
+          const diffY = touchStartY - touchEndY;
+
+          // Điều kiện: Vuốt ngang đủ dài (> 60px) và không bị vuốt chéo lên/xuống quá nhiều (< 50px)
+          if (Math.abs(diffX) > 60 && Math.abs(diffY) < 50) {
+            const currentIndex = SWIPE_VIEWS.indexOf(state.currentView);
+            if (currentIndex === -1) return;
+
+            if (diffX > 0) {
+              // Vuốt từ Phải sang Trái (Swipe Left) => Mở tab TIẾP THEO
+              if (currentIndex < SWIPE_VIEWS.length - 1) {
+                switchView(SWIPE_VIEWS[currentIndex + 1]);
+              }
+            } else {
+              // Vuốt từ Trái sang Phải (Swipe Right) => Trở về tab TRƯỚC ĐÓ
+              if (currentIndex > 0) {
+                switchView(SWIPE_VIEWS[currentIndex - 1]);
+              }
+            }
+          }
+        }
+      }
+
       async function initApp() {
         const splash = document.getElementById("splash-screen");
 
@@ -1862,8 +2007,11 @@
           });
 
         // THAY BẰNG ĐOẠN NÀY
-        const gd = document.getElementById("global-date");
-        if (gd) gd.value = getToday().split("T")[0]; // Điền mặc định ngày hiện tại (YYYY-MM-DD)
+        const todayStr = getToday().split("T")[0];
+        const dashDate = document.getElementById("dash-date-picker");
+        const txDate = document.getElementById("tx-date-picker");
+        if (dashDate) dashDate.value = todayStr;
+        if (txDate) txDate.value = todayStr;
 
         applyTheme();
         renderNav();
@@ -1887,6 +2035,7 @@
 
         initScrollHideUI();
         applyBackgroundImage();
+        initGlobalSwipe();
       }
 
       function saveData() {
@@ -2043,15 +2192,22 @@
         const noHeaderViews = ["map", "budgets", "debts", "goals", "wallets"];
 
         if (noHeaderViews.includes(viewId)) {
-          // Ẩn Header & Spacer
+          // Ẩn hoàn toàn trên cả Desktop và Mobile
           header.classList.add("hidden");
-          header.classList.remove("flex");
-          if (spacer) spacer.classList.add("hidden");
+          header.classList.remove("md:flex", "flex");
+          if (spacer) {
+            spacer.classList.add("hidden");
+            spacer.classList.remove("md:block", "block");
+          }
         } else {
-          // Hiện lại bình thường cho các tab khác
-          header.classList.remove("hidden");
-          header.classList.add("flex");
-          if (spacer) spacer.classList.remove("hidden");
+          // Ở tab Tổng quan, Giao dịch: Hiện trên Desktop (md:flex), nhưng VẪN ẨN trên Mobile (hidden)
+          header.classList.add("hidden", "md:flex");
+          header.classList.remove("flex"); // Phải xóa chữ flex trơn đi thì mobile mới ẩn được
+
+          if (spacer) {
+            spacer.classList.add("hidden", "md:block");
+            spacer.classList.remove("block");
+          }
         }
         // -----------------------------------
 
@@ -2078,12 +2234,16 @@
           state.wallets.reduce((acc, w) => acc + w.balance, 0),
         );
         document.getElementById("header-balance").innerText = bal;
+
+        const avatarUrl =
+          state.userProfile.avatar ||
+          "https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80";
+
+        // Update cả Header (cho Desktop) và Bottom Nav (cho Mobile)
         const hAvt = document.getElementById("header-avatar");
-        if (hAvt) {
-          hAvt.src =
-            state.userProfile.avatar ||
-            "https://ui-avatars.com/api/?name=User&background=6366f1&color=fff";
-        }
+        const navAvt = document.getElementById("nav-avatar");
+        if (hAvt) hAvt.src = avatarUrl;
+        if (navAvt) navAvt.src = avatarUrl;
       }
 
       async function updateAvatar(e) {
@@ -2106,7 +2266,7 @@
         if (hAvt)
           hAvt.src =
             state.userProfile.avatar ||
-            "https://ui-avatars.com/api/?name=User&background=6366f1&color=fff";
+            "https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80";
         document.getElementById("profile-name-disp").innerText =
           state.userProfile.name;
         if (state.userProfile.avatar)
@@ -2146,7 +2306,21 @@
 
         document.getElementById("logs-container").innerHTML =
           state.logs.length === 0
-            ? '<p class="custom-text-secondary">Trống.</p>'
+            ? `
+      <div class="flex flex-col items-center justify-center py-8">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9Fcxk-9q2VakzncBpY-jdMfTAW3g6ACwNU3IFVf0khg&s=10"
+          alt="Chưa có nhật ký"
+          class="w-28 h-28 mb-3 opacity-90 select-none pointer-events-none"
+        />
+        <p class="custom-text-secondary font-medium">
+          Chưa có nhật ký hoạt động
+        </p>
+        <p class="text-xs custom-text-secondary opacity-70 mt-1">
+          Các thao tác của bạn sẽ được ghi lại tại đây.
+        </p>
+      </div>
+    `
             : state.logs
                 .map(
                   (l) =>
@@ -2203,69 +2377,147 @@
           renderSettings();
         }
       }
+      // 1. Biến lưu trạng thái tab đang chọn (Mặc định là Cho vay)
+      let currentDebtTab = "lend";
+
+      // 2. Hàm xử lý hiệu ứng khi bấm chuyển Tab
+      window.switchDebtTab = (tab) => {
+        currentDebtTab = tab;
+        const tabs = ["lend", "borrow", "history"];
+
+        tabs.forEach((t) => {
+          const el = document.getElementById(`tab-debt-${t}`);
+          if (el) {
+            if (t === tab) {
+              el.className =
+                "flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-primary custom-shadow-sm text-white";
+            } else {
+              el.className =
+                "flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95 border border-transparent";
+            }
+          }
+        });
+
+        // Gọi lại hàm render để cập nhật danh sách
+        renderDebts();
+      };
+
+      // 3. Hàm render giao diện danh sách nợ theo Tab
       function renderDebts() {
-        const activeContainer = document.getElementById("active-debts-list");
-        const settledContainer = document.getElementById("settled-debts-list");
-        if (!activeContainer || !settledContainer) return;
+        const container = document.getElementById("debts-content-list");
+        if (!container) return;
 
-        const actives = state.debts.filter((d) => d.status === "active");
-        const settleds = state.debts.filter((d) => d.status === "settled");
+        // Lọc dữ liệu dựa trên tab đang mở
+        let filteredDebts = [];
+        if (currentDebtTab === "history") {
+          filteredDebts = state.debts.filter((d) => d.status === "settled");
+        } else {
+          filteredDebts = state.debts.filter(
+            (d) => d.status === "active" && d.type === currentDebtTab,
+          );
+        }
 
-        activeContainer.innerHTML =
-          actives.length === 0
-            ? '<p class="text-sm custom-text-secondary custom-bg-card dark:bg-gray-800 p-4 rounded-2xl text-center border custom-border">Hết nợ nần, cuộc sống thảnh thơi! 😎</p>'
-            : actives
-                .map((d) => {
-                  const paid = d.paidAmount || 0;
-                  const remain = d.amount - paid;
-                  const pct = Math.min((paid / d.amount) * 100, 100).toFixed(0);
+        if (filteredDebts.length === 0) {
+          let emptyMsg = "";
+          let emptyImage = "";
 
-                  return `
-              <div class="p-4 custom-bg-card dark:bg-gray-800 border rounded-2xl custom-border dark:border-gray-700 custom-shadow-sm mb-3">
-                <div class="flex items-center justify-between mb-2">
-                  <div>
-                    <p class="font-black text-sm custom-text dark:text-white">${d.person}</p>
-                    <p class="text-[10px] font-bold mt-0.5 ${d.type === "lend" ? "text-primary-500" : "text-orange-500"}">
-                      ${d.type === "lend" ? "👉 Ông cho mượn" : "👈 Ông đi vay"}
-                    </p>
+          if (currentDebtTab === "lend") {
+            emptyMsg = "Ông chưa cho ai mượn tiền cả. Quá tốt! 😎";
+            emptyImage =
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2NXi5CtY6rEzLkWo0-rTpmd_itk2ZQ2_EgY3-53ktQ&s=10";
+          }
+
+          if (currentDebtTab === "borrow") {
+            emptyMsg = "Hết nợ nần, cuộc sống thảnh thơi! 🥳";
+            emptyImage =
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7_oYvxX9VNb_oMV5AOBIOOHYlT5yxdwLaXxiBf4QUAA&s=10";
+          }
+
+          if (currentDebtTab === "history") {
+            emptyMsg = "Chưa có lịch sử tất toán nào.";
+            emptyImage = "https://img.icons8.com/fluency/240/document.png";
+          }
+
+          container.innerHTML = `
+        <div class="custom-bg-card dark:bg-gray-800 p-8 rounded-3xl border custom-border text-center flex flex-col items-center">
+            <img
+                src="${emptyImage}"
+                alt="Empty"
+                class="w-40 h-40 object-contain mb-4"
+            >
+            <p class="text-sm custom-text-secondary">
+                ${emptyMsg}
+            </p>
+        </div>
+    `;
+          return;
+        }
+
+        // Hiển thị danh sách nếu có dữ liệu
+        container.innerHTML = filteredDebts
+          .map((d) => {
+            // GIAO DIỆN TAB LỊCH SỬ
+            if (currentDebtTab === "history") {
+              return `
+              <div class="p-4 custom-bg-input dark:bg-gray-800/40 rounded-2xl flex items-center justify-between text-sm mb-3 border custom-border opacity-70">
+                <div>
+                  <span class="font-bold custom-text dark:text-gray-300">${d.person}</span>
+                  <span class="custom-text-secondary dark:text-gray-500 ml-1 text-xs">(${d.type === "lend" ? "Đã thu hồi" : "Đã trả xong"})</span>
+                </div>
+                <span class="font-black line-through custom-text-secondary">${formatMoney(d.amount)}</span>
+              </div>
+            `;
+            }
+            // GIAO DIỆN TAB ĐANG VAY / CHO VAY
+            else {
+              const paid = d.paidAmount || 0;
+              const remain = d.amount - paid;
+              const pct = Math.min((paid / d.amount) * 100, 100).toFixed(0);
+              const isLend = d.type === "lend";
+
+              return `
+              <div class="p-5 custom-bg-card dark:bg-gray-800 border rounded-3xl custom-border dark:border-gray-700 custom-shadow-sm relative overflow-hidden group">
+                <!-- Decor góc trên bên phải -->
+                ${
+                  isLend
+                    ? '<div class="absolute top-0 right-0 w-20 h-20 bg-success-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>'
+                    : '<div class="absolute top-0 right-0 w-20 h-20 bg-danger-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>'
+                }
+                
+                <div class="flex items-center justify-between mb-5 relative z-10">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-sm border custom-border ${isLend ? "bg-success-50 text-success-600 dark:bg-success-900/30" : "bg-orange-50 text-orange-600 dark:bg-orange-900/30"}">
+                      <i class="fa-solid ${isLend ? "fa-arrow-trend-down" : "fa-arrow-trend-up"}"></i>
+                    </div>
+                    <div>
+                      <p class="font-black text-lg tracking-tight custom-text dark:text-white">${d.person}</p>
+                      <p class="text-[10px] font-bold mt-0.5 custom-text-secondary uppercase tracking-wider">
+                        ${isLend ? "Đang cho mượn" : "Đang nợ"}
+                      </p>
+                    </div>
                   </div>
                   <div class="text-right">
-                     <span class="text-sm font-black custom-text dark:text-white">${formatMoney(d.amount)}</span>
+                     <span class="text-xl font-black ${isLend ? "text-success-500" : "text-danger-500"}">${formatMoney(d.amount)}</span>
                   </div>
                 </div>
 
-                <div class="flex justify-between text-[11px] mb-1 font-medium custom-text-secondary">
-                   <span>Đã trả: <b class="${d.type === "lend" ? "text-success-500" : "text-danger-500"}">${formatMoney(paid)}</b></span>
+                <div class="flex justify-between text-xs mb-2 font-medium custom-text-secondary">
+                   <span>Đã ${isLend ? "thu" : "trả"}: <b class="custom-text">${formatMoney(paid)}</b></span>
                    <span>Còn lại: <b class="custom-text dark:text-gray-200">${formatMoney(remain)}</b></span>
                 </div>
-                <div class="h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
-                   <div class="h-full ${d.type === "lend" ? "bg-success-500" : "bg-danger-500"} transition-all" style="width: ${pct}%"></div>
+                
+                <div class="h-2 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border mb-5">
+                   <div class="h-full ${isLend ? "bg-success-500" : "bg-danger-500"} transition-all duration-700" style="width: ${pct}%"></div>
                 </div>
 
-                <button onclick="openModal('debtPayment', '${d.id}')" class="w-full py-2 custom-bg-primary-soft dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:brightness-95 dark:hover:bg-primary-900/50 text-xs font-black rounded-xl transition-colors">
-                  Thanh toán
+                <button onclick="openModal('debtPayment', '${d.id}')" class="w-full py-3.5 custom-bg-primary-soft dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:brightness-95 dark:hover:bg-primary-900/50 text-sm font-black rounded-xl transition-all active:scale-95 border custom-border border-transparent">
+                  ${isLend ? "Ghi nhận thu tiền" : "Ghi nhận trả nợ"}
                 </button>
               </div>
             `;
-                })
-                .join("");
-
-        settledContainer.innerHTML =
-          settleds.length === 0
-            ? '<p class="text-sm custom-text-secondary text-center py-2">Chưa có lịch sử tất toán.</p>'
-            : settleds
-                .map(
-                  (d) => `
-              <div class="p-3 custom-bg-input dark:bg-gray-800/40 rounded-xl flex items-center justify-between text-xs mb-2 border custom-border">
-                <div>
-                  <span class="font-bold custom-text dark:text-gray-300">${d.person}</span>
-                  <span class="custom-text-secondary dark:text-gray-500 ml-1">(${d.type === "lend" ? "Đã thu hồi" : "Đã trả xong"})</span>
-                </div>
-                <span class="font-bold line-through custom-text-secondary">${formatMoney(d.amount)}</span>
-              </div>
-            `,
-                )
-                .join("");
+            }
+          })
+          .join("");
       }
 
       function addDebt(e) {
@@ -2535,6 +2787,14 @@
         insightBox.innerHTML = insightHtml;
 
         if (chartInstance) chartInstance.destroy();
+
+        // THÊM ĐOẠN NÀY: Dọn sạch hình ảnh "Chưa có dữ liệu" trả lại khung trống
+        if (data.length > 0) {
+          document.getElementById("chart-container").innerHTML =
+            '<canvas id="expenseChart"></canvas>';
+        }
+
+        // CHÚ Ý: Dòng const ctx phải nằm SAU khi đã dọn dẹp khung HTML ở trên
         const ctx = document.getElementById("expenseChart");
 
         if (data.length > 0) {
@@ -2655,14 +2915,39 @@
           chartInstance = new Chart(ctx, config);
         } else {
           ctx.getContext("2d").clearRect(0, 0, ctx.width, ctx.height);
-          document.getElementById("chart-container").innerHTML =
-            '<canvas id="expenseChart"></canvas><div class="absolute inset-0 flex items-center justify-center custom-text-secondary font-medium">Chưa có dữ liệu</div>';
+          document.getElementById("chart-container").innerHTML = `
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAkFNgqyn0q9aBxZb7fulgHmuMH-ocLlgnjvxWPDLeyg&s=10"
+        alt="Chưa có dữ liệu"
+        class="w-44 h-44 mb-4 opacity-90 pointer-events-none"
+      />
+      <p class="custom-text-secondary font-medium">
+        Chưa có dữ liệu để hiển thị biểu đồ
+      </p>
+    </div>
+    <canvas id="expenseChart"></canvas>
+  `;
         }
 
         const recent = state.transactions.slice(0, 5);
         document.getElementById("dash-recent-tx").innerHTML =
           recent.length === 0
-            ? '<p class="custom-text-secondary text-center mt-4">Chưa có giao dịch.</p>'
+            ? `
+      <div class="flex flex-col items-center justify-center py-8">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY0nqilG83HYuHouQ4IKQrE_PbOeVZ9DIIbtQQAWx7Lw&s=10"
+          alt="Chưa có giao dịch"
+          class="w-32 h-32 mb-3 opacity-90"
+        />
+        <p class="custom-text-secondary text-center font-medium">
+          Chưa có giao dịch nào
+        </p>
+        <p class="text-xs custom-text-secondary opacity-70 mt-1">
+          Hãy thêm giao dịch đầu tiên của bạn.
+        </p>
+      </div>
+    `
             : recent
                 .map((tx) => {
                   const isInc = tx.type === "income";
@@ -3109,16 +3394,26 @@
       }
       function setTxFilter(val) {
         dateFilter = val;
+        // Nếu bấm Tất cả / Hôm nay / Hôm qua thì xóa ô chọn Ngày cho đỡ rối
+        if (val !== "date") {
+          document.getElementById("tx-date-picker").value = "";
+        }
         renderTransactions();
         document.getElementById("filter-dropdown").classList.add("hidden");
       }
 
       function renderTransactions() {
-        const search = document
+        const searchInput = document
           .getElementById("filter-search")
-          .value.toLowerCase();
+          .value.trim()
+          .toLowerCase();
 
-        const selectedDate = document.getElementById("global-date").value; // Định dạng YYYY-MM-DD
+        // Bỏ dấu để search linh hoạt hơn
+        const removeAccents = (str) =>
+          str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const searchNoAccent = removeAccents(searchInput);
+
+        const specificDate = document.getElementById("tx-date-picker").value;
         const today = new Date().toISOString().split("T")[0];
         const yesterday = new Date(Date.now() - 86400000)
           .toISOString()
@@ -3127,33 +3422,44 @@
         const filteredTx = state.transactions.filter((t) => {
           if (t.category === "transfer") return false;
 
-          const catName =
-            state.categories
-              .find((c) => c.id === t.category)
-              ?.name.toLowerCase() || "";
+          // 1. LOGIC TỪ KHÓA (Thu/Chi và Không Dấu)
+          let matchS = false;
+          if (
+            searchInput === "thu" ||
+            searchInput === "thu nhập" ||
+            searchInput === "thu chi" ||
+            searchInput === "thu tiền"
+          ) {
+            matchS = t.type === "income";
+          } else if (
+            searchInput === "chi" ||
+            searchInput === "chi tiêu" ||
+            searchInput === "chi tiền"
+          ) {
+            matchS = t.type === "expense";
+          } else if (searchInput === "") {
+            matchS = true;
+          } else {
+            const catName =
+              state.categories
+                .find((c) => c.id === t.category)
+                ?.name.toLowerCase() || "";
+            const note = (t.note || "").toLowerCase();
+            matchS =
+              note.includes(searchInput) ||
+              catName.includes(searchInput) ||
+              removeAccents(note).includes(searchNoAccent) ||
+              removeAccents(catName).includes(searchNoAccent);
+          }
 
-          const matchS =
-            (t.note || "").toLowerCase().includes(search) ||
-            catName.includes(search);
-
-          // XỬ LÝ LÔ-GÍC LỌC NGÀY THÔNG MINH, TRÁNH XUNG ĐỘT:
+          // 2. LOGIC LỌC NGÀY CHUẨN TỪ PHỄU
           let matchDate = true;
-
           if (dateFilter === "today") {
-            // Bấm chọn lọc "Hôm nay" ở dropdown
             matchDate = t.date.startsWith(today);
           } else if (dateFilter === "yesterday") {
-            // Bấm chọn lọc "Hôm qua" ở dropdown
             matchDate = t.date.startsWith(yesterday);
-          } else if (dateFilter === "all") {
-            // Nếu bộ lọc dropdown là "Tất cả"
-            if (selectedDate && selectedDate !== today) {
-              // Nếu ông chủ động chọn một ngày cụ thể khác trên Header -> Lọc chuẩn theo ngày đó
-              matchDate = t.date.startsWith(selectedDate);
-            } else {
-              // Nếu ô ngày vẫn là mặc định (Hôm nay) -> Hiện TOÀN BỘ lịch sử để không bị trống trải khi qua ngày mới
-              matchDate = true;
-            }
+          } else if (dateFilter === "date" && specificDate) {
+            matchDate = t.date.startsWith(specificDate);
           }
 
           return matchS && matchDate;
@@ -3175,6 +3481,7 @@
           document.getElementById("tx-empty").classList.remove("hidden");
         } else {
           document.getElementById("tx-empty").classList.add("hidden");
+          // ...(Giữ nguyên đoạn map(tx => ...) vẽ giao diện cũ của ông ở đây)...
           container.innerHTML = filteredTx
             .map((tx) => {
               const isInc = tx.type === "income";
@@ -3186,29 +3493,25 @@
                 color: "bg-gray-100 text-gray-600",
               };
               return `
-          <div class="relative overflow-hidden swipe-item">
-            <div class="absolute inset-y-0 right-0 flex items-center z-0">
-              <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            
-            <div class="relative custom-bg-card dark:bg-gray-800  p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
-                ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+              <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
+                <div class="absolute inset-y-0 right-0 flex items-center z-0">
+                  <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
+                    ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
+                    <p class="text-[11px] custom-text-secondary font-medium">${formatDateTime(tx.date)}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                  </div>
+                </div>
               </div>
-
-              <div class="flex-1 min-w-0">
-                <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
-                <p class="text-[11px] custom-text-secondary font-medium">${formatDateTime(tx.date)}</p>
-              </div>
-              <div class="text-right">
-                <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">
-                  ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
-                </p>
-              </div>
-            </div>
-          </div>
-        `;
+            `;
             })
             .join("");
           if (typeof initSwipeActions === "function") initSwipeActions();
@@ -3218,8 +3521,26 @@
       function renderBudgets() {
         const cont = document.getElementById("budgets-container");
         if (state.budgets.length === 0)
-          return (cont.innerHTML =
-            '<p class="col-span-full text-center custom-text-secondary mt-10">Chưa có ngân sách.</p>');
+          return (cont.innerHTML = `
+    <div class="col-span-full flex flex-col items-center justify-center py-12">
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQGuTg1YAHKm7XXpHbnqPvKRuIQROM7Sw2pdiwJbKMgg&s=10"
+        alt="Chưa có ngân sách"
+        class="w-44 h-44 object-contain opacity-90 pointer-events-none select-none"
+        draggable="false"
+      />
+
+      <h3 class="mt-5 text-xl font-bold custom-text">
+        Chưa có ngân sách nào.
+      </h3>
+
+      <p class="mt-2 text-center custom-text-secondary max-w-xs">
+        Hãy tạo ngân sách đầu tiên để theo dõi và kiểm soát chi tiêu hiệu quả.
+      </p>
+
+      
+    </div>
+  `);
         const { m: cm, y: cy } = getSelectedMonth();
         cont.innerHTML = state.budgets
           .map((b) => {
@@ -3355,37 +3676,64 @@
       }
 
       function renderWallets() {
+        // Mảng màu Gradient sang chảnh cho các thẻ ví
+        const cardGradients = [
+          "from-gray-800 to-black dark:from-gray-700 dark:to-gray-900 border-gray-600", // Đen nhám quyền lực
+          "from-blue-600 to-indigo-800 border-blue-500", // Xanh dương
+          "from-emerald-500 to-teal-700 border-emerald-400", // Xanh lá
+          "from-purple-500 to-fuchsia-700 border-purple-400", // Tím
+          "from-rose-500 to-red-700 border-rose-400", // Đỏ
+          "from-amber-500 to-orange-600 border-amber-400", // Cam
+        ];
+
         document.getElementById("wallets-container").innerHTML = state.wallets
-          .map((w) => {
-            // Ví mặc định (Tiền mặt, Tài khoản NH) thì không cho xóa
+          .map((w, index) => {
+            // Ví mặc định không được xóa
             const isDeletable = !["w1", "w2"].includes(w.id);
+            // Tự động xoay vòng màu gradient theo số lượng ví
+            const gradient = cardGradients[index % cardGradients.length];
 
             return `
-      <div class="relative overflow-hidden rounded-3xl ${isDeletable ? "swipe-item" : ""} custom-border custom-bg-card transition-all hover:custom-shadow-lg">
+      <div class="relative overflow-hidden rounded-[2rem] ${isDeletable ? "swipe-item" : ""} shadow-xl transition-transform hover:-translate-y-1 hover:shadow-2xl">
+        
         ${
           isDeletable
             ? `
-          <div class="absolute inset-y-0 right-0 flex items-center z-0">
-            <button onclick="deleteWallet('${w.id}')" class="w-20 h-full bg-danger-500 text-white flex items-center justify-center hover:bg-danger-600 transition-colors">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>`
+        <div class="absolute inset-y-0 right-0 flex items-center z-0">
+          <button onclick="deleteWallet('${w.id}')" class="w-24 h-full bg-danger-500 text-white flex flex-col items-center justify-center hover:bg-danger-600 transition-colors">
+            <i class="fa-solid fa-trash text-2xl mb-1"></i>
+            <span class="text-[10px] font-bold">Xóa Ví</span>
+          </button>
+        </div>`
             : ""
         }
 
-        <div class="relative p-6 w-full custom-bg-card h-full transition-transform duration-200 swipe-content z-10 flex flex-col justify-between dark:bg-gray-800">
+        <!-- Giao diện Thẻ (Dùng gradient và kính mờ) -->
+        <div class="relative p-6 sm:p-8 w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col justify-between bg-gradient-to-br ${gradient} text-white min-h-[200px] border-t border-l border-white/20">
           
-          <div class="flex justify-between items-start mb-6">
-            <div class="w-12 h-12 rounded-2xl custom-bg-card dark:bg-gray-700 flex items-center justify-center text-2xl shadow-inner border custom-border dark:border-gray-600">
+          <!-- Decor vòng sáng chìm (Ánh sáng hắt) -->
+          <div class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+          <div class="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+
+          <!-- Phần trên: Tên ví, Chip và Icon -->
+          <div class="flex justify-between items-start relative z-20 mb-8">
+            <div>
+              <p class="text-white/80 text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-2 drop-shadow-sm">
+                ${w.name} 
+                ${w.isShared ? '<span class="bg-white/20 px-2 py-0.5 rounded text-[9px] backdrop-blur-sm border border-white/20"><i class="fa-solid fa-users"></i> Chung</span>' : ""}
+              </p>
+              <i class="fa-solid fa-microchip text-yellow-300/80 text-3xl mt-1 drop-shadow-sm"></i>
+            </div>
+            
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30">
               ${w.icon}
             </div>
-            ${w.isShared ? `<span class="text-[10px] font-black bg-pink-100 text-pink-600 px-2 py-1 rounded-lg border border-pink-200"><i class="fa-solid fa-heart mr-1"></i> Quỹ chung</span>` : ""}
           </div>
 
-          <div>
-            <p class="custom-text-secondary dark:text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">${w.name}</p>
-            
-            <h3 class="text-2xl font-black tracking-tight custom-text dark:text-white ${w.balance < 0 ? "text-rose-500" : ""}">
+          <!-- Phần dưới: Số dư -->
+          <div class="relative z-20 mt-auto">
+            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Số dư khả dụng</p>
+            <h3 class="text-3xl sm:text-4xl font-black tracking-tight drop-shadow-md ${w.balance < 0 ? "text-red-200" : "text-white"}">
               ${formatMoney(w.balance)}
             </h3>
           </div>
@@ -4106,6 +4454,98 @@
           };
         }
       }
+
+      // Xử lý tìm kiếm gợi ý thả xuống (Autocomplete)
+      window.handleSearchInput = (val) => {
+        const query = val.trim().toLowerCase();
+        const box = document.getElementById("search-autocomplete");
+
+        // Gọi hàm render để cập nhật luôn cả danh sách chính bên dưới
+        renderTransactions();
+
+        if (!query) {
+          box.classList.add("hidden");
+          return;
+        }
+
+        // Hàm bỏ dấu tiếng Việt
+        const removeAccents = (str) =>
+          str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const queryNoAccent = removeAccents(query);
+
+        // Lấy 10 kết quả phù hợp nhất
+        const results = state.transactions
+          .filter((t) => {
+            if (t.category === "transfer") return false;
+
+            // Lọc theo từ khóa thông minh
+            if (query === "thu" || query === "thu nhập")
+              return t.type === "income";
+            if (query === "chi" || query === "chi tiêu")
+              return t.type === "expense";
+
+            const catName =
+              state.categories
+                .find((c) => c.id === t.category)
+                ?.name.toLowerCase() || "";
+            const note = (t.note || "").toLowerCase();
+
+            return (
+              note.includes(query) ||
+              catName.includes(query) ||
+              removeAccents(note).includes(queryNoAccent) ||
+              removeAccents(catName).includes(queryNoAccent)
+            );
+          })
+          .slice(0, 10);
+
+        if (results.length === 0) {
+          box.innerHTML = `<div class="text-center py-6 opacity-60"><div class="text-4xl mb-2">👻</div><p class="text-sm custom-text-secondary font-medium">Không tìm thấy "${val}"</p></div>`;
+        } else {
+          box.innerHTML = results
+            .map((tx) => {
+              const isInc = tx.type === "income";
+              const cat = state.categories.find(
+                (c) => c.id === tx.category,
+              ) || { name: "Khác", icon: "📦" };
+
+              // Xử lý ảnh giao dịch
+              const imgHtml =
+                tx.image && tx.image.length > 50
+                  ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border custom-border shadow-sm">`
+                  : `<div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xl shrink-0 border custom-border">${cat.icon}</div>`;
+
+              return `
+            <div onclick="openModal('transaction', '${tx.id}'); document.getElementById('search-autocomplete').classList.add('hidden');" 
+                 class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer transition-colors border-b custom-border dark:border-gray-800 last:border-0">
+              ${imgHtml}
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
+                <p class="text-[11px] custom-text-secondary truncate mt-0.5">${tx.note || "Không có ghi chú"}</p>
+                <p class="text-[10px] text-gray-400 mt-1"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+              </div>
+            </div>`;
+            })
+            .join("");
+        }
+        box.classList.remove("hidden");
+      };
+
+      // Tự động đóng bảng gợi ý khi click ra ngoài màn hình
+      document.addEventListener("click", function (e) {
+        const searchBox = document.getElementById("search-autocomplete");
+        const searchInput = document.getElementById("filter-search");
+        if (
+          searchBox &&
+          !searchBox.contains(e.target) &&
+          e.target !== searchInput
+        ) {
+          searchBox.classList.add("hidden");
+        }
+      });
 
       function executeBuffer() {
         const radius = document.getElementById("buffer-radius").value;
@@ -5143,8 +5583,8 @@
 
           // Tự động làm tối ảnh mờ đi một chút để ông vẫn đọc được chữ trên các Panel
           bgDiv.style.filter = state.darkMode
-            ? "brightness(0.3) blur(2px)"
-            : "brightness(0.7) blur(2px)";
+            ? "brightness(0.3) blur(1px)"
+            : "brightness(0.7) blur(1px)";
 
           if (rmvBtn) rmvBtn.classList.remove("hidden");
         } else {
