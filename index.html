@@ -1057,6 +1057,18 @@
         </div>
 
         <div
+          id="view-trips"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
+        >
+          <div class="flex justify-between items-center px-2">
+            <h3 class="font-black text-xl custom-text">
+              <i class="fa-solid fa-plane-departure text-primary-500 mr-2"></i
+              >Chuyến đi của tôi
+            </h3>
+          </div>
+          <div id="trips-container" class="space-y-4 pb-10 px-2"></div>
+        </div>
+        <div
           id="view-settings"
           class="view-section max-w-3xl mx-auto space-y-6"
         >
@@ -1593,7 +1605,7 @@
 
     <div
       id="global-modal"
-      class="hidden fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity"
+      class="hidden fixed inset-0 z-[80] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity"
     >
       <div class="absolute inset-0" onclick="closeModal()"></div>
 
@@ -1733,6 +1745,7 @@
         budgets: [],
         goals: JSON.parse(JSON.stringify(DEFAULT_GOALS)),
         debts: [],
+        trips: [],
         logs: [],
         darkMode: false,
         currentView: "dashboard",
@@ -1750,7 +1763,8 @@
         poiLayerGroup = null;
 
       let currentMapMode = "marker",
-        currentMapCategory = "all";
+        currentMapCategory = "all",
+        currentMapTripId = null;
 
       const generateId = () => Math.random().toString(36).substr(2, 9);
       const getToday = () => {
@@ -1920,6 +1934,7 @@
           "goals",
           "wallets",
           "settings",
+          "trips",
         ];
 
         document.addEventListener(
@@ -2006,6 +2021,7 @@
           if (savedData) {
             state.debts = savedData.debts || [];
             state.badges = savedData.badges || [];
+            state.trips = savedData.trips || [];
             state.transactions = savedData.transactions || [];
             state.wallets =
               savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
@@ -2077,6 +2093,7 @@
           wallets: state.wallets,
           categories: state.categories,
           budgets: state.budgets,
+          trips: state.trips,
           goals: state.goals,
           badges: state.badges || [],
           logs: state.logs,
@@ -2177,6 +2194,7 @@
         { id: "goals", icon: "fa-flag-checkered", label: "Mục tiêu" },
         { id: "wallets", icon: "fa-wallet", label: "Ví", desktopOnly: true },
         { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
+        { id: "trips", icon: "fa-plane-departure", label: "Chuyến đi" },
         { id: "settings", icon: "fa-gear", label: "Cài đặt" },
       ];
 
@@ -2197,6 +2215,7 @@
           { id: "budgets", icon: "fa-money-bill-wave" },
           { id: "debts", icon: "fa-hand-holding-dollar" },
           { id: "goals", icon: "fa-bullseye" },
+          { id: "trips", icon: "fa-plane-departure" },
           { id: "wallets", icon: "fa-wallet" },
         ];
         let pillHtml = "";
@@ -2222,7 +2241,14 @@
         const spacer = document.getElementById("header-spacer");
 
         // Khai báo các view muốn ẩn header
-        const noHeaderViews = ["map", "budgets", "debts", "goals", "wallets"];
+        const noHeaderViews = [
+          "map",
+          "budgets",
+          "debts",
+          "goals",
+          "wallets",
+          "trips",
+        ];
 
         if (noHeaderViews.includes(viewId)) {
           // Ẩn hoàn toàn trên cả Desktop và Mobile
@@ -2257,6 +2283,7 @@
         if (viewId === "map") initMap();
         if (viewId === "budgets") renderBudgets();
         if (viewId === "goals") renderGoals();
+        if (viewId === "trips") renderTrips();
         if (viewId === "wallets") renderWallets();
         if (viewId === "settings") renderSettings();
         updateGlobalHeader();
@@ -2342,7 +2369,7 @@
             ? `
       <div class="flex flex-col items-center justify-center py-8">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9Fcxk-9q2VakzncBpY-jdMfTAW3g6ACwNU3IFVf0khg&s=10"
+          src="https://cdn-icons-png.flaticon.com/512/15815/15815319.png"
           alt="Chưa có nhật ký"
           class="w-28 h-28 mb-3 opacity-90 select-none pointer-events-none"
         />
@@ -2457,13 +2484,13 @@
           if (currentDebtTab === "lend") {
             emptyMsg = "Ông chưa cho ai mượn tiền cả. Quá tốt! 😎";
             emptyImage =
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2NXi5CtY6rEzLkWo0-rTpmd_itk2ZQ2_EgY3-53ktQ&s=10";
+              "https://cdn-icons-png.flaticon.com/512/9196/9196974.png"; // Ví tiền
           }
 
           if (currentDebtTab === "borrow") {
             emptyMsg = "Hết nợ nần, cuộc sống thảnh thơi! 🥳";
             emptyImage =
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7_oYvxX9VNb_oMV5AOBIOOHYlT5yxdwLaXxiBf4QUAA&s=10";
+              "https://cdn-icons-png.flaticon.com/512/8775/8775217.png"; // Tick thành công
           }
 
           if (currentDebtTab === "history") {
@@ -2989,7 +3016,8 @@
           document.getElementById("chart-container").innerHTML = `
     <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
       <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAkFNgqyn0q9aBxZb7fulgHmuMH-ocLlgnjvxWPDLeyg&s=10"
+        
+        src="https://cdn-icons-png.flaticon.com/512/2257/2257295.png"
         alt="Chưa có dữ liệu"
         class="w-44 h-44 mb-4 opacity-90 pointer-events-none"
       />
@@ -3007,7 +3035,7 @@
             ? `
       <div class="flex flex-col items-center justify-center py-8">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY0nqilG83HYuHouQ4IKQrE_PbOeVZ9DIIbtQQAWx7Lw&s=10"
+          src="https://cdn-icons-png.flaticon.com/512/13637/13637588.png"
           alt="Chưa có giao dịch"
           class="w-32 h-32 mb-3 opacity-90"
         />
@@ -3070,6 +3098,7 @@
 
       function setMapCategory(catId) {
         currentMapCategory = catId;
+        currentMapTripId = null;
         renderMapCategoryPills();
         renderMapData();
 
@@ -3186,12 +3215,44 @@
         renderMapData();
       }
 
+      // Hàm chuyển sang xem bản đồ hành trình của 1 chuyến đi
+      window.viewTripMap = (tripId) => {
+        currentMapTripId = tripId;
+        closeTripDetail(); // Đóng overlay
+        switchView("map"); // Chuyển sang tab Bản đồ
+        setMapMode("route"); // Ép sang chế độ Vẽ Đường (Route)
+
+        // Đợi bản đồ render xong thì bay tới khu vực đó
+        setTimeout(() => {
+          let txs = state.transactions.filter(
+            (t) => t.tripId === tripId && t.lat && t.lng,
+          );
+          if (txs.length > 0 && myMap) {
+            const bounds = L.latLngBounds(txs.map((t) => [t.lat, t.lng]));
+            myMap.flyToBounds(bounds, {
+              padding: [50, 50],
+              maxZoom: 15,
+              duration: 0.8,
+            });
+          } else {
+            alert(
+              "Chuyến đi này chưa có giao dịch nào được gắn vị trí để vẽ bản đồ!",
+            );
+          }
+        }, 500);
+      };
+
       function renderMapData() {
         if (!myMap) return;
         const catFilter = currentMapCategory;
         let filteredTx = state.transactions.filter((t) => t.lat && t.lng);
-        if (catFilter !== "all")
+
+        // LOGIC LỌC MỚI: Ưu tiên lọc theo chuyến đi nếu có
+        if (currentMapTripId) {
+          filteredTx = filteredTx.filter((t) => t.tripId === currentMapTripId);
+        } else if (catFilter !== "all") {
           filteredTx = filteredTx.filter((t) => t.category === catFilter);
+        }
 
         if (mapLayerGroup) mapLayerGroup.clearLayers();
         if (heatLayer) {
@@ -3628,25 +3689,23 @@
         const cont = document.getElementById("budgets-container");
         if (state.budgets.length === 0)
           return (cont.innerHTML = `
-    <div class="col-span-full flex flex-col items-center justify-center py-12">
-      <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQGuTg1YAHKm7XXpHbnqPvKRuIQROM7Sw2pdiwJbKMgg&s=10"
-        alt="Chưa có ngân sách"
-        class="w-44 h-44 object-contain opacity-90 pointer-events-none select-none"
-        draggable="false"
-      />
+  <div class="col-span-full flex flex-col items-center justify-center py-12">
+    <img
+      src="https://cdn-icons-png.flaticon.com/512/2942/2942269.png"
+      alt="Chưa có ngân sách"
+      class="w-40 h-40 object-contain opacity-90 pointer-events-none select-none"
+      draggable="false"
+    />
 
-      <h3 class="mt-5 text-xl font-bold custom-text">
-        Chưa có ngân sách nào.
-      </h3>
+    <h3 class="mt-5 text-xl font-bold custom-text">
+      Chưa có ngân sách nào
+    </h3>
 
-      <p class="mt-2 text-center custom-text-secondary max-w-xs">
-        Hãy tạo ngân sách đầu tiên để theo dõi và kiểm soát chi tiêu hiệu quả.
-      </p>
-
-      
-    </div>
-  `);
+    <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
+      Hãy tạo ngân sách đầu tiên để theo dõi và kiểm soát chi tiêu hiệu quả.
+    </p>
+  </div>
+`);
         const { m: cm, y: cy } = getSelectedMonth();
         cont.innerHTML = state.budgets
           .map((b) => {
@@ -3933,10 +3992,11 @@
         else if (state.currentView === "goals") openModal("goal");
         else if (state.currentView === "wallets") openModal("walletAction");
         else if (state.currentView === "debts") openModal("debt");
+        else if (state.currentView === "trips") openModal("trip");
         else openModal("transaction");
       }
 
-      function openModal(type, id = null) {
+      function openModal(type, id = null, tripIdPreset = null) {
         const modal = document.getElementById("global-modal");
         const title = document.getElementById("modal-title");
         const body = document.getElementById("modal-body");
@@ -3962,6 +4022,16 @@
           const formattedAmt = tx.amount
             ? tx.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
             : "";
+          // Gắn ngay dưới đoạn khai báo formattedAmt
+          // Tự chọn option dựa trên giao dịch đang sửa, hoặc dựa trên tripIdPreset (nếu bấm từ màn hình chi tiết chuyến đi)
+          const tripOptions =
+            `<option value="">-- Không gắn vào chuyến đi --</option>` +
+            state.trips
+              .map(
+                (tr) =>
+                  `<option value="${tr.id}" ${tx.tripId === tr.id || tripIdPreset === tr.id ? "selected" : ""}>✈️ ${tr.name}</option>`,
+              )
+              .join("");
 
           window.updateCatOpts = (tType) => {
             document.getElementById("m-cat").innerHTML = state.categories
@@ -4018,6 +4088,12 @@
                 <input type="text" id="m-note" value="${tx.note}" placeholder="Tùy chọn..." class="w-full bg-transparent border-none text-sm font-medium custom-text outline-none p-0 custom-placeholder">
             </div>
         </div>
+        <div class="custom-bg-card rounded-2xl border custom-border p-3 mt-2 custom-shadow-sm">
+        <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Gắn vào chuyến đi</label>
+        <select id="m-trip" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate">
+            ${tripOptions}
+        </select>
+    </div>
     </div>
 
     <div class="flex gap-3">
@@ -4091,6 +4167,7 @@
               type: document.getElementById("m-type").value,
               amount: amt,
               category: document.getElementById("m-cat").value,
+              tripId: document.getElementById("m-trip").value,
               walletId: document.getElementById("m-wal").value,
               date: document.getElementById("m-date").value,
               note: document.getElementById("m-note").value,
@@ -4119,9 +4196,228 @@
               const wN = state.wallets.find((x) => x.id === data.walletId);
               if (wN) wN.balance += data.type === "income" ? amt : -amt;
             }
+            // NẾU ĐANG MỞ MÀN HÌNH CHI TIẾT CHUYẾN ĐI, RENDER LẠI NÓ
+            if (currentViewTripId) {
+              renderTripDetailContent();
+            }
+            if (state.currentView === "trips") {
+              renderTrips(); // Refresh lại tiến trình ở thẻ vé máy bay
+            }
+            saveData();
+
+            closeModal();
+
+            switchView(state.currentView);
+          };
+        } else if (type === "splitBill") {
+          const trip = state.trips.find((t) => t.id === id);
+          if (!trip) return;
+
+          // 1. LỌC CÁC KHOẢN CHI & SẮP XẾP THEO THỜI GIAN (Cũ nhất -> Mới nhất)
+          const tripExpTxs = state.transactions
+            .filter((t) => t.tripId === trip.id && t.type === "expense")
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+          if (tripExpTxs.length === 0) {
+            title.innerText = "Chia Tiền";
+            body.innerHTML = `<div class="text-center py-6"><p class="text-danger-500 font-bold">Chuyến đi này chưa có khoản chi nào để chia!</p></div>`;
+            return;
+          }
+
+          // 2. TẠO DANH SÁCH DROPDOWN TỪNG KHOẢN RIÊNG BIỆT (Có STT 1, 2, 3...)
+          let txOptions = `<option value="" data-amt="0">-- Chọn 1 khoản chi cụ thể để chia --</option>`;
+          tripExpTxs.forEach((tx, idx) => {
+            const cat = state.categories.find((c) => c.id === tx.category) || {
+              name: "Khác",
+            };
+            // Định dạng chuẩn ý ông: "1. Ăn uống - 200.000 đ"
+            txOptions += `<option value="${tx.id}" data-amt="${tx.amount}">${idx + 1}. ${cat.name} - ${formatMoney(tx.amount)}</option>`;
+          });
+
+          title.innerText = "Campuchia (Chia tiền)";
+
+          window.splitMode = "equal";
+          window.switchSplitMode = (mode) => {
+            window.splitMode = mode;
+            const tEq = document.getElementById("tab-split-equal");
+            const tCu = document.getElementById("tab-split-custom");
+            const fEq = document.getElementById("split-equal-form");
+            const fCu = document.getElementById("split-custom-form");
+
+            if (mode === "equal") {
+              tEq.className =
+                "flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-primary custom-shadow-sm text-white border border-transparent";
+              tCu.className =
+                "flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-text-secondary hover:brightness-95 border border-transparent";
+              fEq.classList.remove("hidden");
+              fCu.classList.add("hidden");
+            } else {
+              tCu.className =
+                "flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-primary custom-shadow-sm text-white border border-transparent";
+              tEq.className =
+                "flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-text-secondary hover:brightness-95 border border-transparent";
+              fEq.classList.add("hidden");
+              fCu.classList.remove("hidden");
+            }
+          };
+
+          // Hàm tự động điền tiền khi chọn 1 bill trong danh sách
+          window.handleSplitTxChange = (selectEl) => {
+            const amt =
+              selectEl.options[selectEl.selectedIndex].getAttribute("data-amt");
+            const amtInput = document.getElementById("split-amount");
+            if (amtInput) {
+              // Định dạng số tiền có dấu chấm
+              amtInput.value =
+                amt > 0
+                  ? parseInt(amt, 10)
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                  : "";
+            }
+          };
+
+          window.addCustomSplitRow = () => {
+            const rowId = generateId();
+            const rowHtml = `
+              <div class="flex items-center gap-2 mb-3 custom-split-row" id="row-${rowId}">
+                  <input type="text" placeholder="Tên (VD: Tèo)" class="w-1/2 p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border split-name">
+                  <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" placeholder="0 đ" class="w-1/2 p-3 custom-bg-input rounded-xl outline-none font-black text-danger-500 border custom-border text-right split-amt">
+                  <button type="button" onclick="document.getElementById('row-${rowId}').remove()" class="w-10 h-10 shrink-0 bg-danger-50 text-danger-500 rounded-xl flex items-center justify-center hover:bg-danger-100 border border-danger-100"><i class="fa-solid fa-xmark"></i></button>
+              </div>`;
+            document
+              .getElementById("custom-split-container")
+              .insertAdjacentHTML("beforeend", rowHtml);
+          };
+
+          body.innerHTML = `
+            <div class="flex custom-bg-input p-1.5 rounded-2xl mb-5 border custom-border">
+              <button type="button" id="tab-split-equal" onclick="switchSplitMode('equal')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-primary custom-shadow-sm text-white border border-transparent">Chia đều</button>
+              <button type="button" id="tab-split-custom" onclick="switchSplitMode('custom')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-text-secondary hover:brightness-95 border border-transparent">Chia không đều</button>
+            </div>
+
+            <form id="frm-split" class="space-y-4">
+              <!-- CHỌN GIAO DỊCH TỪNG CÁI MỘT -->
+              <div class="custom-bg-input dark:bg-gray-800 p-4 rounded-2xl border custom-border">
+                <label class="block text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-receipt"></i> 1. Chọn khoản chi để chia</label>
+                <select id="split-tx-select" onchange="handleSplitTxChange(this)" required class="w-full p-3 bg-white dark:bg-gray-700 rounded-xl outline-none font-bold custom-text border custom-border custom-focus">
+                  ${txOptions}
+                </select>
+              </div>
+
+              <!-- CHẾ ĐỘ 1: CHIA ĐỀU -->
+              <div id="split-equal-form" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">2. Số tiền đem chia (VNĐ)</label>
+                  <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="split-amount" required placeholder="Chọn mục ở trên..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-danger-500 border custom-border custom-focus">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">3. Tên những người đi cùng (Phẩy để ngăn cách)</label>
+                  <input type="text" id="split-names" placeholder="VD: Tèo, Tí, Đen" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
+                  <p class="text-[10px] custom-text-secondary mt-1 italic">* Ông là người trả nên App sẽ tự tính ông vào để chia đều.</p>
+                </div>
+              </div>
+
+              <!-- CHẾ ĐỘ 2: CHIA KHÔNG ĐỀU (TÙY CHỈNH) -->
+              <div id="split-custom-form" class="hidden space-y-2">
+                <div class="flex justify-between items-center mb-2 px-1">
+                   <p class="text-xs font-bold custom-text-secondary uppercase tracking-widest">Danh sách nợ</p>
+                   <button type="button" onclick="addCustomSplitRow()" class="text-xs font-bold text-primary-500 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100 hover:bg-primary-100"><i class="fa-solid fa-plus"></i> Thêm người</button>
+                </div>
+                <div id="custom-split-container">
+                    <!-- Mặc định có sẵn 1 dòng -->
+                    <div class="flex items-center gap-2 mb-3 custom-split-row" id="row-init1">
+                        <input type="text" placeholder="Tên (VD: Tèo)" class="w-1/2 p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border split-name">
+                        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" placeholder="0 đ" class="w-1/2 p-3 custom-bg-input rounded-xl outline-none font-black text-danger-500 border custom-border text-right split-amt">
+                        <button type="button" onclick="document.getElementById('row-init1').remove()" class="w-10 h-10 shrink-0 bg-danger-50 text-danger-500 rounded-xl flex items-center justify-center hover:bg-danger-100 border border-danger-100"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Chia Tiền & Ghi Sổ Nợ</button>
+            </form>
+          `;
+
+          document.getElementById("frm-split").onsubmit = (e) => {
+            e.preventDefault();
+            let debtsToAdd = [];
+            let totalLend = 0;
+
+            const selectedTxEl = document.getElementById("split-tx-select");
+            if (!selectedTxEl.value)
+              return alert("Vui lòng chọn 1 khoản chi tiêu cụ thể để chia!");
+
+            // Lấy tên khoản chi (VD: "1. Ăn uống") để lưu vào Sổ Nợ cho rõ ràng
+            const txText =
+              selectedTxEl.options[selectedTxEl.selectedIndex].text;
+            const billName = txText.split(" -")[0];
+
+            // Xử lý logic chia đều
+            if (window.splitMode === "equal") {
+              const amount = getRawNumber(
+                document.getElementById("split-amount").value,
+              );
+              const namesStr = document.getElementById("split-names").value;
+              const names = namesStr
+                .split(",")
+                .map((n) => n.trim())
+                .filter((n) => n);
+
+              if (amount <= 0) return alert("Vui lòng nhập số tiền hợp lệ!");
+              if (names.length === 0)
+                return alert("Vui lòng nhập tên người đi cùng!");
+
+              const count = names.length + 1; // +1 là bản thân mình
+              const perPerson = Math.round(amount / count);
+
+              names.forEach((name) => {
+                debtsToAdd.push({ name: name, amount: perPerson });
+                totalLend += perPerson;
+              });
+            }
+            // Xử lý logic chia tùy chỉnh
+            else {
+              const rows = document.querySelectorAll(".custom-split-row");
+              if (rows.length === 0)
+                return alert("Vui lòng thêm người cần ghi nợ!");
+
+              rows.forEach((row) => {
+                const name = row.querySelector(".split-name").value.trim();
+                const amt = getRawNumber(row.querySelector(".split-amt").value);
+                if (name && amt > 0) {
+                  debtsToAdd.push({ name: name, amount: amt });
+                  totalLend += amt;
+                }
+              });
+
+              if (debtsToAdd.length === 0)
+                return alert("Chưa nhập đủ Tên hoặc Số tiền cho ai cả!");
+            }
+
+            // Ghi vào Sổ Nợ
+            debtsToAdd.forEach((d) => {
+              state.debts.unshift({
+                id: "debt-" + generateId(),
+                person: d.name + ` (${billName})`,
+                amount: d.amount,
+                paidAmount: 0,
+                type: "lend",
+                status: "active",
+                date: new Date().toISOString(),
+              });
+            });
+
+            addLog(
+              "Chia tiền",
+              `Bill: ${billName}. Ghi nợ ${debtsToAdd.length} người.`,
+            );
             saveData();
             closeModal();
-            switchView(state.currentView);
+            alert(
+              `Sòng phẳng! Đã ghi nhận ${debtsToAdd.length} khoản nợ vào Sổ Nợ.`,
+            );
+
+            if (state.currentView === "debts") renderDebts();
           };
         } else if (type === "category") {
           const isEdit = id != null;
@@ -4182,6 +4478,99 @@
             saveData();
             closeModal();
             renderSettings();
+          };
+        } else if (type === "trip") {
+          title.innerText = "Tạo Chuyến Đi Mới";
+          body.innerHTML = `
+            <form id="frm-trip" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên chuyến đi</label>
+                <input type="text" id="trip-name" required placeholder="VD: Đà Lạt 3N2Đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
+              </div>
+              
+              <!-- CHECKBOX QUỸ CHUNG -->
+              <div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
+                <input type="checkbox" id="trip-shared" class="w-5 h-5 accent-pink-500 cursor-pointer" onchange="document.getElementById('trip-members-box').classList.toggle('hidden', !this.checked)">
+                <label for="trip-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none">
+                  <i class="fa-solid fa-users"></i> Sử dụng Quỹ Chung
+                </label>
+              </div>
+
+              <!-- Ô NHẬP TÊN (Chỉ hiện khi bật Quỹ Chung) -->
+              <div id="trip-members-box" class="hidden bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border custom-border">
+                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên những người đi cùng (Phẩy để ngăn cách)</label>
+                <input type="text" id="trip-members" placeholder="VD: Tèo, Tí, Đen" class="w-full p-3 custom-bg-input rounded-xl outline-none font-medium custom-text border custom-border custom-focus">
+                <p class="text-[10px] custom-text-secondary mt-1 italic">* Ông là Thủ quỹ nên không cần nhập tên mình vào đây.</p>
+              </div>
+
+              <div class="flex flex-col gap-4">
+  <div>
+    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">
+      Khởi hành
+    </label>
+    <input
+      type="date"
+      id="trip-start"
+      required
+      class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus"
+    >
+  </div>
+
+  <div>
+    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">
+      Kết thúc
+    </label>
+    <input
+      type="date"
+      id="trip-end"
+      required
+      class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus"
+    >
+  </div>
+</div>
+              <div>
+                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ngân sách dự kiến (VNĐ)</label>
+                <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="trip-budget" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus">
+              </div>
+              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu Hành Trình</button>
+            </form>
+          `;
+          document.getElementById("frm-trip").onsubmit = (e) => {
+            e.preventDefault();
+            const isShared = document.getElementById("trip-shared").checked;
+            let membersArr = [];
+
+            // Xử lý lưu mảng thành viên nộp quỹ
+            if (isShared) {
+              const namesStr = document.getElementById("trip-members").value;
+              membersArr = namesStr
+                .split(",")
+                .map((n) => n.trim())
+                .filter((n) => n)
+                .map((name) => ({
+                  name: name,
+                  contributed: 0, // Ban đầu chưa ai nộp tiền
+                }));
+            }
+
+            state.trips.push({
+              id: "trip-" + generateId(),
+              name: document.getElementById("trip-name").value,
+              isSharedFund: isShared,
+              members: membersArr,
+              startDate: document.getElementById("trip-start").value,
+              endDate: document.getElementById("trip-end").value,
+              budget: getRawNumber(
+                document.getElementById("trip-budget").value,
+              ),
+            });
+            addLog(
+              "Chuyến đi",
+              `Đã lên lịch trình: ${document.getElementById("trip-name").value}`,
+            );
+            saveData();
+            closeModal();
+            switchView("trips");
           };
         } else if (type === "debt") {
           title.innerText = "Thêm khoản nợ mới";
@@ -5594,6 +5983,129 @@
         if (changed) saveData();
       }
 
+      // Render thẻ chuyến đi
+      function renderTrips() {
+        const container = document.getElementById("trips-container");
+        if (!container) return;
+
+        if (!state.trips || state.trips.length === 0) {
+          container.innerHTML = `
+<div class="flex flex-col items-center justify-center py-10">
+    <img
+        src="https://cdn-icons-png.flaticon.com/512/854/854894.png"
+        alt="No Trips"
+        class="w-44 h-44 object-contain mb-5 opacity-90 select-none pointer-events-none"
+        draggable="false"
+    >
+
+    <h3 class="text-xl font-bold custom-text mb-2">
+        Xách ba lô lên và đi thôi! ✈️
+    </h3>
+
+    <p class="text-center custom-text-secondary max-w-sm">
+        Chưa có chuyến đi nào được tạo.<br>
+        Hãy lên kế hoạch cho hành trình đầu tiên của bạn.
+    </p>
+</div>
+`;
+          return;
+        }
+
+        const todayStr = getToday().split("T")[0];
+
+        container.innerHTML = state.trips
+          .map((trip) => {
+            // Tính tiền đã tiêu cho chuyến này
+            const spent = state.transactions
+              .filter((t) => t.tripId === trip.id && t.type === "expense")
+              .reduce((a, b) => a + b.amount, 0);
+            const pct = Math.min((spent / trip.budget) * 100, 100).toFixed(1);
+
+            let statusText = "Đang đi";
+            let statusColor =
+              "text-success-500 bg-success-100 dark:bg-success-900/30";
+            if (todayStr < trip.startDate) {
+              statusText = "Sắp đi";
+              statusColor = "text-blue-500 bg-blue-100 dark:bg-blue-900/30";
+            } else if (todayStr > trip.endDate) {
+              statusText = "Đã kết thúc";
+              statusColor =
+                "text-gray-500 bg-gray-200 dark:bg-gray-700 dark:text-gray-400";
+            }
+
+            return `
+             <div class="relative overflow-hidden rounded-3xl swipe-item shadow-sm mb-4 group cursor-pointer hover:-translate-y-1 transition-transform">
+                <div class="absolute inset-y-0 right-0 flex items-center z-0">
+                  <button onclick="deleteTrip('${trip.id}')" class="w-20 h-full bg-danger-500 text-white flex flex-col items-center justify-center hover:bg-danger-600 transition-colors">
+                    <i class="fa-solid fa-trash text-2xl mb-1"></i>
+                    <span class="text-[10px] font-bold">Xóa</span>
+                  </button>
+                </div>
+                
+                <div onclick="openTripDetail('${trip.id}')" class="relative p-0 w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col custom-bg-card dark:bg-gray-800 border custom-border">
+                  <!-- Tiêu đề Boarding Pass -->
+                  <div class="flex justify-between items-center p-4 border-b-2 border-dashed custom-border bg-gray-50/50 dark:bg-gray-800/50">
+                     <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shadow-inner shrink-0"><i class="fa-solid fa-plane"></i></div>
+                        <div>
+                           <h4 class="font-black text-lg custom-text truncate max-w-[130px] sm:max-w-[200px] leading-tight">${trip.name}</h4>
+                           ${trip.isSharedFund ? '<span class="text-[9px] font-bold text-pink-500 bg-pink-100 dark:bg-pink-900/30 px-1.5 py-0.5 rounded uppercase mt-0.5 inline-block"><i class="fa-solid fa-users"></i> Quỹ chung</span>' : ""}
+                        </div>
+                     </div>
+                     <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/50 shrink-0 ${statusColor}">${statusText}</span>
+                  </div>
+                  
+                  <!-- Thời gian bay -->
+                  <div class="p-5 flex justify-between items-center">
+                     <div>
+                       <p class="text-[10px] custom-text-secondary uppercase font-bold mb-1 tracking-widest">Khởi hành</p>
+                       <p class="text-sm font-black custom-text">${trip.startDate.split("-").reverse().join("/")}</p>
+                     </div>
+                     <i class="fa-solid fa-arrow-right text-gray-300 dark:text-gray-600"></i>
+                     <div class="text-right">
+                       <p class="text-[10px] custom-text-secondary uppercase font-bold mb-1 tracking-widest">Kết thúc</p>
+                       <p class="text-sm font-black custom-text">${trip.endDate.split("-").reverse().join("/")}</p>
+                     </div>
+                  </div>
+                  
+                  <!-- Ngân sách -->
+                  <div class="p-5 bg-gray-50 dark:bg-gray-800/80 mt-auto">
+                      <div class="flex justify-between text-xs mb-2 font-bold">
+                         <span class="custom-text-secondary">Ngân sách: ${formatMoney(trip.budget)}</span>
+                         <span class="${pct > 90 ? "text-danger-500" : "text-primary-500"}">${formatMoney(spent)} (${pct}%)</span>
+                      </div>
+                      <div class="h-2 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border">
+                         <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-primary-500 to-purple-500"}" style="width: ${pct}%"></div>
+                      </div>
+                  </div>
+
+                  <!-- 2 Nét cắt vé máy bay 2 bên -->
+                  <div class="absolute left-[-12px] top-[72px] w-6 h-6 rounded-full custom-bg-body border-r-2 custom-border"></div>
+                  <div class="absolute right-[-12px] top-[72px] w-6 h-6 rounded-full custom-bg-body border-l-2 custom-border"></div>
+                </div>
+             </div>
+           `;
+          })
+          .join("");
+        if (typeof initSwipeActions === "function") initSwipeActions();
+      }
+
+      window.deleteTrip = (id) => {
+        if (
+          confirm(
+            "Xóa chuyến đi này? Các giao dịch thuộc chuyến đi vẫn được giữ lại nhưng sẽ bị gỡ nhãn chuyến đi.",
+          )
+        ) {
+          state.trips = state.trips.filter((t) => t.id !== id);
+          state.transactions.forEach((t) => {
+            if (t.tripId === id) delete t.tripId;
+          });
+          saveData();
+          renderTrips();
+          playSound("trash");
+        }
+      };
+
       function openTrophyRoom() {
         const modal = document.getElementById("global-modal");
         const title = document.getElementById("modal-title");
@@ -5701,6 +6213,338 @@
           if (rmvBtn) rmvBtn.classList.add("hidden");
         }
       }
+
+      let currentViewTripId = null;
+
+      // 1. Hàm mở Màn hình Chi tiết
+      window.openTripDetail = (id) => {
+        currentViewTripId = id;
+        const trip = state.trips.find((t) => t.id === id);
+        if (!trip) return;
+
+        document.getElementById("td-title").innerText = trip.name;
+        renderTripDetailContent(trip);
+
+        const overlay = document.getElementById("trip-detail-overlay");
+        overlay.classList.remove("translate-x-full");
+        overlay.classList.add("translate-x-0");
+        playSound("click");
+      };
+
+      // 2. Hàm đóng Màn hình Chi tiết
+      window.closeTripDetail = () => {
+        const overlay = document.getElementById("trip-detail-overlay");
+        overlay.classList.remove("translate-x-0");
+        overlay.classList.add("translate-x-full");
+        currentViewTripId = null;
+      };
+
+      // 3. Hàm render Báo cáo & Lịch sử của 1 Chuyến đi cụ thể
+      window.renderTripDetailContent = (tripArg) => {
+        const trip =
+          tripArg || state.trips.find((t) => t.id === currentViewTripId);
+        if (!trip) return;
+
+        // Lọc giao dịch của chuyến này
+        const tripTxs = state.transactions.filter((t) => t.tripId === trip.id);
+        const spent = tripTxs
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + t.amount, 0);
+        const remain = trip.budget - spent;
+        const pct = Math.min((spent / trip.budget) * 100, 100).toFixed(1);
+
+        // Gom nhóm chi tiêu theo danh mục
+        const expByCat = tripTxs
+          .filter((t) => t.type === "expense")
+          .reduce((acc, t) => {
+            acc[t.category] = (acc[t.category] || 0) + t.amount;
+            return acc;
+          }, {});
+
+        // --- LOGIC GIAO DIỆN QUỸ CHUNG ---
+        let sharedFundHtml = "";
+        if (trip.isSharedFund && trip.members && trip.members.length > 0) {
+          const totalMembers = trip.members.length + 1; // Cộng thêm ông (Thủ quỹ)
+          const fairShare = spent / totalMembers; // Mức tiền trung bình mỗi người phải chịu
+
+          let membersListHtml = trip.members
+            .map((m, index) => {
+              const diff = m.contributed - fairShare;
+              let statusBadge = "";
+              if (spent > 0) {
+                if (diff > 0)
+                  statusBadge = `<span class="text-[10px] text-orange-500 bg-orange-50 px-2 py-0.5 rounded font-bold">Thừa ${formatMoney(diff)}</span>`;
+                else if (diff < 0)
+                  statusBadge = `<span class="text-[10px] text-danger-500 bg-danger-50 px-2 py-0.5 rounded font-bold">Thiếu ${formatMoney(Math.abs(diff))}</span>`;
+                else
+                  statusBadge = `<span class="text-[10px] text-success-500 bg-success-50 px-2 py-0.5 rounded font-bold">Đủ chỉ tiêu</span>`;
+              }
+
+              return `
+                <div class="flex items-center justify-between p-3 border-b custom-border last:border-0">
+                    <div>
+                        <p class="font-bold text-sm custom-text">${m.name}</p>
+                        <p class="text-xs custom-text-secondary mt-0.5">Đã đóng: <span class="font-black text-primary-500">${formatMoney(m.contributed)}</span></p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        ${statusBadge}
+                        <button onclick="addFundContribution('${trip.id}',${index})" class="text-[10px] bg-primary-100 text-primary-700 hover:bg-primary-200 px-3 py-1.5 rounded-lg font-bold transition-colors">
+                           <i class="fa-solid fa-plus"></i> Thu thêm
+                        </button>
+                    </div>
+                </div>`;
+            })
+            .join("");
+
+          sharedFundHtml = `
+              <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm mt-5">
+                 <div class="flex justify-between items-center mb-3">
+                     <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2"><i class="fa-solid fa-users text-pink-500"></i> Quản lý Quỹ Chung</h4>
+                     <span class="text-xs font-bold bg-pink-100 text-pink-600 px-2 py-1 rounded-lg">${totalMembers} người</span>
+                 </div>
+                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl mb-4 p-3 text-center border custom-border">
+                     <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">Bình quân mỗi người (Thực chi)</p>
+                     <p class="font-black text-lg text-danger-500">${formatMoney(fairShare)}</p>
+                 </div>
+                 <div class="bg-white dark:bg-gray-800 rounded-xl border custom-border">
+                     ${membersListHtml}
+                 </div>
+                 <button onclick="finalizeTripFund('${trip.id}')" class="w-full mt-4 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-black text-sm shadow-md active:scale-95 transition-all">
+                    <i class="fa-solid fa-scale-balanced"></i> CHỐT SỔ & GHI NỢ TỰ ĐỘNG
+                 </button>
+              </div>
+            `;
+        }
+
+        // Build HTML: Báo cáo danh mục
+        let catHtml = Object.entries(expByCat)
+          .sort((a, b) => b[1] - a[1])
+          .map(([catId, amt]) => {
+            const cat = state.categories.find((c) => c.id === catId) || {
+              name: "Khác",
+              icon: "📦",
+              color: "bg-gray-100 text-gray-500",
+            };
+            const cPct = ((amt / spent) * 100).toFixed(1);
+            return `
+             <div class="flex items-center justify-between mb-3 last:mb-0">
+               <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-lg shadow-sm border custom-border">${cat.icon}</div>
+                 <div>
+                   <p class="text-sm font-bold custom-text">${cat.name}</p>
+                   <p class="text-[10px] custom-text-secondary font-medium mt-0.5">${cPct}% tổng chi phí</p>
+                 </div>
+               </div>
+               <p class="font-black text-sm text-danger-500">-${formatMoney(amt)}</p>
+             </div>
+           `;
+          })
+          .join("");
+
+        if (!catHtml)
+          catHtml = `<p class="text-center text-sm custom-text-secondary italic">Chưa có chi tiêu nào được ghi nhận.</p>`;
+
+        // Build HTML: Danh sách Lịch sử giao dịch
+        let txHtml = tripTxs
+          .map((tx) => {
+            const isInc = tx.type === "income";
+            const cat = state.categories.find((c) => c.id === tx.category) || {
+              name: "Khác",
+              icon: "📦",
+              color: "bg-gray-100",
+            };
+            const imgHtml =
+              tx.image && tx.image.length > 50
+                ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border custom-border">`
+                : `<div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xl shrink-0 border custom-border">${cat.icon}</div>`;
+            return `
+             <div onclick="openModal('transaction', '${tx.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl mb-2 cursor-pointer border custom-border transition-colors custom-bg-card">
+                ${imgHtml}
+                <div class="flex-1 min-w-0">
+                  <p class="font-bold text-sm custom-text truncate">${cat.name}</p>
+                  <p class="text-[11px] custom-text-secondary truncate mt-0.5 font-medium">${tx.note || ""}</p>
+                </div>
+                <div class="text-right shrink-0">
+                  <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                  <p class="text-[10px] custom-text-secondary mt-1 font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
+                </div>
+             </div>
+          `;
+          })
+          .join("");
+        if (!txHtml)
+          txHtml = `<div class="text-center py-6 opacity-50"><div class="text-4xl mb-2">🧾</div><p class="text-sm font-medium">Trống trơn!</p></div>`;
+
+        const tripDays = Math.max(
+          1,
+          Math.ceil(
+            (new Date(trip.endDate) - new Date(trip.startDate)) /
+              (1000 * 60 * 60 * 24),
+          ) + 1,
+        );
+        const avgDaily = spent / tripDays;
+
+        // ... thay thế khối HTML đầu tiên bằng đoạn này:
+        document.getElementById("td-content").innerHTML = `
+          <!-- Tổng quan ngân sách chuyến đi -->
+          <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
+             <div class="flex justify-between items-center mb-5">
+               <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl shadow-sm border custom-border"><i class="fa-solid fa-wallet"></i></div>
+               <div class="text-right">
+                 <p class="text-[10px] uppercase tracking-widest font-bold custom-text-secondary mb-1">Ngân sách (${tripDays} ngày)</p>
+                 <p class="font-black text-2xl custom-text">${formatMoney(trip.budget)}</p>
+               </div>
+             </div>
+             
+             <div class="flex justify-between text-sm mb-2 font-bold">
+               <span class="custom-text-secondary">Đã chi: <span class="custom-text">${formatMoney(spent)}</span></span>
+               <span class="${pct > 90 ? "text-danger-500" : "text-indigo-500"}">${pct}%</span>
+             </div>
+             <div class="h-3 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border mb-4">
+               <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%"></div>
+             </div>
+             
+             <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
+                    <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">TB/Ngày</p>
+                    <p class="font-black custom-text">${formatMoney(avgDaily)}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
+                    <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">Còn lại</p>
+                    <p class="font-black ${remain < 0 ? "text-danger-500" : "custom-text"}">${formatMoney(remain)}</p>
+                </div>
+             </div>
+
+             <!-- 2 NÚT TÍNH NĂNG ĐỈNH CAO -->
+             <div class="flex gap-3 mt-5">
+                <button onclick="viewTripMap('${trip.id}')" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors border custom-border dark:border-blue-800">
+                    <i class="fa-solid fa-map-location-dot"></i> Bản đồ
+                </button>
+                <button onclick="openModal('splitBill', '${trip.id}')" class="flex-1 bg-pink-100 hover:bg-pink-200 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors border custom-border dark:border-pink-800">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Chia tiền
+                </button>
+             </div>
+          </div>
+
+          ${sharedFundHtml}
+
+          <!-- Báo cáo phân bổ -->
+          <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
+             <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-5 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Cơ cấu chi tiêu</h4>
+             ${catHtml}
+          </div>
+
+          <!-- Giao dịch -->
+          <div class="custom-bg-card dark:bg-gray-800 p-4 rounded-[2rem] border custom-border custom-shadow-sm">
+             <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-4 mt-2 px-2 flex items-center gap-2"><i class="fa-solid fa-receipt text-indigo-500"></i> Lịch sử</h4>
+             ${txHtml}
+          </div>
+        `;
+      };
+
+      // Hàm: Thu thêm tiền từ 1 thành viên
+      window.addFundContribution = (tripId, memberIndex) => {
+        const trip = state.trips.find((t) => t.id === tripId);
+        if (!trip) return;
+        const member = trip.members[memberIndex];
+
+        const amtStr = prompt(
+          `Nhập số tiền ${member.name} vừa nộp (VNĐ):`,
+          "0",
+        );
+        if (!amtStr) return;
+        const amt = parseInt(amtStr.replace(/\D/g, ""), 10);
+        if (isNaN(amt) || amt <= 0) return alert("Số tiền không hợp lệ!");
+
+        // 1. Cộng tiền vào thành viên
+        member.contributed += amt;
+
+        // 2. Ghi nhận là Khoản Thu nhập của Thủ quỹ (để vào Ví tiền)
+        state.transactions.unshift({
+          id: generateId(),
+          type: "income",
+          amount: amt,
+          category: "c9", // Xếp vào "Khác"
+          walletId: state.wallets.length > 0 ? state.wallets[0].id : null,
+          tripId: trip.id,
+          date: getToday().replace("T", " "),
+          note: `[Nộp Quỹ] ${member.name} đóng tiền`,
+        });
+
+        addLog("Quỹ chung", `${member.name} nộp ${formatMoney(amt)}`);
+        saveData();
+        renderTripDetailContent(trip); // Refresh lại màn hình
+        playSound("success");
+      };
+
+      // Hàm ĐỈNH CAO: Chốt sổ quỹ
+      window.finalizeTripFund = (tripId) => {
+        const trip = state.trips.find((t) => t.id === tripId);
+        if (!trip) return;
+
+        if (
+          !confirm(
+            "Hành động này sẽ tính toán tự động và đưa các khoản thừa/thiếu của mọi người vào Sổ Nợ. Ông có chắc chắn muốn chốt sổ chuyến đi này?",
+          )
+        )
+          return;
+
+        const tripTxs = state.transactions.filter((t) => t.tripId === trip.id);
+        const spent = tripTxs
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + t.amount, 0);
+
+        const totalMembers = trip.members.length + 1; // Có cả ông thủ quỹ
+        const fairShare = spent / totalMembers; // Số tiền mỗi người phải chịu
+
+        let debtsCreated = 0;
+
+        // Chạy vòng lặp từng người để tạo Nợ
+        trip.members.forEach((m) => {
+          const diff = m.contributed - fairShare;
+
+          // diff < 0 (Âm tiền): Họ nộp chưa đủ số tiền họ đã ăn -> Họ nợ mình -> Tạo khoản "Cho Vay" (Lend)
+          if (diff < -1000) {
+            // Sai số 1k VNĐ cho tròn
+            state.debts.unshift({
+              id: "debt-" + generateId(),
+              person: m.name + ` (Chốt quỹ ${trip.name})`,
+              amount: Math.abs(diff),
+              paidAmount: 0,
+              type: "lend",
+              status: "active",
+              date: new Date().toISOString(),
+            });
+            debtsCreated++;
+          }
+          // diff > 0 (Dương tiền): Họ nộp dư so với số tiền họ đã ăn -> Mình cầm dư tiền của họ -> Tạo khoản "Đi Vay" (Borrow - phải trả lại họ)
+          else if (diff > 1000) {
+            state.debts.unshift({
+              id: "debt-" + generateId(),
+              person: m.name + ` (Thối lại tiền quỹ ${trip.name})`,
+              amount: diff,
+              paidAmount: 0,
+              type: "borrow",
+              status: "active",
+              date: new Date().toISOString(),
+            });
+            debtsCreated++;
+          }
+        });
+
+        if (debtsCreated > 0) {
+          alert(
+            `Chốt sổ thành công! App đã tạo ${debtsCreated} khoản nợ/vay vào Sổ Nợ. Ông hãy vào Sổ Nợ để tiến hành đòi tiền hoặc thối lại tiền cho bạn bè nhé.`,
+          );
+        } else {
+          alert(
+            "Vi diệu! Mọi người đã đóng quỹ vừa khít số tiền chi tiêu, không ai nợ ai đồng nào cả!",
+          );
+        }
+
+        saveData();
+        playSound("success");
+      };
     </script>
     <dialog
       id="imageModal"
@@ -5713,5 +6557,42 @@
         class="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl cursor-pointer border custom-border"
       />
     </dialog>
+    <!-- MÀN HÌNH CHI TIẾT CHUYẾN ĐI -->
+    <div
+      id="trip-detail-overlay"
+      class="fixed inset-0 z-[70] custom-bg-body dark:bg-gray-900 flex flex-col transition-transform duration-300 transform translate-x-full"
+    >
+      <!-- Header -->
+      <div
+        class="custom-bg-header dark:bg-gray-800 px-4 py-3 flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.05)] shrink-0 z-10 border-b custom-border"
+      >
+        <button
+          onclick="closeTripDetail()"
+          class="w-10 h-10 flex items-center justify-center rounded-full custom-bg-card dark:bg-gray-700 custom-text-secondary dark:text-gray-300 hover:brightness-95 active:scale-90 transition-transform custom-shadow-sm border custom-border"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h3
+          id="td-title"
+          class="font-black text-lg custom-text dark:text-white truncate flex-1 ml-4 text-center mr-2"
+        >
+          Chi tiết
+        </h3>
+        <button
+          onclick="openModal('transaction', null, currentViewTripId)"
+          class="w-10 h-10 flex items-center justify-center rounded-full custom-primary text-white hover:brightness-95 active:scale-90 transition-transform custom-shadow-sm"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+
+      <!-- Nội dung Báo cáo & Lịch sử -->
+      <div
+        class="flex-1 overflow-y-auto p-4 space-y-6 pb-10 custom-scrollbar"
+        id="td-content"
+      >
+        <!-- JS sẽ đổ HTML báo cáo vào đây -->
+      </div>
+    </div>
   </body>
 </html>
