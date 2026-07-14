@@ -1777,6 +1777,13 @@
         trips: [],
         logs: [],
         tasks: [],
+        notificationSettings: {
+          email: "",
+          time: "07:00",
+          notifyTasks: true,
+          notifyBudgets: true,
+          notifyDebts: true,
+        },
         darkMode: false,
         currentView: "dashboard",
         dashFilter: { time: "month", chart: "doughnut" },
@@ -2064,6 +2071,8 @@
               savedData.goals || JSON.parse(JSON.stringify(DEFAULT_GOALS));
             state.logs = savedData.logs || [];
             state.tasks = savedData.tasks || [];
+            if (savedData.notificationSettings)
+              state.notificationSettings = savedData.notificationSettings;
             if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
             if (savedData.userProfile)
               state.userProfile = savedData.userProfile;
@@ -2127,6 +2136,7 @@
           budgets: state.budgets,
           trips: state.trips,
           goals: state.goals,
+          notificationSettings: state.notificationSettings,
           badges: state.badges || [],
           logs: state.logs,
           tasks: state.tasks,
@@ -2409,6 +2419,141 @@
             .join("");
 
         setTimeout(initSwipeActions, 100);
+
+        // ========================================================
+        // 👇 ĐOẠN CODE CẤU HÌNH EMAIL ĐẦY ĐỦ ĐÃ SỬA LỖI (6 MỤC) 👇
+        // ========================================================
+
+        let notifyFormContainer = document.getElementById(
+          "settings-notify-container",
+        );
+        if (!notifyFormContainer) {
+          const targetDiv = document.getElementById("view-settings");
+          targetDiv.insertAdjacentHTML(
+            "beforeend",
+            `
+              <div id="settings-notify-container" class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800 mb-6 mt-6">
+              </div>
+            `,
+          );
+          notifyFormContainer = document.getElementById(
+            "settings-notify-container",
+          );
+        }
+
+        // Khởi tạo các cờ an toàn trong State nếu lỡ bộ nhớ cũ chưa có
+        if (!state.notificationSettings) {
+          state.notificationSettings = {
+            email: "",
+            time: "07:00",
+            notifyTasks: true,
+            notifyBudgets: true,
+            notifyDebts: true,
+            notifyGoals: true,
+            notifyTrips: true,
+            notifyReports: true,
+          };
+        }
+
+        notifyFormContainer.innerHTML = `
+            <h4 class="font-bold text-lg mb-6 flex items-center gap-2 custom-text">
+                <i class="fa-solid fa-envelope-open-text text-primary-500"></i> Cấu hình Nhắc nhở Email (Đầy đủ)
+            </h4>
+            <form id="frm-email-notify" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Email nhận thông báo</label>
+                        <input type="email" id="set-email" value="${state.notificationSettings.email || ""}" placeholder="VD: mailcuaong@gmail.com" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Giờ nhận bản tin (Mục 1)</label>
+                        <input type="time" id="set-time" value="${state.notificationSettings.time || "07:00"}" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black custom-text border custom-border custom-focus text-lg">
+                    </div>
+                </div>
+                
+                <div class="space-y-3 mt-4">
+                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2"> Hạng mục nhắc nhở</label>
+                    
+                    <!-- 1. BẢN TIN CÔNG VIỆC -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-clipboard-list text-blue-500 w-5 text-center"></i> 1. Bản tin Công việc buổi sáng </span>
+                        <input type="checkbox" id="chk-task" ${state.notificationSettings.notifyTasks ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+                    
+                    <!-- 2. CẢNH BÁO CHÁY TÚI -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-500 w-5 text-center"></i> 2. Cảnh báo "Cháy túi" </span>
+                        <input type="checkbox" id="chk-budget" ${state.notificationSettings.notifyBudgets ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+
+                    <!-- 3. KỶ LUẬT MỤC TIÊU -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bullseye text-indigo-500 w-5 text-center"></i> 3. Nhắc nhở Kỷ luật Mục tiêu </span>
+                        <input type="checkbox" id="chk-goal" ${state.notificationSettings.notifyGoals !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+
+                    <!-- 4. ĐÒI NỢ / TRẢ NỢ -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-handshake text-amber-500 w-5 text-center"></i> 4. Nhắc nhở "Đòi nợ / Trả nợ" </span>
+                        <input type="checkbox" id="chk-debt" ${state.notificationSettings.notifyDebts ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+
+                    <!-- 5. CHUYẾN ĐI & QUỶ CHUNG -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-plane-departure text-pink-500 w-5 text-center"></i> 5. Thông báo Chuyến đi & Quỹ chung </span>
+                        <input type="checkbox" id="chk-trip" ${state.notificationSettings.notifyTrips !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+
+                    <!-- 6. BÁO CÁO CUỐI THÁNG -->
+                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-chart-pie text-emerald-500 w-5 text-center"></i> 6. Báo cáo Tài chính Cuối tháng </span>
+                        <input type="checkbox" id="chk-report" ${state.notificationSettings.notifyReports !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
+                    </label>
+                </div>
+                
+                <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">
+                    Lưu Cấu Hình Nhắc Nhở
+                </button>
+            </form>
+        `;
+
+        document.getElementById("frm-email-notify").onsubmit = (e) => {
+          e.preventDefault();
+
+          // Đồng bộ toàn bộ 6 mục vào bộ nhớ State thực tế
+          state.notificationSettings.email =
+            document.getElementById("set-email").value;
+          state.notificationSettings.time =
+            document.getElementById("set-time").value;
+          state.notificationSettings.notifyTasks =
+            document.getElementById("chk-task").checked;
+          state.notificationSettings.notifyBudgets =
+            document.getElementById("chk-budget").checked;
+          state.notificationSettings.notifyGoals =
+            document.getElementById("chk-goal").checked;
+          state.notificationSettings.notifyDebts =
+            document.getElementById("chk-debt").checked;
+          state.notificationSettings.notifyTrips =
+            document.getElementById("chk-trip").checked;
+          state.notificationSettings.notifyReports =
+            document.getElementById("chk-report").checked;
+
+          saveData();
+          syncToGoogle();
+          addLog(
+            "Cài đặt",
+            `Cập nhật cấu hình email nhận bản tin: ${state.notificationSettings.email || "Trống"}`,
+          );
+          playSound("success");
+
+          alert(
+            "Sòng phẳng luôn đại ka! Đã lưu trọn bộ cấu hình 6 hạng mục nhắc nhở thành công.",
+          );
+        };
+
+        // ========================================================
+        // 👆 KẾT THÚC ĐOẠN CHÈN 👆
+        // ========================================================
 
         document.getElementById("logs-container").innerHTML =
           state.logs.length === 0
@@ -4298,6 +4443,46 @@
               const wN = state.wallets.find((x) => x.id === data.walletId);
               if (wN) wN.balance += data.type === "income" ? amt : -amt;
             }
+
+            // --- LOGIC CHECK VƯỢT NGÂN SÁCH ĐỂ BẮN MAIL KHẨN CẤP ---
+            if (
+              data.type === "expense" &&
+              state.notificationSettings &&
+              state.notificationSettings.notifyBudgets
+            ) {
+              const { m: cm, y: cy } = getSelectedMonth();
+              // Tìm xem giao dịch này có thuộc ngân sách nào không
+              const relatedBudget = state.budgets.find(
+                (b) => b.categoryId === data.category,
+              );
+              if (relatedBudget) {
+                // Tính tổng đã chi cho ngân sách này
+                const totalSpent =
+                  state.transactions
+                    .filter(
+                      (t) =>
+                        t.category === data.category &&
+                        t.type === "expense" &&
+                        new Date(t.date).getMonth() === cm &&
+                        new Date(t.date).getFullYear() === cy,
+                    )
+                    .reduce((a, t) => a + t.amount, 0) + data.amount; // Cộng luôn khoản vừa nhập
+
+                const percent = (totalSpent / relatedBudget.amount) * 100;
+                if (percent >= 90) {
+                  const catName = state.categories.find(
+                    (c) => c.id === data.category,
+                  )?.name;
+                  const msg =
+                    percent > 100
+                      ? `🔴 CẢNH BÁO ĐỎ: Danh mục "${catName}" đã VƯỢT MỨC ${percent.toFixed(1)}% ngân sách! (Đã tiêu: ${formatMoney(totalSpent)} / ${formatMoney(relatedBudget.amount)}).`
+                      : `🟠 Cảnh báo Vàng: Danh mục "${catName}" đã xài hết ${percent.toFixed(1)}% ngân sách. Cẩn thận cháy túi!`;
+
+                  // Bắn lệnh gửi Email khẩn cấp lên Google
+                  syncToGoogle("alert_budget", msg);
+                }
+              }
+            }
             // NẾU ĐANG MỞ MÀN HÌNH CHI TIẾT CHUYẾN ĐI, RENDER LẠI NÓ
             if (currentViewTripId) {
               renderTripDetailContent();
@@ -4743,37 +4928,134 @@
             .join("");
 
           body.innerHTML = `
-  <form id="frm-debt" class="space-y-4">
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Đối tượng</label>
-      <input type="text" id="d-person" required placeholder="Tên người nợ/cho vay" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus custom-placeholder">
-    </div>
+            <form id="frm-debt" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Đối tượng</label>
+                <input type="text" id="d-person" required placeholder="Tên con nợ / chủ nợ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
+              </div>
 
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VND)</label>
-      <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus custom-placeholder">
-    </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VND)</label>
+                  <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus text-danger-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót trả/thu</label>
+                  <input type="date" id="d-due-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus text-sm">
+                </div>
+              </div>
 
-    <div class="flex gap-4">
-      <div class="flex-1">
-        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Loại nợ</label>
-        <select id="d-type" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-            <option value="lend">Tôi cho vay (Rút ví)</option>
-            <option value="borrow">Tôi đi vay (Nhận tiền)</option>
-        </select>
-      </div>
-      <div class="flex-1">
-        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ví giao dịch</label>
-        <select id="d-wallet" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">${walletOptions}</select>
-      </div>
-    </div>
+              <div class="flex gap-4">
+                <div class="flex-1">
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Loại nợ</label>
+                  <select id="d-type" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
+                      <option value="lend">Tôi cho vay (Rút ví)</option>
+                      <option value="borrow">Tôi đi vay (Nhận tiền)</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ví giao dịch</label>
+                  <select id="d-wallet" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">${walletOptions}</select>
+                </div>
+              </div>
 
-    <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">
-        Lưu khoản nợ
-    </button>
-  </form>
-`;
-          document.getElementById("frm-debt").onsubmit = addDebt;
+              <!-- SIÊU CUSTOM NHẮC NỢ (NGÀY & GIỜ & EMAIL) -->
+              <div class="custom-bg-card p-4 rounded-2xl border custom-border mt-2 shadow-sm">
+                 <div class="flex items-center justify-between mb-2">
+                     <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-rose-500"></i> Hẹn giờ nhắc nợ tự động</label>
+                     <input type="checkbox" id="d-has-remind" onchange="document.getElementById('d-remind-box').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-rose-500 cursor-pointer">
+                 </div>
+                 <div id="d-remind-box" class="hidden space-y-3 pt-3 border-t custom-border border-dashed">
+                     <input type="email" id="d-email" placeholder="Email người cần nhắc..." class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border outline-none font-medium custom-text">
+                     <div class="flex gap-2">
+                         <div class="flex-1">
+                             <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Nhắc trước hạn</label>
+                             <select id="d-remind-days" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
+                                 <option value="1">Trước 1 ngày</option>
+                                 <option value="2">Trước 2 ngày</option>
+                                 <option value="3">Trước 3 ngày</option>
+                                 <option value="4">Trước 4 ngày</option>
+                             </select>
+                         </div>
+                         <div class="flex-1">
+                             <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Giờ gửi Mail</label>
+                             <input type="time" id="d-time" value="08:00" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
+                         </div>
+                     </div>
+                 </div>
+              </div>
+
+              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu khoản nợ</button>
+            </form>
+          `;
+
+          // Tự động điền ngày đáo hạn mặc định là hôm nay
+          document.getElementById("d-due-date").value =
+            getToday().split("T")[0];
+
+          document.getElementById("frm-debt").onsubmit = (e) => {
+            e.preventDefault();
+            const amt = getRawNumber(document.getElementById("d-amount").value);
+            if (amt <= 0) return alert("Số tiền không hợp lệ!");
+
+            const person = document.getElementById("d-person").value;
+            const type = document.getElementById("d-type").value;
+            const dueDate = document.getElementById("d-due-date").value;
+
+            // Gói dữ liệu nhắc nợ siêu chi tiết đẩy lên Google Script
+            let reminder = null;
+            if (document.getElementById("d-has-remind").checked) {
+              reminder = {
+                email: document.getElementById("d-email").value,
+                time: document.getElementById("d-time").value, // Giờ nhắc (VD: 08:00)
+                daysBefore: parseInt(
+                  document.getElementById("d-remind-days").value,
+                ), // Số ngày nhắc trước hạn
+              };
+            }
+
+            const newDebt = {
+              id: "debt-" + generateId(),
+              person: person,
+              amount: amt,
+              paidAmount: 0,
+              type: type,
+              status: "active",
+              date: new Date().toISOString(),
+              dueDate: dueDate, // <--- BẮT BUỘC PHẢI CÓ ĐỂ SCRIPT TÍNH TOÁN NGÀY
+              reminder: reminder,
+            };
+
+            state.debts.unshift(newDebt);
+
+            // Ghi nhận vào sổ giao dịch
+            state.transactions.unshift({
+              id: generateId(),
+              type: type === "borrow" ? "income" : "expense",
+              amount: amt,
+              category: "c9",
+              walletId: document.getElementById("d-wallet").value,
+              date: getToday().replace("T", " "),
+              note:
+                type === "borrow" ? `Vay từ ${person}` : `Cho ${person} mượn`,
+            });
+            const w = state.wallets.find(
+              (x) => x.id === document.getElementById("d-wallet").value,
+            );
+            if (w) w.balance += type === "borrow" ? amt : -amt;
+
+            addLog("Sổ nợ", `Đã lưu khoản nợ với ${person}`);
+            saveData();
+
+            // Bắn Data cập nhật ngay lập tức lên Google Script
+            if (typeof window.syncToGoogle === "function")
+              window.syncToGoogle();
+
+            closeModal();
+            updateGlobalHeader();
+            if (state.currentView === "debts") renderDebts();
+            playSound("success");
+          };
         } else if (type === "debtPayment") {
           const debt = state.debts.find((d) => d.id === id);
           if (!debt) return;
@@ -6440,38 +6722,67 @@
           void modal.offsetWidth;
 
           title.innerText = "Thêm Công Việc Mới";
+
+          // Lấy email mặc định từ Settings (nếu có) để điền sẵn cho lẹ
+          const defaultEmail = state.notificationSettings?.email || "";
+
           body.innerHTML = `
                 <form id="frm-task" class="space-y-4">
                   <div>
                     <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên công việc</label>
                     <input type="text" id="task-name" required placeholder="VD: Đóng tiền trọ, Mua đồ..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
                   </div>
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tính chất công việc</label>
-                    <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                        <option value="normal">Bình thường </option>
-                        <option value="expense">💸 Liên quan Chi tiền </option>
-                        <option value="income">💰 Liên quan Thu tiền </option>
-                    </select>
+                  
+                  <div class="flex gap-3">
+                      <div class="flex-1">
+                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tính chất</label>
+                        <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
+                            <option value="normal">Bình thường</option>
+                            <option value="expense">💸 Chi tiền</option>
+                            <option value="income">💰 Thu tiền</option>
+                        </select>
+                      </div>
+                      <div class="flex-1">
+                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót</label>
+                        <input type="datetime-local" id="task-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
+                      </div>
                   </div>
+
                   <div id="task-amt-box" class="hidden">
                     <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VNĐ)</label>
                     <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="task-amt" placeholder="0 đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-primary-500 border custom-border custom-focus">
-                    <p class="text-[10px] custom-text-secondary mt-1 italic">* App sẽ hỏi ghi tự động vào sổ khi ông hoàn thành Task này.</p>
                   </div>
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót (Deadline)</label>
-                    <!-- ĐỔI SANG datetime-local ĐỂ CHỌN CẢ NGÀY LẪN GIỜ -->
-                    <input type="datetime-local" id="task-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
+                  
+                  <!-- KHU VỰC CÀI ĐẶT NHẮC NHỞ RIÊNG CHO TASK NÀY -->
+                  <div class="custom-bg-card dark:bg-gray-800 p-4 rounded-2xl border custom-border mt-2">
+                      <div class="flex items-center justify-between mb-2">
+                          <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-amber-500"></i> Nhắc nhở Email</label>
+                          <input type="checkbox" id="task-has-reminder" onchange="document.getElementById('task-reminder-settings').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-amber-500 cursor-pointer">
+                      </div>
+                      
+                      <div id="task-reminder-settings" class="hidden space-y-3 mt-3 pt-3 border-t custom-border border-dashed">
+                          <div>
+                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Gửi thông báo tới Email</label>
+                              <input type="email" id="task-email" value="${defaultEmail}" placeholder="Nhập email người nhận..." class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-medium custom-text border custom-border">
+                          </div>
+                          <div>
+                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Thời gian nhắc nhở (Trước Deadline)</label>
+                              <select id="task-remind-time" class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-bold custom-text border custom-border">
+                                  <option value="0">Đúng giờ Deadline</option>
+                                  <option value="15">Trước 15 phút</option>
+                                  <option value="60">Trước 1 tiếng</option>
+                                  <option value="1440">Trước 1 ngày</option>
+                              </select>
+                          </div>
+                      </div>
                   </div>
+
                   <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lên Lịch Công Việc</button>
                 </form>
               `;
 
-          // Lấy thẳng getToday() vì nó trả về định dạng YYYY-MM-DDTHH:mm chuẩn xác luôn
+          // Set default date
           document.getElementById("task-date").value = getToday();
-
-          document.getElementById("task-date").value = getToday().split("T")[0];
 
           document.getElementById("frm-task").onsubmit = (e) => {
             e.preventDefault();
@@ -6484,6 +6795,18 @@
                 "Việc liên quan đến tiền bạc thì phải nhập số tiền chứ!",
               );
 
+            // Gom dữ liệu nhắc nhở
+            const hasReminder =
+              document.getElementById("task-has-reminder").checked;
+            const reminderData = hasReminder
+              ? {
+                  email: document.getElementById("task-email").value,
+                  minutesBefore: parseInt(
+                    document.getElementById("task-remind-time").value,
+                  ),
+                }
+              : null;
+
             state.tasks.push({
               id: "task-" + generateId(),
               name: document.getElementById("task-name").value,
@@ -6491,6 +6814,7 @@
               amount: amt,
               date: document.getElementById("task-date").value,
               isCompleted: false,
+              reminder: reminderData, // LƯU VÀO ĐÂY ĐỂ BACKEND LẤY XỬ LÝ
             });
 
             addLog(
@@ -7105,15 +7429,74 @@
           }
 
           // CÀI ĐẶT
+          // CÀI ĐẶT CHUYẾN ĐI (TRIP SETTINGS)
           else if (currentTripTab === "settings") {
+            // TẠO FORM NHẬP EMAIL & CÀI NGÀY NHẮC RIÊNG CHO TỪNG THÀNH VIÊN
+            let membersEmailHtml = `<p class="text-xs custom-text-secondary italic text-center py-4">Chuyến đi này không có thành viên nào.</p>`;
+            if (trip.members && trip.members.length > 0) {
+              membersEmailHtml = trip.members
+                .map(
+                  (m, i) => `
+                    <div class="p-4 mb-3 custom-bg-card rounded-2xl border custom-border shadow-sm">
+                        <p class="text-xs font-black uppercase custom-text mb-3 flex items-center gap-2"><i class="fa-solid fa-user-astronaut text-primary-500"></i> ${m.name}</p>
+                        <input type="email" id="mem-email-${i}" value="${m.email || ""}" placeholder="Nhập Email của ${m.name}..." class="w-full p-3 mb-3 custom-bg-input rounded-xl text-sm outline-none border custom-border custom-focus">
+                        <div class="flex items-center gap-3">
+                            <label class="text-[10px] font-bold custom-text-secondary uppercase">Nhắc đồ trước:</label>
+                            <select id="mem-remind-${i}" class="flex-1 p-2 custom-bg-input rounded-xl text-xs font-bold border custom-border outline-none custom-text">
+                                <option value="0" ${m.remindDays == 0 ? "selected" : ""}>Không nhắc</option>
+                                <option value="1" ${m.remindDays == 1 ? "selected" : ""}>1 ngày</option>
+                                <option value="2" ${m.remindDays == 2 ? "selected" : ""}>2 ngày</option>
+                                <option value="3" ${m.remindDays == 3 ? "selected" : ""}>3 ngày</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                )
+                .join("");
+            }
+
             tabContentHtml = `
-            <div class="p-4">
-                <div class="custom-bg-card dark:bg-gray-800 p-8 rounded-[2rem] border custom-border custom-shadow-sm text-center">
-                    <i class="fa-solid fa-person-digging text-5xl text-primary-500 mb-4 opacity-80"></i>
-                    <h4 class="font-black text-lg custom-text mb-2">Đang nâng cấp tính năng!</h4>
-                    <p class="text-sm custom-text-secondary">Chức năng cài đặt thông báo và chỉnh sửa chuyến đi sẽ sớm ra mắt.</p>
-                </div>
+            <div class="p-4 space-y-5 pb-20">
+                <form id="frm-trip-settings" class="space-y-4">
+                    <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm">
+                        <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-4 flex items-center gap-2"><i class="fa-solid fa-suitcase-rolling text-blue-500"></i> Tùy chỉnh Nhắc Hành Trình</h4>
+                        <div class="bg-gray-50 dark:bg-gray-700/30 p-2 rounded-2xl border custom-border border-dashed">
+                            ${membersEmailHtml}
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-4 bg-gray-800 hover:bg-black dark:bg-gray-100 dark:hover:bg-white dark:text-black text-white rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">
+                        Lưu Cài Đặt Lịch Trình
+                    </button>
+                </form>
             </div>`;
+
+            setTimeout(() => {
+              document.getElementById("frm-trip-settings").onsubmit = (e) => {
+                e.preventDefault();
+
+                // Lưu riêng rẽ cài đặt cho từng người
+                if (trip.members) {
+                  trip.members.forEach((m, i) => {
+                    m.email =
+                      document.getElementById(`mem-email-${i}`)?.value.trim() ||
+                      "";
+                    m.remindDays = parseInt(
+                      document.getElementById(`mem-remind-${i}`)?.value || 0,
+                    );
+                  });
+                }
+
+                saveData();
+                if (typeof window.syncToGoogle === "function")
+                  window.syncToGoogle();
+
+                playSound("success");
+                alert(
+                  "Đã lưu thiết lập nhắc nhở từng người! Đừng quên cài đặt Sync ở Google Script chạy hàng giờ nhé.",
+                );
+                renderTripDetailContent(trip);
+              };
+            }, 50);
           }
 
           // --- 4. TẠO NÚT NỔI (FAB) TÙY THEO TAB ---
@@ -7387,6 +7770,40 @@
         saveData();
         renderTripDetailContent(trip);
         playSound("success");
+      };
+
+      // ==========================================
+      // API ĐỒNG BỘ DỮ LIỆU LÊN GOOGLE APPS SCRIPT
+      // ==========================================
+
+      // BƯỚC QUAN TRỌNG: ÔNG DÁN CÁI LINK WEB APP CỦA GOOGLE VÀO ĐÂY!
+      const GAS_URL =
+        "https://script.google.com/macros/s/AKfycbzwHk55hBoTsBRopbwI0Bt0D4leIEJ22lK48V2oXQv4VxYz7BzBr7G04G6l0FnThxeC/exec";
+
+      window.syncToGoogle = (action = "sync", alertMsg = "") => {
+        if (!state.notificationSettings || !state.notificationSettings.email)
+          return;
+
+        // Chỉ đẩy lên dữ liệu Nhỏ & Đang hoạt động để web chạy cực nhanh (Không đẩy transaction chứa hình)
+        const activeTasks = state.tasks.filter((t) => !t.isCompleted);
+        const activeDebts = state.debts.filter((d) => d.status === "active");
+
+        const payload = {
+          action: action,
+          message: alertMsg,
+          settings: state.notificationSettings,
+          tasks: activeTasks,
+          debts: activeDebts,
+        };
+
+        fetch(GAS_URL, {
+          method: "POST",
+          mode: "no-cors", // Dùng no-cors để tránh lỗi bảo mật chéo domain của Google
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then(() => console.log("Đã Sync dữ liệu lên Google!"))
+          .catch((e) => console.error("Lỗi Sync Google:", e));
       };
     </script>
     <dialog
