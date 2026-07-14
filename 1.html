@@ -1064,40 +1064,6 @@
           <div id="trips-container" class="space-y-4 pb-10 px-2"></div>
         </div>
         <div
-          id="view-tasks"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
-        >
-          <div
-            class="flex custom-bg-input dark:bg-gray-700 p-1.5 rounded-2xl mb-2 border custom-border px-2 mx-2 sm:mx-0"
-          >
-            <button
-              id="tab-task-today"
-              onclick="switchTaskTab('today')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-primary custom-shadow-sm text-white"
-            >
-              🔥 Hôm nay
-            </button>
-            <button
-              id="tab-task-upcoming"
-              onclick="switchTaskTab('upcoming')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
-            >
-              📅 Sắp tới
-            </button>
-            <button
-              id="tab-task-done"
-              onclick="switchTaskTab('done')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
-            >
-              ✅ Đã xong
-            </button>
-          </div>
-          <div
-            id="tasks-content-list"
-            class="space-y-3 pb-20 px-2 sm:px-0"
-          ></div>
-        </div>
-        <div
           id="view-settings"
           class="view-section max-w-3xl mx-auto space-y-6"
         >
@@ -1776,7 +1742,6 @@
         debts: [],
         trips: [],
         logs: [],
-        tasks: [],
         darkMode: false,
         currentView: "dashboard",
         dashFilter: { time: "month", chart: "doughnut" },
@@ -1961,7 +1926,6 @@
           "map",
           "budgets",
           "debts",
-          "tasks",
           "goals",
           "trips",
           "wallets",
@@ -2063,7 +2027,6 @@
             state.goals =
               savedData.goals || JSON.parse(JSON.stringify(DEFAULT_GOALS));
             state.logs = savedData.logs || [];
-            state.tasks = savedData.tasks || [];
             if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
             if (savedData.userProfile)
               state.userProfile = savedData.userProfile;
@@ -2129,7 +2092,6 @@
           goals: state.goals,
           badges: state.badges || [],
           logs: state.logs,
-          tasks: state.tasks,
           dashFilter: state.dashFilter,
           userProfile: state.userProfile,
           debts: state.debts,
@@ -2225,7 +2187,6 @@
           desktopOnly: true,
         },
         { id: "goals", icon: "fa-flag-checkered", label: "Mục tiêu" },
-        { id: "tasks", icon: "fa-clipboard-list", label: "Công việc" },
         { id: "wallets", icon: "fa-wallet", label: "Ví", desktopOnly: true },
         { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
         { id: "trips", icon: "fa-plane-departure", label: "Chuyến đi" },
@@ -2248,7 +2209,6 @@
           { id: "map", icon: "fa-map-location-dot" },
           { id: "budgets", icon: "fa-money-bill-wave" },
           { id: "debts", icon: "fa-hand-holding-dollar" },
-          { id: "tasks", icon: "fa-clipboard-check" },
           { id: "goals", icon: "fa-bullseye" },
           { id: "trips", icon: "fa-plane-departure" },
           { id: "wallets", icon: "fa-wallet" },
@@ -2318,7 +2278,6 @@
         if (viewId === "map") initMap();
         if (viewId === "budgets") renderBudgets();
         if (viewId === "goals") renderGoals();
-        if (viewId === "tasks") renderTasks();
         if (viewId === "trips") renderTrips();
         if (viewId === "wallets") renderWallets();
         if (viewId === "settings") renderSettings();
@@ -2896,40 +2855,6 @@
           insightBox = document.getElementById("dash-insight-box");
         }
         insightBox.innerHTML = insightHtml;
-
-        // --- THÊM WIDGET NHẮC VIỆC HÔM NAY VÀO DASHBOARD ---
-        const todayStrForTask = getToday().split("T")[0];
-        const urgentTasks = state.tasks.filter(
-          (t) => !t.isCompleted && t.date.split("T")[0] <= todayStrForTask,
-        );
-
-        let taskWidget = document.getElementById("dash-task-widget");
-        if (!taskWidget) {
-          insightBox.insertAdjacentHTML(
-            "afterend",
-            `<div id="dash-task-widget" class="mt-4" onclick="switchView('tasks')"></div>`,
-          );
-          taskWidget = document.getElementById("dash-task-widget");
-        }
-
-        if (urgentTasks.length > 0) {
-          taskWidget.innerHTML = `
-              <div class="p-4 bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl custom-shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-all text-white flex items-center justify-between">
-                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-xl shadow-inner border border-white/30">
-                       <i class="fa-solid fa-fire"></i>
-                    </div>
-                    <div>
-                       <p class="font-black text-base">Hôm nay có ${urgentTasks.length} việc cần làm!</p>
-                       <p class="text-xs text-white/80 font-medium">Bấm vào để xử lý ngay cho nóng</p>
-                    </div>
-                 </div>
-                 <i class="fa-solid fa-chevron-right text-white/50"></i>
-              </div>
-            `;
-        } else {
-          taskWidget.innerHTML = ``; // Ẩn nếu không có việc
-        }
 
         if (chartInstance) chartInstance.destroy();
 
@@ -4060,7 +3985,6 @@
       function handleFabClick() {
         if (state.currentView === "budgets") openModal("budget");
         else if (state.currentView === "goals") openModal("goal");
-        else if (state.currentView === "tasks") openModal("task");
         else if (state.currentView === "wallets") openModal("walletAction");
         else if (state.currentView === "debts") openModal("debt");
         else if (state.currentView === "trips") openModal("trip");
@@ -4398,9 +4322,9 @@
 
             <form id="frm-split" class="space-y-4">
               <!-- CHỌN GIAO DỊCH TỪNG CÁI MỘT -->
-              <div class="custom-bg-input p-4 rounded-2xl border custom-border">
+              <div class="custom-bg-input dark:bg-gray-800 p-4 rounded-2xl border custom-border">
                 <label class="block text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-receipt"></i> 1. Chọn khoản chi để chia</label>
-                <select id="split-tx-select" onchange="handleSplitTxChange(this)" required class="w-full p-3 custom-bg-input dark:bg-gray-700 rounded-xl outline-none font-bold custom-text border custom-border custom-focus">
+                <select id="split-tx-select" onchange="handleSplitTxChange(this)" required class="w-full p-3 bg-white dark:bg-gray-700 rounded-xl outline-none font-bold custom-text border custom-border custom-focus">
                   ${txOptions}
                 </select>
               </div>
@@ -4619,18 +4543,18 @@
               </div>
               
               <!-- CHECKBOX QUỸ CHUNG -->
-              <div class="flex items-center gap-3 bg-pink-400 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
+              <div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
                 <input type="checkbox" id="trip-shared" class="w-5 h-5 accent-pink-500 cursor-pointer" onchange="document.getElementById('trip-members-box').classList.toggle('hidden', !this.checked)">
-                <label for="trip-shared" class="font-bold text-pink-600 dark:text-pink-600 cursor-pointer select-none">
+                <label for="trip-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none">
                   <i class="fa-solid fa-users"></i> Sử dụng Quỹ Chung
                 </label>
               </div>
 
               <!-- Ô NHẬP TÊN (Chỉ hiện khi bật Quỹ Chung) -->
-              <div id="trip-members-box" class="hidden custom-bg-card dark:bg-gray-800/50 p-4 rounded-2xl border custom-border">
+              <div id="trip-members-box" class="hidden bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border custom-border">
                 <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên những người đi cùng (Phẩy để ngăn cách)</label>
                 <input type="text" id="trip-members" placeholder="VD: Tèo, Tí, Đen" class="w-full p-3 custom-bg-input rounded-xl outline-none font-medium custom-text border custom-border custom-focus">
-                <p class="text-[10px] custom-text-secondary mt-1 italic">* Bạn là Thủ quỹ nên không cần nhập tên mình vào đây.</p>
+                <p class="text-[10px] custom-text-secondary mt-1 italic">* Ông là Thủ quỹ nên không cần nhập tên mình vào đây.</p>
               </div>
 
               <div class="flex flex-col gap-4">
@@ -4831,91 +4755,6 @@
             saveData();
             closeModal();
             renderGoals();
-          };
-        } else if (type === "addTripFund") {
-          const trip = state.trips.find((t) => t.id === id);
-          if (!trip || !trip.members || trip.members.length === 0)
-            return alert("Chuyến đi này không có thành viên nộp quỹ!");
-
-          title.innerText = "Nộp Tiền Quỹ";
-          const memOpts = trip.members
-            .map((m, i) => `<option value="${i}">${m.name}</option>`)
-            .join("");
-
-          body.innerHTML = `
-            <form id="frm-add-fund" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ai là người nộp tiền?</label>
-                    <select id="fund-mem-idx" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                        ${memOpts}
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền nộp (VNĐ)</label>
-                    <input type="text" id="fund-amt" required inputmode="numeric" oninput="formatInputCurrency(event)" placeholder="0 đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus">
-                </div>
-                <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Ghi Nhận Đóng Quỹ</button>
-            </form>
-          `;
-
-          document.getElementById("frm-add-fund").onsubmit = (e) => {
-            e.preventDefault();
-            const idx = document.getElementById("fund-mem-idx").value;
-            const amt = getRawNumber(document.getElementById("fund-amt").value);
-            if (amt <= 0) return alert("Vui lòng nhập số tiền hợp lệ!");
-
-            const member = trip.members[idx];
-            member.contributed += amt;
-
-            state.transactions.unshift({
-              id: generateId(),
-              type: "income",
-              amount: amt,
-              category: "c9",
-              walletId: state.wallets.length > 0 ? state.wallets[0].id : null,
-              tripId: trip.id,
-              date: getToday().replace("T", " "),
-              note: `[Nộp Quỹ] ${member.name} đóng tiền`,
-            });
-
-            addLog("Quỹ chung", `${member.name} nộp ${formatMoney(amt)}`);
-            saveData();
-            closeModal();
-            renderTripDetailContent(trip);
-            playSound("success");
-          };
-        } else if (type === "itinerary") {
-          // Lấy thông tin chuyến đi dựa trên tripIdPreset truyền vào
-          const trip = state.trips.find((t) => t.id === tripIdPreset);
-          if (!trip) return;
-
-          title.innerText = "Thêm Điểm Đến";
-          body.innerHTML = `
-            <form id="frm-itinerary" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên địa điểm / Hoạt động</label>
-                    <input type="text" id="iti-name" required placeholder="VD: Quảng trường Lâm Viên, Chợ đêm..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                </div>
-                <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Thêm Vào Lịch Trình</button>
-            </form>
-          `;
-
-          document.getElementById("frm-itinerary").onsubmit = (e) => {
-            e.preventDefault();
-            const place = document.getElementById("iti-name").value.trim();
-            if (!place) return;
-
-            if (!trip.itinerary) trip.itinerary = [];
-            trip.itinerary.push({
-              id: "iti-" + generateId(),
-              name: place,
-              isCompleted: false,
-            });
-
-            saveData();
-            closeModal();
-            renderTripDetailContent(trip); // Refresh lại màn hình chi tiết
-            playSound("pop");
           };
         } else if (type === "buffer") {
           title.innerText = "Khoanh vùng phân tích";
@@ -6198,260 +6037,6 @@
         if (changed) saveData();
       }
 
-      // ==========================================
-      // SIÊU TÍNH NĂNG: QUẢN LÝ CÔNG VIỆC (TASKS)
-      // ==========================================
-
-      let currentTaskTab = "today";
-
-      window.switchTaskTab = (tab) => {
-        currentTaskTab = tab;
-        const tabs = ["today", "upcoming", "done"];
-        tabs.forEach((t) => {
-          const el = document.getElementById(`tab-task-${t}`);
-          if (el) {
-            el.className =
-              t === tab
-                ? "flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-primary custom-shadow-sm text-white"
-                : "flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95 border border-transparent";
-          }
-        });
-        renderTasks();
-      };
-
-      window.renderTasks = () => {
-        const container = document.getElementById("tasks-content-list");
-        if (!container) return;
-
-        const todayStr = getToday().split("T")[0];
-        let filteredTasks = [];
-
-        if (currentTaskTab === "today") {
-          // Lọc các task có phần "Ngày" nhỏ hơn hoặc bằng Hôm nay (Bao gồm việc Hôm nay và Việc đã quá hạn)
-          filteredTasks = state.tasks.filter(
-            (t) => !t.isCompleted && t.date.split("T")[0] <= todayStr,
-          );
-        } else if (currentTaskTab === "upcoming") {
-          // Việc của tương lai
-          filteredTasks = state.tasks.filter(
-            (t) => !t.isCompleted && t.date.split("T")[0] > todayStr,
-          );
-        } else if (currentTaskTab === "done") {
-          filteredTasks = state.tasks.filter((t) => t.isCompleted);
-        }
-
-        // Sắp xếp ưu tiên thời gian
-        filteredTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (filteredTasks.length === 0) {
-          const emptyState = {
-            today: {
-              title: "Hôm nay không còn việc nào",
-              desc: "Bạn đã hoàn thành hoặc chưa có công việc nào cho hôm nay.",
-              image:
-                "https://cdn-icons-png.flaticon.com/512/15757/15757011.png",
-            },
-            upcoming: {
-              title: "Chưa có kế hoạch sắp tới",
-              desc: "Hãy tạo một công việc mới để không bỏ lỡ kế hoạch của bạn.",
-              image: "https://cdn-icons-png.flaticon.com/512/6811/6811275.png",
-            },
-            done: {
-              title: "Chưa hoàn thành công việc nào",
-              desc: "Hoàn thành nhiệm vụ đầu tiên để theo dõi tiến độ của bạn.",
-              image: "https://cdn-icons-png.flaticon.com/512/9733/9733327.png",
-            },
-          };
-
-          const state = emptyState[currentTaskTab];
-
-          container.innerHTML = `
-    <div class="flex flex-col items-center justify-center py-12">
-      <img
-        src="${state.image}"
-        alt="${state.title}"
-        class="w-36 h-36 object-contain mb-4 opacity-90 pointer-events-none select-none"
-        draggable="false"
-      />
-
-      <h3 class="text-lg font-bold custom-text">
-        ${state.title}
-      </h3>
-
-      <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
-        ${state.desc}
-      </p>
-    </div>
-  `;
-          return;
-        }
-
-        container.innerHTML = filteredTasks
-          .map((t) => {
-            const isFin = t.type === "expense";
-            const isInc = t.type === "income";
-            let badge = "";
-            if (isFin)
-              badge = `<span class="bg-rose-100 text-rose-600 dark:bg-rose-900/30 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-rose-200 dark:border-rose-800"><i class="fa-solid fa-arrow-trend-up"></i> Chi tiền</span>`;
-            if (isInc)
-              badge = `<span class="bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-emerald-200 dark:border-emerald-800"><i class="fa-solid fa-arrow-trend-down"></i> Thu tiền</span>`;
-
-            return `
-              <div class="relative overflow-hidden rounded-2xl custom-shadow-sm border custom-border swipe-item custom-bg-card dark:bg-gray-800">
-                  <div class="absolute inset-y-0 right-0 flex items-center z-0">
-                      ${!t.isCompleted ? `<button onclick="completeTask('${t.id}')" class="w-16 h-full bg-success-500 hover:bg-success-600 text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-check text-xl"></i></button>` : ""}
-                      <button onclick="deleteTask('${t.id}')" class="w-16 h-full bg-danger-500 hover:bg-danger-600 text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button>
-                  </div>
-                  
-                  <div class="relative p-4 w-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card flex items-start gap-4 ${t.isCompleted ? "opacity-60" : ""}">
-                      <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 border custom-border shadow-inner ${t.isCompleted ? "bg-success-50 text-success-500" : "bg-gray-50 dark:bg-gray-700 custom-text"}">
-                          ${t.isCompleted ? '<i class="fa-solid fa-check-double"></i>' : isFin ? "💸" : isInc ? "💰" : "📌"}
-                      </div>
-                      <div class="flex-1 min-w-0 mt-0.5">
-                          <p class="font-black text-sm custom-text truncate ${t.isCompleted ? "line-through" : ""}">${t.name}</p>
-                          <div class="flex items-center gap-2 mt-1 flex-wrap">
-                              <span class="text-[10px] custom-text-secondary font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(t.date)}</span>
-                              ${badge}
-                          </div>
-                          ${isFin || isInc ? `<p class="text-xs font-bold mt-1.5 ${isFin ? "text-rose-500" : "text-emerald-500"}">${isInc ? "+" : "-"}${formatMoney(t.amount)}</p>` : ""}
-                      </div>
-                  </div>
-              </div>`;
-          })
-          .join("");
-
-        if (typeof initSwipeActions === "function") initSwipeActions();
-      };
-
-      window.completeTask = (id) => {
-        const t = state.tasks.find((x) => x.id === id);
-        if (!t) return;
-
-        t.isCompleted = true;
-        saveData();
-        playSound("success");
-
-        // Tự động hỏi Ghi sổ giao dịch cực đỉnh
-        if (t.type === "expense" || t.type === "income") {
-          setTimeout(() => {
-            if (
-              confirm(
-                `Tuyệt vời! Ông có muốn tự động ghi nhận khoản ${t.type === "expense" ? "CHI" : "THU"} ${formatMoney(t.amount)} này vào Sổ Giao Dịch luôn không?`,
-              )
-            ) {
-              state.transactions.unshift({
-                id: generateId(),
-                type: t.type,
-                amount: t.amount,
-                category: "c9", // Xếp vào Khác
-                walletId: state.wallets[0].id, // Lấy ví mặc định
-                date: getToday().replace("T", " "),
-                note: `[Task] ${t.name}`,
-              });
-              const w = state.wallets.find((x) => x.id === state.wallets[0].id);
-              if (w) w.balance += t.type === "income" ? t.amount : -t.amount;
-
-              saveData();
-              alert("Đã tự động đẩy vào sổ giao dịch. Gọn gàng!");
-              updateAllViews();
-            }
-          }, 300); // Đợi tiếng ting ting kêu xong mới hỏi
-        }
-
-        renderTasks();
-        renderDashboard(); // Update lại widget
-      };
-
-      window.deleteTask = (id) => {
-        if (!confirm("Xóa công việc này?")) return;
-        state.tasks = state.tasks.filter((t) => t.id !== id);
-        saveData();
-        renderTasks();
-        renderDashboard();
-        playSound("trash");
-      };
-
-      // TÌM ĐẾN HÀM openModal() VÀ DÁN NHÁNH NÀY VÀO TRONG:
-      // (Nhớ là phải dán cái else if này vào bên trong hàm window.openModal nhé)
-      const oldOpenModal = window.openModal;
-      window.openModal = function (type, id = null, preset = null) {
-        if (type === "task") {
-          const modal = document.getElementById("global-modal");
-          const title = document.getElementById("modal-title");
-          const body = document.getElementById("modal-body");
-          modal.classList.remove("hidden");
-          void modal.offsetWidth;
-
-          title.innerText = "Thêm Công Việc Mới";
-          body.innerHTML = `
-                <form id="frm-task" class="space-y-4">
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên công việc</label>
-                    <input type="text" id="task-name" required placeholder="VD: Đóng tiền trọ, Mua đồ..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tính chất công việc</label>
-                    <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                        <option value="normal">Bình thường </option>
-                        <option value="expense">💸 Liên quan Chi tiền </option>
-                        <option value="income">💰 Liên quan Thu tiền </option>
-                    </select>
-                  </div>
-                  <div id="task-amt-box" class="hidden">
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VNĐ)</label>
-                    <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="task-amt" placeholder="0 đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-primary-500 border custom-border custom-focus">
-                    <p class="text-[10px] custom-text-secondary mt-1 italic">* App sẽ hỏi ghi tự động vào sổ khi ông hoàn thành Task này.</p>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót (Deadline)</label>
-                    <!-- ĐỔI SANG datetime-local ĐỂ CHỌN CẢ NGÀY LẪN GIỜ -->
-                    <input type="datetime-local" id="task-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                  </div>
-                  <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lên Lịch Công Việc</button>
-                </form>
-              `;
-
-          // Lấy thẳng getToday() vì nó trả về định dạng YYYY-MM-DDTHH:mm chuẩn xác luôn
-          document.getElementById("task-date").value = getToday();
-
-          document.getElementById("task-date").value = getToday().split("T")[0];
-
-          document.getElementById("frm-task").onsubmit = (e) => {
-            e.preventDefault();
-            const type = document.getElementById("task-type").value;
-            const amt =
-              getRawNumber(document.getElementById("task-amt").value) || 0;
-
-            if (type !== "normal" && amt <= 0)
-              return alert(
-                "Việc liên quan đến tiền bạc thì phải nhập số tiền chứ!",
-              );
-
-            state.tasks.push({
-              id: "task-" + generateId(),
-              name: document.getElementById("task-name").value,
-              type: type,
-              amount: amt,
-              date: document.getElementById("task-date").value,
-              isCompleted: false,
-            });
-
-            addLog(
-              "Công việc",
-              `Lên lịch: ${document.getElementById("task-name").value}`,
-            );
-            saveData();
-            closeModal();
-            if (state.currentView === "tasks") renderTasks();
-            renderDashboard();
-            playSound("pop");
-          };
-          return;
-        }
-        // Gọi lại hàm cũ nếu không phải là "task"
-        oldOpenModal(type, id, preset);
-      };
-
       // Render thẻ chuyến đi
       function renderTrips() {
         const container = document.getElementById("trips-container");
@@ -6513,7 +6098,7 @@
                 
                 <div onclick="openTripDetail('${trip.id}')" class="relative p-0 w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col custom-bg-card dark:bg-gray-800 border custom-border">
                   <!-- Tiêu đề Boarding Pass -->
-                  <div class="flex justify-between items-center p-4 border-b-2 border-dashed custom-border custom-bg-card">
+                  <div class="flex justify-between items-center p-4 border-b-2 border-dashed custom-border bg-gray-50/50 dark:bg-gray-800/50">
                      <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shadow-inner shrink-0"><i class="fa-solid fa-plane"></i></div>
                         <div>
@@ -6538,7 +6123,7 @@
                   </div>
                   
                   <!-- Ngân sách -->
-                  <div class="p-5 custom-bg-card mt-auto">
+                  <div class="p-5 bg-gray-50 dark:bg-gray-800/80 mt-auto">
                       <div class="flex justify-between text-xs mb-2 font-bold">
                          <span class="custom-text-secondary">Ngân sách: ${formatMoney(trip.budget)}</span>
                          <span class="${pct > 90 ? "text-danger-500" : "text-primary-500"}">${formatMoney(spent)} (${pct}%)</span>
@@ -6710,478 +6295,369 @@
 
       // 3. Hàm render Báo cáo & Lịch sử của 1 Chuyến đi cụ thể
       window.renderTripDetailContent = (tripArg) => {
-        // Khai báo biến lưu trạng thái Tab hiện tại (Mặc định mở Tổng quan)
-        window.currentTripTab = "overview";
+        const trip =
+          tripArg || state.trips.find((t) => t.id === currentViewTripId);
+        if (!trip) return;
+        if (window.tripChartInstance) {
+          window.tripChartInstance.destroy();
+          window.tripChartInstance = null;
+        }
 
-        // Hàm chuyển Tab
-        window.switchTripTab = (tab) => {
-          window.currentTripTab = tab;
-          renderTripDetailContent(); // Render lại giao diện
-          playSound("click");
-        };
+        // Lọc giao dịch của chuyến này
+        const tripTxs = state.transactions.filter((t) => t.tripId === trip.id);
+        const spent = tripTxs
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + t.amount, 0);
+        const remain = trip.budget - spent;
+        const pct = Math.min((spent / trip.budget) * 100, 100).toFixed(1);
 
-        window.renderTripDetailContent = (tripArg) => {
-          const trip =
-            tripArg || state.trips.find((t) => t.id === currentViewTripId);
-          if (!trip) return;
-
-          // Xóa biểu đồ cũ để tránh lỗi tràn bộ nhớ
-          if (window.tripChartInstance) {
-            window.tripChartInstance.destroy();
-            window.tripChartInstance = null;
-          }
-
-          // --- 1. TÍNH TOÁN DỮ LIỆU CHUNG ---
-          const tripTxs = state.transactions.filter(
-            (t) => t.tripId === trip.id,
-          );
-          const tripExpTxs = tripTxs
-            .filter((t) => t.type === "expense")
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-          const spent = tripExpTxs.reduce((sum, t) => sum + t.amount, 0);
-          const remain = trip.budget - spent;
-          const pct = Math.min((spent / trip.budget) * 100, 100).toFixed(1);
-          const tripDays = Math.max(
-            1,
-            Math.ceil(
-              (new Date(trip.endDate) - new Date(trip.startDate)) /
-                (1000 * 60 * 60 * 24),
-            ) + 1,
-          );
-          const avgDaily = spent / tripDays;
-
-          const expByCat = tripExpTxs.reduce((acc, t) => {
+        // Gom nhóm chi tiêu theo danh mục
+        const expByCat = tripTxs
+          .filter((t) => t.type === "expense")
+          .reduce((acc, t) => {
             acc[t.category] = (acc[t.category] || 0) + t.amount;
             return acc;
           }, {});
 
-          // --- 2. THANH ĐIỀU HƯỚNG TAB (NAV) ---
-          const tabs = [
-            { id: "overview", name: "Tổng quan" },
-            { id: "transactions", name: "Giao dịch" },
-            { id: "itinerary", name: "Lịch trình" },
-            { id: "fund", name: "Quỹ chung" },
-            { id: "settings", name: "Cài đặt" },
-          ];
+        // --- LOGIC GIAO DIỆN QUỸ CHUNG ---
+        let sharedFundHtml = "";
+        if (trip.isSharedFund && trip.members && trip.members.length > 0) {
+          let membersListHtml = trip.members
+            .map((m, index) => {
+              const mSpent = m.spent || 0; // Tổng tiền nó bị chia (Tiêu)
+              const diff = m.contributed - mSpent; // Công thức của ông: Nộp - Tiêu
 
-          const navHtml = `
-          <div class="flex overflow-x-auto gap-2 px-4 py-3 custom-bg-header border-b custom-border scrollbar-hide shrink-0 sticky top-0 z-30">
-            ${tabs
-              .map(
-                (t) => `
-              <button onclick="switchTripTab('${t.id}')" class="px-4 py-2.5 whitespace-nowrap rounded-xl text-xs font-bold transition-all ${currentTripTab === t.id ? "custom-primary text-white custom-shadow-sm" : "custom-bg-input dark:bg-gray-800 custom-text-secondary border custom-border"}">
-                ${t.name}
-              </button>
-            `,
-              )
-              .join("")}
-          </div>
-        `;
+              let statusBadge = "";
+              if (diff > 0)
+                statusBadge = `<span class="text-[10px] text-orange-500 bg-orange-50 px-2 py-0.5 rounded font-bold border border-orange-100">Thừa ${formatMoney(diff)}</span>`;
+              else if (diff < 0)
+                statusBadge = `<span class="text-[10px] text-danger-500 bg-danger-50 px-2 py-0.5 rounded font-bold border border-danger-100">Thiếu ${formatMoney(Math.abs(diff))}</span>`;
+              else
+                statusBadge = `<span class="text-[10px] text-success-500 bg-success-50 px-2 py-0.5 rounded font-bold border border-success-100">Vừa khít</span>`;
 
-          // --- 3. KHỞI TẠO HTML CHO TỪNG TAB ---
-          let tabContentHtml = "";
-
-          // TỔNG QUAN
-          if (currentTripTab === "overview") {
-            let catHtml = Object.entries(expByCat)
-              .sort((a, b) => b[1] - a[1])
-              .map(([catId, amt]) => {
-                const cat = state.categories.find((c) => c.id === catId) || {
-                  name: "Khác",
-                  icon: "📦",
-                  color: "bg-gray-100 text-gray-500",
-                };
-                const cPct = ((amt / spent) * 100).toFixed(1);
-                return `
-                  <div class="flex items-center justify-between mb-3 last:mb-0">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-lg shadow-sm border custom-border">${cat.icon}</div>
-                      <div>
-                        <p class="text-sm font-bold custom-text">${cat.name}</p>
-                        <p class="text-[10px] custom-text-secondary font-medium mt-0.5">${cPct}% tổng chi phí</p>
-                      </div>
+              return `
+                <div class="flex items-center justify-between p-3 border-b custom-border last:border-0">
+                    <div>
+                        <p class="font-bold text-sm custom-text">${m.name}</p>
+                        <p class="text-[11px] custom-text-secondary mt-1">
+                            Nộp: <span class="font-black text-success-500">${formatMoney(m.contributed)}</span> | 
+                            Bị chia: <span class="font-black text-danger-500">${formatMoney(mSpent)}</span>
+                        </p>
                     </div>
-                    <p class="font-black text-sm text-danger-500">-${formatMoney(amt)}</p>
-                  </div>`;
-              })
-              .join("");
-            if (!catHtml)
-              catHtml = `
-<div class="flex flex-col items-center justify-center py-8">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/603/603148.png"
-    alt="Chưa có chi tiêu"
-    class="w-36 h-36 mb-4 object-contain opacity-90 pointer-events-none select-none"
-    draggable="false"
-  />
-
-  <h3 class="text-lg font-bold custom-text">
-    Chưa có chi tiêu
-  </h3>
-
-  <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
-    Chưa có khoản chi tiêu nào được ghi nhận trong danh mục này.
-  </p>
-</div>
-`;
-
-            tabContentHtml = `
-              <div class="p-4 space-y-5">
-                  <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <div class="flex justify-between items-center mb-5">
-                       <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl shadow-sm border custom-border"><i class="fa-solid fa-wallet"></i></div>
-                       <div class="text-right">
-                         <p class="text-[10px] uppercase tracking-widest font-bold custom-text-secondary mb-1">Ngân sách (${tripDays} ngày)</p>
-                         <p class="font-black text-2xl custom-text">${formatMoney(trip.budget)}</p>
-                       </div>
-                     </div>
-                     <div class="flex justify-between text-sm mb-2 font-bold">
-                       <span class="custom-text-secondary">Đã chi: <span class="custom-text">${formatMoney(spent)}</span></span>
-                       <span class="${pct > 90 ? "text-danger-500" : "text-indigo-500"}">${pct}%</span>
-                     </div>
-                     <div class="h-3 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border mb-4">
-                       <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%"></div>
-                     </div>
-                     <div class="grid grid-cols-2 gap-3 mt-4">
-                        <div class="custom-bg-card dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
-                            <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">TB/Ngày</p>
-                            <p class="font-black custom-text">${formatMoney(avgDaily)}</p>
-                        </div>
-                        <div class="custom-bg-card dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
-                            <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">Còn lại</p>
-                            <p class="font-black ${remain < 0 ? "text-danger-500" : "custom-text"}">${formatMoney(remain)}</p>
-                        </div>
-                     </div>
-                  </div>
-                  
-                  <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-5 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Cơ cấu chi tiêu</h4>
-                     <div class="h-48 relative w-full mb-6" id="trip-chart-container">
-                        <canvas id="tripExpenseChart"></canvas>
-                     </div>
-                     ${catHtml}
-                  </div>
-              </div>`;
-          } else if (currentTripTab === "transactions") {
-            let txHtml = tripTxs
-              .map((tx) => {
-                const isInc = tx.type === "income";
-                const cat = state.categories.find(
-                  (c) => c.id === tx.category,
-                ) || { name: "Khác", icon: "📦", color: "bg-gray-100" };
-                const imgHtml =
-                  tx.image && tx.image.length > 50
-                    ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border custom-border">`
-                    : `<div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xl shrink-0 border custom-border">${cat.icon}</div>`;
-                let splitInfoHtml = "";
-                if (
-                  tx.isSplit &&
-                  tx.splitDetails &&
-                  tx.splitDetails.length > 0
-                ) {
-                  splitInfoHtml = `<div class="mt-1.5 flex flex-wrap gap-1.5">${tx.splitDetails.map((d) => `<span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 text-[9px] px-1.5 py-0.5 rounded font-bold">${d}</span>`).join("")}</div>`;
-                }
-                return `
-                 <div onclick="openModal('transaction', '${tx.id}')" class="flex items-start gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl mb-3 cursor-pointer border custom-border transition-colors custom-bg-card shadow-sm">
-                    ${imgHtml}
-                    <div class="flex-1 min-w-0 mt-0.5">
-                      <p class="font-bold text-sm custom-text truncate">${cat.name}</p>
-                      <p class="text-[11px] custom-text-secondary truncate mt-0.5 font-medium">${tx.note || "Không có ghi chú"}</p>
-                      ${splitInfoHtml}
-                    </div>
-                    <div class="text-right shrink-0 ml-2 mt-0.5">
-                      <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
-                      <!-- ĐÃ BỎ HÀM CẮT CHUỖI, HIỂN THỊ ĐẦY ĐỦ NGÀY GIỜ -->
-                      <p class="text-[10px] custom-text-secondary mt-1 font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
-                    </div>
-                 </div>`;
-              })
-              .join("");
-
-            if (!txHtml)
-              txHtml = `
-<div class="flex flex-col items-center justify-center py-10">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
-    alt="Chưa có giao dịch"
-    class="w-36 h-36 mb-4 object-contain opacity-90 pointer-events-none select-none"
-    draggable="false"
-  />
-
-  <h3 class="text-lg font-bold custom-text">
-    Chưa có giao dịch nào
-  </h3>
-
-  <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
-    Hãy thêm giao dịch đầu tiên để bắt đầu theo dõi thu nhập và chi tiêu.
-  </p>
-</div>
-`;
-            tabContentHtml = `<div class="p-4">${txHtml}</div>`;
-          }
-
-          // LỊCH TRÌNH
-          else if (currentTripTab === "itinerary") {
-            if (!trip.itinerary) trip.itinerary = [];
-            let itineraryHtml = trip.itinerary
-              .map((item) => {
-                const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.name} ${trip.name}`)}`;
-                return `
-                <div class="flex items-center justify-between p-4 mb-3 rounded-2xl border custom-border custom-bg-card hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors shadow-sm">
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <button onclick="toggleItinerary('${trip.id}', '${item.id}')" class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${item.isCompleted ? "bg-success-500 border-success-500 text-white" : "border-gray-300 dark:border-gray-600 text-transparent"}">
-                            <i class="fa-solid fa-check text-xs"></i>
-                        </button>
-                        <p class="font-bold text-base truncate ${item.isCompleted ? "line-through text-gray-400 dark:text-gray-500" : "custom-text"} cursor-pointer" onclick="toggleItinerary('${trip.id}', '${item.id}')">${item.name}</p>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0 ml-2">
-                        <a href="${mapLink}" target="_blank" class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 transition-colors border border-blue-100 dark:border-blue-800" title="Chỉ đường Google Map">
-                            <i class="fa-solid fa-location-arrow text-sm"></i>
-                        </a>
-                        <button onclick="deleteItinerary('${trip.id}', '${item.id}')" class="w-10 h-10 rounded-xl bg-danger-50 text-danger-500 dark:bg-danger-900/30 dark:text-danger-400 flex items-center justify-center hover:bg-danger-100 transition-colors border border-danger-100 dark:border-danger-800" title="Xóa điểm này">
-                            <i class="fa-solid fa-trash text-sm"></i>
+                    <div class="flex flex-col items-end gap-2 shrink-0 ml-2">
+                        ${statusBadge}
+                        <button onclick="addFundContribution('${trip.id}', ${index})" class="text-[10px] bg-primary-100 text-primary-700 hover:bg-primary-200 px-3 py-1.5 rounded-lg font-bold transition-colors">
+                           <i class="fa-solid fa-plus"></i> Nộp thêm
                         </button>
                     </div>
                 </div>`;
-              })
-              .join("");
+            })
+            .join("");
 
-            if (trip.itinerary.length === 0)
-              itineraryHtml = `
-<div class="flex flex-col items-center justify-center py-10">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/8324/8324489.png"
-    alt="Chưa có lịch trình"
-    class="w-36 h-36 mb-4 object-contain opacity-90 pointer-events-none select-none"
-    draggable="false"
-  />
+          sharedFundHtml = `
+              <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm mt-5">
+                 <div class="flex justify-between items-center mb-4">
+                     <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2"><i class="fa-solid fa-users text-pink-500"></i> Đối soát Quỹ Chung</h4>
+                     ${trip.isSettled ? '<span class="text-xs font-bold bg-gray-200 text-gray-600 px-2 py-1 rounded-lg">Đã chốt sổ</span>' : '<span class="text-xs font-bold bg-pink-100 text-pink-600 px-2 py-1 rounded-lg">Đang hoạt động</span>'}
+                 </div>
+                 
+                 <div class="bg-white dark:bg-gray-800 rounded-xl border custom-border">
+                     ${membersListHtml}
+                 </div>
+                 
+                 ${
+                   !trip.isSettled
+                     ? `
+                 <button onclick="finalizeTripFund('${trip.id}')" class="w-full mt-4 py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:brightness-110 text-white rounded-xl font-black text-sm shadow-[0_4px_15px_rgba(244,63,94,0.4)] active:scale-95 transition-all">
+                    <i class="fa-solid fa-scale-balanced"></i> CHỐT SỔ & TỰ ĐỘNG GHI NỢ
+                 </button>`
+                     : ""
+                 }
+              </div>
+            `;
+        }
 
-  <h3 class="text-lg font-bold custom-text">
-    Chưa có lịch trình nào
-  </h3>
+        // --- LOGIC LỊCH TRÌNH CHUYẾN ĐI ---
+        if (!trip.itinerary) trip.itinerary = []; // Khởi tạo nếu chưa có
+        let itineraryHtml = trip.itinerary
+          .map((item) => {
+            // Nhúng link Google Map (Tìm kiếm: Tên địa điểm + Tên chuyến đi)
+            const ggMapQuery = encodeURIComponent(
+              `${item.name.trim()} ${trip.name.trim()}`,
+            );
+            const mapLink = `https://www.google.com/maps/search/?api=1&query=${ggMapQuery}`;
 
-  <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
-    Hãy thêm các địa điểm và hoạt động để lên kế hoạch cho chuyến đi của bạn.
-  </p>
-</div>
-`;
-            tabContentHtml = `<div class="p-4">${itineraryHtml}</div>`;
-          }
-
-          // QUỸ CHUNG
-          else if (currentTripTab === "fund") {
-            let sharedFundHtml = `
-<div class="flex flex-col items-center justify-center py-10">
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/18254/18254737.png"
-    alt="Chưa có quỹ chung"
-    class="w-36 h-36 mb-4 object-contain opacity-90 pointer-events-none select-none"
-    draggable="false"
-  />
-
-  <h3 class="text-lg font-bold custom-text">
-    Chưa sử dụng Quỹ chung
-  </h3>
-
-  <p class="mt-2 text-center custom-text-secondary max-w-xs leading-6">
-    Chuyến đi này chưa kích hoạt tính năng Quỹ chung để quản lý chi phí.
-  </p>
-</div>
-`;
-
-            if (trip.isSharedFund && trip.members && trip.members.length > 0) {
-              let membersListHtml = trip.members
-                .map((m, index) => {
-                  const mSpent = m.spent || 0;
-                  const diff = m.contributed - mSpent;
-
-                  let statusBadge = "";
-                  if (diff > 0)
-                    statusBadge = `<span class="text-[10px] text-orange-500 bg-orange-50 px-2 py-0.5 rounded font-bold border border-orange-100">Thừa ${formatMoney(diff)}</span>`;
-                  else if (diff < 0)
-                    statusBadge = `<span class="text-[10px] text-danger-500 bg-danger-50 px-2 py-0.5 rounded font-bold border border-danger-100">Thiếu ${formatMoney(Math.abs(diff))}</span>`;
-                  else
-                    statusBadge = `<span class="text-[10px] text-success-500 bg-success-50 px-2 py-0.5 rounded font-bold border border-success-100">Vừa khít</span>`;
-
-                  return `
-                    <div class="flex items-center custom-bg-card justify-between p-3 border-b custom-border last:border-0">
-                        <div>
-                            <p class="font-bold text-sm custom-text">${m.name}</p>
-                            <p class="text-[11px] custom-text-secondary mt-1">
-                                Nộp: <span class="font-black text-success-500">${formatMoney(m.contributed)}</span> | 
-                                Chi: <span class="font-black text-danger-500">${formatMoney(mSpent)}</span>
-                            </p>
-                        </div>
-                        <div class="flex flex-col items-end gap-2 shrink-0 ml-2">
-                            ${statusBadge}
-                        </div>
-                    </div>`;
-                })
-                .join("");
-
-              sharedFundHtml = `
-                  <!-- Thẻ chứa Nút Bản Đồ (Chuyển từ Overview sang đây) -->
-                  
-
-                  <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <div class="flex justify-between items-center mb-4">
-                         <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2"><i class="fa-solid fa-users text-pink-500"></i>Quỹ Chung</h4>
-                         ${trip.isSettled ? '<span class="text-xs font-bold custom-bg-card ext-gray-600 px-2 py-1 rounded-lg">Đã chốt sổ</span>' : '<span class="text-xs font-bold custom-bg-card text-pink-600 px-2 py-1 rounded-lg">Đang hoạt động</span>'}
-                     </div>
-                     <div class="bg-white dark:bg-gray-800 rounded-xl border custom-border">
-                         ${membersListHtml}
-                     </div>
-                     ${
-                       !trip.isSettled
-                         ? `
-                     <button onclick="finalizeTripFund('${trip.id}')" class="w-full mt-4 py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:brightness-110 text-white rounded-xl font-black text-sm shadow-[0_4px_15px_rgba(244,63,94,0.4)] active:scale-95 transition-all">
-                        <i class="fa-solid fa-scale-balanced"></i> TỔNG KẾT CHUYẾN ĐI
-                     </button>`
-                         : ""
-                     }
-                  </div>
-                `;
-            }
-            tabContentHtml = `<div class="p-4">${sharedFundHtml}</div>`;
-          }
-
-          // CÀI ĐẶT
-          else if (currentTripTab === "settings") {
-            tabContentHtml = `
-            <div class="p-4">
-                <div class="custom-bg-card dark:bg-gray-800 p-8 rounded-[2rem] border custom-border custom-shadow-sm text-center">
-                    <i class="fa-solid fa-person-digging text-5xl text-primary-500 mb-4 opacity-80"></i>
-                    <h4 class="font-black text-lg custom-text mb-2">Đang nâng cấp tính năng!</h4>
-                    <p class="text-sm custom-text-secondary">Chức năng cài đặt thông báo và chỉnh sửa chuyến đi sẽ sớm ra mắt.</p>
+            return `
+            <div class="flex items-center justify-between p-3 border-b custom-border last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <button onclick="toggleItinerary('${trip.id}', '${item.id}')" class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${item.isCompleted ? "bg-success-500 border-success-500 text-white" : "border-gray-300 dark:border-gray-600 text-transparent"}">
+                        <i class="fa-solid fa-check text-xs"></i>
+                    </button>
+                    <p class="font-bold text-sm truncate ${item.isCompleted ? "line-through text-gray-400 dark:text-gray-500" : "custom-text"} cursor-pointer" onclick="toggleItinerary('${trip.id}', '${item.id}')">${item.name}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 ml-2">
+                    <a href="${mapLink}" target="_blank" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center hover:bg-blue-100 transition-colors border border-blue-100 dark:border-blue-800" title="Chỉ đường Google Map">
+                        <i class="fa-solid fa-location-arrow text-xs"></i>
+                    </a>
+                    <button onclick="deleteItinerary('${trip.id}', '${item.id}')" class="w-8 h-8 rounded-xl bg-danger-50 text-danger-500 dark:bg-danger-900/30 dark:text-danger-400 flex items-center justify-center hover:bg-danger-100 transition-colors border border-danger-100 dark:border-danger-800" title="Xóa điểm này">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
                 </div>
             </div>`;
-          }
+          })
+          .join("");
 
-          // --- 4. TẠO NÚT NỔI (FAB) TÙY THEO TAB ---
-          let fabHtml = "";
-          if (
-            currentTripTab === "overview" ||
-            currentTripTab === "transactions"
-          ) {
-            fabHtml = `
-                <button onclick="openModal('transaction', null, '${trip.id}')" class="w-14 h-14 custom-primary rounded-full shadow-[0_8px_20px_rgba(var(--primary-hue),_100%,_50%,_0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
-                    <i class="fa-solid fa-plus"></i>
+        const itinerarySection = `
+          <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm mt-5">
+             <div class="flex justify-between items-center mb-4">
+                 <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-indigo-500"></i> Lịch trình điểm đến
+                 </h4>
+                 <button onclick="addItinerary('${trip.id}')" class="text-xs font-bold text-primary-500 bg-primary-50 dark:bg-primary-900/30 dark:border-primary-800 px-3 py-1.5 rounded-lg border border-primary-100 hover:bg-primary-100">
+                    <i class="fa-solid fa-plus"></i> Thêm điểm
+                 </button>
+             </div>
+             
+             <div class="bg-white dark:bg-gray-800 rounded-xl border custom-border ${trip.itinerary.length > 0 ? "" : "hidden"}">
+                 ${itineraryHtml}
+             </div>
+             
+             ${
+               trip.itinerary.length === 0
+                 ? `
+             <div class="text-center py-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border custom-border border-dashed">
+                 <p class="text-xs custom-text-secondary font-medium">Chưa có điểm đến nào. Hãy thêm vào để bắt đầu hành trình!</p>
+             </div>`
+                 : ""
+             }
+          </div>
+        `;
+
+        // Build HTML: Báo cáo danh mục
+        let catHtml = Object.entries(expByCat)
+          .sort((a, b) => b[1] - a[1])
+          .map(([catId, amt]) => {
+            const cat = state.categories.find((c) => c.id === catId) || {
+              name: "Khác",
+              icon: "📦",
+              color: "bg-gray-100 text-gray-500",
+            };
+            const cPct = ((amt / spent) * 100).toFixed(1);
+            return `
+             <div class="flex items-center justify-between mb-3 last:mb-0">
+               <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-lg shadow-sm border custom-border">${cat.icon}</div>
+                 <div>
+                   <p class="text-sm font-bold custom-text">${cat.name}</p>
+                   <p class="text-[10px] custom-text-secondary font-medium mt-0.5">${cPct}% tổng chi phí</p>
+                 </div>
+               </div>
+               <p class="font-black text-sm text-danger-500">-${formatMoney(amt)}</p>
+             </div>
+           `;
+          })
+          .join("");
+
+        if (!catHtml)
+          catHtml = `<p class="text-center text-sm custom-text-secondary italic">Chưa có chi tiêu nào được ghi nhận.</p>`;
+
+        // Build HTML: Danh sách Lịch sử giao dịch
+        let txHtml = tripTxs
+          .map((tx) => {
+            const isInc = tx.type === "income";
+            const cat = state.categories.find((c) => c.id === tx.category) || {
+              name: "Khác",
+              icon: "📦",
+              color: "bg-gray-100",
+            };
+            const imgHtml =
+              tx.image && tx.image.length > 50
+                ? `<img src="${tx.image}" class="w-12 h-12 object-cover rounded-xl shrink-0 border custom-border">`
+                : `<div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xl shrink-0 border custom-border">${cat.icon}</div>`;
+
+            // HIỂN THỊ CÁC NHÃN CHIA TIỀN (KIỆT, NHƯ, TÔI...)
+            let splitInfoHtml = "";
+            if (tx.isSplit && tx.splitDetails && tx.splitDetails.length > 0) {
+              splitInfoHtml =
+                `<div class="mt-1.5 flex flex-wrap gap-1.5">` +
+                tx.splitDetails
+                  .map(
+                    (d) =>
+                      `<span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 text-[9px] px-1.5 py-0.5 rounded font-bold">${d}</span>`,
+                  )
+                  .join("") +
+                `</div>`;
+            }
+
+            return `
+             <div onclick="openModal('transaction', '${tx.id}')" class="flex items-start gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl mb-2 cursor-pointer border custom-border transition-colors custom-bg-card">
+                ${imgHtml}
+                <div class="flex-1 min-w-0 mt-0.5">
+                  <p class="font-bold text-sm custom-text truncate">${cat.name}</p>
+                  <p class="text-[11px] custom-text-secondary truncate mt-0.5 font-medium">${tx.note || ""}</p>
+                  ${splitInfoHtml}
+                </div>
+                <div class="text-right shrink-0 ml-2 mt-0.5">
+                  <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                  <p class="text-[10px] custom-text-secondary mt-1 font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
+                </div>
+             </div>
+          `;
+          })
+          .join("");
+        if (!txHtml)
+          txHtml = `<div class="text-center py-6 opacity-50"><div class="text-4xl mb-2">🧾</div><p class="text-sm font-medium">Trống trơn!</p></div>`;
+
+        const tripDays = Math.max(
+          1,
+          Math.ceil(
+            (new Date(trip.endDate) - new Date(trip.startDate)) /
+              (1000 * 60 * 60 * 24),
+          ) + 1,
+        );
+        const avgDaily = spent / tripDays;
+
+        // ... thay thế khối HTML đầu tiên bằng đoạn này:
+        document.getElementById("td-content").innerHTML = `
+          <!-- Tổng quan ngân sách chuyến đi -->
+          <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
+             <div class="flex justify-between items-center mb-5">
+               <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl shadow-sm border custom-border"><i class="fa-solid fa-wallet"></i></div>
+               <div class="text-right">
+                 <p class="text-[10px] uppercase tracking-widest font-bold custom-text-secondary mb-1">Ngân sách (${tripDays} ngày)</p>
+                 <p class="font-black text-2xl custom-text">${formatMoney(trip.budget)}</p>
+               </div>
+             </div>
+             
+             <div class="flex justify-between text-sm mb-2 font-bold">
+               <span class="custom-text-secondary">Đã chi: <span class="custom-text">${formatMoney(spent)}</span></span>
+               <span class="${pct > 90 ? "text-danger-500" : "text-indigo-500"}">${pct}%</span>
+             </div>
+             <div class="h-3 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border mb-4">
+               <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%"></div>
+             </div>
+             
+             <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
+                    <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">TB/Ngày</p>
+                    <p class="font-black custom-text">${formatMoney(avgDaily)}</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
+                    <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">Còn lại</p>
+                    <p class="font-black ${remain < 0 ? "text-danger-500" : "custom-text"}">${formatMoney(remain)}</p>
+                </div>
+             </div>
+
+             <!-- 2 NÚT TÍNH NĂNG ĐỈNH CAO -->
+             <div class="flex gap-3 mt-5">
+                <button onclick="viewTripMap('${trip.id}')" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors border custom-border dark:border-blue-800">
+                    <i class="fa-solid fa-map-location-dot"></i> Bản đồ
                 </button>
-            `;
-          } else if (currentTripTab === "itinerary") {
-            fabHtml = `
-                <button onclick="openModal('itinerary', null, '${trip.id}')" class="w-14 h-14 custom-primary rounded-full shadow-[0_8px_20px_rgba(var(--primary-hue),_100%,_50%,_0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
-                    <i class="fa-solid fa-plus"></i>
+                <button onclick="openModal('splitBill', '${trip.id}')" class="flex-1 bg-pink-100 hover:bg-pink-200 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors border custom-border dark:border-pink-800">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Chia tiền
                 </button>
-            `;
-          } else if (
-            currentTripTab === "fund" &&
-            trip.isSharedFund &&
-            !trip.isSettled
-          ) {
-            fabHtml = `
-                <button onclick="openModal('addTripFund', '${trip.id}')" class="w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full  flex items-center justify-center text-white text-xl active:scale-90 transition-transform" title="Thu tiền quỹ">
-                    <i class="fa-solid fa-sack-dollar"></i>
-                </button>
-                <button onclick="openModal('splitBill', '${trip.id}')" class="w-14 h-14 bg-pink-500 hover:bg-pink-600 rounded-full  flex items-center justify-center text-white text-xl active:scale-90 transition-transform" title="Chia tiền">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
-                </button>
-                <button onclick="viewTripMap('${trip.id}')" class="w-14 h-14  bg-blue-500 hover:bg-blue-600 rounded-full  flex items-center justify-center text-white text-xl active:scale-90 transition-transform" title="bản đồ">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                </button>
-            `;
-          }
+             </div>
+          </div>
 
-          // Gắn Nút Nổi (FAB) vào góc dưới phải của màn hình
-          const fabContainerHtml = fabHtml
-            ? `<div class="absolute bottom-6 right-6 flex flex-col gap-3 z-50">${fabHtml}</div>`
-            : "";
+          ${sharedFundHtml}
+          ${itinerarySection}
 
-          // --- 5. RENDER TOÀN BỘ VÀO KHUNG ---
-          document.getElementById("td-content").innerHTML =
-            navHtml + tabContentHtml + fabContainerHtml;
+          <!-- Báo cáo phân bổ -->
+          <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm mt-5">
+             <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-5 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Cơ cấu chi tiêu</h4>
+             
+             <!-- KHUNG CHỨA BIỂU ĐỒ -->
+             <div class="h-48 relative w-full mb-6" id="trip-chart-container">
+                <canvas id="tripExpenseChart"></canvas>
+             </div>
 
-          // --- 6. VẼ PIE CHART NẾU ĐANG Ở TAB TỔNG QUAN ---
-          if (currentTripTab === "overview") {
-            setTimeout(() => {
-              const ctxTrip = document.getElementById("tripExpenseChart");
-              if (!ctxTrip) return;
+             ${catHtml}
+          </div>
 
-              if (spent > 0) {
-                const labels = Object.keys(expByCat).map(
-                  (id) =>
-                    state.categories.find((c) => c.id === id)?.name || "Khác",
-                );
-                const dataChart = Object.values(expByCat);
-                const bodyStyles = getComputedStyle(document.body);
-                const themePrimary =
-                  bodyStyles.getPropertyValue("--bg-primary").trim() ||
-                  "#4f46e5";
-                const bgColors = [
-                  themePrimary,
-                  "#10b981",
-                  "#f43f5e",
-                  "#f59e0b",
-                  "#8b5cf6",
-                  "#14b8a6",
-                  "#ec4899",
-                  "#06b6d4",
-                  "#84cc16",
-                ];
+          <!-- Giao dịch -->
+          <div class="custom-bg-card dark:bg-gray-800 p-4 rounded-[2rem] border custom-border custom-shadow-sm">
+             <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-4 mt-2 px-2 flex items-center gap-2"><i class="fa-solid fa-receipt text-indigo-500"></i> Lịch sử</h4>
+             ${txHtml}
+          </div>
+        `;
+        setTimeout(() => {
+          const ctxTrip = document.getElementById("tripExpenseChart");
+          if (!ctxTrip) return;
 
-                window.tripChartInstance = new Chart(ctxTrip, {
-                  type: "pie",
-                  data: {
-                    labels: labels,
-                    datasets: [
-                      {
-                        data: dataChart,
-                        backgroundColor: bgColors,
-                        borderWidth: 0,
-                        hoverOffset: 5,
-                      },
-                    ],
+          if (spent > 0) {
+            const labels = Object.keys(expByCat).map(
+              (id) => state.categories.find((c) => c.id === id)?.name || "Khác",
+            );
+            const dataChart = Object.values(expByCat);
+
+            const bodyStyles = getComputedStyle(document.body);
+            const themePrimary =
+              bodyStyles.getPropertyValue("--bg-primary").trim() || "#4f46e5";
+            const bgColors = [
+              themePrimary,
+              "#10b981",
+              "#f43f5e",
+              "#f59e0b",
+              "#8b5cf6",
+              "#14b8a6",
+              "#ec4899",
+              "#06b6d4",
+              "#84cc16",
+            ];
+
+            window.tripChartInstance = new Chart(ctxTrip, {
+              type: "pie",
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    data: dataChart,
+                    backgroundColor: bgColors,
+                    borderWidth: 0,
+                    hoverOffset: 5,
                   },
-                  options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    layout: { padding: 10 },
-                    plugins: { legend: { display: false } },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: 10 },
+                plugins: { legend: { display: false } },
+              },
+              plugins: [
+                {
+                  id: "iconPluginTrip",
+                  afterDraw: (chart) => {
+                    const { ctx, data } = chart;
+                    const meta = chart.getDatasetMeta(0);
+                    meta.data.forEach((element, index) => {
+                      const label = data.labels[index];
+                      const cat = state.categories.find(
+                        (c) => c.name === label,
+                      );
+                      if (!cat || !cat.icon) return;
+
+                      if (
+                        element.circumference !== undefined &&
+                        element.circumference < 0.28
+                      )
+                        return;
+
+                      const center = element.tooltipPosition();
+                      ctx.font = "20px serif";
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "middle";
+                      ctx.fillText(cat.icon, center.x, center.y);
+                    });
                   },
-                  plugins: [
-                    {
-                      id: "iconPluginTrip",
-                      afterDraw: (chart) => {
-                        const { ctx, data } = chart;
-                        const meta = chart.getDatasetMeta(0);
-                        meta.data.forEach((element, index) => {
-                          const cat = state.categories.find(
-                            (c) => c.name === data.labels[index],
-                          );
-                          if (
-                            !cat ||
-                            !cat.icon ||
-                            (element.circumference !== undefined &&
-                              element.circumference < 0.28)
-                          )
-                            return;
-                          const center = element.tooltipPosition();
-                          ctx.font = "20px serif";
-                          ctx.textAlign = "center";
-                          ctx.textBaseline = "middle";
-                          ctx.fillText(cat.icon, center.x, center.y);
-                        });
-                      },
-                    },
-                  ],
-                });
-              } else {
-                document.getElementById("trip-chart-container").style.display =
-                  "none";
-              }
-            }, 350);
+                },
+              ],
+            });
+          } else {
+            document.getElementById("trip-chart-container").style.display =
+              "none";
           }
-        }; // <--- ĐÓNG HÀM TẠI ĐÂY
+        }, 350);
       };
 
       // ==========================================
@@ -7358,18 +6834,24 @@
         </button>
         <h3
           id="td-title"
-          class="font-black text-lg custom-text dark:text-white truncate flex-1 ml-4 text-center mr-10"
+          class="font-black text-lg custom-text dark:text-white truncate flex-1 ml-4 text-center mr-2"
         >
           Chi tiết
         </h3>
+        <button
+          onclick="openModal('transaction', null, currentViewTripId)"
+          class="w-10 h-10 flex items-center justify-center rounded-full custom-primary text-white hover:brightness-95 active:scale-90 transition-transform custom-shadow-sm"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
       </div>
 
       <!-- Nội dung Báo cáo & Lịch sử -->
       <div
-        class="flex-1 overflow-y-auto pb-10 custom-scrollbar relative"
+        class="flex-1 overflow-y-auto p-4 space-y-6 pb-10 custom-scrollbar"
         id="td-content"
       >
-        <!-- JS sẽ đổ HTML thanh Tab, Báo cáo và Nút nổi (FAB) vào đây -->
+        <!-- JS sẽ đổ HTML báo cáo vào đây -->
       </div>
     </div>
   </body>
