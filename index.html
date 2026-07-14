@@ -393,7 +393,7 @@
           id="header-spacer"
           class="hidden md:block h-28 w-full shrink-0"
         ></div>
-        <div class="md:hidden h-8 w-full shrink-0"></div>
+        <div class="md:hidden h-4 w-full shrink-0"></div>
         <div
           id="view-dashboard"
           class="view-section active space-y-6 max-w-7xl mx-auto"
@@ -985,7 +985,7 @@
 
         <div
           id="view-budgets"
-          class="view-section space-y-6 max-w-5xl mx-auto pt-10"
+          class="view-section space-y-6 max-w-5xl mx-auto pt-0"
         >
           <div
             id="budgets-container"
@@ -995,7 +995,7 @@
 
         <div
           id="view-goals"
-          class="view-section space-y-6 max-w-5xl mx-auto pt-10"
+          class="view-section space-y-6 max-w-5xl mx-auto pt-0"
         >
           <div class="flex justify-between items-center px-2">
             <button
@@ -1013,7 +1013,7 @@
 
         <div
           id="view-wallets"
-          class="view-section space-y-6 max-w-6xl mx-auto pt-10"
+          class="view-section space-y-6 max-w-6xl mx-auto pt-0"
         >
           <div
             id="wallets-container"
@@ -1023,7 +1023,7 @@
 
         <div
           id="view-debts"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-0"
         >
           <!-- Thanh điều hướng Tab -->
           <div
@@ -1058,14 +1058,14 @@
 
         <div
           id="view-trips"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-0"
         >
           <div class="flex justify-between items-center px-2"></div>
           <div id="trips-container" class="space-y-4 pb-10 px-2"></div>
         </div>
         <div
           id="view-tasks"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-6"
+          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-0"
         >
           <div
             class="flex custom-bg-input dark:bg-gray-700 p-1.5 rounded-2xl mb-2 border custom-border px-2 mx-2 sm:mx-0"
@@ -2373,9 +2373,19 @@
             .map(
               (c) => `
                 <div class="relative overflow-hidden rounded-2xl border custom-border dark:border-gray-700 swipe-item custom-bg-card dark:bg-gray-800">
-                  <div class="absolute inset-y-0 right-0 flex items-center z-0">
-                    <button onclick="openModal('category', '${c.id}')" class="w-16 h-full bg-blue-50 text-blue-500 hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>
-                    <button onclick="deleteCategory('${c.id}')" class="w-16 h-full bg-danger-50 text-danger-500 hover:bg-danger-100"><i class="fa-solid fa-trash"></i></button>
+                  <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                    <button onclick="openModal('category', '${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                      <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                        <i class="fa-solid fa-pen"></i>
+                      </div>
+                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                    </button>
+                    <button onclick="deleteCategory('${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                      <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                        <i class="fa-solid fa-trash"></i>
+                      </div>
+                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                    </button>
                   </div>
 
                   <div class="relative p-4 custom-bg-card dark:bg-gray-800 flex items-center gap-3 transition-transform duration-200 swipe-content z-10">
@@ -3731,9 +3741,19 @@
               };
               return `
               <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
-                <div class="absolute inset-y-0 right-0 flex items-center z-0">
-                  <button onclick="openModal('transaction', '${tx.id}')" class="w-14 h-full bg-blue-50 text-blue-500"><i class="fa-solid fa-pen"></i></button>
-                  <button onclick="deleteTransaction('${tx.id}')" class="w-14 h-full bg-danger-50 text-danger-500"><i class="fa-solid fa-trash"></i></button>
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                  <button onclick="openModal('transaction', '${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                    <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                      <i class="fa-solid fa-pen"></i>
+                    </div>
+                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                  </button>
+                  <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                    <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                      <i class="fa-solid fa-trash"></i>
+                    </div>
+                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                  </button>
                 </div>
                 <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
                   <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
@@ -3798,12 +3818,18 @@
                   : "bg-primary-500";
             return `
 <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-    <div class="absolute inset-y-0 right-0 flex items-center z-0">
-        <button onclick="openModal('budget', '${b.id}')" class="w-16 h-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition-colors">
-            <i class="fa-solid fa-pen text-xl"></i>
+    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+        <button onclick="openModal('budget', '${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                <i class="fa-solid fa-pen"></i>
+            </div>
+            <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
         </button>
-        <button onclick="deleteBudget('${b.id}')" class="w-16 h-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-colors">
-            <i class="fa-solid fa-trash text-xl"></i>
+        <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                <i class="fa-solid fa-trash"></i>
+            </div>
+            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
         </button>
     </div>
 
@@ -3861,9 +3887,12 @@
 
             return `
       <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-        <div class="absolute inset-y-0 right-0 flex items-center z-0">
-          <button onclick="deleteGoal('${g.id}')" class="w-20 h-full bg-danger-500 text-white dark:bg-danger-900/40 dark:text-danger-400 hover:bg-danger-200 flex flex-col items-center justify-center transition-colors">
-            <i class="fa-solid fa-trash text-xl"></i>
+        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+          <button onclick="deleteGoal('${g.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
           </button>
         </div>
         <div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center">
@@ -3934,10 +3963,12 @@
         ${
           isDeletable
             ? `
-        <div class="absolute inset-y-0 right-0 flex items-center z-0">
-          <button onclick="deleteWallet('${w.id}')" class="w-24 h-full bg-danger-500 text-white flex flex-col items-center justify-center hover:bg-danger-600 transition-colors">
-            <i class="fa-solid fa-trash text-2xl mb-1"></i>
-            <span class="text-[10px] font-bold">Xóa Ví</span>
+        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-6 z-0">
+          <button onclick="deleteWallet('${w.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa Ví</span>
           </button>
         </div>`
             : ""
@@ -5414,12 +5445,13 @@
         const swipeItems = document.querySelectorAll(".swipe-item");
         swipeItems.forEach((item) => {
           const content = item.querySelector(".swipe-content");
-          if (!content) return;
+          const actionsBox = item.querySelector(".absolute.inset-y-0.right-0");
+          if (!content || !actionsBox) return;
+
           let startX = 0,
             currentX = 0,
             isDragging = false;
-          const threshold = -60,
-            maxOpen = -128;
+
           item.addEventListener(
             "touchstart",
             (e) => {
@@ -5429,12 +5461,16 @@
             },
             { passive: true },
           );
+
           item.addEventListener(
             "touchmove",
             (e) => {
               if (!isDragging) return;
               currentX = e.touches[0].clientX;
               let diffX = currentX - startX;
+              // Tự động đo độ rộng của cụm nút bấm bên dưới để mở cho vừa khít
+              const maxOpen = -(actionsBox.offsetWidth + 10);
+
               if (diffX < 0) {
                 content.style.transform = `translateX(${Math.max(diffX, maxOpen - 20)}px)`;
               } else {
@@ -5443,11 +5479,16 @@
             },
             { passive: true },
           );
+
           item.addEventListener("touchend", () => {
             if (!isDragging) return;
             isDragging = false;
             content.classList.add("transition-transform", "duration-200");
+
             let diffX = currentX - startX;
+            const maxOpen = -(actionsBox.offsetWidth + 10);
+            const threshold = maxOpen / 2; // Kéo qua một nửa thì tự động mở hết
+
             if (diffX < threshold) {
               content.style.transform = `translateX(${maxOpen}px)`;
             } else {
@@ -6298,9 +6339,25 @@
 
             return `
               <div class="relative overflow-hidden rounded-2xl custom-shadow-sm border custom-border swipe-item custom-bg-card dark:bg-gray-800">
-                  <div class="absolute inset-y-0 right-0 flex items-center z-0">
-                      ${!t.isCompleted ? `<button onclick="completeTask('${t.id}')" class="w-16 h-full bg-success-500 hover:bg-success-600 text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-check text-xl"></i></button>` : ""}
-                      <button onclick="deleteTask('${t.id}')" class="w-16 h-full bg-danger-500 hover:bg-danger-600 text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-xl"></i></button>
+                  <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                      ${
+                        !t.isCompleted
+                          ? `
+                      <button onclick="completeTask('${t.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                        <div class="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                          <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span class="text-[10px] font-bold custom-text-secondary group-active:text-indigo-500">Xong</span>
+                      </button>`
+                          : ""
+                      }
+                      
+                      <button onclick="deleteTask('${t.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                        <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                          <i class="fa-solid fa-trash"></i>
+                        </div>
+                        <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                      </button>
                   </div>
                   
                   <div class="relative p-4 w-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card flex items-start gap-4 ${t.isCompleted ? "opacity-60" : ""}">
@@ -6504,10 +6561,12 @@
 
             return `
              <div class="relative overflow-hidden rounded-3xl swipe-item shadow-sm mb-4 group cursor-pointer hover:-translate-y-1 transition-transform">
-                <div class="absolute inset-y-0 right-0 flex items-center z-0">
-                  <button onclick="deleteTrip('${trip.id}')" class="w-20 h-full bg-danger-500 text-white flex flex-col items-center justify-center hover:bg-danger-600 transition-colors">
-                    <i class="fa-solid fa-trash text-2xl mb-1"></i>
-                    <span class="text-[10px] font-bold">Xóa</span>
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                  <button onclick="deleteTrip('${trip.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                    <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                      <i class="fa-solid fa-trash"></i>
+                    </div>
+                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
                   </button>
                 </div>
                 
