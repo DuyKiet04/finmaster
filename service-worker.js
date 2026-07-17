@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v27'; // Tăng version để ép trình duyệt cập nhật
+const CACHE_NAME = 'finmaster-v29'; // Tăng version lên v28 để ép đè cái lỗi cũ
 
 // Các file nằm ngay trên máy của ông
 const STATIC_ASSETS = [
@@ -41,7 +41,7 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-    // Xóa sạch các bộ nhớ đệm đời cũ (v1, v2)
+    // Xóa sạch các bộ nhớ đệm đời cũ
     e.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
@@ -52,8 +52,13 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-    // Bỏ qua các đường dẫn không hợp lệ (như extension của Chrome)
+    // Bỏ qua các đường dẫn không hợp lệ
     if (!e.request.url.startsWith('http')) return;
+
+    // 🔥 BÙA HỘ MỆNH Ở ĐÂY: Nếu là lệnh POST (như đẩy data lên Google) thì tha cho nó đi luôn, cấm lưu Cache!
+    if (e.request.method !== 'GET') {
+        return; 
+    }
 
     e.respondWith(
         caches.match(e.request).then((cachedRes) => {

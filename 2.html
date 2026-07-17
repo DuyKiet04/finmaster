@@ -210,115 +210,6 @@
       .dark .marker-cluster div {
         border-color: #1f2937; /* Đổi viền trắng thành đen xám khi Dark mode */
       }
-
-      /* ============ GIAO DIỆN THẺ VÍ (LUXURY BANK CARD) ============ */
-      .wallet-scroll {
-        display: flex;
-        flex-direction: column; /* Đổi thành xếp dọc nếu nằm trong Grid, hoặc để nguyên tùy bố cục */
-        gap: 16px;
-      }
-      .wcard {
-        min-width: 270px;
-        scroll-snap-align: start;
-        border-radius: 24px;
-        padding: 24px;
-        position: relative;
-        overflow: hidden;
-        color: #fff;
-        box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.5);
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
-        cursor: pointer;
-      }
-      .wcard:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
-      }
-      .wcard:before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          140deg,
-          rgba(255, 255, 255, 0.16),
-          transparent 60%
-        );
-        pointer-events: none;
-      }
-      .wcard .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        position: relative;
-        z-index: 1;
-      }
-      .wcard .bank {
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        opacity: 0.85;
-      }
-      .wcard .chip {
-        font-size: 26px;
-        opacity: 0.9;
-      }
-      .wcard .bal-lbl {
-        font-size: 11px;
-        opacity: 0.7;
-        font-weight: 700;
-        text-transform: uppercase;
-        margin-top: 24px;
-        letter-spacing: 0.5px;
-        position: relative;
-        z-index: 1;
-      }
-      .wcard .bal {
-        font-size: 28px;
-        font-weight: 900;
-        margin-top: 2px;
-        letter-spacing: -0.5px;
-        position: relative;
-        z-index: 1;
-      }
-      .wcard .foot {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 20px;
-        position: relative;
-        z-index: 1;
-      }
-      .wcard .dots {
-        font-size: 15px;
-        letter-spacing: 2px;
-        opacity: 0.85;
-      }
-      .wcard .brand {
-        font-weight: 900;
-        font-style: italic;
-        font-size: 17px;
-        opacity: 0.9;
-      }
-      /* Nút thêm ví đồng bộ style */
-      .wadd {
-        min-width: 100%;
-        border-radius: 24px;
-        border: 1.5px dashed var(--line, rgba(156, 163, 175, 0.4));
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        color: var(--muted, #9ca3af);
-        padding: 30px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-      }
-      .wadd:hover {
-        background: rgba(156, 163, 175, 0.05);
-      }
     </style>
   </head>
   <body
@@ -770,10 +661,14 @@
                 class="w-full pl-11 pr-12 py-3.5 custom-bg-card dark:bg-gray-800 border custom-border rounded-2xl custom-shadow-sm custom-focus font-medium outline-none custom-text relative z-10"
               />
 
-              <!-- Nút Phễu Lọc Cập Nhật -->
+              <!-- Nút Phễu Lọc Ngày Cũ -->
               <button
                 id="filter-btn"
-                onclick="toggleTxFilter()"
+                onclick="
+                  document
+                    .getElementById('filter-dropdown')
+                    .classList.toggle('hidden')
+                "
                 class="absolute right-3 p-2 custom-icon hover:text-primary-500 z-10"
               >
                 <i class="fa-solid fa-filter"></i>
@@ -789,6 +684,8 @@
                 id="filter-dropdown"
                 class="hidden absolute right-0 top-14 w-52 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-xl border custom-border dark:border-gray-700 z-50 p-2"
               >
+                <!-- Header -->
+
                 <!-- Date Picker -->
                 <div class="px-3 py-3">
                   <label
@@ -797,6 +694,7 @@
                     <i class="fa-regular fa-calendar"></i>
                     Chọn ngày
                   </label>
+
                   <div
                     class="flex items-center gap-2 custom-bg-input border custom-border rounded-xl px-3 py-2"
                   >
@@ -809,26 +707,7 @@
                   </div>
                 </div>
 
-                <div
-                  class="border-t custom-border dark:border-gray-700 my-1"
-                ></div>
-
-                <!-- Chọn Ví -->
-                <div class="px-3 py-2">
-                  <label
-                    class="text-[10px] font-bold text-gray-400 uppercase flex items-center gap-1 mb-2"
-                  >
-                    <i class="fa-solid fa-wallet"></i> Chọn ví
-                  </label>
-                  <select
-                    id="filter-wallet-select"
-                    onchange="setTxWalletFilter(this.value)"
-                    class="w-full bg-transparent text-sm font-bold custom-text outline-none custom-bg-input border custom-border rounded-xl px-3 py-2"
-                  >
-                    <option value="all">Tất cả ví</option>
-                  </select>
-                </div>
-
+                <!-- Divider -->
                 <div
                   class="border-t custom-border dark:border-gray-700 my-1"
                 ></div>
@@ -840,8 +719,9 @@
                     class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
                   >
                     <i class="fa-solid fa-layer-group w-5 text-blue-500"></i>
-                    <span>Tất cả ngày</span>
+                    <span>Tất cả</span>
                   </button>
+
                   <button
                     onclick="setTxFilter('today')"
                     class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
@@ -849,6 +729,7 @@
                     <i class="fa-solid fa-sun w-5 text-amber-500"></i>
                     <span>Hôm nay</span>
                   </button>
+
                   <button
                     onclick="setTxFilter('yesterday')"
                     class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
@@ -1912,7 +1793,6 @@
       let chartInstance = null;
       let currentEditId = null;
       let dateFilter = "all";
-      let walletFilter = "all";
       let myMap = null,
         mapLayerGroup = null,
         heatLayer = null,
@@ -1964,35 +1844,6 @@
           style: "currency",
           currency: "VND",
         }).format(amount || 0);
-
-      // 1. Hàm cắt địa chỉ SIÊU THÔNG MINH (Lấy: Tên quán/Tên đường + Phường/Xã)
-      window.formatShortAddress = (address) => {
-        if (!address) return "";
-        const parts = address.split(",").map((p) => p.trim());
-        const firstPart = parts[0]; // Đây chính là Tên Quán (Bách hóa xanh) hoặc Số nhà/Đường
-        const ward = window.getWardName(address); // Đi tìm đúng cái Phường
-
-        // Nếu vô tình cái đầu tiên chính là Phường luôn thì hiện 1 chữ thôi
-        if (firstPart === ward) return firstPart;
-
-        // Ghép lại: [Tên quán/Đường], [Phường]
-        return ward !== "Chưa xác định"
-          ? `${firstPart}, ${ward}`
-          : parts.length > 1
-            ? `${parts[0]}, ${parts[1]}`
-            : parts[0];
-      };
-
-      // 2. Hàm săn tìm chính xác chữ Phường/Xã
-      window.getWardName = (address) => {
-        if (!address) return "Chưa xác định";
-        const parts = address.split(",").map((p) => p.trim());
-        // Quét tìm chữ Phường, Xã, Thị trấn (Có chữ 'i' để không phân biệt hoa thường)
-        const ward = parts.find((p) =>
-          p.toLowerCase().match(/^(phường|xã|thị trấn|p\.|x\.)\s/i),
-        );
-        return ward ? ward : parts.length > 1 ? parts[1] : parts[0];
-      };
 
       function formatInputCurrency(e) {
         let val = e.target.value.replace(/\D/g, "");
@@ -3431,30 +3282,23 @@
                     icon: "💸",
                     color: "bg-gray-100",
                   };
-
-                  // LẤY THÔNG TIN VÍ
-                  const wallet = state.wallets.find(
-                    (w) => w.id === tx.walletId,
-                  ) || { name: "Ví đã xóa", icon: "💳" };
-
                   return `
     <div class="flex items-center justify-between group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
-        <div class="flex items-center gap-4 min-w-0">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
-                ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover  cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2 mb-0.5">
-                    <p class="font-bold custom-text dark:text-gray-100 truncate">${cat.name}</p>
-                    <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
-                </div>
-                <p class="text-xs custom-text-secondary font-medium truncate mt-0.5">
-                    <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)} 
-                    ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
+        <div class="flex items-center gap-4">
+            
+            
+<div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
+    ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover  cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+</div>
+            <div>
+                <p class="font-bold custom-text dark:text-gray-100">${cat.name}</p>
+                <p class="text-xs custom-text-secondary font-medium">
+                    ${formatDateTime(tx.date)} 
+                    ${tx.locationName ? `• <i class="fa-solid fa-location-dot"></i> ${tx.locationName.split(",")[0]}` : ""}
                 </p>
             </div>
         </div>
-        <span class="shrink-0 ml-2 font-black text-lg ${isInc ? "text-success-500" : "custom-text dark:text-gray-200"}">
+        <span class="font-black text-lg ${isInc ? "text-success-500" : "custom-text dark:text-gray-200"}">
             ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
         </span>
     </div>`;
@@ -3710,8 +3554,7 @@
                       ${sign}${formatMoney(tx.amount)}
                   </div>
                   <div class="custom-text-secondary dark:text-gray-500 text-[10px] font-medium mt-1">
-                      <p><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
-                      ${tx.locationName ? `<p class="mt-0.5 truncate max-w-[170px]" title="${tx.locationName}"><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}</p>` : ""}
+                      <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
                   </div>
               </div>
               ${tx.image && tx.image.length > 50 ? `<img src="${tx.image}" class="w-12 h-12 object-cover cursor-pointer rounded-xl shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm" onclick="openImageModal(this.src)">` : ""}
@@ -3785,8 +3628,8 @@
         const grouped = exps.reduce((acc, tx) => {
           let area = "Không xác định";
           if (tx.locationName) {
-            // FIX: Gọi thẳng hàm getWardName là lấy được ngay cái Phường/Xã
-            area = getWardName(tx.locationName);
+            const parts = tx.locationName.split(",");
+            area = parts.length > 1 ? parts[parts.length - 2].trim() : parts[0];
           }
           acc[area] = (acc[area] || 0) + tx.amount;
           return acc;
@@ -3950,33 +3793,6 @@
         renderTransactions();
         document.getElementById("filter-dropdown").classList.add("hidden");
       }
-      // Hàm hiển thị Menu Lọc (Tự động nạp danh sách ví mới nhất)
-      window.toggleTxFilter = () => {
-        const dropdown = document.getElementById("filter-dropdown");
-        if (dropdown.classList.contains("hidden")) {
-          const sel = document.getElementById("filter-wallet-select");
-          if (sel) {
-            sel.innerHTML =
-              '<option value="all">Tất cả ví</option>' +
-              state.wallets
-                .map(
-                  (w) =>
-                    `<option value="${w.id}" ${walletFilter === w.id ? "selected" : ""}>${w.icon} ${w.name}</option>`,
-                )
-                .join("");
-          }
-          dropdown.classList.remove("hidden");
-        } else {
-          dropdown.classList.add("hidden");
-        }
-      };
-
-      // Hàm lọc theo ví
-      window.setTxWalletFilter = (val) => {
-        walletFilter = val;
-        renderTransactions();
-        document.getElementById("filter-dropdown").classList.add("hidden");
-      };
 
       function renderTransactions() {
         const searchInput = document
@@ -3998,19 +3814,8 @@
         const filteredTx = state.transactions.filter((t) => {
           if (t.category === "transfer") return false;
 
+          // 1. LOGIC TỪ KHÓA (Thu/Chi và Không Dấu)
           let matchS = false;
-          const catName =
-            state.categories
-              .find((c) => c.id === t.category)
-              ?.name.toLowerCase() || "";
-          const note = (t.note || "").toLowerCase();
-          // HÚT TÊN VÍ ĐỂ SEARCH
-          const walletName =
-            state.wallets
-              .find((w) => w.id === t.walletId)
-              ?.name.toLowerCase() || "";
-
-          // 1. LOGIC TỪ KHÓA (Gõ tên ví cũng ra)
           if (
             searchInput === "thu" ||
             searchInput === "thu nhập" ||
@@ -4027,16 +3832,19 @@
           } else if (searchInput === "") {
             matchS = true;
           } else {
+            const catName =
+              state.categories
+                .find((c) => c.id === t.category)
+                ?.name.toLowerCase() || "";
+            const note = (t.note || "").toLowerCase();
             matchS =
               note.includes(searchInput) ||
               catName.includes(searchInput) ||
-              walletName.includes(searchInput) ||
               removeAccents(note).includes(searchNoAccent) ||
-              removeAccents(catName).includes(searchNoAccent) ||
-              removeAccents(walletName).includes(searchNoAccent);
+              removeAccents(catName).includes(searchNoAccent);
           }
 
-          // 2. LOGIC LỌC NGÀY TỪ PHỄU
+          // 2. LOGIC LỌC NGÀY CHUẨN TỪ PHỄU
           let matchDate = true;
           if (dateFilter === "today") {
             matchDate = t.date.startsWith(today);
@@ -4046,11 +3854,7 @@
             matchDate = t.date.startsWith(specificDate);
           }
 
-          // 3. LOGIC LỌC VÍ TỪ PHỄU
-          let matchWallet =
-            walletFilter === "all" || t.walletId === walletFilter;
-
-          return matchS && matchDate && matchWallet;
+          return matchS && matchDate;
         });
 
         const inc = filteredTx
@@ -4069,6 +3873,7 @@
           document.getElementById("tx-empty").classList.remove("hidden");
         } else {
           document.getElementById("tx-empty").classList.add("hidden");
+          // ...(Giữ nguyên đoạn map(tx => ...) vẽ giao diện cũ của ông ở đây)...
           container.innerHTML = filteredTx
             .map((tx) => {
               const isInc = tx.type === "income";
@@ -4079,12 +3884,6 @@
                 icon: "📦",
                 color: "bg-gray-100 text-gray-600",
               };
-
-              // LẤY THÔNG TIN VÍ TẠI TAB CHÍNH
-              const wallet = state.wallets.find(
-                (w) => w.id === tx.walletId,
-              ) || { name: "Ví đã xóa", icon: "💳" };
-
               return `
               <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
                 <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
@@ -4101,23 +3900,15 @@
                     <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
                   </button>
                 </div>
-                
                 <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
                   <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
                     ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
                   </div>
                   <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-0.5">
-                        <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
-                        <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
-                    </div>
-                    <p class="text-[11px] custom-text-secondary truncate mb-0.5">${tx.note || "Không có ghi chú"}</p>
-                    <p class="text-[10px] custom-text-secondary font-medium truncate">
-                      <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
-                      ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
-                    </p>
+                    <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
+                    <p class="text-[11px] custom-text-secondary font-medium">${formatDateTime(tx.date)}</p>
                   </div>
-                  <div class="text-right shrink-0 ml-2">
+                  <div class="text-right">
                     <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
                   </div>
                 </div>
@@ -4294,60 +4085,75 @@
       }
 
       function renderWallets() {
-        // Mảng màu Gradient sang chảnh (đã update màu luxury từ code mới)
-        const WALLET_GRADIENTS = [
-          "linear-gradient(135deg,#1e293b,#0f172a)", // Đen nhám
-          "linear-gradient(135deg,#4338ca,#6d28d9)", // Xanh tím MB Bank
-          "linear-gradient(135deg,#0f766e,#134e4a)", // Xanh lá Vietcombank
-          "linear-gradient(135deg,#be123c,#7f1d1d)", // Đỏ mận Techcombank
-          "linear-gradient(135deg,#b45309,#78350f)", // Cam
-          "linear-gradient(135deg,#0369a1,#0c4a6e)", // Xanh biển
+        // Mảng màu Gradient sang chảnh cho các thẻ ví
+        const cardGradients = [
+          "from-gray-800 to-black dark:from-gray-700 dark:to-gray-900 border-gray-600", // Đen nhám quyền lực
+          "from-blue-600 to-indigo-800 border-blue-500", // Xanh dương
+          "from-emerald-500 to-teal-700 border-emerald-400", // Xanh lá
+          "from-purple-500 to-fuchsia-700 border-purple-400", // Tím
+          "from-rose-500 to-red-700 border-rose-400", // Đỏ
+          "from-amber-500 to-orange-600 border-amber-400", // Cam
         ];
 
-        document.getElementById("wallets-container").innerHTML =
-          state.wallets
-            .map((w, index) => {
-              // Tự động xoay vòng màu gradient
-              const gradient =
-                WALLET_GRADIENTS[index % WALLET_GRADIENTS.length];
-              const isDeletable = !["w1", "w2"].includes(w.id); // Tránh xóa ví mặc định
+        document.getElementById("wallets-container").innerHTML = state.wallets
+          .map((w, index) => {
+            // Ví mặc định không được xóa
+            const isDeletable = !["w1", "w2"].includes(w.id);
+            // Tự động xoay vòng màu gradient theo số lượng ví
+            const gradient = cardGradients[index % cardGradients.length];
 
-              // Xử lý nút xóa rác rưởi (Chuyển nó thành 1 nút nhỏ ở góc nếu cần, hoặc để dạng vuốt)
-              const deleteBtnHtml = isDeletable
-                ? `
-              <button onclick="event.stopPropagation(); deleteWallet('${w.id}')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500/20 text-red-200 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors z-20">
-                <i class="fa-solid fa-trash text-[10px]"></i>
-              </button>
-            `
-                : "";
-
-              return `
-              <div class="wcard relative" style="background: ${gradient};" onclick="openModal('walletAction')">
-                ${deleteBtnHtml}
-                <div class="top">
-                  <span class="bank flex items-center gap-2">
-                    ${w.name}
-                    ${w.isShared ? '<span class="bg-white/20 px-1.5 py-0.5 rounded text-[8px] backdrop-blur-sm border border-white/20"><i class="fa-solid fa-users"></i></span>' : ""}
-                  </span>
-                  <span class="chip"><i class="fa-solid fa-microchip"></i></span>
-                </div>
-                <div class="bal-lbl">Số dư khả dụng</div>
-                <div class="bal tnum">${formatMoney(w.balance)}</div>
-                <div class="foot">
-                  <span class="dots">•••• ${w.last4 || "0000"}</span>
-                  <span class="brand">${w.name.slice(0, 4).toUpperCase()}</span>
-                </div>
-              </div>
-            `;
-            })
-            .join("") +
-          // Nút thêm ví
-          `<div class="wadd" onclick="openModal('walletAction')">
-            <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 mb-2">
-               <i class="fa-solid fa-plus text-xl"></i>
+            return `
+      <div class="relative overflow-hidden rounded-[2rem] ${isDeletable ? "swipe-item" : ""} shadow-xl transition-transform hover:-translate-y-1 hover:shadow-2xl">
+        
+        ${
+          isDeletable
+            ? `
+        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-6 z-0">
+          <button onclick="deleteWallet('${w.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+              <i class="fa-solid fa-trash"></i>
             </div>
-            <span style="font-size:13px;font-weight:700;">Thêm ví hoặc Chuyển tiền</span>
-          </div>`;
+            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa Ví</span>
+          </button>
+        </div>`
+            : ""
+        }
+
+        <!-- Giao diện Thẻ (Dùng gradient và kính mờ) -->
+        <div class="relative p-6 sm:p-8 w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col justify-between bg-gradient-to-br ${gradient} text-white min-h-[200px] border-t border-l border-white/20">
+          
+          <!-- Decor vòng sáng chìm (Ánh sáng hắt) -->
+          <div class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+          <div class="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+
+          <!-- Phần trên: Tên ví, Chip và Icon -->
+          <div class="flex justify-between items-start relative z-20 mb-8">
+            <div>
+              <p class="text-white/80 text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-2 drop-shadow-sm">
+                ${w.name} 
+                ${w.isShared ? '<span class="bg-white/20 px-2 py-0.5 rounded text-[9px] backdrop-blur-sm border border-white/20"><i class="fa-solid fa-users"></i> Chung</span>' : ""}
+              </p>
+              <i class="fa-solid fa-microchip text-yellow-300/80 text-3xl mt-1 drop-shadow-sm"></i>
+            </div>
+            
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30">
+              ${w.icon}
+            </div>
+          </div>
+
+          <!-- Phần dưới: Số dư -->
+          <div class="relative z-20 mt-auto">
+            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Số dư khả dụng</p>
+            <h3 class="text-3xl sm:text-4xl font-black tracking-tight drop-shadow-md ${w.balance < 0 ? "text-red-200" : "text-white"}">
+              ${formatMoney(w.balance)}
+            </h3>
+          </div>
+          
+        </div>
+      </div>
+      `;
+          })
+          .join("");
 
         if (typeof initSwipeActions === "function") initSwipeActions();
       }
@@ -5590,30 +5396,23 @@
   <div id="form-add-container" class="hidden">
     <form id="frm-w" class="space-y-5">
       <div class="flex gap-4">
-        <!-- Chỗ nhập Tên ví cũ -->
+        <div class="w-1/4">
+          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Icon</label>
+          <input type="text" id="w-i" value="💳" class="w-full p-4 custom-bg-input border custom-border rounded-2xl text-center text-xl outline-none custom-text custom-focus">
+        </div>
         <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên Ví / Ngân hàng</label>
-          <input type="text" id="w-n" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus" placeholder="VD: Techcombank">
+          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên Ví</label>
+          <input type="text" id="w-n" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus">
         </div>
       </div>
-      
-      <div class="flex gap-4">
-        <!-- Nhập số dư -->
-        <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số dư ban đầu</label>
-          <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
-        </div>
-        <!-- Thêm chỗ nhập 4 số cuối -->
-        <div class="w-1/3">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">4 Số cuối</label>
-          <input type="text" id="w-last4" maxlength="4" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus text-center" placeholder="0000">
-        </div>
+      <div>
+        <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số dư ban đầu (VNĐ)</label>
+        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
       </div>
       
-      <!-- Checkbox quỹ chung -->
-      <div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
+      <div class="flex items-center gap-3 bg-pink-50 p-4 rounded-xl border border-pink-100">
         <input type="checkbox" id="w-shared" class="w-5 h-5 accent-pink-500 cursor-pointer">
-        <label for="w-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none">
+        <label for="w-shared" class="font-bold text-pink-600 cursor-pointer select-none">
           <i class="fa-solid fa-heart"></i> Là quỹ chung (Split Bill)
         </label>
       </div>
@@ -5665,11 +5464,11 @@
             const name = document.getElementById("w-n").value;
             state.wallets.push({
               id: generateId(),
+              icon: document.getElementById("w-i").value || "💳",
               name: name,
               balance: getRawNumber(
                 document.getElementById("w-b").value || "0",
               ),
-              last4: document.getElementById("w-last4").value || "0000", // LƯU THÊM MỤC NÀY
               isShared: document.getElementById("w-shared").checked,
             });
             saveData();
@@ -5702,6 +5501,7 @@
           .filter((t) => {
             if (t.category === "transfer") return false;
 
+            // Lọc theo từ khóa thông minh
             if (query === "thu" || query === "thu nhập")
               return t.type === "income";
             if (query === "chi" || query === "chi tiêu")
@@ -5712,18 +5512,12 @@
                 .find((c) => c.id === t.category)
                 ?.name.toLowerCase() || "";
             const note = (t.note || "").toLowerCase();
-            const walletName =
-              state.wallets
-                .find((w) => w.id === t.walletId)
-                ?.name.toLowerCase() || "";
 
             return (
               note.includes(query) ||
               catName.includes(query) ||
-              walletName.includes(query) ||
               removeAccents(note).includes(queryNoAccent) ||
-              removeAccents(catName).includes(queryNoAccent) ||
-              removeAccents(walletName).includes(queryNoAccent)
+              removeAccents(catName).includes(queryNoAccent)
             );
           })
           .slice(0, 10);
@@ -5738,11 +5532,6 @@
                 (c) => c.id === tx.category,
               ) || { name: "Khác", icon: "📦" };
 
-              // LẤY THÔNG TIN VÍ TÌM KIẾM
-              const wallet = state.wallets.find(
-                (w) => w.id === tx.walletId,
-              ) || { name: "Ví đã xóa", icon: "💳" };
-
               // Xử lý ảnh giao dịch
               const imgHtml =
                 tx.image && tx.image.length > 50
@@ -5754,17 +5543,11 @@
                  class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl cursor-pointer transition-colors border-b custom-border dark:border-gray-800 last:border-0">
               ${imgHtml}
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-0.5">
-                    <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
-                    <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
-                </div>
+                <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
                 <p class="text-[11px] custom-text-secondary truncate mt-0.5">${tx.note || "Không có ghi chú"}</p>
-                <p class="text-[10px] text-gray-400 mt-1 truncate">
-                  <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
-                  ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
-                </p>
+                <p class="text-[10px] text-gray-400 mt-1"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</p>
               </div>
-              <div class="text-right shrink-0 ml-2">
+              <div class="text-right shrink-0">
                 <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
               </div>
             </div>`;
@@ -6196,7 +5979,7 @@
         }
       });
 
-      // poiLayerGroup = L.layerGroup().addTo(myMap);
+      poiLayerGroup = L.layerGroup().addTo(myMap);
 
       async function togglePOILayer(type) {
         const poiConfig = {
@@ -7039,8 +6822,6 @@
               `Lên lịch: ${document.getElementById("task-name").value}`,
             );
             saveData();
-            if (typeof window.syncToGoogle === "function")
-              window.syncToGoogle();
             closeModal();
             if (state.currentView === "tasks") renderTasks();
             renderDashboard();
@@ -7172,7 +6953,6 @@
             if (t.tripId === id) delete t.tripId;
           });
           saveData();
-          if (typeof window.syncToGoogle === "function") window.syncToGoogle();
           renderTrips();
           playSound("trash");
         }
@@ -7998,7 +7778,7 @@
 
       // BƯỚC QUAN TRỌNG: ÔNG DÁN CÁI LINK WEB APP CỦA GOOGLE VÀO ĐÂY!
       const GAS_URL =
-        "https://script.google.com/macros/s/AKfycby7PRzuDwdrJ1drZN_kMZlFAi-SF-RKttM8t6DUFRbl_qYye0hf2ppTBDBBrBncEJ8_/exec";
+        "https://script.google.com/macros/s/AKfycbzwHk55hBoTsBRopbwI0Bt0D4leIEJ22lK48V2oXQv4VxYz7BzBr7G04G6l0FnThxeC/exec";
 
       window.syncToGoogle = (action = "sync", alertMsg = "") => {
         if (!state.notificationSettings || !state.notificationSettings.email)
@@ -8007,7 +7787,6 @@
         // Chỉ đẩy lên dữ liệu Nhỏ & Đang hoạt động để web chạy cực nhanh (Không đẩy transaction chứa hình)
         const activeTasks = state.tasks.filter((t) => !t.isCompleted);
         const activeDebts = state.debts.filter((d) => d.status === "active");
-        const activeTrips = state.trips || []; // CHATGPT NÓI ĐÚNG, THÊM DÒNG NÀY
 
         const payload = {
           action: action,
@@ -8015,7 +7794,6 @@
           settings: state.notificationSettings,
           tasks: activeTasks,
           debts: activeDebts,
-          trips: activeTrips,
         };
 
         fetch(GAS_URL, {
