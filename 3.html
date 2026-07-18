@@ -319,6 +319,22 @@
       .wadd:hover {
         background: rgba(156, 163, 175, 0.05);
       }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes shimmer {
+        100% {
+          transform: translateX(100%);
+        }
+      }
     </style>
   </head>
   <body
@@ -787,76 +803,113 @@
 
               <div
                 id="filter-dropdown"
-                class="hidden absolute right-0 top-14 w-52 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-xl border custom-border dark:border-gray-700 z-50 p-2"
+                class="hidden absolute right-0 top-16 w-64 custom-bg-card ackdrop-blur-xl rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-50 p-3 transition-all duration-200 origin-top-right"
               >
                 <!-- Date Picker -->
-                <div class="px-3 py-3">
+                <div class="mb-3">
                   <label
-                    class="text-[10px] font-bold text-gray-400 uppercase flex items-center gap-1 mb-2"
+                    class="text-[11px] font-bold tracking-widest custom-text ppercase flex items-center gap-2 mb-2 px-1"
                   >
-                    <i class="fa-regular fa-calendar"></i>
-                    Chọn ngày
+                    <i class="fa-regular fa-calendar-days"></i>
+                    Chọn thời gian
                   </label>
-                  <div
-                    class="flex items-center gap-2 custom-bg-input border custom-border rounded-xl px-3 py-2"
-                  >
+                  <div class="relative group">
                     <input
                       type="date"
                       id="tx-date-picker"
                       onchange="setTxFilter('date')"
-                      class="w-full bg-transparent text-sm font-bold custom-text outline-none"
+                      class="w-full custom-bg-card text-sm font-semibold custom-text-secondary ounded-xl px-4 py-2.5 outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 cursor-pointer"
                     />
                   </div>
                 </div>
 
+                <!-- Divider Gradient -->
                 <div
-                  class="border-t custom-border dark:border-gray-700 my-1"
+                  class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-4"
                 ></div>
 
-                <!-- Chọn Ví -->
-                <div class="px-3 py-2">
+                <!-- Chọn Ví (Wallet Selector) -->
+                <div class="mb-3">
                   <label
-                    class="text-[10px] font-bold text-gray-400 uppercase flex items-center gap-1 mb-2"
+                    class="text-[11px] font-bold tracking-widest custom-text uppercase flex items-center gap-2 mb-2 px-1"
                   >
-                    <i class="fa-solid fa-wallet"></i> Chọn ví
+                    <i class="fa-solid fa-wallet"></i>
+                    Nguồn tiền
                   </label>
-                  <select
-                    id="filter-wallet-select"
-                    onchange="setTxWalletFilter(this.value)"
-                    class="w-full bg-transparent text-sm font-bold custom-text outline-none custom-bg-input border custom-border rounded-xl px-3 py-2"
-                  >
-                    <option value="all">Tất cả ví</option>
-                  </select>
+                  <div class="relative group">
+                    <!-- Added appearance-none to hide default arrow -->
+                    <select
+                      id="filter-wallet-select"
+                      onchange="setTxWalletFilter(this.value)"
+                      class="w-full custom-bg-card text-sm font-semibold custom-text-secondary rounded-xl px-4 py-2.5 outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 appearance-none cursor-pointer pr-10"
+                    >
+                      <option value="all">Tất cả ví</option>
+                      <option value="wallet1">Ví cá nhân</option>
+                      <option value="wallet2">Thẻ tín dụng</option>
+                    </select>
+                    <!-- Custom Caret Icon -->
+                    <div
+                      class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-blue-500 transition-colors"
+                    >
+                      <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                  </div>
                 </div>
 
+                <!-- Divider Gradient -->
                 <div
-                  class="border-t custom-border dark:border-gray-700 my-1"
+                  class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-4"
                 ></div>
 
-                <!-- Quick Filter -->
-                <div class="space-y-1">
+                <!-- Quick Filters -->
+                <div class="space-y-1.5">
                   <button
                     onclick="setTxFilter('all')"
-                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                    class="group flex items-center gap-3 w-full text-left px-2 py-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all duration-200"
                   >
-                    <i class="fa-solid fa-layer-group w-5 text-blue-500"></i>
-                    <span>Tất cả ngày</span>
+                    <div
+                      class="flex items-center justify-center w-9 h-9 rounded-lg custom-bg-card group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 group-hover:border-blue-200 dark:group-hover:border-blue-500/30 group-hover:scale-105 transition-all duration-200"
+                    >
+                      <i
+                        class="fa-solid fa-layer-group text-blue-500 text-[13px]"
+                      ></i>
+                    </div>
+                    <span
+                      class="text-sm font-bold custom-text-secondary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                      >Tất cả ngày</span
+                    >
                   </button>
+
                   <button
                     onclick="setTxFilter('today')"
-                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                    class="group flex items-center gap-3 w-full text-left px-2 py-2 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all duration-200"
                   >
-                    <i class="fa-solid fa-sun w-5 text-amber-500"></i>
-                    <span>Hôm nay</span>
+                    <div
+                      class="flex items-center justify-center w-9 h-9 rounded-lg custom-bg-card group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 group-hover:border-amber-200 dark:group-hover:border-amber-500/30 group-hover:scale-105 transition-all duration-200"
+                    >
+                      <i class="fa-solid fa-sun text-amber-500 text-[13px]"></i>
+                    </div>
+                    <span
+                      class="text-sm font-bold custom-text-secondary group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
+                      >Hôm nay</span
+                    >
                   </button>
+
                   <button
                     onclick="setTxFilter('yesterday')"
-                    class="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-bold custom-text transition"
+                    class="group flex items-center gap-3 w-full text-left px-2 py-2 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-xl transition-all duration-200"
                   >
-                    <i
-                      class="fa-solid fa-clock-rotate-left w-5 text-violet-500"
-                    ></i>
-                    <span>Hôm qua</span>
+                    <div
+                      class="flex items-center justify-center w-9 h-9 rounded-lg custom-bg-card group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 group-hover:border-violet-200 dark:group-hover:border-violet-500/30 group-hover:scale-105 transition-all duration-200"
+                    >
+                      <i
+                        class="fa-solid fa-clock-rotate-left text-violet-500 text-[13px]"
+                      ></i>
+                    </div>
+                    <span
+                      class="text-sm font-bold custom-text-secondary group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors"
+                      >Hôm qua</span
+                    >
                   </button>
                 </div>
               </div>
@@ -1559,9 +1612,9 @@
                   ></span>
                 </button>
                 <button
-                  onclick="changeThemeColor('theme-ios26', '125')"
-                  class="group relative w-14 h-14 rounded-full bg-white/30 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50"
-                  title="Ios26"
+                  onclick="changeThemeColor('theme-ios26', '38')"
+                  class="group relative w-14 h-14 rounded-full bg-amber-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50"
+                  title="Emerald"
                 >
                   <span
                     class="absolute inset-2 rounded-full border border-white/40"
@@ -2615,66 +2668,164 @@
         }
 
         notifyFormContainer.innerHTML = `
-            <h4 class="font-bold text-lg mb-6 flex items-center gap-2 custom-text">
-                <i class="fa-solid fa-envelope-open-text text-primary-500"></i> Cấu hình Nhắc nhở Email (Đầy đủ)
-            </h4>
-            <form id="frm-email-notify" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Email nhận thông báo</label>
-                        <input type="email" id="set-email" value="${state.notificationSettings.email || ""}" placeholder="VD: mailcuaong@gmail.com" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Giờ nhận bản tin (Mục 1)</label>
-                        <input type="time" id="set-time" value="${state.notificationSettings.time || "07:00"}" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black custom-text border custom-border custom-focus text-lg">
-                    </div>
+    <form id="frm-email-notify" class="flex flex-col gap-6  max-w-[420px] mx-auto font-sans pb-12 selection:bg-indigo-100 selection:text-indigo-900">
+        
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-2">
+            <div class="w-12 h-12 rounded-[16px] bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-[0_8px_16px_-6px_rgba(79,70,229,0.5)]">
+                <i class="fa-solid fa-envelope-open-text text-xl"></i>
+            </div>
+            <div>
+                <h4 class="font-black text-xl text-slate-800 dark:text-white tracking-tight">Email & Nhắc nhở</h4>
+                <p class="text-[12px] font-medium text-slate-400 mt-0.5">Tùy chỉnh thông báo trợ lý tài chính</p>
+            </div>
+        </div>
+
+        <!-- 1. Cấu hình Email & Thời gian (Settings Card) -->
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-3 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800 relative z-10">
+            
+            <!-- Email Input -->
+            <div class="group flex items-center p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl transition-all duration-300 focus-within:bg-slate-50 dark:focus-within:bg-slate-800">
+                <div class="w-12 h-12 shrink-0 rounded-[14px] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 border border-white dark:border-slate-700/50 mr-4 group-focus-within:text-blue-500 group-focus-within:scale-110 transition-all duration-300">
+                    <i class="fa-solid fa-at text-xl"></i>
                 </div>
-                
-                <div class="space-y-3 mt-4">
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2"> Hạng mục nhắc nhở</label>
-                    
-                    <!-- 1. BẢN TIN CÔNG VIỆC -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-clipboard-list text-blue-500 w-5 text-center"></i> 1. Bản tin Công việc buổi sáng </span>
-                        <input type="checkbox" id="chk-task" ${state.notificationSettings.notifyTasks ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
-                    
-                    <!-- 2. CẢNH BÁO CHÁY TÚI -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-500 w-5 text-center"></i> 2. Cảnh báo "Cháy túi" </span>
-                        <input type="checkbox" id="chk-budget" ${state.notificationSettings.notifyBudgets ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
-
-                    <!-- 3. KỶ LUẬT MỤC TIÊU -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bullseye text-indigo-500 w-5 text-center"></i> 3. Nhắc nhở Kỷ luật Mục tiêu </span>
-                        <input type="checkbox" id="chk-goal" ${state.notificationSettings.notifyGoals !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
-
-                    <!-- 4. ĐÒI NỢ / TRẢ NỢ -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-handshake text-amber-500 w-5 text-center"></i> 4. Nhắc nhở "Đòi nợ / Trả nợ" </span>
-                        <input type="checkbox" id="chk-debt" ${state.notificationSettings.notifyDebts ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
-
-                    <!-- 5. CHUYẾN ĐI & QUỶ CHUNG -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-plane-departure text-pink-500 w-5 text-center"></i> 5. Thông báo Chuyến đi & Quỹ chung </span>
-                        <input type="checkbox" id="chk-trip" ${state.notificationSettings.notifyTrips !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
-
-                    <!-- 6. BÁO CÁO CUỐI THÁNG -->
-                    <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-chart-pie text-emerald-500 w-5 text-center"></i> 6. Báo cáo Tài chính Cuối tháng </span>
-                        <input type="checkbox" id="chk-report" ${state.notificationSettings.notifyReports !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                    </label>
+                <div class="flex-1 min-w-0">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email nhận thông báo</label>
+                    <input type="email" id="set-email" value="${state.notificationSettings.email || ""}" placeholder="VD: mailcuaong@gmail.com" class="w-full bg-transparent border-none text-[15px] font-bold text-slate-700 dark:text-white outline-none p-0 placeholder:text-slate-300 dark:placeholder:text-slate-600 truncate">
                 </div>
+            </div>
+
+            <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+            <!-- Time Input -->
+            <div class="group flex items-center p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl transition-all duration-300 focus-within:bg-slate-50 dark:focus-within:bg-slate-800">
+                <div class="w-12 h-12 shrink-0 rounded-[14px] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 border border-white dark:border-slate-700/50 mr-4 group-focus-within:text-indigo-500 group-focus-within:scale-110 transition-all duration-300">
+                    <i class="fa-regular fa-clock text-xl"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Giờ nhận bản tin sáng</label>
+                    <input type="time" id="set-time" value="${state.notificationSettings.time || "07:00"}" required class="w-full bg-transparent border-none text-[18px] tracking-wider font-black text-slate-800 dark:text-white outline-none p-0 cursor-pointer">
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Hạng mục nhắc nhở (iOS Style List) -->
+        <div class="mt-2">
+            <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">Cá nhân hóa hạng mục</h5>
+            
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-3 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800">
                 
-                <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">
-                    Lưu Cấu Hình Nhắc Nhở
-                </button>
-            </form>
-        `;
+                <!-- 1. BẢN TIN CÔNG VIỆC -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/40 dark:to-cyan-900/40 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Bản tin công việc sáng</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-task" ${state.notificationSettings.notifyTasks ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-400 peer-checked:to-blue-500"></div>
+                    </div>
+                </label>
+
+                <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+                <!-- 2. CẢNH BÁO CHÁY TÚI -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/40 dark:to-red-900/40 flex items-center justify-center text-rose-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Cảnh báo "Cháy túi"</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-budget" ${state.notificationSettings.notifyBudgets ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-rose-400 peer-checked:to-rose-500"></div>
+                    </div>
+                </label>
+
+                <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+                <!-- 3. KỶ LUẬT MỤC TIÊU -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Kỷ luật mục tiêu</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-goal" ${state.notificationSettings.notifyGoals !== false ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-indigo-400 peer-checked:to-indigo-500"></div>
+                    </div>
+                </label>
+
+                <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+                <!-- 4. ĐÒI NỢ / TRẢ NỢ -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/40 dark:to-orange-900/40 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Nhắc đòi nợ / Trả nợ</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-debt" ${state.notificationSettings.notifyDebts ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-amber-400 peer-checked:to-amber-500"></div>
+                    </div>
+                </label>
+
+                <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+                <!-- 5. CHUYẾN ĐI & QUỸ CHUNG -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/40 dark:to-rose-900/40 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Chuyến đi & Quỹ chung</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-trip" ${state.notificationSettings.notifyTrips !== false ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-pink-400 peer-checked:to-pink-500"></div>
+                    </div>
+                </label>
+
+                <div class="w-[85%] h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent mx-auto"></div>
+
+                <!-- 6. BÁO CÁO CUỐI THÁNG -->
+                <label class="flex items-center justify-between p-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 rounded-2xl cursor-pointer transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/40 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <span class="font-bold text-[14px] text-slate-700 dark:text-white">Báo cáo tài chính tháng</span>
+                    </div>
+                    <div class="relative inline-flex items-center active:scale-90 transition-transform">
+                        <input type="checkbox" id="chk-report" ${state.notificationSettings.notifyReports !== false ? "checked" : ""} class="sr-only peer">
+                        <div class="w-12 h-[26px] bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:shadow-[0_2px_5px_rgba(0,0,0,0.2)] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-emerald-400 peer-checked:to-emerald-500"></div>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+        
+        <!-- Nút Hành động (Gradient Glow) -->
+        <button type="submit" class="w-full mt-4 py-4 relative group overflow-hidden rounded-[1.5rem] active:scale-[0.98] transition-all duration-300">
+            <!-- Nền Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-600 group-hover:scale-105 transition-transform duration-500"></div>
+            <!-- Shadow phát sáng -->
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 -z-10"></div>
+            <!-- Content -->
+            <div class="relative flex items-center justify-center gap-2 text-white font-black text-[15px] tracking-wide">
+                <i class="fa-solid fa-check-double text-lg"></i>
+                LƯU CẤU HÌNH NHẮC NHỞ
+            </div>
+        </button>
+    </form>
+`;
 
         document.getElementById("frm-email-notify").onsubmit = (e) => {
           e.preventDefault();
@@ -4181,44 +4332,76 @@
                   ? "bg-orange-500"
                   : "bg-primary-500";
             return `
-<div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-        <button onclick="openModal('budget', '${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
-            <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+<div class="relative overflow-hidden rounded-[2rem] shadow-[0_8px_20px_-8px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 swipe-item group mb-4">
+    
+    <!-- Lớp nền: Nút thao tác ẩn (Vuốt để hiện) -->
+    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-5 z-0 w-full">
+        <button onclick="openModal('budget', '${b.id}')" class="flex flex-col items-center justify-center outline-none active:scale-95 transition-transform group/btn w-12">
+            <div class="w-11 h-11 rounded-[14px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-lg mb-1.5 shadow-inner group-hover/btn:bg-slate-300 dark:group-hover/btn:bg-slate-600 transition-colors">
                 <i class="fa-solid fa-pen"></i>
             </div>
-            <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sửa</span>
         </button>
-        <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
-            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                <i class="fa-solid fa-trash"></i>
+        <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center outline-none active:scale-95 transition-transform group/btn w-12">
+            <div class="w-11 h-11 rounded-[14px] bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center text-lg mb-1.5 shadow-inner group-hover/btn:bg-rose-200 dark:group-hover/btn:bg-rose-900/50 transition-colors">
+                <i class="fa-solid fa-trash-can"></i>
             </div>
-            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+            <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Xóa</span>
         </button>
     </div>
 
-    <div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex items-center gap-3 font-bold text-lg custom-text">
-                <div class="w-10 h-10 rounded-xl ${cat?.color || "bg-gray-200"} flex items-center justify-center border custom-border">
-                    ${cat?.icon || ""}
+    <!-- Lớp mặt: Thẻ nội dung chính (Glassmorphism) -->
+    <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-5 w-full transition-transform duration-300 ease-out z-10 swipe-content h-full border border-white dark:border-slate-700 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4">
+        
+        <!-- Header: Icon & Tên Danh Mục -->
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <!-- Icon Box -->
+                <div class="w-12 h-12 rounded-[14px] ${cat?.color || "bg-gray-200 text-gray-500"} flex items-center justify-center text-xl shadow-sm border border-white/50 dark:border-slate-600/50">
+                    ${cat?.icon || "<i class='fa-solid fa-box'></i>"}
                 </div>
-                ${cat?.name || "Khác"}
+                <div>
+                    <h4 class="font-black text-[16px] text-slate-800 dark:text-white tracking-tight">${cat?.name || "Khác"}</h4>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Ngân sách</p>
+                </div>
+            </div>
+            
+            <!-- Badge Phần trăm -->
+            <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center gap-2 shadow-inner">
+                <div class="w-2 h-2 rounded-full ${pct >= 100 ? "bg-rose-500 animate-pulse" : pct >= 80 ? "bg-orange-500" : "bg-emerald-500"}"></div>
+                <span class="text-[13px] font-black text-slate-700 dark:text-slate-300">${pct}%</span>
             </div>
         </div>
 
-        <div class="flex justify-between text-sm mb-2 font-medium">
-            <span class="custom-text-secondary">${formatMoney(spent)}</span>
-            <span class="custom-text">${formatMoney(b.amount)}</span>
+        <!-- Body: Hiển thị Số tiền (Typography Tương phản cao) -->
+        <div class="flex items-end justify-between px-1 mt-1">
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Đã chi tiêu</p>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-3xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">${formatMoney(spent)}</span>
+                    <span class="text-[14px] font-bold text-slate-400">₫</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Tổng mức</p>
+                <span class="text-[15px] font-bold text-slate-500 dark:text-slate-400">${formatMoney(b.amount)}</span>
+            </div>
         </div>
 
-        <div class="h-3 w-full custom-bg-body rounded-full overflow-hidden border custom-border">
-            <div class="h-full rounded-full transition-all duration-700 ${color}" style="width: ${pct}%"></div>
+        <!-- Footer: Thanh Progress Bar (Hiệu ứng Glossy & Bóng mờ) -->
+        <div class="mt-2">
+            <div class="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700 shadow-inner relative">
+                <!-- Vùng màu Fill -->
+                <div class="h-full rounded-full transition-all duration-1000 ease-out relative ${color}" style="width: ${pct}%">
+                    <!-- Ánh sáng phản chiếu tạo độ phồng 3D -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"></div>
+                </div>
+            </div>
         </div>
         
-        <p class="text-xs mt-2 text-right custom-text-secondary font-medium">Đã dùng ${pct}%</p>
     </div>
-</div>`;
+</div>
+`;
           })
           .join("");
         if (typeof initSwipeActions === "function") initSwipeActions();
@@ -4250,50 +4433,122 @@
               daysLeft > 0 && amountLeft > 0 ? amountLeft / daysLeft : 0;
 
             return `
-      <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-          <button onclick="deleteGoal('${g.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
-            <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-              <i class="fa-solid fa-trash"></i>
+<div class="relative overflow-hidden rounded-[2rem] shadow-[0_8px_20px_-8px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 swipe-item group mb-4">
+    
+    <!-- Lớp nền: Nút Xóa (Vuốt sang trái để hiện) -->
+    <div class="absolute inset-y-0 right-0 flex items-center justify-end pr-5 z-0 w-full">
+        <button onclick="deleteGoal('${g.id}')" class="flex flex-col items-center justify-center outline-none active:scale-95 transition-transform group/btn w-12">
+            <div class="w-11 h-11 rounded-[14px] bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center text-lg mb-1.5 shadow-inner group-hover/btn:bg-rose-200 dark:group-hover/btn:bg-rose-900/50 transition-colors">
+                <i class="fa-solid fa-trash-can"></i>
             </div>
-            <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
-          </button>
+            <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Xóa</span>
+        </button>
+    </div>
+
+    <!-- Lớp mặt: Thẻ nội dung chính (Glassmorphism) -->
+    <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-5 w-full transition-transform duration-300 ease-out z-10 swipe-content h-full flex flex-col gap-4 border border-white dark:border-slate-700 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        
+        <!-- Header: Icon, Tên, Trạng thái Ví & Phần trăm -->
+        <div class="flex justify-between items-start">
+            <div class="flex gap-4 items-center">
+                <!-- Box Icon (Tự đổi sang cúp vàng nếu đạt 100%) -->
+                <div class="w-12 h-12 shrink-0 rounded-[14px] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 flex items-center justify-center text-2xl shadow-sm border border-white/50 dark:border-slate-600/50">
+                    ${pct >= 100 ? '<i class="fa-solid fa-trophy text-amber-500 drop-shadow-[0_2px_8px_rgba(245,158,11,0.6)]"></i>' : "🎯"}
+                </div>
+                <div>
+                    <h3 class="font-black text-[17px] text-slate-800 dark:text-white tracking-tight leading-tight">${g.name}</h3>
+                    <!-- Trạng thái nguồn ví -->
+                    ${
+                      linkedWallet
+                        ? `<div class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+                            <i class="fa-solid fa-link"></i> ${linkedWallet.name}
+                        </div>`
+                        : `<div class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-900/30 border border-rose-100 dark:border-rose-800/50 text-[10px] font-bold text-rose-500 uppercase tracking-widest">
+                            <i class="fa-solid fa-link-slash"></i> Mất kết nối
+                        </div>`
+                    }
+                </div>
+            </div>
+            
+            <!-- Badge Phần trăm -->
+            <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-inner flex flex-col items-center justify-center min-w-[54px]">
+                <span class="text-[14px] font-black ${pct >= 100 ? "text-emerald-500" : "text-indigo-600 dark:text-indigo-400"} leading-none">${pct}%</span>
+            </div>
         </div>
-        <div class="relative custom-bg-card p-6 w-full transition-transform duration-200 ease-out z-10 swipe-content h-full flex flex-col justify-center">
-          <div class="flex justify-between items-start mb-4">
+
+        <!-- Body: Số liệu Khổng lồ -->
+        <div class="flex items-end justify-between px-1 mt-1">
             <div>
-              <h3 class="text-xl font-black flex items-center gap-2 custom-text">
-                ${pct >= 100 ? '<i class="fa-solid fa-circle-check text-success-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] rounded-full"></i>' : "🎯"} ${g.name}
-              </h3>
-              <p class="text-sm custom-text-secondary mt-1 font-medium">Mục tiêu: ${formatMoney(g.targetAmount)}</p>
-              ${linkedWallet ? `<p class="text-xs text-primary-500 mt-1.5 custom-bg-primary-soft inline-block px-2 py-1 rounded-md border custom-border"><i class="fa-solid fa-link"></i> Nguồn: ${linkedWallet.name}</p>` : '<p class="text-xs text-danger-500 mt-1.5"><i class="fa-solid fa-link-slash"></i> Mất kết nối ví</p>'}
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Đã tích lũy</p>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-3xl font-black ${pct >= 100 ? "text-emerald-500" : "text-slate-800 dark:text-white"} tracking-tighter leading-none">${formatMoney(currentBalance)}</span>
+                    <span class="text-[14px] font-bold text-slate-400">₫</span>
+                </div>
             </div>
-          </div>
-          <div class="flex justify-between text-sm mb-2 font-black">
-            <span class="text-primary-600 dark:text-primary-400">${formatMoney(currentBalance)}</span>
-            <span class="custom-text">${pct}%</span>
-          </div>
-          
-          <!-- Thanh tiến trình có vạch chia Cột mốc -->
-          <div class="h-4 w-full custom-bg-body border custom-border rounded-full p-0.5 relative">
-            <div class="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-1000 relative z-0" style="width: ${pct}%"></div>
-            <!-- Các vạch đánh dấu 25%, 50%, 75% -->
-            <div class="absolute top-0 bottom-0 left-[25%] w-[1.5px] bg-gray-400/40 z-10"></div>
-            <div class="absolute top-0 bottom-0 left-[50%] w-[1.5px] bg-gray-400/40 z-10"></div>
-            <div class="absolute top-0 bottom-0 left-[75%] w-[1.5px] bg-gray-400/40 z-10"></div>
-          </div>
-          
-          ${
-            daysLeft > 0
-              ? `
-          <div class="mt-4 p-3 custom-bg-input rounded-xl border custom-border">
-            <p class="text-xs font-bold custom-text-secondary mb-1"><i class="fa-solid fa-calendar-days"></i> Còn ${daysLeft} ngày (Đến ${targetDate.toLocaleDateString("vi-VN")})</p>
-            ${pct < 100 ? `<p class="text-sm font-black text-orange-500"><i class="fa-solid fa-fire"></i> Cần tiết kiệm ${formatMoney(dailyNeeded)}/ngày</p>` : `<p class="text-sm font-black text-success-500">🎉 Đã hoàn thành mục tiêu!</p>`}
-          </div>`
-              : ""
-          }
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Mục tiêu</p>
+                <span class="text-[15px] font-bold text-slate-500 dark:text-slate-400">${formatMoney(g.targetAmount)}</span>
+            </div>
         </div>
-      </div>`;
+        
+        <!-- Thanh tiến trình (Gradient bóng bẩy & Vạch đánh dấu) -->
+        <div class="mt-1">
+            <div class="h-[14px] w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700 shadow-inner relative">
+                <!-- Vùng màu Fill -->
+                <div class="h-full rounded-full transition-all duration-1000 ease-out relative z-0 ${pct >= 100 ? "bg-gradient-to-r from-emerald-400 to-teal-500" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%">
+                    <!-- Ánh sáng phản chiếu tạo độ phồng 3D -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"></div>
+                </div>
+                <!-- Các vạch đánh dấu 25%, 50%, 75% -->
+                <div class="absolute top-0 bottom-0 left-[25%] w-[2px] bg-white/50 dark:bg-slate-900/50 z-10"></div>
+                <div class="absolute top-0 bottom-0 left-[50%] w-[2px] bg-white/50 dark:bg-slate-900/50 z-10"></div>
+                <div class="absolute top-0 bottom-0 left-[75%] w-[2px] bg-white/50 dark:bg-slate-900/50 z-10"></div>
+            </div>
+        </div>
+        
+        <!-- Insight Box: Gợi ý hành động thông minh (Chỉ hiện khi còn hạn) -->
+        ${
+          daysLeft > 0
+            ? `
+        <div class="mt-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 relative overflow-hidden group/insight">
+            <!-- Hiệu ứng Glow nền -->
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-indigo-100 to-transparent dark:from-indigo-900/30 rounded-full blur-xl z-0 transition-opacity"></div>
+            
+            <div class="relative z-10 flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-check text-slate-400"></i> ${targetDate.toLocaleDateString("vi-VN")}</span>
+                <span class="bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700">Còn ${daysLeft} ngày</span>
+            </div>
+            
+            <div class="relative z-10 flex items-center gap-3">
+                ${
+                  pct < 100
+                    ? `
+                <div class="w-9 h-9 rounded-full bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-orange-500 shrink-0 border border-orange-100 dark:border-orange-800/50 shadow-sm">
+                    <i class="fa-solid fa-fire text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Cần tích lũy thêm</p>
+                    <p class="text-[14px] font-black text-slate-700 dark:text-white leading-none">${formatMoney(dailyNeeded)}<span class="text-[11px] font-bold text-slate-400 ml-1 tracking-wide">/ ngày</span></p>
+                </div>
+                `
+                    : `
+                <div class="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500 shrink-0 border border-emerald-100 dark:border-emerald-800/50 shadow-sm">
+                    <i class="fa-solid fa-party-horn text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-widest mb-0.5">Tuyệt vời</p>
+                    <p class="text-[14px] font-black text-emerald-600 dark:text-emerald-400 leading-none">Đã hoàn thành mục tiêu!</p>
+                </div>
+                `
+                }
+            </div>
+        </div>
+        `
+            : ""
+        }
+    </div>
+</div>
+`;
           })
           .join("");
 
@@ -4304,12 +4559,12 @@
       }
 
       function renderWallets() {
-        // Mảng màu Gradient sang chảnh (đã update màu luxury từ code mới)
+        // Mảng màu Gradient sang chảnh (đã update màu luxury)
         const WALLET_GRADIENTS = [
           "linear-gradient(135deg,#1e293b,#0f172a)", // Đen nhám
-          "linear-gradient(135deg,#4338ca,#6d28d9)", // Xanh tím MB Bank
-          "linear-gradient(135deg,#0f766e,#134e4a)", // Xanh lá Vietcombank
-          "linear-gradient(135deg,#be123c,#7f1d1d)", // Đỏ mận Techcombank
+          "linear-gradient(135deg,#4338ca,#6d28d9)", // Xanh tím MB
+          "linear-gradient(135deg,#0f766e,#134e4a)", // Xanh lá VCB
+          "linear-gradient(135deg,#be123c,#7f1d1d)", // Đỏ mận Tech
           "linear-gradient(135deg,#b45309,#78350f)", // Cam
           "linear-gradient(135deg,#0369a1,#0c4a6e)", // Xanh biển
         ];
@@ -4317,43 +4572,54 @@
         document.getElementById("wallets-container").innerHTML =
           state.wallets
             .map((w, index) => {
-              // Tự động xoay vòng màu gradient
               const gradient =
                 WALLET_GRADIENTS[index % WALLET_GRADIENTS.length];
               const isDeletable = !["w1", "w2"].includes(w.id); // Tránh xóa ví mặc định
 
-              // Xử lý nút xóa rác rưởi (Chuyển nó thành 1 nút nhỏ ở góc nếu cần, hoặc để dạng vuốt)
-              const deleteBtnHtml = isDeletable
-                ? `
-              <button onclick="event.stopPropagation(); deleteWallet('${w.id}')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-500/20 text-red-200 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors z-20">
-                <i class="fa-solid fa-trash text-[10px]"></i>
-              </button>
-            `
-                : "";
-
               return `
-              <div class="wcard relative" style="background: ${gradient};" onclick="openModal('walletAction')">
-                ${deleteBtnHtml}
-                <div class="top">
-                  <span class="bank flex items-center gap-2">
-                    ${w.name}
-                    ${w.isShared ? '<span class="bg-white/20 px-1.5 py-0.5 rounded text-[8px] backdrop-blur-sm border border-white/20"><i class="fa-solid fa-users"></i></span>' : ""}
-                  </span>
-                  <span class="chip"><i class="fa-solid fa-microchip"></i></span>
+              <!-- 1. BỌC KHUNG VUỐT (SWIPE-ITEM) Ở NGOÀI CÙNG -->
+              <div class="relative rounded-[24px] ${isDeletable ? "swipe-item" : ""} shadow-xl hover:-translate-y-1 hover:shadow-2xl transition-all overflow-hidden mb-2">
+                
+                <!-- 2. NÚT XÓA BỊ GIẤU XUỐNG ĐÁY (Z-0) -->
+                ${
+                  isDeletable
+                    ? `
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end pr-5 z-0 w-full bg-red-50 dark:bg-red-900/20">
+                  <button onclick="event.stopPropagation(); deleteWallet('${w.id}')" class="flex flex-col items-center justify-center outline-none w-14">
+                    <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                      <i class="fa-solid fa-trash"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-danger-500">Xóa Ví</span>
+                  </button>
+                </div>`
+                    : ""
+                }
+
+                <!-- 3. THẺ NGÂN HÀNG THẬT SỰ (SWIPE-CONTENT) ĐÈ LÊN TRÊN CÙNG (Z-10) -->
+                <div class="wcard swipe-content z-10 w-full h-full m-0 transition-transform duration-300 ease-out cursor-pointer" style="background: ${gradient}; box-shadow: none;" onclick="openModal('walletAction')">
+                  <div class="top">
+                    <span class="bank flex items-center gap-2">
+                      ${w.name}
+                      ${w.isShared ? '<span class="bg-white/20 px-1.5 py-0.5 rounded text-[8px] backdrop-blur-sm border border-white/20"><i class="fa-solid fa-users"></i></span>' : ""}
+                    </span>
+                    <span class="chip"><i class="fa-solid fa-microchip"></i></span>
+                  </div>
+                  <div class="bal-lbl">Số dư khả dụng</div>
+                  <div class="bal tnum">${formatMoney(w.balance)}</div>
+                  <div class="foot">
+                    <span class="dots">•••• ${w.last4 || "0000"}</span>
+                    <span class="brand">${w.name.slice(0, 4).toUpperCase()}</span>
+                  </div>
                 </div>
-                <div class="bal-lbl">Số dư khả dụng</div>
-                <div class="bal tnum">${formatMoney(w.balance)}</div>
-                <div class="foot">
-                  <span class="dots">•••• ${w.last4 || "0000"}</span>
-                  <span class="brand">${w.name.slice(0, 4).toUpperCase()}</span>
-                </div>
+
               </div>
             `;
             })
             .join("") +
-          // Nút thêm ví
+          // Nút thêm ví nằm bên dưới
           ``;
 
+        // KÍCH HOẠT LẠI TÍNH NĂNG VUỐT
         if (typeof initSwipeActions === "function") initSwipeActions();
       }
 
@@ -4806,47 +5072,75 @@
           };
 
           body.innerHTML = `
-            <div class="flex custom-bg-input p-1.5 rounded-2xl mb-5 border custom-border">
-              <button type="button" id="tab-split-equal" onclick="switchSplitMode('equal')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-primary custom-shadow-sm text-white border border-transparent">Chia đều</button>
-              <button type="button" id="tab-split-custom" onclick="switchSplitMode('custom')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all custom-text-secondary hover:brightness-95 border border-transparent">Chia không đều</button>
-            </div>
+<form id="frm-split" class="flex flex-col gap-6 p-5 max-w-[420px] mx-auto font-sans pb-12">
+    
+    <!-- Header: Switch Mode (Segmented Control phong cách Apple) -->
+    <div class="relative p-1.5 bg-slate-100/60 dark:bg-slate-800/60 backdrop-blur-2xl rounded-2xl flex items-center mx-auto w-full shadow-inner border border-slate-200/50 dark:border-slate-700">
+      <button type="button" id="tab-split-equal" onclick="switchSplitMode('equal')" 
+        class="relative z-10 flex-1 py-3 text-[12px] font-black tracking-widest uppercase rounded-xl transition-all duration-500 bg-white dark:bg-slate-700 shadow-[0_8px_16px_-6px_rgba(99,102,241,0.2)] text-indigo-600 dark:text-indigo-400 scale-[1.02]">
+        CHIA ĐỀU
+      </button>
+      <button type="button" id="tab-split-custom" onclick="switchSplitMode('custom')" 
+        class="relative z-10 flex-1 py-3 text-[12px] font-black tracking-widest uppercase rounded-xl transition-all duration-500 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+        TÙY CHỈNH
+      </button>
+    </div>
 
-            <form id="frm-split" class="space-y-4">
-              <!-- CHỌN GIAO DỊCH TỪNG CÁI MỘT -->
-              <div class="custom-bg-input p-4 rounded-2xl border custom-border">
-                <label class="block text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-receipt"></i> 1. Chọn khoản chi để chia</label>
-                <select id="split-tx-select" onchange="handleSplitTxChange(this)" required class="w-full p-3 custom-bg-input dark:bg-gray-700 rounded-xl outline-none font-bold custom-text border custom-border custom-focus">
-                  ${txOptions}
-                </select>
-              </div>
+    <!-- 1. Chọn khoản chi -->
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-4 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">
+            <i class="fa-solid fa-receipt mr-1 text-indigo-400"></i> Khoản chi cần chia
+        </label>
+        <div class="relative group">
+            <select id="split-tx-select" onchange="handleSplitTxChange(this)" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-4 font-bold text-slate-700 dark:text-white outline-none cursor-pointer appearance-none transition-all focus:ring-2 focus:ring-indigo-400">
+                ${txOptions}
+            </select>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+        </div>
+    </div>
 
-              <!-- CHẾ ĐỘ 1: CHIA ĐỀU -->
-              <div id="split-equal-form" class="space-y-4">
-                <div>
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">2. Số tiền đem chia (VNĐ)</label>
-                  <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="split-amount" required placeholder="Chọn mục ở trên..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-danger-500 border custom-border custom-focus">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">3. Tên những người đi cùng</label>
-                  <input type="text" id="split-names" value="${defaultNamesStr}" placeholder="VD: Tèo, Tí, Đen" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
-                  <p class="text-[10px] custom-text-secondary mt-1 italic">* App sẽ tự động cộng thêm ông vào tổng số người để chia đều.</p>
-                </div>
-              </div>
+    <!-- 2. Chế độ Chia đều (Equal Mode) -->
+    <div id="split-equal-form" class="space-y-4">
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Số tiền (VNĐ)</label>
+            <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="split-amount" required placeholder="0" 
+              class="w-full bg-transparent border-none text-[2rem] font-black text-rose-500 outline-none p-0 tracking-tight">
+        </div>
 
-              <!-- CHẾ ĐỘ 2: CHIA KHÔNG ĐỀU (TÙY CHỈNH) -->
-              <div id="split-custom-form" class="hidden space-y-2">
-                <div class="flex justify-between items-center mb-2 px-1">
-                   <p class="text-xs font-bold custom-text-secondary uppercase tracking-widest">Danh sách nợ</p>
-                   <button type="button" onclick="addCustomSplitRow()" class="text-xs font-bold text-primary-500 bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-100 hover:bg-primary-100"><i class="fa-solid fa-plus"></i> Thêm người</button>
-                </div>
-                <div id="custom-split-container">
-                    ${customRowsHtml}
-                </div>
-              </div>
-              
-              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Chia Tiền & Ghi Sổ Nợ</button>
-            </form>
-          `;
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Người tham gia</label>
+            <input type="text" id="split-names" value="${defaultNamesStr}" placeholder="Ví dụ: Tèo, Tí, Đen" 
+              class="w-full bg-slate-50 dark:bg-slate-800 rounded-xl p-4 font-bold text-slate-700 dark:text-white outline-none border-none focus:ring-2 focus:ring-indigo-400 transition-all">
+            <p class="text-[10px] font-medium text-slate-400 mt-2 ml-1 italic flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-slate-300"></i> Bạn sẽ được tự động cộng vào danh sách.
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. Chế độ Tùy chỉnh (Custom Mode - Ẩn mặc định) -->
+    <div id="split-custom-form" class="hidden space-y-4">
+        <div class="flex justify-between items-center px-1">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Danh sách nợ chi tiết</p>
+            <button type="button" onclick="addCustomSplitRow()" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[11px] font-bold rounded-xl hover:scale-105 active:scale-95 transition-transform">
+                <i class="fa-solid fa-plus mr-1"></i> Thêm người
+            </button>
+        </div>
+        <div id="custom-split-container" class="space-y-3">
+            ${customRowsHtml}
+        </div>
+    </div>
+    
+    <!-- 4. Nút Submit (Gradient Glow) -->
+    <button type="submit" class="w-full mt-4 py-4 relative group overflow-hidden rounded-[1.5rem] active:scale-[0.98] transition-all duration-300">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-600 group-hover:scale-105 transition-transform duration-500"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 -z-10"></div>
+        <div class="relative flex items-center justify-center gap-2 text-white font-black text-[15px] tracking-wide">
+            <i class="fa-solid fa-check-double text-lg"></i>
+            CHIA TIỀN & GHI SỔ NỢ
+        </div>
+    </button>
+</form>
+`;
 
           document.getElementById("frm-split").onsubmit = (e) => {
             e.preventDefault();
@@ -5027,59 +5321,151 @@
         } else if (type === "trip") {
           title.innerText = "Tạo Chuyến Đi Mới";
           body.innerHTML = `
-            <form id="frm-trip" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên chuyến đi</label>
-                <input type="text" id="trip-name" required placeholder="VD: Đà Lạt 3N2Đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-              </div>
-              
-              <!-- CHECKBOX QUỸ CHUNG -->
-              <div class="flex items-center gap-3 bg-pink-400 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
-                <input type="checkbox" id="trip-shared" class="w-5 h-5 accent-pink-500 cursor-pointer" onchange="document.getElementById('trip-members-box').classList.toggle('hidden', !this.checked)">
-                <label for="trip-shared" class="font-bold text-pink-600 dark:text-pink-600 cursor-pointer select-none">
-                  <i class="fa-solid fa-users"></i> Sử dụng Quỹ Chung
-                </label>
-              </div>
-
-              <!-- Ô NHẬP TÊN (Chỉ hiện khi bật Quỹ Chung) -->
-              <div id="trip-members-box" class="hidden custom-bg-card dark:bg-gray-800/50 p-4 rounded-2xl border custom-border">
-                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên những người đi cùng (Phẩy để ngăn cách)</label>
-                <input type="text" id="trip-members" placeholder="VD: Tèo, Tí, Đen" class="w-full p-3 custom-bg-input rounded-xl outline-none font-medium custom-text border custom-border custom-focus">
-                <p class="text-[10px] custom-text-secondary mt-1 italic">* Bạn là Thủ quỹ nên không cần nhập tên mình vào đây.</p>
-              </div>
-
-              <div class="flex flex-col gap-4">
-  <div>
-    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">
-      Khởi hành
+<form id="frm-trip" class="relative flex flex-col gap-5 p-1">
+  
+  <!-- Tên chuyến đi -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Tên chuyến đi
     </label>
-    <input
-      type="date"
-      id="trip-start"
-      required
-      class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus"
-    >
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-violet-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-map-location-dot text-sm"></i>
+      </div>
+      <input 
+        type="text" 
+        id="trip-name" 
+        required 
+        placeholder="VD: Đà Lạt 3N2Đ, Vũng Tàu..." 
+        class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] font-bold outline-none focus:border-violet-500 dark:focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+      >
+    </div>
   </div>
 
-  <div>
-    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">
-      Kết thúc
-    </label>
-    <input
-      type="date"
-      id="trip-end"
-      required
-      class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus"
-    >
+  <!-- Thời gian đi & về (Grid 2 cột) -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Ngày đi -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Khởi hành
+      </label>
+      <div class="relative">
+        <input 
+          type="date" 
+          id="trip-start" 
+          required 
+          class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl px-4 py-3.5 text-[14px] font-bold outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all cursor-pointer"
+        >
+      </div>
+    </div>
+
+    <!-- Ngày về -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Kết thúc
+      </label>
+      <div class="relative">
+        <input 
+          type="date" 
+          id="trip-end" 
+          required 
+          class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl px-4 py-3.5 text-[14px] font-bold outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all cursor-pointer"
+        >
+      </div>
+    </div>
   </div>
-</div>
-              <div>
-                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ngân sách dự kiến (VNĐ)</label>
-                <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="trip-budget" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus">
-              </div>
-              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu Hành Trình</button>
-            </form>
-          `;
+  
+  <!-- CỤM TÍNH NĂNG QUỸ CHUNG -->
+  <div class="space-y-3 mt-1">
+    <!-- Card Toggle Quỹ Chung (Pink Theme) -->
+    <div class="relative overflow-hidden bg-pink-50/80 dark:bg-pink-900/20 rounded-3xl p-4 border border-pink-100 dark:border-pink-800/50 shadow-sm transition-all group">
+      <!-- Đốm sáng nền -->
+      <div class="absolute -right-6 -top-6 w-20 h-20 bg-pink-400/10 dark:bg-pink-500/10 blur-2xl rounded-full pointer-events-none"></div>
+      
+      <div class="relative z-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white shadow-inner shadow-white/20">
+            <i class="fa-solid fa-users text-sm"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-[14px] text-pink-600 dark:text-pink-400">Sử dụng Quỹ chung</h4>
+            <p class="text-[11px] text-pink-500/80 dark:text-pink-500/80 font-medium">Chia tiền nhóm dễ dàng</p>
+          </div>
+        </div>
+        
+        <!-- Nút Toggle Switch phong cách iOS -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            id="trip-shared" 
+            class="sr-only peer"
+            onchange="document.getElementById('trip-members-box').classList.toggle('hidden', !this.checked)"
+          >
+          <div class="w-11 h-6 bg-pink-200/50 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-pink-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-pink-500"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Khung nhập tên thành viên (Ẩn/Hiện mượt mà) -->
+    <div id="trip-members-box" class="hidden relative p-4 bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700/50 rounded-2xl shadow-sm animate-[fadeIn_0.3s_ease-out]">
+      <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 pl-1">
+        Tên người đi cùng (Phẩy để ngăn cách)
+      </label>
+      <div class="relative mb-2">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+          <i class="fa-solid fa-user-tag text-xs"></i>
+        </div>
+        <input 
+          type="text" 
+          id="trip-members" 
+          placeholder="VD: Tèo, Tí, Đen..." 
+          class="w-full bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-[13px] font-semibold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-400/10 transition-all"
+        >
+      </div>
+      <div class="flex items-start gap-2 text-pink-500/80 dark:text-pink-400/80 pl-1">
+        <i class="fa-solid fa-circle-info mt-[2px] text-[10px]"></i>
+        <p class="text-[10px] font-medium leading-snug">
+          Bạn là Thủ quỹ nên <span class="font-bold">không cần</span> nhập tên mình vào đây.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ngân sách dự kiến (Money Input) -->
+  <div class="group relative mt-2">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Ngân sách dự kiến (VNĐ)
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-500 pointer-events-none">
+        <i class="fa-solid fa-dong-sign text-lg"></i>
+      </div>
+      <input 
+        type="text" 
+        inputmode="numeric" 
+        oninput="formatInputCurrency(event)" 
+        id="trip-budget" 
+        required 
+        placeholder="0" 
+        class="w-full bg-emerald-50/50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl pl-11 pr-4 py-4 text-2xl font-black outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all placeholder:text-emerald-300/50"
+      >
+    </div>
+  </div>
+  
+  <!-- Nút Submit Siêu Đẹp (Gradient Tím - Hồng) -->
+  <button 
+    type="submit" 
+    class="group relative overflow-hidden w-full py-4 mt-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(139,92,246,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(139,92,246,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1"
+  >
+    <!-- Hiệu ứng lướt bóng sáng -->
+    <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <span class="relative z-10 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-plane-departure"></i> Lưu Hành Trình
+    </span>
+  </button>
+
+</form>
+`;
           document.getElementById("frm-trip").onsubmit = (e) => {
             e.preventDefault();
             const isShared = document.getElementById("trip-shared").checked;
@@ -5127,66 +5513,213 @@
             .join("");
 
           body.innerHTML = `
-            <form id="frm-debt" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Đối tượng</label>
-                <input type="text" id="d-person" required placeholder="Tên con nợ / chủ nợ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
-              </div>
+<form id="frm-debt" class="relative flex flex-col gap-4 p-1">
+  
+  <!-- Đối tượng (Người nợ/Chủ nợ) -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Đối tượng (Người vay / Cho vay)
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-rose-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-user-tag text-sm"></i>
+      </div>
+      <input 
+        type="text" 
+        id="d-person" 
+        required 
+        placeholder="VD: Nguyễn Văn A, Sếp..." 
+        class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] font-bold outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+      >
+    </div>
+  </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VND)</label>
-                  <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus text-danger-500">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót trả/thu</label>
-                  <input type="date" id="d-due-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus text-sm">
-                </div>
-              </div>
+  <!-- Hàng 2: Số tiền & Hạn chót -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Số tiền -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Số tiền (VNĐ)
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-rose-500 pointer-events-none">
+          <i class="fa-solid fa-dong-sign text-lg"></i>
+        </div>
+        <input 
+          type="text" 
+          inputmode="numeric" 
+          oninput="formatInputCurrency(event)" 
+          id="d-amount" 
+          required 
+          placeholder="0" 
+          class="w-full bg-rose-50/50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 border border-rose-200/50 dark:border-rose-800/50 rounded-2xl pl-11 pr-4 py-3.5 text-xl font-black outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 transition-all placeholder:text-rose-300/50"
+        >
+      </div>
+    </div>
 
-              <div class="flex gap-4">
-                <div class="flex-1">
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Loại nợ</label>
-                  <select id="d-type" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                      <option value="lend">Tôi cho vay (Rút ví)</option>
-                      <option value="borrow">Tôi đi vay (Nhận tiền)</option>
-                  </select>
-                </div>
-                <div class="flex-1">
-                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ví giao dịch</label>
-                  <select id="d-wallet" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">${walletOptions}</select>
-                </div>
-              </div>
+    <!-- Hạn chót -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Hạn chót
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-orange-500 transition-colors pointer-events-none">
+          <i class="fa-solid fa-calendar-xmark text-sm"></i>
+        </div>
+        <input 
+          type="date" 
+          id="d-due-date" 
+          required 
+          class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[14px] font-bold outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer"
+        >
+      </div>
+    </div>
+  </div>
 
-              <!-- SIÊU CUSTOM NHẮC NỢ (NGÀY & GIỜ & EMAIL) -->
-              <div class="custom-bg-card p-4 rounded-2xl border custom-border mt-2 shadow-sm">
-                 <div class="flex items-center justify-between mb-2">
-                     <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-rose-500"></i> Hẹn giờ nhắc nợ tự động</label>
-                     <input type="checkbox" id="d-has-remind" onchange="document.getElementById('d-remind-box').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-rose-500 cursor-pointer">
-                 </div>
-                 <div id="d-remind-box" class="hidden space-y-3 pt-3 border-t custom-border border-dashed">
-                     <input type="email" id="d-email" placeholder="Email người cần nhắc..." class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border outline-none font-medium custom-text">
-                     <div class="flex gap-2">
-                         <div class="flex-1">
-                             <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Nhắc trước hạn</label>
-                             <select id="d-remind-days" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
-                                 <option value="1">Trước 1 ngày</option>
-                                 <option value="2">Trước 2 ngày</option>
-                                 <option value="3">Trước 3 ngày</option>
-                                 <option value="4">Trước 4 ngày</option>
-                             </select>
-                         </div>
-                         <div class="flex-1">
-                             <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Giờ gửi Mail</label>
-                             <input type="time" id="d-time" value="08:00" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
-                         </div>
-                     </div>
-                 </div>
-              </div>
+  <!-- Hàng 3: Loại Nợ & Ví -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Loại Nợ -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Loại giao dịch
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+          <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+        </div>
+        <select 
+          id="d-type" 
+          class="w-full appearance-none bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-8 py-3.5 text-[13px] sm:text-[14px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
+        >
+          <option value="lend">Cho vay (Rút ví)</option>
+          <option value="borrow">Đi vay (Nhận tiền)</option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+        </div>
+      </div>
+    </div>
 
-              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu khoản nợ</button>
-            </form>
-          `;
+    <!-- Ví giao dịch -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Ví liên kết
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+          <i class="fa-solid fa-wallet text-sm"></i>
+        </div>
+        <select 
+          id="d-wallet" 
+          class="w-full appearance-none bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-8 py-3.5 text-[13px] sm:text-[14px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
+        >
+          ${walletOptions}
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CỤM TÍNH NĂNG NHẮC NỢ QUA EMAIL -->
+  <div class="space-y-3 mt-2">
+    <!-- Card Toggle Nhắc Nợ (Amber Theme) -->
+    <div class="relative overflow-hidden bg-amber-50/80 dark:bg-amber-900/20 rounded-3xl p-4 border border-amber-100 dark:border-amber-800/50 shadow-sm transition-all group">
+      <!-- Đốm sáng nền -->
+      <div class="absolute -right-6 -top-6 w-20 h-20 bg-amber-400/10 dark:bg-amber-500/10 blur-2xl rounded-full pointer-events-none"></div>
+      
+      <div class="relative z-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-inner shadow-white/20">
+            <i class="fa-solid fa-bell text-sm"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-[14px] text-amber-600 dark:text-amber-500">Hẹn giờ nhắc nợ</h4>
+            <p class="text-[11px] text-amber-600/70 dark:text-amber-500/80 font-medium">Tự động gửi Email báo nợ</p>
+          </div>
+        </div>
+        
+        <!-- Nút Toggle Switch phong cách iOS -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            id="d-has-remind" 
+            class="sr-only peer"
+            onchange="document.getElementById('d-remind-box').classList.toggle('hidden', !this.checked)"
+          >
+          <div class="w-11 h-6 bg-amber-200/50 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-amber-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Khung Cấu Hình Nhắc Nợ (Ẩn/Hiện mượt mà) -->
+    <div id="d-remind-box" class="hidden relative p-4 bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700/50 rounded-2xl shadow-sm animate-[fadeIn_0.3s_ease-out] space-y-4">
+      
+      <!-- Email -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+          <i class="fa-solid fa-envelope text-xs"></i>
+        </div>
+        <input 
+          type="email" 
+          id="d-email" 
+          placeholder="Nhập Email người cần nhắc..." 
+          class="w-full bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl pl-9 pr-4 py-3 text-[13px] font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all"
+        >
+      </div>
+
+      <!-- Hàng 2: Ngày & Giờ Gửi -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Ngày nhắc -->
+        <div>
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Nhắc trước hạn</label>
+          <div class="relative">
+            <select 
+              id="d-remind-days" 
+              class="w-full appearance-none bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all cursor-pointer"
+            >
+              <option value="1">Trước 1 ngày</option>
+              <option value="2">Trước 2 ngày</option>
+              <option value="3">Trước 3 ngày</option>
+              <option value="4">Trước 4 ngày</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Giờ gửi -->
+        <div>
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Giờ gửi Mail</label>
+          <div class="relative">
+            <input 
+              type="time" 
+              id="d-time" 
+              value="08:00" 
+              class="w-full bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all cursor-pointer"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nút Submit -->
+  <button 
+    type="submit" 
+    class="group relative overflow-hidden w-full py-4 mt-2 bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(225,29,72,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(225,29,72,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1"
+  >
+    <!-- Hiệu ứng shimmer chớp sáng -->
+    <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <span class="relative z-10 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-handshake-angle"></i> Lưu Khoản Nợ
+    </span>
+  </button>
+  
+</form>
+`;
 
           // Tự động điền ngày đáo hạn mặc định là hôm nay
           document.getElementById("d-due-date").value =
@@ -5301,31 +5834,101 @@
             )
             .join("");
           body.innerHTML = `
-  <form id="frm-g" class="space-y-5">
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên mục tiêu</label>
-      <input type="text" id="g-n" required class="w-full p-4 custom-bg-input rounded-2xl outline-none border custom-border custom-focus font-medium custom-text">
+<form id="frm-g" class="relative flex flex-col gap-5 p-1">
+  
+  <!-- Tên mục tiêu -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Tên mục tiêu
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-bullseye text-sm"></i>
+      </div>
+      <input 
+        type="text" 
+        id="g-n" 
+        required 
+        placeholder="VD: Mua xe máy, Du lịch Nhật Bản..." 
+        class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] font-bold outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+      >
     </div>
+  </div>
 
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số tiền cần đạt (VNĐ)</label>
-      <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="g-a" required class="w-full p-4 custom-bg-input rounded-2xl outline-none border custom-border custom-focus font-black text-xl custom-text custom-placeholder" placeholder="0">
+  <!-- Số tiền cần đạt -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Số tiền cần đạt (VNĐ)
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-500 pointer-events-none">
+        <i class="fa-solid fa-sack-dollar text-lg"></i>
+      </div>
+      <input 
+        type="text" 
+        inputmode="numeric" 
+        oninput="formatInputCurrency(event)" 
+        id="g-a" 
+        required 
+        placeholder="0" 
+        class="w-full bg-emerald-50/50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl pl-11 pr-4 py-4 text-2xl font-black outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all placeholder:text-emerald-300/50"
+      >
     </div>
+  </div>
 
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Ngày dự kiến hoàn thành</label>
-      <input type="date" id="g-d" required class="w-full p-4 custom-bg-input rounded-2xl outline-none border custom-border custom-focus font-medium custom-text">
+  <!-- Ngày dự kiến hoàn thành -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Ngày dự kiến hoàn thành
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-orange-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-calendar-check text-sm"></i>
+      </div>
+      <input 
+        type="date" 
+        id="g-d" 
+        required 
+        class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[14px] font-bold outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer"
+      >
     </div>
+  </div>
 
-    <div>
-      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Nguồn tiền (Liên kết Ví)</label>
-      <select id="g-w" class="w-full p-4 custom-bg-input rounded-2xl outline-none border custom-border custom-focus font-medium custom-text">${walletOptions}</select>
+  <!-- Nguồn tiền (Liên kết Ví) -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Nguồn tiền (Liên kết Ví)
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-wallet text-sm"></i>
+      </div>
+      <!-- Dùng appearance-none để ẩn icon mặc định của thẻ select -->
+      <select 
+        id="g-w" 
+        class="w-full appearance-none bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-10 py-3.5 text-[15px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
+      >
+        ${walletOptions}
+      </select>
+      <!-- Icon mũi tên thả xuống custom -->
+      <div class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 pointer-events-none">
+        <i class="fa-solid fa-chevron-down text-xs"></i>
+      </div>
     </div>
+  </div>
 
-    <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg mt-2 custom-shadow-lg active:scale-95 transition-all duration-200">
-      Tạo Mục Tiêu
-    </button>
-  </form>
+  <!-- Nút Submit -->
+  <button 
+    type="submit" 
+    class="group relative overflow-hidden w-full py-4 mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(79,70,229,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(79,70,229,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1"
+  >
+    <!-- Hiệu ứng shimmer (chớp sáng) -->
+    <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <span class="relative z-10 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-rocket"></i> Tạo Mục Tiêu
+    </span>
+  </button>
+</form>
 `;
           document.getElementById("frm-g").onsubmit = (e) => {
             e.preventDefault();
@@ -5467,33 +6070,65 @@
             : "";
 
           body.innerHTML = `
-    <form id="frm-b" class="space-y-5">
-        <div>
-            <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Danh mục</label>
-            <select id="b-c" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text custom-border border custom-focus">
-                ${expCats}
-            </select>
-        </div>
+<form id="frm-b" class="relative flex flex-col gap-6 p-1">
+  
+  <!-- Danh mục chi tiêu -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Danh mục ngân sách
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-teal-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-folder-open text-sm"></i>
+      </div>
+      <select 
+        id="b-c" 
+        class="w-full appearance-none bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-8 py-4 text-[15px] font-bold outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 transition-all cursor-pointer"
+      >
+        ${expCats}
+      </select>
+      <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+      </div>
+    </div>
+  </div>
 
-        <div>
-            <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Ngân sách (VNĐ/Tháng)</label>
-            <input 
-                type="text" 
-                inputmode="numeric" 
-                oninput="formatInputCurrency(event)" 
-                id="b-a" 
-                value="${formattedAmt}"
-                required 
-                class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text custom-border border custom-focus custom-placeholder" 
-                placeholder="0"
-            >
-        </div>
+  <!-- Số tiền Ngân sách -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Hạn mức ngân sách (VNĐ/Tháng)
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-teal-500 pointer-events-none">
+        <i class="fa-solid fa-coins text-lg"></i>
+      </div>
+      <input 
+        type="text" 
+        inputmode="numeric" 
+        oninput="formatInputCurrency(event)" 
+        id="b-a" 
+        value="${formattedAmt}"
+        required 
+        placeholder="0" 
+        class="w-full bg-teal-50/50 dark:bg-teal-900/10 text-teal-600 dark:text-teal-400 border border-teal-200/50 dark:border-teal-800/50 rounded-2xl pl-11 pr-4 py-4 text-2xl font-black outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all placeholder:text-teal-300/50"
+      >
+    </div>
+  </div>
 
-        <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">
-            ${isEdit ? "Cập Nhật Ngân Sách" : "Lưu Ngân Sách"}
-        </button>
-    </form>
-    `;
+  <!-- Nút Lưu -->
+  <button 
+    type="submit" 
+    class="group relative overflow-hidden w-full py-4 mt-2 bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-500 hover:to-sky-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(13,148,136,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(13,148,136,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1"
+  >
+    <!-- Hiệu ứng shimmer chớp sáng -->
+    <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <span class="relative z-10 flex items-center justify-center gap-2">
+      <i class="fa-solid ${isEdit ? "fa-pen-to-square" : "fa-floppy-disk"}"></i> 
+      ${isEdit ? "Cập Nhật Ngân Sách" : "Lưu Ngân Sách"}
+    </span>
+  </button>
+</form>
+`;
 
           document.getElementById("frm-b").onsubmit = (e) => {
             e.preventDefault();
@@ -5566,64 +6201,148 @@
             }
           };
           body.innerHTML = `
-  <div class="flex custom-bg-input p-1.5 rounded-2xl mb-6 border custom-border">
-    <button type="button" id="tab-transfer" onclick="switchWalletTab('transfer')" class="flex-1 py-3 font-bold rounded-xl transition-all custom-primary custom-shadow-sm">Chuyển tiền</button>
-    <button type="button" id="tab-add" onclick="switchWalletTab('add')" class="flex-1 py-3 font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95">Thêm ví</button>
+  <!-- Tab Switcher (Segmented Control phong cách iOS) -->
+  <div class="relative flex bg-gray-100/80 dark:bg-gray-800/60 p-1.5 rounded-2xl mb-6 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-md">
+    <button type="button" id="tab-transfer" onclick="switchWalletTab('transfer')" class="flex-1 py-2.5 font-bold text-[14px] rounded-xl transition-all duration-300 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm border border-gray-200/50 dark:border-gray-600/50">
+      <i class="fa-solid fa-money-bill-transfer mr-1"></i> Chuyển tiền
+    </button>
+    <button type="button" id="tab-add" onclick="switchWalletTab('add')" class="flex-1 py-2.5 font-bold text-[14px] rounded-xl transition-all duration-300 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+      <i class="fa-solid fa-plus-circle mr-1"></i> Thêm ví
+    </button>
   </div>
 
-  <div id="form-transfer-container">
+  <!-- ================= FORM CHUYỂN TIỀN ================= -->
+  <div id="form-transfer-container" class="animate-[fadeIn_0.3s_ease-out]">
     <form id="frm-transfer" class="space-y-5">
-      <div class="flex gap-4 items-center">
-        <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Từ ví</label>
-          <select id="tr-from" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus">${options}</select>
+      
+      <!-- Block Từ Ví -> Đến Ví -->
+      <div class="relative flex items-center justify-between gap-3 bg-gray-50/50 dark:bg-gray-800/30 p-3 rounded-3xl border border-gray-100 dark:border-gray-700/50">
+        
+        <!-- Từ ví -->
+        <div class="flex-1 group">
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 pl-2">Từ ví</label>
+          <div class="relative">
+            <select id="tr-from" class="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-10 pr-6 py-3 text-[13px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none cursor-pointer">
+              ${options}
+            </select>
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
         </div>
-        <i class="fa-solid fa-arrow-right custom-text-secondary mt-6"></i>
-        <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Đến ví</label>
-          <select id="tr-to" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus">${options}</select>
+
+        <!-- Mũi tên ở giữa nối 2 ví -->
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-1 w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 text-blue-600 dark:text-blue-300 flex items-center justify-center shadow-md border-4 border-white dark:border-[#18181b] z-10">
+          <i class="fa-solid fa-arrow-right-long text-sm"></i>
+        </div>
+
+        <!-- Đến ví -->
+        <div class="flex-1 group">
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 pl-2 text-right">Đến ví</label>
+          <div class="relative">
+            <select id="tr-to" class="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-10 pr-6 py-3 text-[13px] font-bold outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all appearance-none cursor-pointer text-right">
+              ${options}
+            </select>
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+               <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Số tiền -->
+      <div class="group relative">
+        <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-2">Số tiền chuyển (VNĐ)</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-5 text-blue-500 pointer-events-none">
+            <i class="fa-solid fa-dong-sign text-xl"></i>
+          </div>
+          <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="tr-amt" required class="w-full bg-blue-50/30 dark:bg-blue-900/10 text-blue-700 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 rounded-3xl pl-12 pr-5 py-4 text-2xl font-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all placeholder:text-blue-300/50" placeholder="0">
         </div>
       </div>
-      <div>
-        <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số tiền (VNĐ)</label>
-        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="tr-amt" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
-      </div>
-      <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">Xác Nhận Chuyển</button>
+
+      <!-- Nút Xác Nhận -->
+      <button type="submit" class="group relative overflow-hidden w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(79,70,229,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(79,70,229,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1">
+        <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Xác Nhận Chuyển
+        </span>
+      </button>
     </form>
   </div>
 
-  <div id="form-add-container" class="hidden">
+  <!-- ================= FORM THÊM VÍ ================= -->
+  <div id="form-add-container" class="hidden animate-[fadeIn_0.3s_ease-out]">
     <form id="frm-w" class="space-y-5">
+      
+      <!-- Tên Ví / Ngân hàng -->
+      <div class="group relative">
+        <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-2">Tên Ví / Ngân hàng</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-emerald-500 transition-colors pointer-events-none">
+            <i class="fa-solid fa-building-columns text-sm"></i>
+          </div>
+          <input type="text" id="w-n" required class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] font-bold outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:font-medium placeholder:text-gray-400" placeholder="VD: Techcombank, Momo...">
+        </div>
+      </div>
+      
+      <!-- Số dư & 4 Số cuối -->
       <div class="flex gap-4">
-        <!-- Chỗ nhập Tên ví cũ -->
-        <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên Ví / Ngân hàng</label>
-          <input type="text" id="w-n" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus" placeholder="VD: Techcombank">
+        <!-- Số dư -->
+        <div class="flex-1 group">
+          <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-2">Số dư ban đầu</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-500 pointer-events-none">
+              <i class="fa-solid fa-dong-sign text-lg"></i>
+            </div>
+            <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full bg-emerald-50/30 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl pl-11 pr-4 py-3.5 text-xl font-black outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all placeholder:text-emerald-300/50" placeholder="0">
+          </div>
+        </div>
+        
+        <!-- 4 Số cuối -->
+        <div class="w-[110px] group">
+          <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 text-center">4 Số cuối</label>
+          <div class="relative">
+             <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
+              <i class="fa-regular fa-credit-card text-xs"></i>
+            </div>
+            <input type="text" id="w-last4" maxlength="4" class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-8 pr-2 py-3.5 text-lg font-black tracking-widest text-center outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:font-medium placeholder:text-gray-400" placeholder="0000">
+          </div>
         </div>
       </div>
       
-      <div class="flex gap-4">
-        <!-- Nhập số dư -->
-        <div class="flex-1">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số dư ban đầu</label>
-          <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
-        </div>
-        <!-- Thêm chỗ nhập 4 số cuối -->
-        <div class="w-1/3">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">4 Số cuối</label>
-          <input type="text" id="w-last4" maxlength="4" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus text-center" placeholder="0000">
+      <!-- Checkbox quỹ chung (Split Bill - Thẻ Pink) -->
+      <div class="relative overflow-hidden bg-pink-50/50 dark:bg-pink-900/20 rounded-2xl p-4 border border-pink-100 dark:border-pink-800/50 shadow-sm transition-all hover:shadow-md hover:border-pink-200 dark:hover:border-pink-700 group">
+        <!-- Đốm sáng nền -->
+        <div class="absolute -right-6 -top-6 w-20 h-20 bg-pink-400/10 dark:bg-pink-500/10 blur-2xl rounded-full pointer-events-none"></div>
+        
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white shadow-inner shadow-white/20 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-heart text-sm"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-[14px] text-pink-600 dark:text-pink-400">Là quỹ chung</h4>
+              <p class="text-[11px] text-pink-400/80 dark:text-pink-500/80 font-medium">Dùng chia tiền </p>
+            </div>
+          </div>
+          
+          <!-- Nút Toggle Switch phong cách iOS -->
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="w-shared" class="sr-only peer">
+            <div class="w-11 h-6 bg-pink-200/50 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-pink-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-pink-500"></div>
+          </label>
         </div>
       </div>
       
-      <!-- Checkbox quỹ chung -->
-      <div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
-        <input type="checkbox" id="w-shared" class="w-5 h-5 accent-pink-500 cursor-pointer">
-        <label for="w-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none">
-          <i class="fa-solid fa-heart"></i> Là quỹ chung (Split Bill)
-        </label>
-      </div>
-      
-      <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">Lưu Ví Mới</button>
+      <!-- Nút Lưu Ví -->
+      <button type="submit" class="group relative overflow-hidden w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(16,185,129,0.5)] hover:shadow-[0_15px_30px_-10px_rgba(16,185,129,0.7)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1">
+        <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> Lưu Ví Mới
+        </span>
+      </button>
     </form>
   </div>
 `;
@@ -6950,59 +7669,177 @@
           const defaultEmail = state.notificationSettings?.email || "";
 
           body.innerHTML = `
-                <form id="frm-task" class="space-y-4">
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên công việc</label>
-                    <input type="text" id="task-name" required placeholder="VD: Đóng tiền trọ, Mua đồ..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                  </div>
-                  
-                  <div class="flex gap-3">
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tính chất</label>
-                        <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                            <option value="normal">Bình thường</option>
-                            <option value="expense">💸 Chi tiền</option>
-                            <option value="income">💰 Thu tiền</option>
-                        </select>
-                      </div>
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót</label>
-                        <input type="datetime-local" id="task-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                      </div>
-                  </div>
+<form id="frm-task" class="relative flex flex-col gap-5 p-1">
+  
+  <!-- Tên công việc -->
+  <div class="group relative">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Tên công việc
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none">
+        <i class="fa-solid fa-keyboard text-sm"></i>
+      </div>
+      <input 
+        type="text" 
+        id="task-name" 
+        required 
+        placeholder="VD: Đóng tiền trọ, Mua đồ..." 
+        class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] font-bold outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:font-medium placeholder:text-gray-400"
+      >
+    </div>
+  </div>
+  
+  <!-- Tính chất & Hạn chót (Grid 2 cột) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Tính chất -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Tính chất
+      </label>
+      <div class="relative">
+        <select 
+          id="task-type" 
+          onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" 
+          class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl px-4 py-3.5 text-[14px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none cursor-pointer pr-10"
+        >
+          <option value="normal">📌 Bình thường</option>
+          <option value="expense">💸 Chi tiền</option>
+          <option value="income">💰 Thu tiền</option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 pointer-events-none">
+          <i class="fa-solid fa-chevron-down text-xs"></i>
+        </div>
+      </div>
+    </div>
 
-                  <div id="task-amt-box" class="hidden">
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VNĐ)</label>
-                    <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="task-amt" placeholder="0 đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-primary-500 border custom-border custom-focus">
-                  </div>
-                  
-                  <!-- KHU VỰC CÀI ĐẶT NHẮC NHỞ RIÊNG CHO TASK NÀY -->
-                  <div class="custom-bg-card dark:bg-gray-800 p-4 rounded-2xl border custom-border mt-2">
-                      <div class="flex items-center justify-between mb-2">
-                          <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-amber-500"></i> Nhắc nhở Email</label>
-                          <input type="checkbox" id="task-has-reminder" onchange="document.getElementById('task-reminder-settings').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-amber-500 cursor-pointer">
-                      </div>
-                      
-                      <div id="task-reminder-settings" class="hidden space-y-3 mt-3 pt-3 border-t custom-border border-dashed">
-                          <div>
-                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Gửi thông báo tới Email</label>
-                              <input type="email" id="task-email" value="${defaultEmail}" placeholder="Nhập email người nhận..." class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-medium custom-text border custom-border">
-                          </div>
-                          <div>
-                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Thời gian nhắc nhở (Trước Deadline)</label>
-                              <select id="task-remind-time" class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-bold custom-text border custom-border">
-                                  <option value="0">Đúng giờ Deadline</option>
-                                  <option value="15">Trước 15 phút</option>
-                                  <option value="60">Trước 1 tiếng</option>
-                                  <option value="1440">Trước 1 ngày</option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
+    <!-- Hạn chót -->
+    <div class="group relative">
+      <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+        Hạn chót (Deadline)
+      </label>
+      <div class="relative">
+        <input 
+          type="datetime-local" 
+          id="task-date" 
+          required 
+          class="w-full bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700/60 rounded-2xl px-4 py-3.5 text-[14px] font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
+        >
+      </div>
+    </div>
+  </div>
 
-                  <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lên Lịch Công Việc</button>
-                </form>
-              `;
+  <!-- Số tiền (Ẩn/Hiện mượt mà) -->
+  <div id="task-amt-box" class="hidden animate-[fadeIn_0.3s_ease-out]">
+    <label class="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 pl-1">
+      Số tiền (VNĐ)
+    </label>
+    <div class="relative group">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-500 pointer-events-none">
+        <i class="fa-solid fa-dong-sign text-lg"></i>
+      </div>
+      <input 
+        type="text" 
+        inputmode="numeric" 
+        oninput="formatInputCurrency(event)" 
+        id="task-amt" 
+        placeholder="0" 
+        class="w-full bg-emerald-50/50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl pl-11 pr-4 py-4 text-2xl font-black outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all placeholder:text-emerald-300/50"
+      >
+    </div>
+  </div>
+  
+  <!-- KHU VỰC NHẮC NHỞ EMAIL (Glass Card với Toggle iOS) -->
+  <div class="relative overflow-hidden bg-white dark:bg-gray-800/80 rounded-3xl p-5 border border-gray-100 dark:border-gray-700/50 shadow-sm mt-2">
+    <!-- Hiệu ứng đốm sáng nền -->
+    <div class="absolute -right-10 -top-10 w-32 h-32 bg-amber-400/10 dark:bg-amber-500/10 blur-3xl rounded-full pointer-events-none"></div>
+    
+    <!-- Header Toggle -->
+    <div class="relative z-10 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-[14px] bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-inner shadow-white/20">
+          <i class="fa-solid fa-bell text-sm"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-[15px] text-gray-800 dark:text-gray-100">Nhắc nhở qua Email</h4>
+          <p class="text-[11px] text-gray-400 font-medium">Gửi thông báo trước khi hết hạn</p>
+        </div>
+      </div>
+      
+      <!-- Nút Toggle Switch phong cách iOS -->
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input 
+          type="checkbox" 
+          id="task-has-reminder" 
+          onchange="document.getElementById('task-reminder-settings').classList.toggle('hidden', !this.checked)" 
+          class="sr-only peer"
+        >
+        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
+      </label>
+    </div>
+    
+    <!-- Cài đặt chi tiết (Mở rộng) -->
+    <div id="task-reminder-settings" class="hidden relative z-10 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700/50 border-dashed animate-[fadeIn_0.3s_ease-out]">
+      <div class="space-y-4">
+        <!-- Email Nhận -->
+        <div class="group">
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 pl-1">
+            Email người nhận
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+              <i class="fa-regular fa-envelope"></i>
+            </div>
+            <input 
+              type="email" 
+              id="task-email" 
+              value="${defaultEmail}" 
+              placeholder="Nhập email..." 
+              class="w-full bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] font-semibold outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all"
+            >
+          </div>
+        </div>
+
+        <!-- Thời gian nhắc -->
+        <div class="group">
+          <label class="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 pl-1">
+            Thời điểm nhắc nhở
+          </label>
+          <div class="relative">
+             <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 pointer-events-none">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+            <select 
+              id="task-remind-time" 
+              class="w-full bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-10 py-2.5 text-[13px] font-semibold outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all appearance-none cursor-pointer"
+            >
+              <option value="0">Đúng giờ Deadline</option>
+              <option value="15">Trước 15 phút</option>
+              <option value="60">Trước 1 tiếng</option>
+              <option value="1440">Trước 1 ngày</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 pointer-events-none">
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nút Submit Siêu Đẹp -->
+  <button 
+    type="submit" 
+    class="group relative overflow-hidden w-full py-4 mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl text-white font-black text-[16px] shadow-[0_10px_20px_-10px_rgba(79,70,229,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(79,70,229,0.8)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1"
+  >
+    <!-- Hiệu ứng bóng lướt qua nút (Shine effect) -->
+    <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <span class="relative z-10 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-calendar-check"></i> Lên Lịch Công Việc
+    </span>
+  </button>
+</form>
+`;
 
           // Set default date
           document.getElementById("task-date").value = getToday();
@@ -7109,59 +7946,104 @@
             }
 
             return `
-             <div class="relative overflow-hidden rounded-3xl swipe-item shadow-sm mb-4 group cursor-pointer hover:-translate-y-1 transition-transform">
-                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-                  <button onclick="deleteTrip('${trip.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
-                    <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                      <i class="fa-solid fa-trash"></i>
+<div class="relative overflow-hidden rounded-[2rem] swipe-item mb-5 group cursor-pointer shadow-[0_10px_30px_-10px_rgba(0,0,0,0.08)] border border-slate-100/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 hover:-translate-y-1 transition-all duration-300">
+
+    <!-- Lớp nền: Nút Xóa (Vuốt sang trái để hiện) -->
+    <div class="absolute inset-y-0 right-0 flex items-center justify-end pr-5 z-0 w-full">
+        <button onclick="deleteTrip('${trip.id}')" class="flex flex-col items-center justify-center outline-none active:scale-95 transition-transform group/btn w-12">
+            <div class="w-11 h-11 rounded-[14px] bg-rose-100 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center text-lg mb-1.5 shadow-inner group-hover/btn:bg-rose-200 dark:group-hover/btn:bg-rose-900/50 transition-colors">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Xóa</span>
+        </button>
+    </div>
+
+    <!-- Lớp mặt: Thẻ Boarding Pass (Glassmorphism) -->
+    <div onclick="openTripDetail('${trip.id}')" class="relative w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
+
+        <!-- Phần 1: Header (Tên chuyến đi & Status) -->
+        <div class="flex justify-between items-start p-5 pb-4">
+            <div class="flex gap-4 items-center min-w-0">
+                <!-- Icon Box -->
+                <div class="w-12 h-12 shrink-0 rounded-[14px] bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/40 dark:to-fuchsia-900/40 flex items-center justify-center text-violet-500 shadow-sm border border-white dark:border-slate-700/50">
+                    <i class="fa-solid fa-plane-up text-xl"></i>
+                </div>
+                <div class="flex flex-col justify-center min-w-0">
+                    <h4 class="font-black text-[17px] text-slate-800 dark:text-white tracking-tight leading-tight truncate max-w-[150px] sm:max-w-[220px]">${trip.name}</h4>
+                    ${
+                      trip.isSharedFund
+                        ? `
+                    <div class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-900/30 border border-pink-100 dark:border-pink-800/50 text-[9px] font-bold text-pink-500 uppercase tracking-widest w-fit">
+                        <i class="fa-solid fa-users"></i> Quỹ chung
+                    </div>`
+                        : `
+                    <p class="text-[11px] font-medium text-slate-400 mt-0.5 tracking-wide">Hành trình cá nhân</p>`
+                    }
+                </div>
+            </div>
+            <!-- Status Badge -->
+            <div class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-inner ${statusColor} shrink-0">
+                ${statusText}
+            </div>
+        </div>
+
+        <!-- Phần 2: Đường cắt Boarding Pass (Dập lỗ 2 bên & Đứt nét) -->
+        <div class="relative w-full h-0 flex items-center justify-center my-1">
+            <!-- Lỗ cắt bên trái -->
+            <div class="absolute left-[-12px] w-6 h-6 rounded-full bg-slate-50 dark:bg-[#0f172a] shadow-inner z-20 border-r border-slate-200 dark:border-slate-700"></div>
+            <!-- Đường đứt nét -->
+            <div class="w-full border-b-[1.5px] border-dashed border-slate-200 dark:border-slate-700 mx-4"></div>
+            <!-- Lỗ cắt bên phải -->
+            <div class="absolute right-[-12px] w-6 h-6 rounded-full bg-slate-50 dark:bg-[#0f172a] shadow-inner z-20 border-l border-slate-200 dark:border-slate-700"></div>
+        </div>
+
+        <!-- Phần 3: Sơ đồ chuyến bay (Flight Path) -->
+        <div class="px-5 py-4 flex justify-between items-center relative">
+            <!-- Đường vạch ngang nối 2 điểm -->
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[1.5px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent"></div>
+
+            <div class="text-left relative z-10 bg-white/95 dark:bg-slate-900/95 pr-2">
+                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1 tracking-widest">Khởi hành</p>
+                <p class="text-[15px] font-black text-slate-700 dark:text-white">${trip.startDate.split("-").reverse().join("/")}</p>
+            </div>
+
+            <div class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-300 dark:text-slate-500 relative z-10 shadow-sm transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 duration-500">
+                <i class="fa-solid fa-plane rotate-45 text-sm"></i>
+            </div>
+
+            <div class="text-right relative z-10 bg-white/95 dark:bg-slate-900/95 pl-2">
+                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1 tracking-widest">Kết thúc</p>
+                <p class="text-[15px] font-black text-slate-700 dark:text-white">${trip.endDate.split("-").reverse().join("/")}</p>
+            </div>
+        </div>
+
+        <!-- Phần 4: Box Ngân Sách (Inset Card) -->
+        <div class="px-5 pb-5">
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-[1.25rem] p-3 border border-slate-100 dark:border-slate-700/50">
+                <div class="flex justify-between items-end mb-2.5">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Tổng ngân sách</p>
+                        <p class="text-[13px] font-bold text-slate-500 dark:text-slate-400">${formatMoney(trip.budget)}</p>
                     </div>
-                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
-                  </button>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold ${pct > 90 ? "text-rose-400" : "text-violet-400"} uppercase tracking-widest mb-0.5">Đã dùng (${pct}%)</p>
+                        <p class="text-[15px] font-black ${pct > 90 ? "text-rose-500" : "text-slate-800 dark:text-white"} leading-none tracking-tight">${formatMoney(spent)}</p>
+                    </div>
                 </div>
                 
-                <div onclick="openTripDetail('${trip.id}')" class="relative p-0 w-full h-full transition-transform duration-300 ease-out swipe-content z-10 flex flex-col custom-bg-card dark:bg-gray-800 border custom-border">
-                  <!-- Tiêu đề Boarding Pass -->
-                  <div class="flex justify-between items-center p-4 border-b-2 border-dashed custom-border custom-bg-card">
-                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shadow-inner shrink-0"><i class="fa-solid fa-plane"></i></div>
-                        <div>
-                           <h4 class="font-black text-lg custom-text truncate max-w-[130px] sm:max-w-[200px] leading-tight">${trip.name}</h4>
-                           ${trip.isSharedFund ? '<span class="text-[9px] font-bold text-pink-500 bg-pink-100 dark:bg-pink-900/30 px-1.5 py-0.5 rounded uppercase mt-0.5 inline-block"><i class="fa-solid fa-users"></i> Quỹ chung</span>' : ""}
-                        </div>
-                     </div>
-                     <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/50 shrink-0 ${statusColor}">${statusText}</span>
-                  </div>
-                  
-                  <!-- Thời gian bay -->
-                  <div class="p-5 flex justify-between items-center">
-                     <div>
-                       <p class="text-[10px] custom-text-secondary uppercase font-bold mb-1 tracking-widest">Khởi hành</p>
-                       <p class="text-sm font-black custom-text">${trip.startDate.split("-").reverse().join("/")}</p>
-                     </div>
-                     <i class="fa-solid fa-arrow-right text-gray-300 dark:text-gray-600"></i>
-                     <div class="text-right">
-                       <p class="text-[10px] custom-text-secondary uppercase font-bold mb-1 tracking-widest">Kết thúc</p>
-                       <p class="text-sm font-black custom-text">${trip.endDate.split("-").reverse().join("/")}</p>
-                     </div>
-                  </div>
-                  
-                  <!-- Ngân sách -->
-                  <div class="p-5 custom-bg-card mt-auto">
-                      <div class="flex justify-between text-xs mb-2 font-bold">
-                         <span class="custom-text-secondary">Ngân sách: ${formatMoney(trip.budget)}</span>
-                         <span class="${pct > 90 ? "text-danger-500" : "text-primary-500"}">${formatMoney(spent)} (${pct}%)</span>
-                      </div>
-                      <div class="h-2 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border">
-                         <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-primary-500 to-purple-500"}" style="width: ${pct}%"></div>
-                      </div>
-                  </div>
-
-                  <!-- 2 Nét cắt vé máy bay 2 bên -->
-                  <div class="absolute left-[-12px] top-[72px] w-6 h-6 rounded-full custom-bg-body border-r-2 custom-border"></div>
-                  <div class="absolute right-[-12px] top-[72px] w-6 h-6 rounded-full custom-bg-body border-l-2 custom-border"></div>
+                <!-- Thanh Progress Bar 3D -->
+                <div class="h-2.5 w-full bg-slate-200/60 dark:bg-slate-700/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700 shadow-inner relative">
+                    <div class="h-full rounded-full transition-all duration-1000 ease-out relative z-0 ${pct > 90 ? "bg-gradient-to-r from-rose-400 to-red-500 animate-pulse" : "bg-gradient-to-r from-violet-500 to-fuchsia-500"}" style="width: ${pct}%">
+                        <!-- Ánh sáng phản chiếu -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"></div>
+                    </div>
                 </div>
-             </div>
-           `;
+            </div>
+        </div>
+
+    </div>
+</div>
+`;
           })
           .join("");
         if (typeof initSwipeActions === "function") initSwipeActions();
@@ -7435,42 +8317,94 @@
 `;
 
             tabContentHtml = `
-              <div class="p-4 space-y-5">
-                  <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <div class="flex justify-between items-center mb-5">
-                       <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl shadow-sm border custom-border"><i class="fa-solid fa-wallet"></i></div>
-                       <div class="text-right">
-                         <p class="text-[10px] uppercase tracking-widest font-bold custom-text-secondary mb-1">Ngân sách (${tripDays} ngày)</p>
-                         <p class="font-black text-2xl custom-text">${formatMoney(trip.budget)}</p>
-                       </div>
-                     </div>
-                     <div class="flex justify-between text-sm mb-2 font-bold">
-                       <span class="custom-text-secondary">Đã chi: <span class="custom-text">${formatMoney(spent)}</span></span>
-                       <span class="${pct > 90 ? "text-danger-500" : "text-indigo-500"}">${pct}%</span>
-                     </div>
-                     <div class="h-3 w-full custom-bg-body dark:bg-gray-700 rounded-full overflow-hidden border custom-border mb-4">
-                       <div class="h-full transition-all duration-700 ${pct > 90 ? "bg-danger-500" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%"></div>
-                     </div>
-                     <div class="grid grid-cols-2 gap-3 mt-4">
-                        <div class="custom-bg-card dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
-                            <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">TB/Ngày</p>
-                            <p class="font-black custom-text">${formatMoney(avgDaily)}</p>
-                        </div>
-                        <div class="custom-bg-card dark:bg-gray-700/50 rounded-xl p-3 border custom-border text-center">
-                            <p class="text-[10px] uppercase font-bold custom-text-secondary mb-1">Còn lại</p>
-                            <p class="font-black ${remain < 0 ? "text-danger-500" : "custom-text"}">${formatMoney(remain)}</p>
-                        </div>
-                     </div>
-                  </div>
-                  
-                  <div class="custom-bg-card dark:bg-gray-800 p-6 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary mb-5 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-indigo-500"></i> Cơ cấu chi tiêu</h4>
-                     <div class="h-48 relative w-full mb-6" id="trip-chart-container">
-                        <canvas id="tripExpenseChart"></canvas>
-                     </div>
-                     ${catHtml}
-                  </div>
-              </div>`;
+<div class="p-4 space-y-6 selection:bg-indigo-100 selection:text-indigo-900 pb-12">
+    
+    <!-- CARD 1: TỔNG QUAN NGÂN SÁCH -->
+    <div class="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800 z-10 overflow-hidden">
+        
+        <!-- Hiệu ứng ánh sáng nền (Glow) -->
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl rounded-full pointer-events-none"></div>
+
+        <!-- Header: Icon & Tổng ngân sách -->
+        <div class="flex justify-between items-start mb-6 relative z-10">
+            <div class="w-14 h-14 rounded-[16px] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 flex items-center justify-center text-indigo-500 shadow-sm border border-white dark:border-slate-700/50">
+                <i class="fa-solid fa-wallet text-2xl"></i>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-1">Ngân sách (${tripDays} ngày)</p>
+                <div class="flex items-baseline justify-end gap-1">
+                    <p class="font-black text-[2rem] leading-none text-slate-800 dark:text-white tracking-tighter">${formatMoney(trip.budget)}</p>
+                    <span class="text-[14px] font-bold text-slate-400">₫</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin Đã chi & Phần trăm -->
+        <div class="flex justify-between items-end mb-2 relative z-10 px-1">
+            <div>
+                <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400 block mb-1">Đã chi tiêu</span>
+                <span class="font-black text-[16px] text-slate-700 dark:text-slate-200">${formatMoney(spent)}</span>
+            </div>
+            <!-- Badge Phần trăm -->
+            <div class="px-2.5 py-1 rounded-xl ${pct > 90 ? "bg-rose-50 dark:bg-rose-900/30 text-rose-500 border-rose-100 dark:border-rose-800" : "bg-slate-50 dark:bg-slate-800 text-indigo-500 border-slate-100 dark:border-slate-700"} border shadow-inner">
+                <span class="font-black text-[13px] tracking-wide">${pct}%</span>
+            </div>
+        </div>
+
+        <!-- Thanh Progress Bar (Hiệu ứng 3D Kính) -->
+        <div class="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700 shadow-inner relative z-10 mb-6">
+            <div class="h-full rounded-full transition-all duration-1000 ease-out relative z-0 ${pct > 90 ? "bg-gradient-to-r from-rose-400 to-red-500 animate-pulse" : "bg-gradient-to-r from-indigo-500 to-purple-500"}" style="width: ${pct}%">
+                <!-- Lớp highlight tạo độ phồng 3D -->
+                <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"></div>
+            </div>
+        </div>
+
+        <!-- Lưới Thống kê phụ (Inset Cards) -->
+        <div class="grid grid-cols-2 gap-3 relative z-10">
+            <!-- Trung bình ngày -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-[1.25rem] p-4 border border-slate-100 dark:border-slate-700/50 text-center flex flex-col justify-center">
+                <p class="text-[9px] uppercase font-bold text-slate-400 mb-1.5 tracking-widest">TB / Ngày</p>
+                <p class="font-black text-[15px] text-slate-700 dark:text-white">${formatMoney(avgDaily)}</p>
+            </div>
+            <!-- Còn lại -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-[1.25rem] p-4 border border-slate-100 dark:border-slate-700/50 text-center flex flex-col justify-center">
+                <p class="text-[9px] uppercase font-bold text-slate-400 mb-1.5 tracking-widest">Còn lại</p>
+                <p class="font-black text-[15px] ${remain < 0 ? "text-rose-500" : "text-emerald-500 dark:text-emerald-400"}">${formatMoney(remain)}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CARD 2: CƠ CẤU CHI TIÊU (BIỂU ĐỒ) -->
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800 relative z-10">
+        
+        <!-- Header Biểu đồ -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-[12px] bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 border border-indigo-100 dark:border-indigo-800/50 shadow-sm">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div>
+                <h4 class="font-black text-[14px] uppercase tracking-widest text-slate-700 dark:text-white leading-tight">Cơ cấu chi tiêu</h4>
+                <p class="text-[10px] font-medium text-slate-400 mt-0.5">Phân bổ theo danh mục</p>
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative w-full flex justify-center items-center mb-6">
+            <!-- Vùng sáng (Glow) lót dưới biểu đồ -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-50 to-transparent dark:from-slate-800/50 rounded-full blur-2xl -z-10 w-40 h-40 mx-auto"></div>
+            
+            <div class="h-48 w-full relative z-10" id="trip-chart-container">
+                <canvas id="tripExpenseChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Danh sách chi tiết (Category List) -->
+        <div class="bg-slate-50 dark:bg-slate-800/30 rounded-[1.25rem] p-3 border border-slate-100 dark:border-slate-700/50">
+            ${catHtml}
+        </div>
+    </div>
+</div>
+`;
           } else if (currentTripTab === "transactions") {
             let txHtml = tripTxs
               .map((tx) => {
@@ -7629,27 +8563,64 @@
                 .join("");
 
               sharedFundHtml = `
-                  <!-- Thẻ chứa Nút Bản Đồ (Chuyển từ Overview sang đây) -->
-                  
+<div class="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-white dark:border-slate-800 z-10 overflow-hidden">
+    
+    <!-- Hiệu ứng ánh sáng nền (Glow) góc phải -->
+    <div class="absolute -right-10 -top-10 w-40 h-40 bg-pink-400/10 dark:bg-pink-500/20 blur-3xl rounded-full pointer-events-none"></div>
 
-                  <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-[2rem] border custom-border custom-shadow-sm">
-                     <div class="flex justify-between items-center mb-4">
-                         <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2"><i class="fa-solid fa-users text-pink-500"></i>Quỹ Chung</h4>
-                         ${trip.isSettled ? '<span class="text-xs font-bold custom-bg-card ext-gray-600 px-2 py-1 rounded-lg">Đã chốt sổ</span>' : '<span class="text-xs font-bold custom-bg-card text-pink-600 px-2 py-1 rounded-lg">Đang hoạt động</span>'}
-                     </div>
-                     <div class="bg-white dark:bg-gray-800 rounded-xl border custom-border">
-                         ${membersListHtml}
-                     </div>
-                     ${
-                       !trip.isSettled
-                         ? `
-                     <button onclick="finalizeTripFund('${trip.id}')" class="w-full mt-4 py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:brightness-110 text-white rounded-xl font-black text-sm shadow-[0_4px_15px_rgba(244,63,94,0.4)] active:scale-95 transition-all">
-                        <i class="fa-solid fa-scale-balanced"></i> TỔNG KẾT CHUYẾN ĐI
-                     </button>`
-                         : ""
-                     }
-                  </div>
-                `;
+    <!-- Header: Icon & Trạng thái -->
+    <div class="flex justify-between items-center mb-5 relative z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-[14px] bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/40 dark:to-rose-900/40 flex items-center justify-center text-pink-500 shadow-sm border border-white dark:border-slate-700/50">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+            <div>
+                <h4 class="font-black text-[14px] uppercase tracking-widest text-slate-700 dark:text-white leading-tight">Quỹ Chung</h4>
+                <p class="text-[10px] font-medium text-slate-400 mt-0.5 tracking-wide">Chia sẻ chi phí nhóm</p>
+            </div>
+        </div>
+        
+        <!-- Status Badge thông minh -->
+        ${
+          trip.isSettled
+            ? `<div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700 shadow-inner flex items-center gap-2">
+                 <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Đã chốt</span>
+               </div>`
+            : `<div class="px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 border border-pink-100 dark:border-pink-800/50 shadow-inner flex items-center gap-2">
+                 <div class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></div>
+                 <span class="text-[10px] font-black text-pink-600 dark:text-pink-400 uppercase tracking-widest">Hoạt động</span>
+               </div>`
+        }
+    </div>
+
+    <!-- Vùng chứa danh sách thành viên (Inset Box) -->
+    <div class="bg-slate-50 dark:bg-slate-800/40 rounded-[1.5rem] p-2 border border-slate-100 dark:border-slate-700/50 relative z-10 ${!trip.isSettled ? "mb-5" : ""}">
+        ${membersListHtml}
+    </div>
+
+    <!-- Nút Tổng kết (Chỉ hiện khi chưa chốt) -->
+    ${
+      !trip.isSettled
+        ? `
+    <button onclick="finalizeTripFund('${trip.id}')" class="w-full py-4 relative group overflow-hidden rounded-[1.5rem] active:scale-[0.98] transition-all duration-300 z-10 mt-2">
+        <!-- Nền Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 group-hover:scale-105 transition-transform duration-500"></div>
+        <!-- Shadow phát sáng -->
+        <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 -z-10"></div>
+        <!-- Hiệu ứng shimmer (lướt sáng) -->
+        <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <!-- Content -->
+        <div class="relative flex items-center justify-center gap-2 text-white font-black text-[15px] tracking-wide">
+            <i class="fa-solid fa-scale-balanced text-lg"></i>
+            TỔNG KẾT CHUYẾN ĐI
+        </div>
+    </button>
+    `
+        : ""
+    }
+</div>
+`;
             }
             tabContentHtml = `<div class="p-4">${sharedFundHtml}</div>`;
           }
