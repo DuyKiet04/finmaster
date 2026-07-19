@@ -446,6 +446,7 @@
       <nav class="flex-1 px-4 space-y-1 overflow-y-auto" id="desktop-nav"></nav>
       <div class="p-6 shrink-0">
         <button
+          id="fab-desktop"
           onclick="handleFabClick()"
           class="absolute -top-16 right-0 w-12 h-12 custom-primary rounded-full custom-shadow-lg flex items-center justify-center text-xl transition-transform active:scale-90"
         >
@@ -2049,6 +2050,7 @@
       ></nav>
 
       <button
+        id="fab-mobile"
         onclick="handleFabClick()"
         class="absolute -top-16 right-0 w-12 h-12 custom-primary rounded-full custom-shadow-lg flex items-center justify-center text-xl shrink-0"
       >
@@ -2071,7 +2073,7 @@
 
     <div
       id="global-modal"
-      class="hidden fixed inset-0 z-[80] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity"
+      class="hidden fixed inset-0 z-[9999] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity"
     >
       <div class="absolute inset-0" onclick="closeModal()"></div>
 
@@ -2530,6 +2532,7 @@
             state.badges = savedData.badges || [];
             state.trips = savedData.trips || [];
             state.transactions = savedData.transactions || [];
+            state.runs = savedData.runs || [];
             state.wallets =
               savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
             state.categories =
@@ -2753,6 +2756,18 @@
 
       function switchView(viewId) {
         state.currentView = viewId;
+
+        // Ẩn/Hiện nút cộng FAB
+        const fabMobile = document.getElementById("fab-mobile");
+        const fabDesktop = document.getElementById("fab-desktop");
+
+        if (viewId === "running") {
+          fabMobile?.classList.add("hidden");
+          fabDesktop?.classList.add("hidden");
+        } else {
+          fabMobile?.classList.remove("hidden");
+          fabDesktop?.classList.remove("hidden");
+        }
         const targetNav = NAV_ITEMS.find((i) => i.id === viewId);
         document.getElementById("header-title").innerText =
           targetNav?.label || "FinMaster";
@@ -4868,107 +4883,109 @@
           };
 
           body.innerHTML = `
-        <form id="frm-tx" class="space-y-3.5">
+        <form id="frm-tx" class="space-y-4">
           <input type="hidden" id="m-type" value="${tx.type}">
 
           <!-- KHỐI 1: LOẠI GIAO DỊCH & SỐ TIỀN (Hero Card) -->
-          <div class="custom-bg-card border custom-border rounded-[24px] p-4 custom-shadow-sm flex flex-col gap-4">
+          <div class="custom-bg-card border custom-border rounded-[24px] p-5 custom-shadow-sm flex flex-col gap-5">
             <!-- Nút Thu/Chi -->
-            <div class="flex custom-border p-1 rounded-xl custom-bg-body border">
-              <button type="button" id="btn-exp" onclick="setType('expense')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border custom-border ${tx.type === "expense" ? "custom-bg-body shadow-sm border-danger-500/30 text-danger-600" : "custom-text-secondary border-transparent hover:brightness-95"}">Chi tiền</button>
-              <button type="button" id="btn-inc" onclick="setType('income')" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all border custom-border ${tx.type === "income" ? "custom-bg-body shadow-sm border-success-500/30 text-success-600" : "custom-text-secondary border-transparent hover:brightness-95"}">Thu tiền</button>
+            <div class="flex custom-border p-1.5 rounded-xl custom-bg-body border">
+              <button type="button" id="btn-exp" onclick="setType('expense')" class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 border custom-border ${tx.type === "expense" ? "custom-bg-body shadow-sm border-danger-500/30 text-danger-600" : "custom-text-secondary border-transparent hover:bg-black/5 dark:hover:bg-white/5"}">Chi tiền</button>
+              <button type="button" id="btn-inc" onclick="setType('income')" class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 border custom-border ${tx.type === "income" ? "custom-bg-body shadow-sm border-success-500/30 text-success-600" : "custom-text-secondary border-transparent hover:bg-black/5 dark:hover:bg-white/5"}">Thu tiền</button>
             </div>
 
             <!-- Nhập số tiền -->
-            <div class="w-full flex flex-col items-center justify-center pb-1">
-              <label class="text-[10px] font-bold custom-text-secondary uppercase tracking-[0.15em] mb-1.5 opacity-80">Số tiền (VNĐ)</label>
-              <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="m-amt" required value="${formattedAmt}" class="w-full bg-transparent border-none text-5xl font-black text-center custom-text custom-placeholder outline-none p-0 transition-all" placeholder="0">
+            <div class="w-full flex flex-col items-center justify-center pb-2">
+              <label class="text-[11px] font-bold custom-text-secondary uppercase tracking-[0.15em] mb-2 opacity-80">Số tiền (VNĐ)</label>
+              <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="m-amt" required value="${formattedAmt}" class="w-full bg-transparent border-none text-[3.25rem] leading-none font-black text-center custom-text custom-placeholder outline-none p-0 transition-all focus:scale-105" placeholder="0">
             </div>
           </div>
 
-          <!-- KHỐI 2: THÔNG TIN CHI TIẾT (Grid 2 cột gọn gàng) -->
-          <div class="grid grid-cols-2 gap-3">
+          <!-- KHỐI 2: THÔNG TIN CHI TIẾT (Grid 2 cột) -->
+          <div class="grid grid-cols-2 gap-3.5">
               <!-- Danh mục -->
-              <div class="custom-bg-card border custom-border rounded-2xl p-3 custom-shadow-sm">
-                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1"><i class="fa-solid fa-shapes opacity-60"></i> Danh mục</label>
-                  <select id="m-cat" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate"></select>
+              <div class="custom-bg-card border custom-border rounded-[20px] p-3.5 custom-shadow-sm hover:border-gray-400/50 transition-colors cursor-pointer group">
+                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1.5 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-shapes opacity-70 text-amber-500"></i> Danh mục</label>
+                  <select id="m-cat" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate cursor-pointer appearance-none"></select>
               </div>
 
               <!-- Ví giao dịch -->
-              <div class="custom-bg-card border custom-border rounded-2xl p-3 custom-shadow-sm">
-                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1"><i class="fa-solid fa-wallet opacity-60"></i> Ví giao dịch</label>
-                  <select id="m-wal" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate">${state.wallets.map((w) => `<option value="${w.id}" ${w.id === tx.walletId ? "selected" : ""}>${w.name}</option>`).join("")}</select>
+              <div class="custom-bg-card border custom-border rounded-[20px] p-3.5 custom-shadow-sm hover:border-gray-400/50 transition-colors cursor-pointer group">
+                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1.5 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-wallet opacity-70 text-blue-500"></i> Ví giao dịch</label>
+                  <select id="m-wal" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate cursor-pointer appearance-none">${state.wallets.map((w) => `<option value="${w.id}" ${w.id === tx.walletId ? "selected" : ""}>${w.name}</option>`).join("")}</select>
               </div>
 
               <!-- Thời gian -->
-              <div class="custom-bg-card border custom-border rounded-2xl p-3 custom-shadow-sm">
-                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1"><i class="fa-solid fa-calendar-day opacity-60"></i> Thời gian</label>
-                  <input type="text" id="m-date" required value="${tx.date}" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0">
+              <div class="custom-bg-card border custom-border rounded-[20px] p-3.5 custom-shadow-sm hover:border-gray-400/50 transition-colors group">
+                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1.5 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-calendar-day opacity-70 text-rose-500"></i> Thời gian</label>
+                  <input type="text" id="m-date" required value="${tx.date}" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 cursor-pointer">
               </div>
 
               <!-- Chuyến đi -->
-              <div class="custom-bg-card border custom-border rounded-2xl p-3 custom-shadow-sm">
-                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1"><i class="fa-solid fa-suitcase-rolling opacity-60"></i> Chuyến đi</label>
-                  <select id="m-trip" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate">
+              <div class="custom-bg-card border custom-border rounded-[20px] p-3.5 custom-shadow-sm hover:border-gray-400/50 transition-colors cursor-pointer group">
+                  <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1.5 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-suitcase-rolling opacity-70 text-emerald-500"></i> Chuyến đi</label>
+                  <select id="m-trip" class="w-full bg-transparent border-none text-sm font-bold custom-text outline-none p-0 truncate cursor-pointer appearance-none">
                       ${tripOptions}
                   </select>
               </div>
           </div>
 
           <!-- Ghi chú (Full Width) -->
-          <div class="custom-bg-card border custom-border rounded-2xl p-3.5 custom-shadow-sm">
-              <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-1"><i class="fa-solid fa-comment-dots opacity-60"></i> Ghi chú</label>
+          <div class="custom-bg-card border custom-border rounded-[20px] p-4 custom-shadow-sm hover:border-gray-400/50 transition-colors">
+              <label class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary uppercase mb-2"><i class="fa-solid fa-comment-dots opacity-70 text-purple-500"></i> Ghi chú</label>
               <input type="text" id="m-note" value="${tx.note}" placeholder="Nhập mô tả cho giao dịch này..." class="w-full bg-transparent border-none text-sm font-medium custom-text outline-none p-0 custom-placeholder">
           </div>
 
           <!-- KHỐI 3: HÌNH ẢNH & VỊ TRÍ -->
-          <div class="flex gap-3">
+          <div class="flex gap-3.5">
               <!-- Camera -->
-              <div class="flex flex-col items-center gap-1">
-                  <label for="m-img-input" class="w-[60px] h-[60px] shrink-0 flex flex-col items-center justify-center border-2 border-dashed custom-border rounded-2xl custom-bg-primary-soft custom-icon-active hover:brightness-95 cursor-pointer relative overflow-hidden active:scale-95 custom-shadow-sm transition-all group">
-                      <i class="fa-solid fa-camera text-xl group-hover:scale-110 transition-transform"></i>
+              <div class="flex flex-col items-center gap-1 shrink-0">
+                  <label for="m-img-input" class="w-[64px] h-[64px] flex flex-col items-center justify-center border-2 border-dashed custom-border rounded-[20px] custom-bg-primary-soft custom-icon-active hover:brightness-95 cursor-pointer relative overflow-hidden active:scale-95 custom-shadow-sm transition-all group">
+                      <i class="fa-solid fa-camera text-xl opacity-80 group-hover:scale-110 transition-transform"></i>
                       <input type="file" id="m-img-input" accept="image/*" capture="environment" class="hidden" onchange="handleImageAndScan(this)">
-                      <img id="m-img-preview" src="${tx.image && tx.image.length > 50 ? tx.image : ""}" class="${tx.image && tx.image.length > 50 ? "" : "hidden"} w-full h-full object-cover shrink-0 absolute inset-0 z-10 bg-white">
+                      <img id="m-img-preview" src="${tx.image && tx.image.length > 50 ? tx.image : ""}" class="${tx.image && tx.image.length > 50 ? "" : "hidden"} w-full h-full object-cover rounded-[20px] absolute inset-0 z-10 bg-white">
                   </label>
                   <div id="scan-status" class="hidden text-[10px] font-bold text-center w-full mt-1"></div>
               </div>
               
               <!-- Location -->
-              <div class="flex-1 flex items-center custom-bg-card rounded-2xl border custom-border p-2 pr-3 custom-shadow-sm h-[60px]">
-                  <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-11 h-11 shrink-0 custom-bg-primary-soft custom-icon-active rounded-xl flex items-center justify-center text-lg hover:brightness-95 transition-all mr-3 active:scale-90 border custom-border">
-                      <i class="fa-solid fa-location-dot"></i>
+              <div class="flex-1 flex items-center custom-bg-card rounded-[20px] border custom-border p-2 pr-3 custom-shadow-sm h-[64px]">
+                  <button type="button" id="btn-get-loc" onclick="requestLocation()" class="w-12 h-12 shrink-0 custom-bg-primary-soft custom-icon-active rounded-xl flex items-center justify-center text-lg hover:brightness-95 transition-all mr-3 active:scale-90 border custom-border">
+                      <i class="fa-solid fa-location-dot text-cyan-600"></i>
                   </button>
-                  <div class="flex-1 min-w-0 flex flex-col justify-center">
-                      <label class="block text-[9px] font-bold custom-text-secondary uppercase mb-0.5">Vị trí</label>
+                  <div class="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
+                      <div class="flex items-center justify-between w-full">
+                          <label class="block text-[10px] font-bold custom-text-secondary uppercase">Vị trí</label>
+                          <button type="button" id="btn-fav-heart" onclick="toggleFavoriteFromForm()" class="text-gray-300 hover:text-rose-500 transition-colors text-base active:scale-90 px-1 drop-shadow-sm shrink-0">
+                              <i class="fa-solid fa-heart"></i>
+                          </button>
+                      </div>
                       <input type="hidden" id="frm-lat" value="${tx.lat}">
                       <input type="hidden" id="frm-lng" value="${tx.lng}">
-                      <div class="flex items-center gap-2">
-                          <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn icon GPS..." class="flex-1 min-w-0 bg-transparent border-none text-xs font-bold custom-text outline-none p-0 truncate custom-placeholder">
-                          <button type="button" id="btn-fav-heart" onclick="toggleFavoriteFromForm()" class="text-gray-300 hover:text-rose-500 transition-colors text-xl active:scale-90 px-1 drop-shadow-sm"><i class="fa-solid fa-heart"></i></button>
-                      </div>
+                      <input type="text" id="frm-loc-name" value="${tx.locationName || ""}" placeholder="Nhấn icon GPS..." class="w-full bg-transparent border-none text-xs font-bold custom-text outline-none p-0 truncate custom-placeholder">
                   </div>
               </div>
           </div>
 
           <!-- KHỐI 4: LẶP LẠI (Recurring) -->
-          <div class="flex items-center justify-between p-3.5 custom-bg-card border custom-border custom-shadow-sm rounded-2xl">
+          <div class="flex items-center justify-between p-4 custom-bg-card border custom-border custom-shadow-sm rounded-[20px]">
               <div class="flex items-center gap-3.5">
-                  <div class="w-10 h-10 rounded-full custom-bg-primary-soft custom-icon-active flex items-center justify-center text-sm border custom-border">
-                      <i class="fa-solid fa-arrows-rotate"></i>
+                  <div class="w-10 h-10 rounded-full custom-bg-primary-soft custom-icon-active flex items-center justify-center text-sm border custom-border shadow-inner">
+                      <i class="fa-solid fa-arrows-rotate text-orange-500"></i>
                   </div>
                   <div>
                       <p class="text-sm font-bold custom-text">Giao dịch định kỳ</p>
                       <p class="text-[10px] font-medium custom-text-secondary mt-0.5">Tự động lặp lại tháng sau</p>
                   </div>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer active:scale-90">
+              <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
                   <input type="checkbox" id="m-recurring" ${tx.isRecurring ? "checked" : ""} class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all border custom-border"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all border custom-border shadow-sm"></div>
               </label>
           </div>
           
           <!-- KHỐI 5: NÚT SUBMIT -->
-          <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-base custom-shadow-lg mt-2 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+          <button type="submit" class="w-full py-4 custom-primary rounded-[20px] font-black text-base custom-shadow-lg mt-2 hover:brightness-110 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
               <i class="fa-solid fa-check-circle text-lg opacity-90"></i> 
               ${id ? "Lưu Cập Nhật" : "Thêm Giao Dịch"}
           </button>
@@ -5362,41 +5379,82 @@
           title.innerHTML =
             '<i class="fa-solid fa-pen-to-square text-rose-500"></i> Sửa Sổ Tay';
           body.innerHTML = `
-            <form id="frm-edit-fav" class="space-y-5  z-[400] ">
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Loại quán</label>
-                    <select id="fav-type" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-bold custom-text custom-focus">
-                        <option value="cafe" ${fav.type == "cafe" ? "selected" : ""}>☕ Quán Cafe</option>
-                        <option value="food" ${fav.type == "food" ? "selected" : ""}>🍜 Nhà hàng / Quán Ăn</option>
-                        <option value="bar" ${fav.type == "bar" ? "selected" : ""}>🍻 Nhậu / Bar / Pub</option>
-                        <option value="shop" ${fav.type == "shop" ? "selected" : ""}>🛍️ Shop Mua sắm</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Thẻ Tags (cách nhau dấu phẩy)</label>
-                    <input type="text" id="fav-tags" value="${fav.tags || ""}" placeholder="VD: #WifiMạnh, #MáyLạnh" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-bold custom-text custom-focus text-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Món Must-Try / Cần Né</label>
-                    <input type="text" id="fav-musttry" value="${fav.mustTry || ""}" placeholder="VD: Trà Ô Long ngon..." class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Pass Wifi (Ghi chú mật)</label>
-                    <input type="text" id="fav-wifi" value="${fav.wifi || ""}" placeholder="VD: 88889999" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-mono font-black custom-text custom-focus text-emerald-500">
-                </div>
+    <form id="frm-edit-fav" class="space-y-6 z-[400] w-full">
+        
+        <!-- Phân loại quán -->
+        <div class="relative group">
+            <label class="flex items-center gap-2 text-[11px] font-extrabold custom-text-secondary uppercase tracking-widest mb-2.5 ml-1">
+                <span>📌 Loại địa điểm</span>
+            </label>
+            <select id="fav-type" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-bold custom-text custom-focus transition-all duration-300 hover:shadow-sm appearance-none">
+                <option value="cafe" ${fav.type == "cafe" ? "selected" : ""}>☕ Quán Cafe</option>
+                <option value="food" ${fav.type == "food" ? "selected" : ""}>🍜 Nhà hàng / Quán Ăn</option>
+                <option value="bar" ${fav.type == "bar" ? "selected" : ""}>🍻 Nhậu / Bar / Pub</option>
+                <option value="shop" ${fav.type == "shop" ? "selected" : ""}>🛍️ Shop Mua sắm</option>
+            </select>
+            <!-- Mũi tên Custom cho Select -->
+            <div class="absolute right-4 top-[42px] pointer-events-none custom-text-secondary opacity-60">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        </div>
 
-                <!-- CỤC CHỤP/TẢI ẢNH MỚI -->
-                <div>
-                    <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-2">Ảnh quán (Camera / Thư viện)</label>
-                    <div class="flex items-center gap-3">
-                        <div id="fav-img-preview" class="w-14 h-14 rounded-2xl bg-gray-200 dark:bg-gray-700 bg-cover bg-center border custom-border" style="background-image: url('${fav.image || ""}')"></div>
-                        <input type="file" id="fav-image-input" accept="image/*" class="text-xs custom-text-secondary">
-                    </div>
-                </div>
+        <!-- Thẻ Tags -->
+        <div class="relative group">
+            <label class="flex items-center gap-2 text-[11px] font-extrabold custom-text-secondary uppercase tracking-widest mb-2.5 ml-1">
+                <span>🏷️ Thẻ Tags</span>
+            </label>
+            <input type="text" id="fav-tags" value="${fav.tags || ""}" placeholder="VD: #WifiMạnh, #MáyLạnh..." class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-bold custom-text custom-focus text-indigo-500 transition-all duration-300 hover:shadow-sm">
+        </div>
+
+        <!-- Món Must-Try / Cần Né -->
+        <div class="relative group">
+            <label class="flex items-center gap-2 text-[11px] font-extrabold custom-text-secondary uppercase tracking-widest mb-2.5 ml-1">
+                <span>✨ Món Must-Try / Cần Né</span>
+            </label>
+            <input type="text" id="fav-musttry" value="${fav.mustTry || ""}" placeholder="VD: Trà Ô Long ngon, né bánh ngọt..." class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus transition-all duration-300 hover:shadow-sm">
+        </div>
+
+        <!-- Pass Wifi -->
+        <div class="relative group">
+            <label class="flex items-center gap-2 text-[11px] font-extrabold custom-text-secondary uppercase tracking-widest mb-2.5 ml-1">
+                <span>🔒 Pass Wifi</span>
+            </label>
+            <input type="text" id="fav-wifi" value="${fav.wifi || ""}" placeholder="VD: 88889999" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-mono font-black custom-text custom-focus text-emerald-500 tracking-wider transition-all duration-300 hover:shadow-sm">
+        </div>
+
+        <!-- Khu vực Chọn/Tải Ảnh Mới -->
+        <div class="relative group">
+            <label class="flex items-center gap-2 text-[11px] font-extrabold custom-text-secondary uppercase tracking-widest mb-2.5 ml-1">
+                <span>📸 Ảnh kỷ niệm</span>
+            </label>
+            <div class="flex items-center gap-4 p-3 custom-bg-input border custom-border rounded-2xl transition-all duration-300 hover:shadow-sm">
+                <!-- Preview Ảnh -->
+                <div id="fav-img-preview" class="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-800 bg-cover bg-center shadow-inner border custom-border shrink-0" style="background-image: url('${fav.image || ""}')"></div>
                 
-                <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all mt-4">Lưu Lại</button>
-            </form>
-          `;
+                <!-- Nút Upload (Đã ẩn thẻ input xấu xí) -->
+                <div class="flex-1">
+                    <label for="fav-image-input" class="cursor-pointer flex flex-col items-center justify-center py-2.5 px-3 border-2 border-dashed custom-border rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors group-hover:border-indigo-400">
+                        <span class="text-xs font-bold custom-text mb-0.5">Đổi ảnh bìa</span>
+                        <span class="text-[10px] custom-text-secondary font-medium">Chụp hoặc tải lên từ máy</span>
+                    </label>
+                    <input type="file" id="fav-image-input" accept="image/*" class="hidden">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Nút Submit -->
+        <div class="pt-3">
+            <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-[17px] tracking-wide custom-shadow-lg transform active:scale-95 hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2">
+                <span>Lưu Lại Điểm Đến</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </form>
+`;
 
           // Biến lưu ảnh
           let uploadedImage = fav.image || "";
@@ -5607,66 +5665,120 @@
             .join("");
 
           body.innerHTML = `
-                  <form id="frm-debt" class="space-y-4">
-                    <div>
-                      <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Đối tượng</label>
-                      <input type="text" id="d-person" required placeholder="Tên con nợ / chủ nợ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
-                    </div>
+  <form id="frm-debt" class="space-y-5">
+    
+    <!-- ĐỐI TƯỢNG -->
+    <div class="relative group">
+      <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+        <i class="fa-solid fa-user-astronaut text-blue-500"></i> Đối tượng
+      </label>
+      <input type="text" id="d-person" required placeholder="Tên con nợ / chủ nợ..." 
+        class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus transition-all duration-300 hover:shadow-sm">
+    </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                      <div>
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VND)</label>
-                        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus text-danger-500">
-                      </div>
-                      <div>
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót trả/thu</label>
-                        <input type="date" id="d-due-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus text-sm">
-                      </div>
-                    </div>
+    <!-- SỐ TIỀN & HẠN CHÓT -->
+    <div class="grid grid-cols-2 gap-5">
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-coins text-yellow-500"></i> Số tiền (VND)
+        </label>
+        <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="d-amount" required placeholder="0" 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl custom-text border custom-border custom-focus text-danger-500 transition-all duration-300 hover:shadow-sm">
+      </div>
+      
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-calendar-day text-emerald-500"></i> Hạn chót
+        </label>
+        <input type="date" id="d-due-date" required 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus text-sm transition-all duration-300 hover:shadow-sm">
+      </div>
+    </div>
 
-                    <div class="flex gap-4">
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Loại nợ</label>
-                        <select id="d-type" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                            <option value="lend">Tôi cho vay (Rút ví)</option>
-                            <option value="borrow">Tôi đi vay (Nhận tiền)</option>
-                        </select>
-                      </div>
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Ví giao dịch</label>
-                        <select id="d-wallet" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">${walletOptions}</select>
-                      </div>
-                    </div>
+    <!-- LOẠI NỢ & VÍ GIAO DỊCH -->
+    <div class="grid grid-cols-2 gap-5">
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-hand-holding-dollar text-purple-500"></i> Loại nợ
+        </label>
+        <select id="d-type" 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus cursor-pointer transition-all duration-300 hover:shadow-sm">
+            <option value="lend">Cho vay (Rút ví)</option>
+            <option value="borrow">Đi vay (Nhận tiền)</option>
+        </select>
+      </div>
+      
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-wallet text-sky-500"></i> Ví giao dịch
+        </label>
+        <select id="d-wallet" 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus cursor-pointer transition-all duration-300 hover:shadow-sm">
+          ${walletOptions}
+        </select>
+      </div>
+    </div>
 
-                    <!-- SIÊU CUSTOM NHẮC NỢ (NGÀY & GIỜ & EMAIL) -->
-                    <div class="custom-bg-card p-4 rounded-2xl border custom-border mt-2 shadow-sm">
-                       <div class="flex items-center justify-between mb-2">
-                           <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-rose-500"></i> Hẹn giờ nhắc nợ tự động</label>
-                           <input type="checkbox" id="d-has-remind" onchange="document.getElementById('d-remind-box').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-rose-500 cursor-pointer">
-                       </div>
-                       <div id="d-remind-box" class="hidden space-y-3 pt-3 border-t custom-border border-dashed">
-                           <input type="email" id="d-email" placeholder="Email người cần nhắc..." class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border outline-none font-medium custom-text">
-                           <div class="flex gap-2">
-                               <div class="flex-1">
-                                   <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Nhắc trước hạn</label>
-                                   <select id="d-remind-days" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
-                                       <option value="1">Trước 1 ngày</option>
-                                       <option value="2">Trước 2 ngày</option>
-                                       <option value="3">Trước 3 ngày</option>
-                                       <option value="4">Trước 4 ngày</option>
-                                   </select>
-                               </div>
-                               <div class="flex-1">
-                                   <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Giờ gửi Mail</label>
-                                   <input type="time" id="d-time" value="08:00" class="w-full p-3 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text">
-                               </div>
-                           </div>
-                       </div>
-                    </div>
+    <!-- SIÊU CUSTOM NHẮC NỢ (NGÀY & GIỜ & EMAIL) -->
+    <div class="custom-bg-card p-5 rounded-3xl border custom-border mt-4 shadow-sm transition-all duration-300 hover:shadow-md">
+       <!-- Header Toggle -->
+       <div class="flex items-center justify-between cursor-pointer" onclick="document.getElementById('d-has-remind').click()">
+           <div class="flex items-center gap-3">
+               <div class="w-10 h-10 rounded-full bg-rose-100/10 flex items-center justify-center border border-rose-500/20">
+                   <i class="fa-solid fa-bell text-rose-500 text-lg"></i>
+               </div>
+               <div>
+                   <h4 class="font-bold text-sm custom-text">Hẹn giờ nhắc nợ tự động</h4>
+                   <p class="text-[11px] custom-text-secondary mt-0.5">Hệ thống sẽ gửi email khi đến hạn</p>
+               </div>
+           </div>
+           <div class="relative flex items-center pointer-events-none">
+               <input type="checkbox" id="d-has-remind" onchange="document.getElementById('d-remind-box').classList.toggle('hidden', !this.checked)" 
+                 class="w-6 h-6 accent-rose-500 cursor-pointer pointer-events-auto">
+           </div>
+       </div>
 
-                    <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu khoản nợ</button>
-                  </form>
-                `;
+       <!-- Body Form Nhắc Nợ -->
+       <div id="d-remind-box" class="hidden mt-5 space-y-4 pt-5 border-t custom-border border-dashed transition-all duration-300">
+           <div>
+               <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5">
+                 <i class="fa-solid fa-envelope-open-text text-gray-400"></i> Email người nhận
+               </label>
+               <input type="email" id="d-email" placeholder="Nhập địa chỉ email..." 
+                 class="w-full p-3.5 custom-bg-input rounded-xl text-sm border custom-border outline-none font-medium custom-text custom-focus transition-all">
+           </div>
+           
+           <div class="grid grid-cols-2 gap-4">
+               <div>
+                   <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5">
+                     <i class="fa-regular fa-clock text-gray-400"></i> Nhắc trước hạn
+                   </label>
+                   <select id="d-remind-days" 
+                     class="w-full p-3.5 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text custom-focus cursor-pointer transition-all">
+                       <option value="1">Trước 1 ngày</option>
+                       <option value="2">Trước 2 ngày</option>
+                       <option value="3">Trước 3 ngày</option>
+                       <option value="4">Trước 4 ngày</option>
+                   </select>
+               </div>
+               <div>
+                   <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5">
+                     <i class="fa-solid fa-business-time text-gray-400"></i> Giờ gửi Mail
+                   </label>
+                   <input type="time" id="d-time" value="08:00" 
+                     class="w-full p-3.5 custom-bg-input rounded-xl text-sm border custom-border font-bold custom-text custom-focus transition-all">
+               </div>
+           </div>
+       </div>
+    </div>
+
+    <!-- SUBMIT BUTTON -->
+    <button type="submit" 
+      class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-6 active:scale-95 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-floppy-disk text-xl"></i> Lưu khoản nợ
+    </button>
+  </form>
+`;
 
           // Tự động điền ngày đáo hạn mặc định là hôm nay
           document.getElementById("d-due-date").value =
@@ -7519,59 +7631,99 @@
           const defaultEmail = state.notificationSettings?.email || "";
 
           body.innerHTML = `
-                <form id="frm-task" class="space-y-4">
-                  <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tên công việc</label>
-                    <input type="text" id="task-name" required placeholder="VD: Đóng tiền trọ, Mua đồ..." class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                  </div>
-                  
-                  <div class="flex gap-3">
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Tính chất</label>
-                        <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                            <option value="normal">Bình thường</option>
-                            <option value="expense">💸 Chi tiền</option>
-                            <option value="income">💰 Thu tiền</option>
-                        </select>
-                      </div>
-                      <div class="flex-1">
-                        <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Hạn chót</label>
-                        <input type="datetime-local" id="task-date" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus">
-                      </div>
-                  </div>
+  <form id="frm-task" class="space-y-5">
+    
+    <!-- TÊN CÔNG VIỆC -->
+    <div class="relative group">
+      <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+        <i class="fa-solid fa-list-check text-blue-500"></i> Tên công việc
+      </label>
+      <input type="text" id="task-name" required placeholder="VD: Đóng tiền trọ, Mua đồ..." 
+        class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus transition-all duration-300 hover:shadow-sm">
+    </div>
+    
+    <!-- TÍNH CHẤT & HẠN CHÓT -->
+    <div class="grid grid-cols-2 gap-5">
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-sliders text-purple-500"></i> Tính chất
+        </label>
+        <select id="task-type" onchange="document.getElementById('task-amt-box').classList.toggle('hidden', this.value === 'normal')" 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus cursor-pointer transition-all duration-300 hover:shadow-sm">
+            <option value="normal">Bình thường</option>
+            <option value="expense">💸 Chi tiền</option>
+            <option value="income">💰 Thu tiền</option>
+        </select>
+      </div>
+      
+      <div class="relative group">
+        <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+          <i class="fa-solid fa-calendar-days text-emerald-500"></i> Hạn chót
+        </label>
+        <input type="datetime-local" id="task-date" required 
+          class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus text-sm transition-all duration-300 hover:shadow-sm">
+      </div>
+    </div>
 
-                  <div id="task-amt-box" class="hidden">
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Số tiền (VNĐ)</label>
-                    <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="task-amt" placeholder="0 đ" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-primary-500 border custom-border custom-focus">
-                  </div>
-                  
-                  <!-- KHU VỰC CÀI ĐẶT NHẮC NHỞ RIÊNG CHO TASK NÀY -->
-                  <div class="custom-bg-card dark:bg-gray-800 p-4 rounded-2xl border custom-border mt-2">
-                      <div class="flex items-center justify-between mb-2">
-                          <label class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bell text-amber-500"></i> Nhắc nhở Email</label>
-                          <input type="checkbox" id="task-has-reminder" onchange="document.getElementById('task-reminder-settings').classList.toggle('hidden', !this.checked)" class="w-5 h-5 accent-amber-500 cursor-pointer">
-                      </div>
-                      
-                      <div id="task-reminder-settings" class="hidden space-y-3 mt-3 pt-3 border-t custom-border border-dashed">
-                          <div>
-                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Gửi thông báo tới Email</label>
-                              <input type="email" id="task-email" value="${defaultEmail}" placeholder="Nhập email người nhận..." class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-medium custom-text border custom-border">
-                          </div>
-                          <div>
-                              <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1">Thời gian nhắc nhở (Trước Deadline)</label>
-                              <select id="task-remind-time" class="w-full p-3 custom-bg-input rounded-xl outline-none text-sm font-bold custom-text border custom-border">
-                                  <option value="0">Đúng giờ Deadline</option>
-                                  <option value="15">Trước 15 phút</option>
-                                  <option value="60">Trước 1 tiếng</option>
-                                  <option value="1440">Trước 1 ngày</option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
+    <!-- SỐ TIỀN (CHỈ HIỂN THỊ KHI LIÊN QUAN ĐẾN THU CHI) -->
+    <div id="task-amt-box" class="hidden relative group transition-all duration-300">
+      <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5 tracking-wider">
+        <i class="fa-solid fa-money-bill-wave text-primary-500"></i> Số tiền (VNĐ)
+      </label>
+      <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="task-amt" placeholder="0 đ" 
+        class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-primary-500 border custom-border custom-focus transition-all duration-300 hover:shadow-sm">
+    </div>
+    
+    <!-- KHU VỰC CÀI ĐẶT NHẮC NHỞ RIÊNG CHO TASK -->
+    <div class="custom-bg-card dark:bg-gray-800 p-5 rounded-3xl border custom-border mt-4 shadow-sm transition-all duration-300 hover:shadow-md">
+       <!-- Header Row: Click toàn vùng để kích hoạt checkbox nhanh -->
+       <div class="flex items-center justify-between cursor-pointer" onclick="document.getElementById('task-has-reminder').click()">
+           <div class="flex items-center gap-3">
+               <div class="w-10 h-10 rounded-full bg-amber-100/10 flex items-center justify-center border border-amber-500/20">
+                   <i class="fa-solid fa-bell text-amber-500 text-lg"></i>
+               </div>
+               <div>
+                   <h4 class="font-bold text-sm custom-text">Nhắc nhở Email</h4>
+                   <p class="text-[11px] custom-text-secondary mt-0.5">Nhận thông báo tự động trước khi hết hạn</p>
+               </div>
+           </div>
+           <div class="relative flex items-center pointer-events-none">
+               <input type="checkbox" id="task-has-reminder" onchange="document.getElementById('task-reminder-settings').classList.toggle('hidden', !this.checked)" 
+                 class="w-6 h-6 accent-amber-500 cursor-pointer pointer-events-auto">
+           </div>
+       </div>
+       
+       <!-- Nội dung chi tiết cài đặt nhắc nhở -->
+       <div id="task-reminder-settings" class="hidden mt-5 space-y-4 pt-5 border-t custom-border border-dashed transition-all duration-300">
+           <div>
+               <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5">
+                 <i class="fa-solid fa-envelope-open-text text-gray-400"></i> Gửi thông báo tới Email
+               </label>
+               <input type="email" id="task-email" value="${defaultEmail}" placeholder="Nhập email người nhận..." 
+                 class="w-full p-3.5 custom-bg-input rounded-xl outline-none text-sm font-medium custom-text border custom-border custom-focus transition-all">
+           </div>
+           <div>
+               <label class="block text-[11px] font-bold custom-text-secondary uppercase mb-2 flex items-center gap-1.5">
+                 <i class="fa-regular fa-clock text-gray-400"></i> Thời gian nhắc nhở (Trước Deadline)
+               </label>
+               <select id="task-remind-time" 
+                 class="w-full p-3.5 custom-bg-input rounded-xl outline-none text-sm font-bold custom-text border custom-border custom-focus cursor-pointer transition-all">
+                   <option value="0">Đúng giờ Deadline</option>
+                   <option value="15">Trước 15 phút</option>
+                   <option value="60">Trước 1 tiếng</option>
+                   <option value="1440">Trước 1 ngày</option>
+               </select>
+           </div>
+       </div>
+    </div>
 
-                  <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lên Lịch Công Việc</button>
-                </form>
-              `;
+    <!-- NÚT LÊN LỊCH CÔNG VIỆC -->
+    <button type="submit" 
+      class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-6 active:scale-95 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-calendar-plus text-xl"></i> Lên Lịch Công Việc
+    </button>
+  </form>
+`;
 
           // Set default date
           document.getElementById("task-date").value = getToday();
@@ -7868,6 +8020,7 @@
         currentViewTripId = id;
         const trip = state.trips.find((t) => t.id === id);
         if (!trip) return;
+        renderTripDetailContent(trip);
 
         document.getElementById("td-title").innerText = trip.name;
         renderTripDetailContent(trip);
@@ -7876,6 +8029,9 @@
         overlay.classList.remove("translate-x-full");
         overlay.classList.add("translate-x-0");
         playSound("click");
+        setTimeout(() => {
+          if (rdMapObj) rdMapObj.invalidateSize();
+        }, 400);
       };
 
       // 2. Hàm đóng Màn hình Chi tiết
@@ -7885,11 +8041,10 @@
         overlay.classList.add("translate-x-full");
         currentViewTripId = null;
       };
-
+      window.currentTripTab = "overview";
       // 3. Hàm render Báo cáo & Lịch sử của 1 Chuyến đi cụ thể
       window.renderTripDetailContent = (tripArg) => {
         // Khai báo biến lưu trạng thái Tab hiện tại (Mặc định mở Tổng quan)
-        window.currentTripTab = "overview";
 
         // Hàm chuyển Tab
         window.switchTripTab = (tab) => {
@@ -8748,42 +8903,44 @@
                   .join("")}</div>`
               : "";
 
-            // Bỏ nút Sửa lắt nhắt ở ngoài, biến cả cái thẻ thành nút bấm mở Chi tiết
-            // Thay toàn bộ cục return cũ bằng cục này:
             return `
-              <div class="relative overflow-hidden rounded-3xl mb-3 border custom-border shadow-sm swipe-item custom-bg-card dark:bg-gray-800">
-                
-                <!-- LỚP NÚT BẤM ẨN BÊN DƯỚI (Chỉ hiện khi vuốt) -->
-                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-                  <button onclick="openModal('editFavorite', '${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
-                    <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                      <i class="fa-solid fa-pen"></i>
-                    </div>
-                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
-                  </button>
-                  <button onclick="deleteFavoritePlace('${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
-                    <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                      <i class="fa-solid fa-trash"></i>
-                    </div>
-                    <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
-                  </button>
-                </div>
-                
-                <!-- LỚP GIAO DIỆN BỊ VUỐT (Bấm vào thì mở Chi tiết) -->
-                <div onclick="openFavoriteDetail('${f.id}')" class="relative p-5 w-full h-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card dark:bg-gray-800 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl ${color} flex items-center justify-center text-3xl shadow-inner border shrink-0 bg-cover bg-center" style="${f.image ? `background-image: url('${f.image}')` : ""}">${f.image ? "" : icon}</div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-black text-lg custom-text truncate leading-tight">${f.name}</h4>
-                            <p class="text-xs font-bold text-danger-500 mt-1 bg-danger-50 dark:bg-danger-900/20 inline-block px-2 py-0.5 rounded-md border border-danger-100 dark:border-danger-800">🔥 Tổng chi: ${formatMoney(f.totalSpent)} <span class="text-gray-400 dark:text-gray-500">(${f.visits} lần)</span></p>
-                        </div>
-                    </div>
-                    ${tagsHtml}
-                </div>
+                <div class="relative overflow-hidden rounded-3xl mb-3 border custom-border shadow-sm swipe-item custom-bg-card dark:bg-gray-800">
+                  
+                  <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                    <button onclick="openModal('editFavorite', '${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
+                      <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                        <i class="fa-solid fa-pen"></i>
+                      </div>
+                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                    </button>
+                    <button onclick="deleteFavoritePlace('${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
+                      <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                        <i class="fa-solid fa-trash"></i>
+                      </div>
+                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                    </button>
+                  </div>
+                  
+                  <!-- Bọc riêng onclick ở đây để không bị liệt tính năng vuốt -->
+                  <div class="relative p-5 w-full h-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card dark:bg-gray-800 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-700/50" onclick="openFavoriteDetail('${f.id}')">
+                      <div class="flex items-center gap-4">
+                          <div class="w-16 h-16 rounded-2xl ${color} flex items-center justify-center text-3xl shadow-inner border shrink-0 bg-cover bg-center" style="${f.image ? `background-image: url('${f.image}')` : ""}">${f.image ? "" : icon}</div>
+                          <div class="flex-1 min-w-0">
+                              <h4 class="font-black text-lg custom-text truncate leading-tight">${f.name}</h4>
+                              <p class="text-xs font-bold text-danger-500 mt-1 bg-danger-50 dark:bg-danger-900/20 inline-block px-2 py-0.5 rounded-md border border-danger-100 dark:border-danger-800">🔥 Tổng chi: ${formatMoney(f.totalSpent)} <span class="text-gray-400 dark:text-gray-500">(${f.visits} lần)</span></p>
+                          </div>
+                      </div>
+                      ${tagsHtml}
+                  </div>
 
-              </div>`;
+                </div>`;
           })
           .join("");
+
+        // 👉 DÙNG SETTIMEOUT ĐỂ ÉP NÓ GẮN HÀM VUỐT SAU KHI HTML CHẠY XONG
+        setTimeout(() => {
+          if (typeof initSwipeActions === "function") initSwipeActions();
+        }, 100);
       };
 
       // 2. Hàm bấm thả tim từ Form Giao dịch
@@ -8960,9 +9117,9 @@
 
         // 1. TÍNH TOÁN HIỂN THỊ SAO TRÊN HEADER (Nếu đã đánh giá)
         let ratingHtml =
-          '<span class="px-3 py-1.5 bg-gray-200/60 dark:bg-gray-800 text-gray-500 rounded-full text-xs font-bold border custom-border">Chưa đánh giá</span>';
+          '<span class="px-3 py-1.5 bg-gray-200/60 dark:bg-gray-800 text-gray-500 rounded-full text-xs whitespace-nowrap shrink-0 font-bold border custom-border">Chưa đánh giá</span>';
         if (fav.rating > 0) {
-          ratingHtml = `<span class="px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-star text-amber-500"></i> ${fav.rating}/5 Điểm</span>`;
+          ratingHtml = `<span class="px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 whitespace-nowrap shrink-0 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-star text-amber-500"></i> ${fav.rating}/5 Điểm</span>`;
         }
 
         panel.innerHTML = `
@@ -8980,14 +9137,14 @@
                   <!-- KHU VỰC THẺ TAGS MỚI -->
                   <div class="flex gap-2 mt-5 overflow-x-auto hidden-scrollbar pb-1">
                       ${ratingHtml}
-                      <span class="px-3 py-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm whitespace-nowrap"><i class="fa-solid fa-heart"></i> Đã lưu</span>
+                      <span class="px-3 py-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200 whitespace-nowrap shrink-0 dark:border-rose-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm whitespace-nowrap"><i class="fa-solid fa-heart"></i> Đã lưu</span>
                       ${
                         fav.tags
                           ? fav.tags
                               .split(",")
                               .map(
                                 (t) =>
-                                  `<span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 rounded-full text-xs font-bold shadow-sm whitespace-nowrap">${t.trim()}</span>`,
+                                  `<span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 whitespace-nowrap shrink-0 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 rounded-full text-xs font-bold shadow-sm whitespace-nowrap">${t.trim()}</span>`,
                               )
                               .join("")
                           : ""
@@ -9734,13 +9891,19 @@
                 document.getElementById("run-weather-uv").innerHTML =
                   `<i class="fa-solid fa-sun text-yellow-500"></i> UV: ${uv}`;
 
-                // Xử lý Icon
+                // Xử lý Icon phân biệt Ngày/Đêm chuẩn xác
+                const isNight = iconCode.includes("n"); // Kiểm tra xem API báo là ban đêm hay không
+
                 let icon = '<i class="fa-solid fa-cloud text-gray-500"></i>';
-                if (iconCode.includes("01"))
-                  icon = '<i class="fa-solid fa-sun text-yellow-500"></i>';
-                else if (iconCode.includes("02"))
-                  icon = '<i class="fa-solid fa-cloud-sun text-blue-400"></i>';
-                else if (iconCode.includes("03") || iconCode.includes("04"))
+                if (iconCode.includes("01")) {
+                  icon = isNight
+                    ? '<i class="fa-solid fa-moon text-indigo-400"></i>'
+                    : '<i class="fa-solid fa-sun text-yellow-500"></i>';
+                } else if (iconCode.includes("02")) {
+                  icon = isNight
+                    ? '<i class="fa-solid fa-cloud-moon text-indigo-400"></i>'
+                    : '<i class="fa-solid fa-cloud-sun text-blue-400"></i>';
+                } else if (iconCode.includes("03") || iconCode.includes("04"))
                   icon = '<i class="fa-solid fa-cloud text-gray-500"></i>';
                 else if (iconCode.includes("09") || iconCode.includes("10"))
                   icon = '<i class="fa-solid fa-cloud-rain text-blue-500"></i>';
