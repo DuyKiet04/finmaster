@@ -1414,6 +1414,7 @@
                   tiêu tháng này
                 </h4>
                 <button
+                  onclick="setRunGoal()"
                   class="text-xs font-bold text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-lg border border-primary-100 dark:border-primary-800"
                 >
                   <i class="fa-solid fa-pen"></i> Đặt lại
@@ -1512,6 +1513,98 @@
             </div>
           </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- MÀN HÌNH LỊCH TỔNG HỢP (MASTER CALENDAR) -->
+        <!-- ========================================== -->
+        <div
+          id="view-calendar"
+          class="view-section space-y-6 max-w-4xl mx-auto hidden pt-4 px-2 sm:px-4 pb-24"
+        >
+          <div
+            class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm"
+          >
+            <!-- Header của Lịch (Tháng / Năm) -->
+            <div class="flex justify-between items-center mb-6">
+              <button
+                onclick="changeCalMonth(-1)"
+                class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors custom-text"
+              >
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <h2
+                id="cal-month-year"
+                class="text-xl font-black custom-text uppercase tracking-widest"
+              >
+                Tháng --/----
+              </h2>
+              <button
+                onclick="changeCalMonth(1)"
+                class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors custom-text"
+              >
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Dòng tiêu đề Thứ -->
+            <div
+              class="grid grid-cols-7 gap-1 mb-3 text-center text-[10px] font-bold custom-text-secondary uppercase"
+            >
+              <div>T2</div>
+              <div>T3</div>
+              <div>T4</div>
+              <div>T5</div>
+              <div>T6</div>
+              <div>T7</div>
+              <div class="text-rose-500">CN</div>
+            </div>
+
+            <!-- Lưới hiển thị các ngày trong tháng -->
+            <div id="cal-grid" class="grid grid-cols-7 gap-1 sm:gap-2">
+              <!-- Khối JS sẽ tự động sinh các ô ngày vào đây -->
+            </div>
+
+            <!-- Chú thích chấm màu -->
+            <div
+              class="flex flex-wrap justify-center gap-3 mt-6 pt-4 border-t custom-border border-dashed"
+            >
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1"
+                ><div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                Công việc</span
+              >
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1"
+                ><div class="w-2 h-2 rounded-full bg-rose-500"></div>
+                Hạn trả nợ</span
+              >
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1"
+                ><div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                Chuyến đi</span
+              >
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1"
+                ><div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                Chạy bộ</span
+              >
+            </div>
+          </div>
+
+          <!-- Bảng Chi tiết Sự Kiện của 1 Ngày (Nằm bên dưới Lịch) -->
+          <div id="cal-day-detail" class="hidden animate-fadeIn pb-10">
+            <h3
+              id="cdd-title"
+              class="font-black text-lg custom-text mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-calendar-day text-primary-500"></i> Sự kiện
+              trong ngày
+            </h3>
+            <div id="cdd-content" class="space-y-3">
+              <!-- Nội dung các sự kiện trong ngày -->
+            </div>
+          </div>
+        </div>
         <div
           id="view-settings"
           class="view-section max-w-3xl mx-auto space-y-6"
@@ -1560,6 +1653,25 @@
                 </p>
               </div>
             </div>
+            <!-- Nút cập nhật chỉ số cơ thể -->
+            <button
+              onclick="openModal('physical')"
+              class="w-full mt-5 py-3 custom-bg-input dark:bg-gray-700/50 rounded-xl border custom-border dark:border-gray-700 flex items-center justify-between px-4 hover:bg-gray-50 transition-colors active:scale-95"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-child-reaching"></i>
+                </div>
+                <span class="font-bold text-sm custom-text"
+                  >Cập nhật chỉ số cơ thể</span
+                >
+              </div>
+              <i
+                class="fa-solid fa-chevron-right text-xs custom-text-secondary"
+              ></i>
+            </button>
           </div>
 
           <div
@@ -1609,6 +1721,22 @@
                 <span
                   class="text-xs font-medium text-gray-500 dark:text-gray-400"
                   >Random</span
+                >
+              </button>
+              <!-- Nút Hóa đơn định kỳ -->
+              <button
+                onclick="openModal('recurring')"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                title="Hóa đơn định kỳ"
+              >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Định kỳ</span
                 >
               </button>
               <button
@@ -2434,6 +2562,7 @@
         const SWIPE_VIEWS = [
           "dashboard",
           "transactions",
+          "calendar",
           "map",
           "favorites",
           "budgets",
@@ -2552,6 +2681,13 @@
               state.currentTheme = savedData.currentTheme;
             if (savedData.primaryHue) state.primaryHue = savedData.primaryHue;
             state.favorites = savedData.favorites || [];
+            state.runs = savedData.runs || [];
+            state.runPBs = savedData.runPBs || {
+              pb1k: null,
+              pb5k: null,
+              pb10k: null,
+              pb21k: null,
+            };
           }
 
           const savedSettings = await localforage.getItem("finmaster_settings");
@@ -2619,6 +2755,8 @@
           currentTheme: state.currentTheme, // Thêm dòng này
           primaryHue: state.primaryHue,
           favorites: state.favorites || [],
+          runs: state.runs || [],
+          runPBs: state.runPBs || null,
         };
 
         // localforage lưu ngầm dưới IndexedDB
@@ -2702,6 +2840,7 @@
       const NAV_ITEMS = [
         { id: "dashboard", icon: "fa-chart-pie", label: "Tổng quan" },
         { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
+        { id: "calendar", icon: "fa-calendar-days", label: "Lịch trình" },
         { id: "map", icon: "fa-map-location-dot", label: "Bản đồ" },
         { id: "favorites", icon: "fa-heart", label: "Quán ruột" },
         {
@@ -2732,6 +2871,7 @@
         const pillItems = [
           { id: "dashboard", icon: "fa-gauge-high" },
           { id: "transactions", icon: "fa-receipt" },
+          { id: "calendar", icon: "fa-calendar-days" },
           { id: "map", icon: "fa-map-location-dot" },
           { id: "favorites", icon: "fa-heart" },
           { id: "budgets", icon: "fa-money-bill-wave" },
@@ -2785,6 +2925,7 @@
           "wallets",
           "trips",
           "running",
+          "calendar",
         ];
 
         if (noHeaderViews.includes(viewId)) {
@@ -2816,6 +2957,7 @@
 
         if (viewId === "dashboard") renderDashboard();
         if (viewId === "debts") renderDebts();
+        if (viewId === "calendar") renderCalendar();
         if (viewId === "transactions") renderTransactions();
         if (viewId === "map") initMap();
         if (viewId === "budgets") renderBudgets();
@@ -7774,6 +7916,103 @@
             playSound("pop");
           };
           return;
+        } else if (type === "physical") {
+          const modal = document.getElementById("global-modal");
+          const title = document.getElementById("modal-title");
+          const body = document.getElementById("modal-body");
+          modal.classList.remove("hidden");
+          title.innerHTML =
+            '<i class="fa-solid fa-weight-scale text-emerald-500"></i> Chỉ số cơ thể';
+          const w = state.userProfile?.weight || "";
+          const h = state.userProfile?.height || "";
+
+          body.innerHTML = `
+            <form id="frm-physical" class="space-y-4">
+              <div class="flex gap-4">
+                <div class="flex-1">
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Cân nặng (kg)</label>
+                  <input type="number" id="phys-w" value="${w}" required step="0.1" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-center custom-text border custom-border custom-focus" placeholder="VD: 60">
+                </div>
+                <div class="flex-1">
+                  <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Chiều cao (cm)</label>
+                  <input type="number" id="phys-h" value="${h}" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-xl text-center custom-text border custom-border custom-focus" placeholder="VD: 170">
+                </div>
+              </div>
+              <div class="p-3 custom-bg-primary-soft border border-primary-500/30 rounded-xl mt-2 text-[11px] font-medium custom-text-secondary">
+                  <i class="fa-solid fa-circle-info text-primary-500"></i> Dữ liệu này dùng để tính Calo thiêu đốt theo chuẩn y tế thể thao.
+              </div>
+              <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">Lưu Dữ Liệu</button>
+            </form>
+          `;
+
+          document.getElementById("frm-physical").onsubmit = (e) => {
+            e.preventDefault();
+            if (!state.userProfile) state.userProfile = {};
+            state.userProfile.weight = parseFloat(
+              document.getElementById("phys-w").value,
+            );
+            state.userProfile.height = parseFloat(
+              document.getElementById("phys-h").value,
+            );
+            saveData();
+            closeModal();
+            playSound("success");
+            alert("Đã cập nhật chỉ số cơ thể thành công!");
+          };
+          return;
+        } else if (type === "recurring") {
+          const modal = document.getElementById("global-modal");
+          const title = document.getElementById("modal-title");
+          const body = document.getElementById("modal-body");
+          modal.classList.remove("hidden");
+          title.innerHTML =
+            '<i class="fa-solid fa-arrows-rotate text-teal-500"></i> Hóa đơn định kỳ';
+          const recurringTxs = state.transactions.filter((t) => t.isRecurring);
+
+          if (recurringTxs.length === 0) {
+            body.innerHTML = `<div class="text-center py-10 opacity-70"><i class="fa-solid fa-file-invoice-dollar text-5xl text-gray-400 mb-4"></i><p class="font-medium custom-text-secondary">Tuyệt vời! Ông không vướng bận hóa đơn tự động nào.</p></div>`;
+          } else {
+            body.innerHTML =
+              `<div class="space-y-3 pb-6">` +
+              recurringTxs
+                .map((tx) => {
+                  const cat = state.categories.find(
+                    (c) => c.id === tx.category,
+                  ) || {
+                    name: "Khác",
+                    icon: "📦",
+                    color: "bg-gray-100 text-gray-600",
+                  };
+                  return `
+                  <div class="flex items-center justify-between p-4 custom-bg-card rounded-2xl border custom-border shadow-sm">
+                      <div class="flex items-center gap-3">
+                          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm border custom-border ${cat.color}">${cat.icon}</div>
+                          <div>
+                              <p class="font-bold text-sm custom-text">${tx.note || cat.name}</p>
+                              <p class="text-[10px] custom-text-secondary font-medium mt-0.5"><i class="fa-regular fa-calendar-check"></i> Lặp lại ngày ${new Date(tx.date).getDate()} hàng tháng</p>
+                              <p class="font-black text-sm text-danger-500 mt-0.5">-${formatMoney(tx.amount)}</p>
+                          </div>
+                      </div>
+                      <button onclick="cancelRecurring('${tx.id}')" class="w-10 h-10 shrink-0 rounded-full bg-danger-50 text-danger-500 hover:bg-danger-100 transition-colors flex items-center justify-center active:scale-90 border border-danger-100" title="Hủy lặp lại"><i class="fa-solid fa-xmark"></i></button>
+                  </div>`;
+                })
+                .join("") +
+              `</div>`;
+          }
+
+          // Khai báo hàm con xử lý Hủy hóa đơn
+          window.cancelRecurring = (txId) => {
+            if (confirm("Hủy tự động thanh toán hóa đơn này vào tháng sau?")) {
+              const tx = state.transactions.find((t) => t.id === txId);
+              if (tx) {
+                tx.isRecurring = false;
+                saveData();
+                openModal("recurring"); // Mở lại để load danh sách mới
+                playSound("trash");
+              }
+            }
+          };
+          return;
         }
         // Gọi lại hàm cũ nếu không phải là "task"
         oldOpenModal(type, id, preset);
@@ -7905,6 +8144,108 @@
         }
       };
 
+      // ==========================================
+      // HỆ THỐNG GAMIFICATION (HUY HIỆU & THÀNH TỰU)
+      // ==========================================
+      const SYSTEM_BADGES = [
+        {
+          id: "b_run_100",
+          name: "Chân Chạy Siêu Phàm",
+          desc: "Tổng cự ly chạy bộ đạt 100km",
+          icon: "🏃‍♂️",
+          color: "from-blue-400 to-indigo-500",
+          shadow: "shadow-[0_0_15px_rgba(59,130,246,0.5)]",
+        },
+        {
+          id: "b_task_50",
+          name: "Kẻ Hủy Diệt Task",
+          desc: "Hoàn thành 50 công việc/deadline",
+          icon: "✅",
+          color: "from-emerald-400 to-green-500",
+          shadow: "shadow-[0_0_15px_rgba(16,185,129,0.5)]",
+        },
+        {
+          id: "b_trip_5",
+          name: "Chiến Thần Phượt",
+          desc: "Tham gia đủ 5 chuyến đi (Trips)",
+          icon: "✈️",
+          color: "from-pink-400 to-rose-500",
+          shadow: "shadow-[0_0_15px_rgba(244,63,94,0.5)]",
+        },
+        {
+          id: "b_goal_1",
+          name: "Đại Gia Tương Lai",
+          desc: "Hoàn thành 1 mục tiêu tiết kiệm",
+          icon: "💰",
+          color: "from-amber-300 to-orange-500",
+          shadow: "shadow-[0_0_15px_rgba(245,158,11,0.5)]",
+        },
+        {
+          id: "b_early_bird",
+          name: "Kẻ Hủy Diệt Mục Tiêu",
+          desc: "Về đích mục tiêu tiết kiệm trước thời hạn",
+          icon: "🦅",
+          color: "from-yellow-300 to-amber-500",
+          shadow: "shadow-[0_0_15px_rgba(252,211,77,0.5)]",
+        },
+      ];
+
+      window.checkAchievements = () => {
+        if (!state.badges) state.badges = [];
+        let newUnlock = false;
+
+        const unlock = (badgeId) => {
+          if (!state.badges.find((b) => b.id === badgeId)) {
+            const badgeInfo = SYSTEM_BADGES.find((b) => b.id === badgeId);
+            state.badges.unshift({
+              id: badgeId,
+              name: badgeInfo.name,
+              dateEarned: new Date().toISOString(),
+            });
+            newUnlock = true;
+
+            // Chúc mừng User khi mở khóa được huy hiệu mới
+            setTimeout(() => {
+              alert(
+                `🏆 CHÚC MỪNG!\nĐại ka vừa mở khóa huy hiệu: ${badgeInfo.name}\nVào Phòng truyền thống để xem ngay!`,
+              );
+              if (typeof confetti === "function")
+                confetti({
+                  particleCount: 200,
+                  spread: 100,
+                  zIndex: 99999,
+                  origin: { y: 0.5 },
+                });
+              playSound("success");
+            }, 500);
+          }
+        };
+
+        // 1. Quét Kỷ lục Chạy
+        const totalKm = (state.runs || []).reduce(
+          (sum, r) => sum + r.distance,
+          0,
+        );
+        if (totalKm >= 100) unlock("b_run_100");
+
+        // 2. Quét Kỷ lục Task
+        const completedTasks = state.tasks.filter((t) => t.isCompleted).length;
+        if (completedTasks >= 50) unlock("b_task_50");
+
+        // 3. Quét Kỷ lục Phượt
+        if (state.trips.length >= 5) unlock("b_trip_5");
+
+        // 4. Quét Mục Tiêu Tiết Kiệm (Goals)
+        const completedGoals = state.goals.filter((g) => {
+          const w = state.wallets.find((w) => w.id === g.walletId);
+          return w && w.balance >= g.targetAmount;
+        });
+        if (completedGoals.length >= 1) unlock("b_goal_1");
+
+        // Nếu có huy hiệu mới thì lưu Data
+        if (newUnlock) saveData();
+      };
+
       function openTrophyRoom() {
         const modal = document.getElementById("global-modal");
         const title = document.getElementById("modal-title");
@@ -7912,35 +8253,51 @@
 
         modal.classList.remove("hidden");
         title.innerHTML =
-          '<i class="fa-solid fa-trophy text-amber-500"></i> Huy hiệu';
+          '<i class="fa-solid fa-trophy text-amber-500"></i> Phòng Truyền Thống';
 
-        if (!state.badges || state.badges.length === 0) {
-          body.innerHTML = `
-      <div class="text-center py-10 opacity-70">
-        <div class="text-6xl mb-4">👻</div>
-        <p class="font-medium custom-text-secondary">Trống trơn! Hãy hoàn thành mục tiêu trước hạn để săn huy hiệu nhé.</p>
-      </div>`;
-          return;
-        }
+        // Check thành tựu mới nhất trước khi mở
+        if (typeof checkAchievements === "function") checkAchievements();
 
-        const badgesHtml = state.badges
-          .map(
-            (b) => `
-    <div class="flex items-center gap-4 p-4 rounded-2xl custom-bg-card border custom-border shadow-sm mb-3">
-        <div class="w-14 h-14 shrink-0 rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 flex items-center justify-center text-3xl shadow-[0_0_15px_rgba(245,158,11,0.5)] border-2 border-white dark:border-gray-800">
-            🦅
-        </div>
-        <div custom-bg-card>
-            <h4 class="font-black text-orange-500 text-sm mb-0.5">Kẻ Hủy Diệt Mục Tiêu</h4>
-            <p class="text-xs font-bold custom-text dark:text-gray-100">${b.name}</p>
-            <p class="text-[10px] custom-text-secondary mt-1 font-medium custom-bg-card dark:bg-gray-700 inline-block px-2 py-0.5 rounded">Về đích sớm ${b.daysEarly} ngày • ${formatDateTime(b.dateEarned)}</p>
-        </div>
-    </div>
-  `,
-          )
-          .join("");
+        let html = '<div class="space-y-3 pb-6">';
 
-        body.innerHTML = `<div class="space-y-2 pb-6">${badgesHtml}</div>`;
+        SYSTEM_BADGES.forEach((sysB) => {
+          // Quét xem user đã có huy hiệu này chưa (Fallback tương thích với Huy hiệu cũ của đại ka)
+          let earnedBadge = (state.badges || []).find(
+            (b) => b.id === sysB.id || b.name === sysB.name,
+          );
+
+          if (earnedBadge) {
+            // TRẠNG THÁI ĐÃ MỞ KHÓA (SÁNG RỰC RỠ)
+            html += `
+                <div class="flex items-center gap-4 p-4 rounded-2xl custom-bg-card border border-amber-200 dark:border-amber-800/50 shadow-sm relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r ${sysB.color} opacity-10"></div>
+                    <div class="w-14 h-14 shrink-0 rounded-full bg-gradient-to-br ${sysB.color} flex items-center justify-center text-3xl ${sysB.shadow} border-2 border-white dark:border-gray-800 z-10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform">
+                        ${sysB.icon}
+                    </div>
+                    <div class="z-10 flex-1">
+                        <h4 class="font-black text-amber-600 dark:text-amber-400 text-sm mb-0.5">${sysB.name}</h4>
+                        <p class="text-[11px] font-bold custom-text dark:text-gray-200 mb-1.5">${sysB.desc}</p>
+                        <p class="text-[9px] custom-text-secondary font-medium custom-bg-input inline-block px-2 py-0.5 rounded border custom-border"><i class="fa-solid fa-check"></i> Đạt được: ${new Date(earnedBadge.dateEarned).toLocaleDateString("vi-VN")}</p>
+                    </div>
+                    <i class="fa-solid fa-medal absolute right-[-10px] top-1/2 -translate-y-1/2 text-7xl text-amber-500/10"></i>
+                </div>`;
+          } else {
+            // TRẠNG THÁI CHƯA MỞ KHÓA (MÀU XÁM)
+            html += `
+                <div class="flex items-center gap-4 p-4 rounded-2xl custom-bg-card border custom-border shadow-sm grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    <div class="w-14 h-14 shrink-0 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-3xl border-2 border-gray-300 dark:border-gray-600 shadow-inner">
+                        🔒
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-black text-gray-500 text-sm mb-0.5">Nhiệm Vụ Ẩn</h4>
+                        <p class="text-[11px] font-bold custom-text-secondary">${sysB.desc}</p>
+                    </div>
+                </div>`;
+          }
+        });
+
+        html += "</div>";
+        body.innerHTML = html;
       }
 
       // 1. Hàm nhận file ảnh và lưu vào State
@@ -9550,8 +9907,35 @@
           playSound("pop");
         }
 
-        // Công thức Calo đốt (Ước tính tb 65 kcal/km cho người 65kg)
-        runData.calories = runData.distanceKm * 65;
+        // ==========================================
+        // THUẬT TOÁN ĐỐT CALO & BƯỚC CHÂN (CHUẨN Y TẾ)
+        // ==========================================
+        const weight = state.userProfile?.weight || 60;
+        const heightCm = state.userProfile?.height || 160; // Lấy chiều cao, mặc định 170cm
+
+        if (runData.distanceKm > 0.01 && runData.elapsedSec > 0) {
+          const speedKmh = runData.distanceKm / (runData.elapsedSec / 3600);
+
+          // 1. Tính Calo & Chiều dài sải bước (mét)
+          let stepLengthM = 0;
+          if (speedKmh >= 7.0) {
+            // Đang CHẠY
+            runData.calories = 1.03 * weight * runData.distanceKm;
+            stepLengthM = (heightCm * 0.65) / 100;
+          } else {
+            // Đang ĐI BỘ
+            runData.calories = 0.65 * weight * runData.distanceKm;
+            stepLengthM = (heightCm * 0.415) / 100;
+          }
+
+          // 2. Tính tổng số bước
+          runData.steps = Math.round((runData.distanceKm * 1000) / stepLengthM);
+        }
+
+        // Cập nhật lên UI nếu có thẻ hiển thị
+        const stepsEl = document.getElementById("live-run-steps");
+        if (stepsEl)
+          stepsEl.innerText = (runData.steps || 0).toLocaleString("vi-VN");
       };
 
       // 1. HIỆU ỨNG ĐẾM NGƯỢC 3-2-1
@@ -9786,6 +10170,7 @@
           distance: finalDist,
           pace: runData.elapsedSec / finalDist,
           calories: runData.calories,
+          steps: runData.steps || 0,
           splits: runData.splits,
           // Lưu route mỏng lại để chống tràn bộ nhớ
           route: runData.coords.map((c) => [
@@ -9946,7 +10331,7 @@
           `${totalCal.toFixed(0)} <span class="text-xs font-medium">kcal</span>`;
         document.getElementById("run-stat-sessions").innerText = sessions;
 
-        // C. TIẾN ĐỘ THÁNG NÀY (MỤC TIÊU 100KM)
+        // C. TIẾN ĐỘ THÁNG NÀY
         const curM = new Date().getMonth();
         const curY = new Date().getFullYear();
         const monthKm = state.runs
@@ -9956,11 +10341,15 @@
               new Date(r.date).getFullYear() === curY,
           )
           .reduce((sum, r) => sum + r.distance, 0);
-        const goal = 100; // Có thể làm hàm cài đặt sau
+
+        // Lấy mục tiêu từ bộ nhớ, mặc định là 100km nếu chưa đặt
+        const goal =
+          parseFloat(localStorage.getItem("run_monthly_goal")) || 100;
         const pct = Math.min((monthKm / goal) * 100, 100);
 
         document.getElementById("run-goal-current").innerText =
           `${monthKm.toFixed(1)} km`;
+        document.getElementById("run-goal-target").innerText = `${goal} km`; // Hiển thị số mới
         document.getElementById("run-goal-bar").style.width = `${pct}%`;
 
         // D. IN DANH SÁCH NHẬT KÝ CHẠY
@@ -10101,8 +10490,10 @@
         document.getElementById("rd-date").innerHTML =
           `<i class="fa-regular fa-clock"></i> ${d.toLocaleDateString("vi-VN")} - ${d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`;
 
-        document.getElementById("rd-dist").innerHTML =
-          `${run.distance.toFixed(2)} <span class="text-xs">km</span>`;
+        document.getElementById("rd-dist").innerHTML = `
+            ${run.distance.toFixed(2)} <span class="text-xs">km</span>
+            <div class="text-[11px] font-bold text-gray-500 mt-1 uppercase tracking-wider"><i class="fa-solid fa-shoe-prints"></i> ${(run.steps || 0).toLocaleString("vi-VN")} BƯỚC</div>
+        `;
         document.getElementById("rd-pace").innerText = formatPace(run.pace);
         document.getElementById("rd-calo").innerHTML =
           `${Math.round(run.calories)} <span class="text-xs">kcal</span>`;
@@ -10276,6 +10667,180 @@
         renderRunningDashboard();
         playSound("trash");
       };
+      // HÀM ĐẶT LẠI MỤC TIÊU CHẠY BỘ
+      window.setRunGoal = () => {
+        const currentGoal = localStorage.getItem("run_monthly_goal") || 100;
+        const input = prompt(
+          "Đại ka muốn đặt mục tiêu tháng này là bao nhiêu km?",
+          currentGoal,
+        );
+
+        if (input !== null) {
+          const newGoal = parseFloat(input);
+          if (!isNaN(newGoal) && newGoal > 0) {
+            localStorage.setItem("run_monthly_goal", newGoal);
+            renderRunningDashboard(); // Cập nhật lại thanh tiến trình ngay lập tức
+            if (typeof playSound === "function") playSound("success");
+          } else {
+            alert("Số km không hợp lệ. Phải nhập số đàng hoàng nha đại ka!");
+          }
+        }
+      };
+
+      // ==========================================
+      // BỘ NÃO LỊCH TỔNG HỢP (MASTER CALENDAR)
+      // ==========================================
+      let calCurrentDate = new Date(); // Giữ tọa độ tháng/năm đang xem
+
+      // Hàm tiến/lùi tháng
+      window.changeCalMonth = (dir) => {
+        calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
+        renderCalendar();
+        playSound("click");
+      };
+
+      // Hàm vẽ Lịch
+      window.renderCalendar = () => {
+        const year = calCurrentDate.getFullYear();
+        const month = calCurrentDate.getMonth();
+
+        document.getElementById("cal-month-year").innerText =
+          `Tháng ${month + 1}/${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay(); // Ngày đầu tháng là thứ mấy
+        const daysInMonth = new Date(year, month + 1, 0).getDate(); // Số ngày trong tháng
+
+        // Chuyển lịch để Thứ 2 làm đầu tuần (JS mặc định CN là 0)
+        let emptyCells = firstDay === 0 ? 6 : firstDay - 1;
+
+        let html = "";
+        // 1. Tạo các ô trống đầu tháng
+        for (let i = 0; i < emptyCells; i++) {
+          html += `<div class="aspect-square rounded-xl bg-transparent"></div>`;
+        }
+
+        const todayStr = getToday().split("T")[0]; // YYYY-MM-DD
+
+        // 2. Tạo các ô có Ngày
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const isToday = dateStr === todayStr;
+
+          // LỌC TẤT CẢ SỰ KIỆN TRÙNG VỚI NGÀY NÀY TỪ DATA CỦA APP
+          const dayTasks = state.tasks.filter((t) =>
+            t.date.startsWith(dateStr),
+          );
+          const dayDebts = state.debts.filter(
+            (db) => db.status === "active" && db.dueDate === dateStr,
+          );
+          const dayRuns = (state.runs || []).filter((r) =>
+            r.date.startsWith(dateStr),
+          );
+          const dayTrips = state.trips.filter(
+            (tr) => dateStr >= tr.startDate && dateStr <= tr.endDate,
+          );
+
+          // Nếu có sự kiện thì sinh ra cái chấm màu
+          let dotsHtml = "";
+          if (dayTasks.length)
+            dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm"></div>`;
+          if (dayDebts.length)
+            dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-sm"></div>`;
+          if (dayTrips.length)
+            dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm"></div>`;
+          if (dayRuns.length)
+            dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm"></div>`;
+
+          let cellClass = isToday
+            ? "custom-primary text-white custom-shadow-sm border-transparent scale-105 z-10"
+            : "custom-bg-input dark:bg-gray-800 custom-text border custom-border hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
+
+          html += `
+                  <div onclick="showDayEvents('${dateStr}')" class="aspect-square rounded-[14px] flex flex-col items-center p-1 sm:p-2 border transition-all active:scale-90 ${cellClass}">
+                      <span class="text-sm sm:text-base font-bold mt-1 sm:mt-0">${d}</span>
+                      <div class="flex gap-0.5 mt-auto pb-1 justify-center flex-wrap w-full">${dotsHtml}</div>
+                  </div>
+              `;
+        }
+
+        document.getElementById("cal-grid").innerHTML = html;
+        document.getElementById("cal-day-detail").classList.add("hidden"); // Ẩn bảng chi tiết khi đổi tháng
+      };
+
+      // Hàm hiển thị Bảng sự kiện bên dưới khi click vào 1 ô ngày
+      window.showDayEvents = (dateStr) => {
+        const detailBox = document.getElementById("cal-day-detail");
+        const contentBox = document.getElementById("cdd-content");
+
+        const [y, m, d] = dateStr.split("-");
+        document.getElementById("cdd-title").innerHTML =
+          `<i class="fa-solid fa-calendar-check text-primary-500"></i> Lịch trình ngày ${d}/${m}/${y}`;
+
+        // Lấy Data ra
+        const dayTasks = state.tasks.filter((t) => t.date.startsWith(dateStr));
+        const dayDebts = state.debts.filter(
+          (db) => db.status === "active" && db.dueDate === dateStr,
+        );
+        const dayRuns = (state.runs || []).filter((r) =>
+          r.date.startsWith(dateStr),
+        );
+        const dayTrips = state.trips.filter(
+          (tr) => dateStr >= tr.startDate && dateStr <= tr.endDate,
+        );
+
+        let html = "";
+
+        // 1. Nếu có chuyến đi
+        dayTrips.forEach((tr) => {
+          html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-plane-departure"></i></div>
+                  <div><p class="font-bold custom-text text-sm">Chuyến đi: ${tr.name}</p><p class="text-[10px] font-bold uppercase text-emerald-500 mt-1">${tr.startDate.split("-").reverse().join("/")} ➔ ${tr.endDate.split("-").reverse().join("/")}</p></div>
+              </div>`;
+        });
+
+        // 2. Nếu có nợ nần
+        dayDebts.forEach((db) => {
+          const isLend = db.type === "lend";
+          const remain = db.amount - (db.paidAmount || 0);
+          html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('debts')">
+                  <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-handshake"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm">Hạn chót: ${isLend ? "Thu nợ từ" : "Trả nợ cho"} ${db.person}</p><p class="font-black text-rose-500 text-sm mt-1">${formatMoney(remain)}</p></div>
+                  <i class="fa-solid fa-chevron-right text-gray-300 text-sm"></i>
+              </div>`;
+        });
+
+        // 3. Nếu có công việc
+        dayTasks.forEach((t) => {
+          html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${t.isCompleted ? "opacity-50" : ""}" onclick="switchView('tasks')">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid ${t.isCompleted ? "fa-check" : "fa-thumbtack"}"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm ${t.isCompleted ? "line-through" : ""}">${t.name}</p><p class="text-[10px] custom-text-secondary mt-1 font-bold"><i class="fa-regular fa-clock"></i> ${formatDateTime(t.date).split(" ")[1]}</p></div>
+                  ${t.type === "expense" || t.type === "income" ? `<p class="font-black text-sm ${t.type === "income" ? "text-success-500" : "text-danger-500"}">${t.type === "income" ? "+" : "-"}${formatMoney(t.amount)}</p>` : ""}
+              </div>`;
+        });
+
+        // 4. Nếu có chạy bộ
+        dayRuns.forEach((r) => {
+          html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('running')">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-shoe-prints"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm">Chạy bộ ${r.distance.toFixed(2)} km</p><p class="text-[10px] custom-text-secondary mt-1 font-bold">Pace: ${formatPace(r.pace)} • Đốt: ${Math.round(r.calories)} kcal</p></div>
+              </div>`;
+        });
+
+        if (!html) {
+          html = `<div class="text-center py-8 opacity-60"><i class="fa-regular fa-calendar-xmark text-5xl text-gray-400 mb-3"></i><p class="text-sm font-bold custom-text-secondary">Trống trơn, đại ka cứ nghỉ ngơi xả láng!</p></div>`;
+        }
+
+        contentBox.innerHTML = html;
+        detailBox.classList.remove("hidden");
+
+        // Trượt màn hình xuống cho User dễ nhìn
+        setTimeout(
+          () =>
+            detailBox.scrollIntoView({ behavior: "smooth", block: "nearest" }),
+          100,
+        );
+        playSound("pop");
+      };
     </script>
     <dialog
       id="imageModal"
@@ -10389,27 +10954,41 @@
         </div>
 
         <!-- Pace & Thời gian -->
+        <!-- Pace, Thời gian & Bước chân -->
         <div
-          class="grid grid-cols-2 w-full gap-8 mb-10 border-t border-b border-gray-800 py-6"
+          class="grid grid-cols-3 w-full gap-4 mb-10 border-t border-b border-gray-800 py-6 px-2"
         >
           <div class="text-center">
             <p
-              class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1"
+              class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1"
             >
               Thời gian
             </p>
-            <h2 id="live-run-time" class="text-3xl font-black font-mono">
+            <h2 id="live-run-time" class="text-2xl font-black font-mono">
               00:00
+            </h2>
+          </div>
+          <div class="text-center border-l border-r border-gray-800">
+            <p
+              class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1"
+            >
+              Pace
+            </p>
+            <h2 id="live-run-pace" class="text-2xl font-black font-mono">
+              --:--
             </h2>
           </div>
           <div class="text-center">
             <p
-              class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1"
+              class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1"
             >
-              Pace (Phút/Km)
+              Bước chân
             </p>
-            <h2 id="live-run-pace" class="text-3xl font-black font-mono">
-              --:--
+            <h2
+              id="live-run-steps"
+              class="text-2xl font-black font-mono text-emerald-500"
+            >
+              0
             </h2>
           </div>
         </div>
