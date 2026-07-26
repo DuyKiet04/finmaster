@@ -1585,6 +1585,119 @@
             </div>
           </div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- TAB TÀI XẾ GRAB MỚI -->
+        <!-- ========================================== -->
+        <div
+          id="view-grab"
+          class="view-section max-w-5xl mx-auto hidden pt-4 px-2 sm:px-0 pb-24 relative"
+        >
+          <!-- Thống kê tổng quan tháng -->
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div
+              class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm flex flex-col justify-center"
+            >
+              <div
+                class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 flex items-center justify-center text-xl mb-3 shadow-inner"
+              >
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+              <p
+                class="text-[11px] font-bold custom-text-secondary uppercase mb-1"
+              >
+                Thực Lãnh
+              </p>
+              <h4
+                id="grab-stat-net"
+                class="text-2xl font-black text-emerald-500"
+              >
+                0 ₫
+              </h4>
+            </div>
+
+            <div class="grid grid-rows-2 gap-3">
+              <div
+                class="custom-bg-card p-4 rounded-3xl border custom-border shadow-sm flex items-center justify-between"
+              >
+                <div>
+                  <p
+                    class="text-[10px] font-bold custom-text-secondary uppercase mb-0.5"
+                  >
+                    Tiền xăng / Ăn uống
+                  </p>
+                  <h4
+                    id="grab-stat-exp"
+                    class="text-lg font-black text-danger-500"
+                  >
+                    0 ₫
+                  </h4>
+                </div>
+                <i class="fa-solid fa-gas-pump text-2xl text-danger-500/20"></i>
+              </div>
+              <div
+                class="custom-bg-card p-4 rounded-3xl border custom-border shadow-sm flex items-center justify-between"
+              >
+                <div>
+                  <p
+                    class="text-[10px] font-bold custom-text-secondary uppercase mb-0.5"
+                  >
+                    Tổng số cuốc
+                  </p>
+                  <h4
+                    id="grab-stat-rides"
+                    class="text-lg font-black text-primary-500"
+                  >
+                    0
+                  </h4>
+                </div>
+                <i
+                  class="fa-solid fa-motorcycle text-2xl text-primary-500/20"
+                ></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Biểu đồ phân tích (Chart.js) -->
+          <div
+            class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm mb-5"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h4
+                class="font-black text-sm uppercase tracking-widest custom-text flex items-center gap-2"
+              >
+                <i class="fa-solid fa-chart-column text-primary-500"></i> Phân
+                tích 7 ngày qua
+              </h4>
+            </div>
+            <div class="h-48 w-full relative">
+              <canvas id="grabChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Nhật ký chạy -->
+          <div
+            class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm mb-5"
+          >
+            <h4
+              class="font-black text-sm uppercase tracking-widest custom-text mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-list-check text-orange-500"></i> Lịch Sử
+              Chốt Ca
+            </h4>
+            <div id="grab-history-list" class="space-y-3"></div>
+          </div>
+
+          <!-- Nút Nổi (FAB) Chốt Ca -->
+          <button
+            onclick="openModal('grabShift')"
+            class="absolute bottom-4 right-2 sm:right-0 w-12 h-12 custom-primary rounded-full custom-shadow-lg flex items-center justify-center text-xl shrink-0 z-20"
+          >
+            <i class="fa-solid fa-cash-register"></i>
+          </button>
+
+          <!-- absolute  custom-bg-primary-soft hover:bg-green-500 rounded-full shadow-[0_8px_20px_rgba(22,163,74,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform z-50 -->
+        </div>
         <div
           id="view-settings"
           class="view-section max-w-3xl mx-auto space-y-6"
@@ -2544,6 +2657,7 @@
           "transactions",
           "calendar",
           "map",
+          "grab",
           "favorites",
           "budgets",
           "running",
@@ -2639,6 +2753,7 @@
           if (savedData) {
             state.debts = savedData.debts || [];
             state.badges = savedData.badges || [];
+            state.grabShifts = savedData.grabShifts || [];
             state.trips = savedData.trips || [];
             state.transactions = savedData.transactions || [];
             state.runs = savedData.runs || [];
@@ -2724,6 +2839,7 @@
           categories: state.categories,
           budgets: state.budgets,
           trips: state.trips,
+          grabShifts: state.grabShifts || [],
           goals: state.goals,
           notificationSettings: state.notificationSettings,
           badges: state.badges || [],
@@ -2822,6 +2938,7 @@
         { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
         { id: "calendar", icon: "fa-calendar-days", label: "Lịch trình" },
         { id: "map", icon: "fa-map-location-dot", label: "Bản đồ" },
+        { id: "grab", icon: "fa-motorcycle", label: "Tài xế Grab" },
         { id: "favorites", icon: "fa-heart", label: "Quán ruột" },
         {
           id: "budgets",
@@ -2853,6 +2970,7 @@
           { id: "transactions", icon: "fa-receipt" },
           { id: "calendar", icon: "fa-calendar-days" },
           { id: "map", icon: "fa-map-location-dot" },
+          { id: "grab", icon: "fa-motorcycle" },
           { id: "favorites", icon: "fa-heart" },
           { id: "budgets", icon: "fa-money-bill-wave" },
           { id: "running", icon: "fa-person-running" },
@@ -2884,7 +3002,8 @@
         if (
           viewId === "running" ||
           viewId === "calendar" ||
-          viewId === "settings"
+          viewId === "settings" ||
+          viewId === "grab"
         ) {
           fabMobile?.classList.add("hidden");
           fabDesktop?.classList.add("hidden");
@@ -2945,6 +3064,7 @@
         if (viewId === "calendar") renderCalendar();
         if (viewId === "transactions") renderTransactions();
         if (viewId === "map") initMap();
+        if (viewId === "grab") renderGrab();
         if (viewId === "budgets") renderBudgets();
         if (viewId === "running") renderRunningDashboard();
         if (viewId === "goals") renderGoals();
@@ -10953,6 +11073,286 @@
           }
         };
         window.requestAnimationFrame(step);
+      };
+
+      // ==========================================
+      // MODULE TÀI XẾ GRAB (CHỐT CA & THỐNG KÊ)
+      // ==========================================
+      if (!state.grabShifts) state.grabShifts = [];
+
+      // 1. TÍCH HỢP FORM CHỐT CA VÀO HỆ THỐNG MODAL GỐC
+      const oldModalForGrab = window.openModal;
+      window.openModal = function (type, id, preset) {
+        if (type === "grabShift") {
+          const modal = document.getElementById("global-modal");
+          const title = document.getElementById("modal-title");
+          const body = document.getElementById("modal-body");
+          modal.classList.remove("hidden");
+
+          title.innerHTML =
+            '<i class="fa-solid fa-motorcycle text-green-500"></i> Chốt Ca Hôm Nay';
+
+          const walletOptions = state.wallets
+            .map(
+              (w) =>
+                `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
+            )
+            .join("");
+
+          body.innerHTML = `
+              <form id="frm-grab" class="space-y-4">
+                 <div>
+                    <label class="block text-[11px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5"><i class="fa-solid fa-calendar-day text-blue-500"></i> Ngày chạy</label>
+                    <input type="date" id="g-date" required value="${getToday().split("T")[0]}" class="w-full p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border custom-focus text-sm">
+                 </div>
+                 
+                 <div class="grid grid-cols-2 gap-3">
+                    <div>
+                       <label class="block text-[11px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5"><i class="fa-solid fa-money-bill text-emerald-500"></i> Doanh thu app</label>
+                       <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="g-rev" required placeholder="0" class="w-full p-4 custom-bg-input rounded-xl outline-none font-black text-xl text-emerald-500 border custom-border custom-focus">
+                    </div>
+                    <div>
+                       <label class="block text-[11px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5"><i class="fa-solid fa-hashtag text-primary-500"></i> Số cuốc</label>
+                       <input type="number" id="g-rides" required placeholder="0" class="w-full p-4 custom-bg-input rounded-xl outline-none font-black text-xl custom-text border custom-border custom-focus text-center">
+                    </div>
+                 </div>
+
+                 <div class="p-3 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 rounded-xl space-y-3">
+                     <p class="text-[11px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i> Khấu trừ chi phí</p>
+                     <div class="grid grid-cols-2 gap-3">
+                         <div>
+                            <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-gas-pump text-orange-500"></i> Đổ xăng</label>
+                            <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="g-gas" placeholder="0" class="w-full p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border custom-focus text-danger-500">
+                         </div>
+                         <div>
+                            <label class="block text-[10px] font-bold custom-text-secondary uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-bowl-food text-amber-500"></i> Ăn uống / Khác</label>
+                            <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="g-food" placeholder="0" class="w-full p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border custom-focus text-danger-500">
+                         </div>
+                     </div>
+                 </div>
+
+                 <div>
+                    <label class="block text-[11px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5"><i class="fa-solid fa-wallet text-purple-500"></i> Lưu tiền vào ví</label>
+                    <select id="g-wallet" class="w-full p-3 custom-bg-input rounded-xl outline-none font-bold custom-text border custom-border custom-focus">${walletOptions}</select>
+                 </div>
+
+                 <button type="submit" class="w-full py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-black text-lg custom-shadow-lg mt-2 active:scale-95 transition-all">CHỐT SỔ & LƯU GIAO DỊCH</button>
+              </form>
+            `;
+
+          document.getElementById("frm-grab").onsubmit = (e) => {
+            e.preventDefault();
+            const date = document.getElementById("g-date").value;
+            const rev = getRawNumber(document.getElementById("g-rev").value);
+            const rides =
+              parseInt(document.getElementById("g-rides").value) || 0;
+            const gas =
+              getRawNumber(document.getElementById("g-gas").value) || 0;
+            const food =
+              getRawNumber(document.getElementById("g-food").value) || 0;
+            const walletId = document.getElementById("g-wallet").value;
+
+            if (rev <= 0)
+              return alert("Hôm nay móm à đại ka? Ế thì khỏi cần chốt sổ!");
+            const net = rev - gas - food;
+
+            // Lưu Nhật ký Grab
+            state.grabShifts.unshift({
+              id: "grab-" + generateId(),
+              date: date,
+              revenue: rev,
+              rides: rides,
+              gas: gas,
+              food: food,
+              net: net,
+            });
+
+            // Bơm thẳng tiền vào Sổ Giao Dịch chính (Tách bạch Thu và Chi)
+            const baseDate =
+              date + " " + new Date().toTimeString().split(" ")[0];
+            state.transactions.unshift({
+              id: generateId(),
+              type: "income",
+              amount: rev,
+              category: "c7",
+              walletId: walletId,
+              date: baseDate,
+              note: `Doanh thu Grab (${rides} cuốc)`,
+            });
+
+            if (gas > 0)
+              state.transactions.unshift({
+                id: generateId(),
+                type: "expense",
+                amount: gas,
+                category: "c2",
+                walletId: walletId,
+                date: baseDate,
+                note: `Đổ xăng (Ca Grab)`,
+              });
+            if (food > 0)
+              state.transactions.unshift({
+                id: generateId(),
+                type: "expense",
+                amount: food,
+                category: "c1",
+                walletId: walletId,
+                date: baseDate,
+                note: `Ăn uống (Ca Grab)`,
+              });
+
+            // Cập nhật số dư Ví
+            const w = state.wallets.find((x) => x.id === walletId);
+            if (w) w.balance += net; // Doanh thu trừ hao Chi phí
+
+            addLog("Tài xế Grab", `Chốt sổ ${date}: Nhận ${formatMoney(net)}`);
+            saveData();
+            closeModal();
+            renderGrab();
+            updateAllViews();
+            playSound("success");
+            alert(
+              `Chốt ca thành công! Thực lãnh hôm nay bỏ túi là: ${formatMoney(net)}`,
+            );
+          };
+        } else {
+          oldModalForGrab(type, id, preset);
+        }
+      };
+
+      // 2. HÀM VẼ GIAO DIỆN (RENDER DASHBOARD GRAB)
+      window.renderGrab = () => {
+        const curM = new Date().getMonth();
+        const curY = new Date().getFullYear();
+
+        // Lọc các ca trong tháng này
+        const monthShifts = state.grabShifts.filter(
+          (s) =>
+            new Date(s.date).getMonth() === curM &&
+            new Date(s.date).getFullYear() === curY,
+        );
+
+        const totalNet = monthShifts.reduce((a, b) => a + b.net, 0);
+        const totalGas = monthShifts.reduce((a, b) => a + b.gas, 0);
+        const totalFood = monthShifts.reduce((a, b) => a + b.food, 0);
+        const totalRides = monthShifts.reduce((a, b) => a + b.rides, 0);
+
+        // Animate số
+        animateMoney("grab-stat-net", totalNet, 1000);
+        animateMoney("grab-stat-exp", totalGas + totalFood, 1000);
+        document.getElementById("grab-stat-rides").innerText = totalRides;
+
+        // Lịch sử chốt ca
+        const historyContainer = document.getElementById("grab-history-list");
+        if (state.grabShifts.length === 0) {
+          historyContainer.innerHTML = `<p class="text-center text-sm text-gray-500 py-6">Chưa có ca chạy nào được lưu.</p>`;
+        } else {
+          historyContainer.innerHTML = state.grabShifts
+            .map(
+              (s) => `
+                 <div class="flex items-center justify-between p-4 custom-bg-input dark:bg-gray-800/50 rounded-2xl border custom-border relative group overflow-hidden">
+                     <button onclick="deleteGrabShift('${s.id}')" class="absolute right-0 top-0 bottom-0 w-12 bg-danger-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                     <div class="flex items-center gap-3">
+                         <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg shrink-0 border border-green-200"><i class="fa-solid fa-motorcycle"></i></div>
+                         <div>
+                             <p class="font-black text-sm custom-text">${new Date(s.date).toLocaleDateString("vi-VN")}</p>
+                             <p class="text-[10px] font-bold text-gray-500 mt-0.5">Cuốc: ${s.rides} • Hao phí: -${formatMoney(s.gas + s.food)}</p>
+                         </div>
+                     </div>
+                     <div class="text-right pr-6 group-hover:pr-12 transition-all">
+                         <p class="font-black text-base text-emerald-500">+${formatMoney(s.net)}</p>
+                     </div>
+                 </div>
+             `,
+            )
+            .join("");
+        }
+
+        // Vẽ Biểu đồ 7 ngày gần nhất (Doanh thu Gộp vs Thực Lãnh)
+        if (window.grabChartInstance) window.grabChartInstance.destroy();
+        const ctxGrab = document.getElementById("grabChart");
+
+        if (ctxGrab && state.grabShifts.length > 0) {
+          let last7Days = Array.from({ length: 7 }, (_, i) => {
+            let d = new Date();
+            d.setDate(d.getDate() - i);
+            return d.toISOString().split("T")[0];
+          }).reverse();
+
+          let dataRev = Array(7).fill(0);
+          let dataNet = Array(7).fill(0);
+
+          state.grabShifts.forEach((s) => {
+            let idx = last7Days.indexOf(s.date);
+            if (idx > -1) {
+              dataRev[idx] += s.revenue;
+              dataNet[idx] += s.net;
+            }
+          });
+
+          const labels = last7Days.map(
+            (d) => d.substring(8, 10) + "/" + d.substring(5, 7),
+          );
+
+          window.grabChartInstance = new Chart(ctxGrab, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Thực Lãnh",
+                  data: dataNet,
+                  backgroundColor: "#10b981",
+                  borderRadius: 4,
+                  barPercentage: 0.6,
+                },
+                {
+                  label: "Doanh Thu (App)",
+                  data: dataRev,
+                  backgroundColor: "#e2e8f0",
+                  borderRadius: 4,
+                  barPercentage: 0.6,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: "bottom",
+                  labels: { boxWidth: 12, font: { size: 10 } },
+                },
+              },
+              scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: {
+                  stacked: false,
+                  grid: { borderDash: [5, 5] },
+                  ticks: {
+                    callback: (v) => v / 1000 + "k",
+                    font: { size: 10 },
+                  },
+                },
+              },
+            },
+          });
+        }
+      };
+
+      // 3. Xóa ca (Cảnh báo: Chỉ xóa nhật ký Grab, không xóa trong Sổ Giao Dịch chính)
+      window.deleteGrabShift = (id) => {
+        if (
+          !confirm(
+            "Xóa lịch sử chốt ca này? (Lưu ý: Tiền đã tự động đưa vào Sổ giao dịch sẽ KHÔNG BỊ XÓA, bạn phải tự qua Tab Giao Dịch để xóa tay).",
+          )
+        )
+          return;
+        state.grabShifts = state.grabShifts.filter((s) => s.id !== id);
+        saveData();
+        renderGrab();
+        playSound("trash");
       };
     </script>
     <dialog
