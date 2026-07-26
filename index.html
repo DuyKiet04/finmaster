@@ -111,37 +111,7 @@
       }
 
       /* -- ÁP DỤNG MÀU CHO TOÀN BỘ LỚP BẢN ĐỒ (CẢ NỀN LẪN CHỮ) -- */
-      .leaflet-container {
-        transition: filter 0.5s ease;
-      }
 
-      /* Áp dụng filter cho cái "Map Pane" - nó bao trùm cả ảnh nền và nhãn tên đường */
-      .leaflet-map-pane {
-        transition: filter 0.5s ease;
-        /* Cấu hình filter chuẩn cho việc đổi màu toàn bộ bản đồ */
-        filter: invert(0.9) hue-rotate(calc(var(--primary-hue) * 1deg + 180deg))
-          contrast(1.2);
-      }
-
-      /* Tinh chỉnh riêng cho Dark Mode để tên đường không bị chói */
-      .dark .leaflet-map-pane {
-        /* brightness cao hơn để bù lại nền tối */
-        filter: brightness(1.2) invert(0.9)
-          hue-rotate(calc(var(--primary-hue) * 1deg + 180deg)) contrast(1.2);
-      }
-
-      /* Đảm bảo các lớp chồng lên nhau không bị lỗi hiển thị */
-      .leaflet-tile-pane,
-      .leaflet-overlay-pane,
-      .leaflet-marker-pane {
-        will-change: filter;
-      }
-
-      .leaflet-container {
-        z-index: 10;
-
-        font-family: inherit;
-      }
       /* --- ÉP MÀU CHO CÁI BAO BÊN NGOÀI POPUP --- */
       .leaflet-popup-content-wrapper {
         background-color: var(--bg-card, #ffffff) !important;
@@ -1083,7 +1053,7 @@
           <button
             id="btn-satellite"
             onclick="toggleSatellite()"
-            class="absolute bottom-60 right-4 w-12 h-12 custom-primary backdrop-blur-md rounded-full custom-shadow border custom-border flex items-center justify-center text-lg z-20 active:scale-90 transition-all pointer-events-auto group"
+            class="absolute bottom-60 right-4 w-12 h-12 custom-primary backdrop-blur-md rounded-full custom-shadow border custom-border flex items-center justify-center text-lg z-20 transition-all pointer-events-auto"
           >
             <i class="fa-solid fa-earth-asia"></i>
           </button>
@@ -4056,12 +4026,12 @@
         } else {
           if (state.darkMode) {
             currentBaseLayer = L.tileLayer(
-              "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+              "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
               { attribution: "© CartoDB", subdomains: "abcd" },
             );
           } else {
             currentBaseLayer = L.tileLayer(
-              "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+              "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
               { attribution: "© CartoDB", subdomains: "abcd" },
             );
           }
@@ -9991,14 +9961,20 @@
         }, 1000);
       };
 
-      // 2. KHỞI ĐỘNG HỆ THỐNG TRACKING
+      // ==========================================
+      // KHỞI ĐỘNG HỆ THỐNG TRACKING (ĐÃ CHỮA BỆNH GPS)
+      // ==========================================
+      // ==========================================
+      // KHỞI ĐỘNG HỆ THỐNG TRACKING (ĐỘ CHÍNH XÁC CAO - CHUẨN STRAVA)
+      // ==========================================
       const startActiveRun = async () => {
         const ui = document.getElementById("active-run-overlay");
         ui.classList.remove("translate-y-full");
 
         runData.elapsedSec = 0;
         runData.distanceKm = 0;
-        runData.coords = [];
+        runData.coords = []; // Lưu tọa độ thô (đã qua lọc cơ bản)
+        runData.smoothedCoords = []; // Lưu tọa độ đã được làm mượt (Moving Average)
         runData.status = "running";
         runData.startTime = Date.now();
         runData.splits = [];
@@ -10024,54 +10000,100 @@
         const gpsIndicator = document.getElementById("gps-indicator");
         const gpsText = document.getElementById("gps-status-text");
 
-        // RESET ID CŨ TRƯỚC KHI YÊU CẦU MỚI (Fix lỗi cuốc thứ 2 đéo chạy)
         if (runData.watchId) {
           navigator.geolocation.clearWatch(runData.watchId);
           runData.watchId = null;
         }
 
+        // BIẾN LƯU THỜI GIAN LẤY GPS LẦN CUỐI ĐỂ TÍNH VẬN TỐC
+        let lastGpsTime = Date.now();
+
         runData.watchId = navigator.geolocation.watchPosition(
           (pos) => {
+            if (runData.status !== "running") return;
+
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
             const acc = pos.coords.accuracy;
+            const now = Date.now();
 
-            gpsIndicator.classList.replace("bg-red-500", "bg-success-500");
-            gpsText.innerText = `GPS: ${Math.round(acc)}m`;
+            // 1. HIỂN THỊ CHẤT LƯỢNG GPS
+            if (acc <= 8) {
+              gpsIndicator.className =
+                "w-2.5 h-2.5 rounded-full bg-emerald-500";
+              gpsText.innerText = `GPS: Rất tốt (${Math.round(acc)}m)`;
+            } else if (acc <= 15) {
+              gpsIndicator.className = "w-2.5 h-2.5 rounded-full bg-yellow-400";
+              gpsText.innerText = `GPS: Tốt (${Math.round(acc)}m)`;
+            } else if (acc <= 25) {
+              gpsIndicator.className = "w-2.5 h-2.5 rounded-full bg-orange-500";
+              gpsText.innerText = `GPS: Tạm (${Math.round(acc)}m)`;
+            } else {
+              gpsIndicator.className =
+                "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
+              gpsText.innerText = `GPS: Yếu (${Math.round(acc)}m)`;
+              // BỎ QUA NẾU GPS QUÁ TỆ (Sai số > 25m thì vứt luôn không cần xét tiếp)
+              if (runData.coords.length > 0) return;
+            }
 
-            // CHỈ LẤY NẾU SAI SỐ GPS DƯỚI 15m (Bắt buộc phải ra trời thoáng)
-            if (acc <= 15 && runData.status === "running") {
-              const newPt = L.latLng(lat, lng);
+            const newPt = L.latLng(lat, lng);
 
-              if (runData.coords.length > 0) {
-                const lastPt = runData.coords[runData.coords.length - 1];
-                const distMeters = window.getDistance(
-                  lastPt.lat,
-                  lastPt.lng,
-                  lat,
-                  lng,
-                );
+            if (runData.coords.length > 0) {
+              const lastPt = runData.coords[runData.coords.length - 1];
 
-                // THUẬT TOÁN LỌC NHIỄU (CHỐNG TRÔI GPS VÀ DỊCH CHUYỂN TỨC THỜI):
-                // 1. Phải di chuyển > 6 mét mới cộng (Bỏ qua nhiễu đứng im)
-                // 2. Không được vượt quá 30 mét trong 1 giây (Vận tốc Usain Bolt cũng đéo tới, tránh lỗi GPS nhảy vọt)
-                if (distMeters > 6 && distMeters < 30) {
-                  runData.distanceKm += distMeters / 1000;
-                  runData.coords.push(newPt);
-                  updateRunMap(newPt);
-                }
-              } else {
+              // 2. DÙNG HAVERSINE CỦA LEAFLET ĐỂ ĐO KHOẢNG CÁCH CHUẨN XÁC
+              const distMeters = lastPt.distanceTo(newPt);
+
+              // 3. TÍNH VẬN TỐC THỰC TẾ (mét / giây)
+              const timeDiffSecs = (now - lastGpsTime) / 1000;
+              const speed = distMeters / (timeDiffSecs > 0 ? timeDiffSecs : 1);
+
+              // 4. LỌC NHIỄU (SPEED FILTER & DISTANCE FILTER)
+              // - Không cộng nếu di chuyển quá ít (< 3m) để tránh GPS Drift khi đứng yên
+              // - Không cộng nếu tốc độ > 8 m/s (~28km/h) vì người chạy đéo thể nhanh thế được
+              if (distMeters >= 3 && speed <= 8) {
                 runData.coords.push(newPt);
-                updateRunMap(newPt);
-                runData.mapObj.setView(newPt, 17);
+                lastGpsTime = now;
+
+                // 5. MOVING AVERAGE (LÀM MƯỢT ĐƯỜNG CHẠY)
+                // Lấy 3 điểm gần nhất để tính trung bình tọa độ
+                let smoothedPt = newPt;
+                if (runData.coords.length >= 3) {
+                  const p1 = runData.coords[runData.coords.length - 1];
+                  const p2 = runData.coords[runData.coords.length - 2];
+                  const p3 = runData.coords[runData.coords.length - 3];
+
+                  const avgLat = (p1.lat + p2.lat + p3.lat) / 3;
+                  const avgLng = (p1.lng + p2.lng + p3.lng) / 3;
+                  smoothedPt = L.latLng(avgLat, avgLng);
+                }
+
+                runData.smoothedCoords.push(smoothedPt);
+
+                // CỘNG QUÃNG ĐƯỜNG TỪ ĐIỂM ĐÃ LÀM MƯỢT (Tránh cộng dồn các nét ziczac của GPS)
+                if (runData.smoothedCoords.length > 1) {
+                  const lastSmoothed =
+                    runData.smoothedCoords[runData.smoothedCoords.length - 2];
+                  const smoothedDist = lastSmoothed.distanceTo(smoothedPt);
+                  runData.distanceKm += smoothedDist / 1000;
+                }
+
+                updateRunMap(smoothedPt);
               }
+            } else {
+              // Điểm đầu tiên
+              runData.coords.push(newPt);
+              runData.smoothedCoords.push(newPt);
+              lastGpsTime = now;
+              updateRunMap(newPt);
+              runData.mapObj.setView(newPt, 17);
             }
           },
           (err) => {
-            gpsIndicator.classList.replace("bg-success-500", "bg-red-500");
+            gpsIndicator.className =
+              "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
             gpsText.innerText = "Mất tín hiệu";
           },
-          // THÊM maximumAge: 0 ĐỂ ÉP TRÌNH DUYỆT KHÔNG DÙNG GPS CACHE CŨ
           { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
         );
       };
@@ -10085,7 +10107,7 @@
           }).setView([10.8, 106.7], 15);
           // Dùng bản đồ Đen ngòm cho ngầu và đỡ chói mắt
           L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
           ).addTo(runData.mapObj);
         }
 
@@ -10534,7 +10556,7 @@
               attributionControl: false,
             });
             L.tileLayer(
-              "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+              "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
             ).addTo(rdMapObj);
           }
 
