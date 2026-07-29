@@ -181,6 +181,157 @@
         border-color: #1f2937; /* Đổi viền trắng thành đen xám khi Dark mode */
       }
 
+      /* --- HIỆU ỨNG NỀN ĐỘNG CHUẨN GEMINI (FLUID BLOBS) --- */
+      #app-custom-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+        background-color: #0f172a;
+        transition: opacity 0.5s ease;
+      }
+
+      /* Lớp Noise tạo độ nhám, sống động */
+      .bg-noise {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+        pointer-events: none;
+      }
+
+      /* Định dạng chung 5 Blob (Blur cực mạnh, Opacity thấp) */
+      .gemini-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.45;
+        mix-blend-mode: screen;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+        will-change: transform;
+      }
+
+      html:not(.dark) .gemini-blob {
+        mix-blend-mode: multiply;
+        opacity: 0.3;
+      }
+      html:not(.dark) #app-custom-bg {
+        background-color: #aff0fc;
+      }
+
+      /* Từng Blob riêng biệt */
+      .blob-blue {
+        width: 60vw;
+        height: 60vw;
+        background-color: #3b82f6;
+        top: -10%;
+        left: -10%;
+        animation-name: blobMove1;
+        animation-duration: 12s;
+      }
+      .blob-purple {
+        width: 70vw;
+        height: 70vw;
+        background-color: #5414e9;
+        top: 20%;
+        right: -20%;
+        animation-name: blobMove2;
+        animation-duration: 15s;
+        animation-direction: alternate-reverse;
+      }
+      .blob-pink {
+        width: 50vw;
+        height: 50vw;
+        background-color: #e90e0e;
+        bottom: -10%;
+        left: 10%;
+        animation-name: blobMove3;
+        animation-duration: 10s;
+      }
+      .blob-orange {
+        width: 60vw;
+        height: 60vw;
+        background-color: #f1e31b;
+        bottom: -20%;
+        right: 10%;
+        animation-name: blobMove4;
+        animation-duration: 14s;
+      }
+      .blob-emerald {
+        width: 40vw;
+        height: 40vw;
+        background-color: #3adfa8;
+        top: 40%;
+        left: 30%;
+        animation-name: blobMove5;
+        animation-duration: 18s;
+      }
+
+      /* Animation Transform GPU */
+      @keyframes blobMove1 {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+        33% {
+          transform: translate(15vw, 10vh) scale(1.1) rotate(45deg);
+        }
+        66% {
+          transform: translate(-5vw, 20vh) scale(0.9) rotate(90deg);
+        }
+        100% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+      }
+      @keyframes blobMove2 {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate(-20vw, 15vh) scale(1.2) rotate(-60deg);
+        }
+        100% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+      }
+      @keyframes blobMove3 {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate(25vw, -10vh) scale(1.1) rotate(120deg);
+        }
+        100% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+      }
+      @keyframes blobMove4 {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+        33% {
+          transform: translate(-10vw, -20vh) scale(0.9) rotate(-45deg);
+        }
+        66% {
+          transform: translate(15vw, -10vh) scale(1.1) rotate(45deg);
+        }
+        100% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+      }
+      @keyframes blobMove5 {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate(-15vw, -15vh) scale(1.3) rotate(90deg);
+        }
+        100% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+      }
       /* ============ GIAO DIỆN THẺ VÍ (LUXURY BANK CARD) ============ */
       .wallet-scroll {
         display: flex;
@@ -745,6 +896,15 @@
                 autocomplete="off"
                 class="w-full pl-11 pr-12 py-3.5 custom-bg-card dark:bg-gray-800 border custom-border rounded-2xl custom-shadow-sm custom-focus font-medium outline-none custom-text relative z-10"
               />
+
+              <button
+                id="view-mode-btn"
+                onclick="toggleTxViewMode()"
+                class="absolute right-12 p-2 custom-icon hover:text-primary-500 z-20"
+                title="Đổi chế độ hiển thị"
+              >
+                <i class="fa-solid fa-table-cells-large"></i>
+              </button>
 
               <!-- Nút Phễu Lọc Cập Nhật -->
               <button
@@ -1919,6 +2079,22 @@
                   >Hình nền</span
                 >
               </button>
+              <!-- Nút Nền động Gemini -->
+              <button
+                onclick="toggleAnimatedBg()"
+                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700 col-span-1"
+                title="Bật/Tắt Nền Động"
+              >
+                <div
+                  class="w-10 h-10 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                >
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <span
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  >Nền động</span
+                >
+              </button>
             </div>
 
             <input
@@ -2828,7 +3004,7 @@
           checkAllNotifications();
 
         initScrollHideUI();
-        applyBackgroundImage();
+        applyBackgrounds();
         initGlobalSwipe();
       }
 
@@ -2880,7 +3056,7 @@
       function toggleDarkMode() {
         state.darkMode = !state.darkMode;
         applyTheme();
-        applyBackgroundImage();
+        applyBackgrounds();
         saveData();
         if (state.currentView === "dashboard") renderDashboard();
       }
@@ -4607,13 +4783,31 @@
         document.getElementById("filter-dropdown").classList.add("hidden");
       };
 
+      // Thêm biến global quản lý chế độ xem (mặc định là list)
+      window.txViewMode = "list";
+
+      window.toggleTxViewMode = () => {
+        window.txViewMode = window.txViewMode === "list" ? "grid" : "list";
+
+        // Đổi icon nút bấm
+        const btnIcon = document.querySelector("#view-mode-btn i");
+        if (btnIcon) {
+          if (window.txViewMode === "grid") {
+            btnIcon.className = "fa-solid fa-list";
+          } else {
+            btnIcon.className = "fa-solid fa-table-cells-large";
+          }
+        }
+
+        renderTransactions();
+        playSound("click");
+      };
+
       function renderTransactions() {
         const searchInput = document
           .getElementById("filter-search")
           .value.trim()
           .toLowerCase();
-
-        // Bỏ dấu để search linh hoạt hơn
         const removeAccents = (str) =>
           str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const searchNoAccent = removeAccents(searchInput);
@@ -4633,13 +4827,11 @@
               .find((c) => c.id === t.category)
               ?.name.toLowerCase() || "";
           const note = (t.note || "").toLowerCase();
-          // HÚT TÊN VÍ ĐỂ SEARCH
           const walletName =
             state.wallets
               .find((w) => w.id === t.walletId)
               ?.name.toLowerCase() || "";
 
-          // 1. LOGIC TỪ KHÓA (Gõ tên ví cũng ra)
           if (
             searchInput === "thu" ||
             searchInput === "thu nhập" ||
@@ -4665,17 +4857,13 @@
               removeAccents(walletName).includes(searchNoAccent);
           }
 
-          // 2. LOGIC LỌC NGÀY TỪ PHỄU
           let matchDate = true;
-          if (dateFilter === "today") {
-            matchDate = t.date.startsWith(today);
-          } else if (dateFilter === "yesterday") {
+          if (dateFilter === "today") matchDate = t.date.startsWith(today);
+          else if (dateFilter === "yesterday")
             matchDate = t.date.startsWith(yesterday);
-          } else if (dateFilter === "date" && specificDate) {
+          else if (dateFilter === "date" && specificDate)
             matchDate = t.date.startsWith(specificDate);
-          }
 
-          // 3. LOGIC LỌC VÍ TỪ PHỄU
           let matchWallet =
             walletFilter === "all" || t.walletId === walletFilter;
 
@@ -4693,68 +4881,140 @@
         document.getElementById("sum-exp").innerText = formatMoney(exp);
 
         const container = document.getElementById("tx-list-container");
+
         if (filteredTx.length === 0) {
           container.innerHTML = "";
+          container.className = "border custom-border"; // Reset class
           document.getElementById("tx-empty").classList.remove("hidden");
         } else {
           document.getElementById("tx-empty").classList.add("hidden");
-          container.innerHTML = filteredTx
-            .map((tx) => {
-              const isInc = tx.type === "income";
-              const cat = state.categories.find(
-                (c) => c.id === tx.category,
-              ) || {
-                name: "Khác",
-                icon: "📦",
-                color: "bg-gray-100 text-gray-600",
-              };
 
-              // LẤY THÔNG TIN VÍ TẠI TAB CHÍNH
-              const wallet = state.wallets.find(
-                (w) => w.id === tx.walletId,
-              ) || { name: "Ví đã xóa", icon: "💳" };
+          // ==========================================
+          // RENDER GIAO DIỆN STORY (GRID MODE)
+          // ==========================================
+          if (window.txViewMode === "grid") {
+            container.className = "p-4 bg-transparent"; // Xóa viền bao ngoài
 
-              return `
-                          <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item">
-                            <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-                              <button onclick="openModal('transaction', '${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+            container.innerHTML =
+              `<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">` +
+              filteredTx
+                .map((tx) => {
+                  const isInc = tx.type === "income";
+                  const cat = state.categories.find(
+                    (c) => c.id === tx.category,
+                  ) || {
+                    name: "Khác",
+                    icon: "📦",
+                    color: "bg-gray-100 text-gray-600",
+                  };
+
+                  // Nếu không có ảnh, tạo màu nền gradient cơ bản từ màu danh mục
+                  const hasImage = tx.image && tx.image.length > 50;
+                  const bgStyle = hasImage
+                    ? `background-image: url('${tx.image}');`
+                    : `background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.8));`;
+
+                  return `
+                    <div onclick="openModal('transaction', '${tx.id}')" 
+                         class="aspect-[3/4] rounded-3xl ${hasImage ? "bg-cover bg-center" : "bg-gray-800"} relative overflow-hidden shadow-md cursor-pointer border custom-border dark:border-gray-700 hover:scale-[1.02] active:scale-95 transition-all group"
+                         style="${bgStyle}">
+                        
+                        <!-- Lớp phủ tối (Overlay) để nổi bật chữ -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-black/50 transition-colors"></div>
+
+                        <!-- Top Left: Logo & Danh mục -->
+                        <div class="absolute top-3 left-3 flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full ${cat.color} flex items-center justify-center text-sm shadow-md border border-white/30 backdrop-blur-md">
+                                ${cat.icon}
+                            </div>
+                            <span class="text-white text-[10px] font-black drop-shadow-md truncate max-w-[70px] uppercase tracking-wider">${cat.name}</span>
+                        </div>
+
+                        <!-- Nút Xóa (Góc trên phải, hiện khi hover) -->
+                        <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-danger-500/80 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger-600 z-20">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+
+                        <!-- Bottom Content -->
+                        <div class="absolute bottom-4 left-4 right-4 flex flex-col gap-1.5">
+                            <p class="font-black text-xl ${isInc ? "text-success-400" : "text-white"} drop-shadow-lg leading-none">
+                                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+                            </p>
+                            <p class="text-sm font-bold text-gray-200 truncate drop-shadow-md">${tx.note || "Giao dịch"}</p>
+                            <div class="flex flex-col gap-1 mt-1">
+                                <span class="text-[10px] text-gray-300 drop-shadow-md font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</span>
+                                ${tx.locationName ? `<span class="text-[10px] text-rose-300 drop-shadow-md font-medium truncate"><i class="fa-solid fa-location-dot"></i> ${formatShortAddress(tx.locationName)}</span>` : ""}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                })
+                .join("") +
+              `</div>`;
+          }
+          // ==========================================
+          // RENDER GIAO DIỆN MẶC ĐỊNH (LIST MODE)
+          // ==========================================
+          else {
+            container.className = "border custom-border rounded-3xl"; // Trả lại viền bao ngoài
+
+            container.innerHTML = filteredTx
+              .map((tx) => {
+                const isInc = tx.type === "income";
+                const cat = state.categories.find(
+                  (c) => c.id === tx.category,
+                ) || {
+                  name: "Khác",
+                  icon: "📦",
+                  color: "bg-gray-100 text-gray-600",
+                };
+                const wallet = state.wallets.find(
+                  (w) => w.id === tx.walletId,
+                ) || { name: "Ví đã xóa", icon: "💳" };
+
+                return `
+                    <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item last:border-0">
+                        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                            <button onclick="openModal('transaction', '${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                 <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                                  <i class="fa-solid fa-pen"></i>
+                                    <i class="fa-solid fa-pen"></i>
                                 </div>
                                 <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
-                              </button>
-                              <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                            </button>
+                            <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                 <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
-                                  <i class="fa-solid fa-trash"></i>
+                                    <i class="fa-solid fa-trash"></i>
                                 </div>
                                 <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
-                              </button>
-                            </div>
+                            </button>
+                        </div>
 
-                            <div class="relative custom-bg-card dark:bg-gray-800 p-3 flex items-center gap-3 transition-transform duration-200 swipe-content z-10 custom-shadow-sm">
-                              <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
-                                ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
-                              </div>
-                              <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-0.5">
+                        <div class="relative custom-bg-card dark:bg-gray-800 p-4 flex items-center gap-4 transition-transform duration-200 swipe-content z-10 custom-shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50" onclick="openModal('transaction', '${tx.id}')">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
+                                ${tx.image && tx.image.length > 50 ? `<img src="${tx.image}" class="w-full h-full object-cover" onclick="event.stopPropagation(); openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
                                     <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
                                     <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
                                 </div>
-                                <p class="text-[11px] custom-text-secondary truncate mb-0.5">${tx.note || "Không có ghi chú"}</p>
-                                <p class="text-[10px] custom-text-secondary font-medium truncate">
-                                  <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
-                                  ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
+                                <p class="text-[11px] custom-text-secondary truncate mb-1">${tx.note || "Không có ghi chú"}</p>
+                                <p class="text-[10px] custom-text-secondary font-medium truncate flex items-center gap-1">
+                                    <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
+                                    ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> <span class="truncate max-w-[100px] inline-block align-bottom">${formatShortAddress(tx.locationName)}</span>` : ""}
                                 </p>
-                              </div>
-                              <div class="text-right shrink-0 ml-2">
-                                <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-white"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
-                              </div>
                             </div>
-                          </div>
-                        `;
-            })
-            .join("");
-          if (typeof initSwipeActions === "function") initSwipeActions();
+                            <div class="text-right shrink-0 ml-2">
+                                <p class="font-black text-base ${isInc ? "text-success-500" : "custom-text dark:text-white"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+              })
+              .join("");
+
+            if (typeof initSwipeActions === "function") initSwipeActions();
+          }
         }
       }
 
@@ -8402,38 +8662,89 @@
         body.innerHTML = html;
       }
 
-      // 1. Hàm nhận file ảnh và lưu vào State
+      // 1. Hàm bật/tắt nền động mới
+      window.toggleAnimatedBg = () => {
+        if (!state.userProfile) state.userProfile = {};
+
+        // Đảo trạng thái bật/tắt nền động
+        state.userProfile.useAnimatedBg = !state.userProfile.useAnimatedBg;
+
+        saveData();
+        applyBackgrounds(); // Gọi hàm mới
+        playSound("success");
+      };
+
+      // 2. HÀM MỚI: Gộp xử lý cả Ảnh nền và Nền động (Thay cho applyBackgroundImage cũ)
+      function applyBackgrounds() {
+        let bgDiv = document.getElementById("app-custom-bg");
+        if (!bgDiv) {
+          bgDiv = document.createElement("div");
+          bgDiv.id = "app-custom-bg";
+          bgDiv.className =
+            "fixed inset-0 z-[-1] pointer-events-none transition-all duration-500 bg-cover bg-center bg-no-repeat";
+          document.body.prepend(bgDiv);
+        }
+
+        const rmvBtn = document.getElementById("btn-remove-bg");
+
+        // Dọn dẹp trạng thái cũ trước khi render
+        bgDiv.classList.remove("gemini-animated-bg");
+        bgDiv.style.backgroundImage = "none";
+        bgDiv.style.opacity = "0";
+        if (rmvBtn) rmvBtn.classList.add("hidden");
+
+        // Ưu tiên 1: Hiển thị Nền động nếu đang bật
+        if (state.userProfile && state.userProfile.useAnimatedBg) {
+          bgDiv.classList.add("gemini-animated-bg");
+          bgDiv.style.opacity = "1";
+          bgDiv.style.filter = "none"; // Nền động không làm mờ
+        }
+        // Ưu tiên 2: Hiển thị Ảnh nền
+        else if (state.userProfile && state.userProfile.bgImage) {
+          bgDiv.style.backgroundImage = `url(${state.userProfile.bgImage})`;
+          bgDiv.style.opacity = "1";
+          bgDiv.style.filter = state.darkMode
+            ? "brightness(0.3) blur(1px)"
+            : "brightness(0.7) blur(1px)";
+          if (rmvBtn) rmvBtn.classList.remove("hidden");
+        }
+      }
+
+      // 3. Dán đè lại hàm tải ảnh nền này
       async function updateBackgroundImage(e) {
         const file = e.target.files[0];
         if (!file) return;
 
         try {
           playSound("pop");
-          // Tận dụng luôn hàm nén ảnh ông viết sẵn để app không bị phình to
           const compressedBg = await compressImage(file);
 
-          // Tạo object userProfile nếu chưa có
           if (!state.userProfile) state.userProfile = {};
+
           state.userProfile.bgImage = compressedBg;
+          state.userProfile.useAnimatedBg = false; // Tải ảnh lên thì tắt nền động đi
 
           saveData();
-          applyBackgroundImage();
+          applyBackgrounds(); // Gọi hàm mới
           playSound("success");
         } catch (err) {
           alert("Lỗi khi xử lý ảnh nền!");
         }
       }
 
-      // 2. Hàm xóa ảnh nền
+      // 4. Dán đè lại hàm xóa ảnh nền này
       function removeBackgroundImage() {
         if (
           confirm(
             "Ông có chắc muốn xóa hình nền hiện tại về giao diện mặc định không?",
           )
         ) {
-          if (state.userProfile) state.userProfile.bgImage = null;
+          if (state.userProfile) {
+            state.userProfile.bgImage = null;
+            state.userProfile.useAnimatedBg = false; // Xóa luôn trạng thái nền động
+          }
           saveData();
-          applyBackgroundImage();
+          applyBackgrounds(); // Gọi hàm mới
           playSound("trash");
         }
       }
@@ -11354,6 +11665,99 @@
         renderGrab();
         playSound("trash");
       };
+
+      // HÀM BẬT/TẮT NỀN ĐỘNG
+      window.toggleAnimatedBg = () => {
+        if (!state.userProfile) state.userProfile = {};
+
+        // Đảo trạng thái: Đang tắt thì bật, đang bật thì tắt
+        state.userProfile.useAnimatedBg = !state.userProfile.useAnimatedBg;
+
+        saveData();
+        applyBackgrounds(); // Load lại giao diện
+        playSound("success");
+      };
+
+      window.applyBackgrounds = () => {
+        let bgDiv = document.getElementById("app-custom-bg");
+        if (!bgDiv) {
+          bgDiv = document.createElement("div");
+          bgDiv.id = "app-custom-bg";
+          document.body.prepend(bgDiv);
+        }
+
+        const rmvBtn = document.getElementById("btn-remove-bg");
+
+        // 1. DỌN SẠCH CẢN TRỞ TRƯỚC KHI RENDER
+        bgDiv.className =
+          "fixed inset-0 z-[-1] pointer-events-none transition-opacity duration-500 overflow-hidden";
+        bgDiv.innerHTML = ""; // Xóa cấu trúc Blob cũ nếu có
+        bgDiv.style.background = "";
+        bgDiv.style.backgroundImage = "";
+        bgDiv.style.opacity = "0";
+        if (rmvBtn) rmvBtn.classList.add("hidden");
+
+        // 2. NẾU BẬT NỀN ĐỘNG -> Bơm cấu trúc 5 Blobs + Noise vào DOM
+        if (state.userProfile && state.userProfile.useAnimatedBg) {
+          bgDiv.innerHTML = `
+            <div class="bg-noise"></div>
+            <div class="gemini-blob blob-blue"></div>
+            <div class="gemini-blob blob-purple"></div>
+            <div class="gemini-blob blob-pink"></div>
+            <div class="gemini-blob blob-orange"></div>
+            <div class="gemini-blob blob-emerald"></div>
+        `;
+          bgDiv.style.opacity = "1";
+        }
+        // 3. NẾU DÙNG ẢNH NỀN GỐC
+        else if (state.userProfile && state.userProfile.bgImage) {
+          bgDiv.classList.add("bg-cover", "bg-center", "bg-no-repeat");
+          bgDiv.style.backgroundImage = `url(${state.userProfile.bgImage})`;
+          bgDiv.style.opacity = "1";
+          bgDiv.style.filter = state.darkMode
+            ? "brightness(0.3) blur(1px)"
+            : "brightness(0.7) blur(1px)";
+          if (rmvBtn) rmvBtn.classList.remove("hidden");
+        }
+      };
+
+      // Đảm bảo khi up ảnh lên thì tự động tắt nền động đi
+      window.updateBackgroundImage = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+          playSound("pop");
+          const compressedBg = await compressImage(file);
+
+          if (!state.userProfile) state.userProfile = {};
+
+          state.userProfile.bgImage = compressedBg;
+          state.userProfile.useAnimatedBg = false; // Tắt nền động nhường chỗ cho ảnh
+
+          saveData();
+          applyBackgrounds();
+          playSound("success");
+        } catch (err) {
+          alert("Lỗi khi xử lý ảnh nền!");
+        }
+      };
+
+      window.removeBackgroundImage = () => {
+        if (
+          confirm(
+            "Ông có chắc muốn xóa hình nền hiện tại về giao diện mặc định không?",
+          )
+        ) {
+          if (state.userProfile) {
+            state.userProfile.bgImage = null;
+            state.userProfile.useAnimatedBg = false;
+          }
+          saveData();
+          applyBackgrounds();
+          playSound("trash");
+        }
+      };
     </script>
     <dialog
       id="imageModal"
@@ -11693,5 +12097,172 @@
       </div>
     </div>
     <!-- ========================================== -->
+
+    <script>
+      (function () {
+        // 1. CSS FLUID BLOBS (ÉP GPU BẰNG TRANSLATE3D VÀ PERCENTAGE)
+        const style = document.createElement("style");
+        style.innerHTML = `
+        #app-custom-bg {
+            position: fixed; inset: 0; overflow: hidden; background: #050505; z-index: -1; transition: opacity 0.5s ease;
+            transform: translateZ(0); /* Ép trình duyệt tạo layer riêng cho nền */
+        }
+
+        .gemini-blob {
+            position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.85;
+            mix-blend-mode: screen; 
+            will-change: transform;
+            /* 3 Dòng dưới đây là bùa chú để ép Mobile Safari/Chrome phải chạy animation mượt */
+            -webkit-backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            -webkit-transform: translateZ(0);
+        }
+
+        .blob1 { 
+            background: #ffb000; width: 85vw; height: 85vw; 
+            top: -10vh; right: -20vw; 
+            animation: mb1 8s ease-in-out infinite alternate; 
+        }
+        .blob2 { 
+            background: #ff5c00; width: 95vw; height: 95vw; 
+            top: 25vh; left: -30vw; 
+            animation: mb2 12s ease-in-out infinite alternate; 
+        }
+        .blob3 { 
+            background: #5aff00; width: 80vw; height: 80vw; 
+            bottom: -15vh; right: -10vw; 
+            animation: mb3 15s ease-in-out infinite alternate; 
+        }
+
+        /* ĐÃ ĐỔI vw/vh THÀNH % VÀ DÙNG TRANSLATE3D */
+        @keyframes mb1 { 
+            0% { transform: translate3d(0, 0, 0) scale(1); } 
+            100% { transform: translate3d(-35%, 20%, 0) scale(1.2); } 
+        }
+        @keyframes mb2 { 
+            0% { transform: translate3d(0, 0, 0) scale(1); } 
+            100% { transform: translate3d(40%, -10%, 0) scale(1.1); } 
+        }
+        @keyframes mb3 { 
+            0% { transform: translate3d(0, 0, 0) scale(1); } 
+            100% { transform: translate3d(-30%, -25%, 0) scale(1.3); } 
+        }
+    `;
+        document.head.appendChild(style);
+
+        // 2. HÀM RENDER NỀN
+        window.applyBackgrounds = () => {
+          let bgDiv = document.getElementById("app-custom-bg");
+          if (!bgDiv) {
+            bgDiv = document.createElement("div");
+            bgDiv.id = "app-custom-bg";
+            document.body.prepend(bgDiv);
+          }
+
+          const rmvBtn = document.getElementById("btn-remove-bg");
+
+          bgDiv.innerHTML = "";
+          bgDiv.style.opacity = "0";
+          bgDiv.style.backgroundImage = "none";
+          bgDiv.className = "";
+          if (rmvBtn) rmvBtn.classList.add("hidden");
+
+          document.documentElement.style.setProperty(
+            "background-color",
+            "transparent",
+            "important",
+          );
+          document.body.style.setProperty(
+            "background-color",
+            "transparent",
+            "important",
+          );
+          document.body.classList.remove(
+            "custom-bg-body",
+            "dark:bg-gray-900",
+            "bg-gray-900",
+          );
+
+          if (state.userProfile && state.userProfile.useAnimatedBg) {
+            bgDiv.innerHTML = `
+                <div class="gemini-blob blob1"></div>
+                <div class="gemini-blob blob2"></div>
+                <div class="gemini-blob blob3"></div>
+            `;
+            bgDiv.style.opacity = "1";
+          } else if (state.userProfile && state.userProfile.bgImage) {
+            bgDiv.classList.add(
+              "fixed",
+              "inset-0",
+              "z-[-1]",
+              "pointer-events-none",
+              "bg-cover",
+              "bg-center",
+              "bg-no-repeat",
+              "transition-opacity",
+              "duration-500",
+            );
+            bgDiv.style.backgroundImage = `url(${state.userProfile.bgImage})`;
+            bgDiv.style.opacity = "1";
+            bgDiv.style.filter = state.darkMode
+              ? "brightness(0.3) blur(1px)"
+              : "brightness(0.7) blur(1px)";
+            if (rmvBtn) rmvBtn.classList.remove("hidden");
+          } else {
+            bgDiv.style.background = "transparent";
+            document.documentElement.style.removeProperty("background-color");
+            document.body.style.removeProperty("background-color");
+            document.body.classList.add("custom-bg-body");
+            if (state.darkMode) document.body.classList.add("dark:bg-gray-900");
+          }
+        };
+
+        window.applyBackgroundImage = window.applyBackgrounds;
+
+        window.toggleAnimatedBg = () => {
+          if (!state.userProfile) state.userProfile = {};
+          state.userProfile.useAnimatedBg = !state.userProfile.useAnimatedBg;
+          if (state.userProfile.useAnimatedBg) state.userProfile.bgImage = null;
+          saveData();
+          applyBackgrounds();
+          if (typeof playSound === "function") playSound("success");
+        };
+
+        window.updateBackgroundImage = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          try {
+            if (typeof playSound === "function") playSound("pop");
+            const compressedBg = await compressImage(file);
+            if (!state.userProfile) state.userProfile = {};
+            state.userProfile.bgImage = compressedBg;
+            state.userProfile.useAnimatedBg = false;
+            saveData();
+            applyBackgrounds();
+            if (typeof playSound === "function") playSound("success");
+          } catch (err) {
+            alert("Lỗi khi xử lý ảnh nền!");
+          }
+        };
+
+        window.removeBackgroundImage = () => {
+          if (
+            confirm(
+              "Ông có chắc muốn xóa hình nền hiện tại về giao diện mặc định không?",
+            )
+          ) {
+            if (state.userProfile) {
+              state.userProfile.bgImage = null;
+              state.userProfile.useAnimatedBg = false;
+            }
+            saveData();
+            applyBackgrounds();
+            if (typeof playSound === "function") playSound("trash");
+          }
+        };
+
+        setTimeout(applyBackgrounds, 300);
+      })();
+    </script>
   </body>
 </html>
