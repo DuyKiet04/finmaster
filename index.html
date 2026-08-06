@@ -1327,39 +1327,87 @@
           <div class="flex justify-between items-center px-2"></div>
           <div id="trips-container" class="space-y-4 pb-10 px-2"></div>
         </div>
+
+        <!-- ========================================== -->
+        <!-- TAB CÔNG VIỆC DẠNG LỊCH (CALENDAR) -->
+        <!-- ========================================== -->
         <div
           id="view-tasks"
-          class="view-section space-y-6 max-w-5xl mx-auto hidden pt-0"
+          class="view-section space-y-6 max-w-4xl mx-auto hidden pt-4 px-2 sm:px-4 pb-24"
         >
           <div
-            class="flex custom-bg-input dark:bg-gray-700 p-1.5 rounded-2xl mb-2 border custom-border px-2 mx-2 sm:mx-0"
+            class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm"
           >
-            <button
-              id="tab-task-today"
-              onclick="switchTaskTab('today')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-primary custom-shadow-sm text-white"
+            <!-- Header của Lịch Công Việc -->
+            <div class="flex justify-between items-center mb-6">
+              <button
+                onclick="changeTaskCalMonth(-1)"
+                class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors custom-text"
+              >
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <h2
+                id="task-cal-month-year"
+                class="text-xl font-black custom-text uppercase tracking-widest"
+              >
+                Tháng --/----
+              </h2>
+              <button
+                onclick="changeTaskCalMonth(1)"
+                class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors custom-text"
+              >
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <!-- Dòng tiêu đề Thứ -->
+            <div
+              class="grid grid-cols-7 gap-1 mb-3 text-center text-[10px] font-bold custom-text-secondary uppercase"
             >
-              🔥 Hôm nay
-            </button>
-            <button
-              id="tab-task-upcoming"
-              onclick="switchTaskTab('upcoming')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
+              <div>T2</div>
+              <div>T3</div>
+              <div>T4</div>
+              <div>T5</div>
+              <div>T6</div>
+              <div>T7</div>
+              <div class="text-rose-500">CN</div>
+            </div>
+
+            <!-- Lưới hiển thị các ngày trong tháng -->
+            <div id="task-cal-grid" class="grid grid-cols-7 gap-1 sm:gap-2">
+              <!-- JS sẽ bơm ngày vào đây -->
+            </div>
+
+            <!-- Chú thích chấm màu -->
+            <div
+              class="flex flex-wrap justify-center gap-4 mt-6 pt-4 border-t custom-border border-dashed"
             >
-              📅 Sắp tới
-            </button>
-            <button
-              id="tab-task-done"
-              onclick="switchTaskTab('done')"
-              class="flex-1 py-3 text-sm font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95"
-            >
-              ✅ Đã xong
-            </button>
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1.5"
+                ><div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                Chưa xong</span
+              >
+              <span
+                class="text-[10px] font-bold custom-text-secondary flex items-center gap-1.5"
+                ><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                Đã xong</span
+              >
+            </div>
           </div>
-          <div
-            id="tasks-content-list"
-            class="space-y-3 pb-20 px-2 sm:px-0"
-          ></div>
+
+          <!-- Bảng Chi tiết Công Việc của 1 Ngày (Ẩn mặc định) -->
+          <div id="task-cal-day-detail" class="hidden animate-fadeIn pb-10">
+            <h3
+              id="task-cdd-title"
+              class="font-black text-lg custom-text mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-clipboard-list text-primary-500"></i> Công
+              việc trong ngày
+            </h3>
+            <div id="task-cdd-content" class="space-y-3">
+              <!-- JS sẽ bơm danh sách task của ngày đó vào đây -->
+            </div>
+          </div>
         </div>
 
         <!-- TAB QUÁN RUỘT MỚI -->
@@ -1650,7 +1698,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- MÀN HÌNH LỊCH TỔNG HỢP (MASTER CALENDAR) -->
+        <!-- MÀN HÌNH LỊCH TỔNG HỢP  -->
         <!-- ========================================== -->
         <div
           id="view-calendar"
@@ -1659,7 +1707,7 @@
           <div
             class="custom-bg-card p-5 rounded-3xl border custom-border shadow-sm"
           >
-            <!-- Header của Lịch (Tháng / Năm) -->
+            <!-- Header của Lịch -->
             <div class="flex justify-between items-center mb-6">
               <button
                 onclick="changeCalMonth(-1)"
@@ -3305,13 +3353,13 @@
                                   <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                   </div>
-                                  <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                                  
                                 </button>
                                 <button onclick="deleteCategory('${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                   <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                   </div>
-                                  <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                                  
                                 </button>
                               </div>
 
@@ -4979,13 +5027,13 @@
                                 <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                 </div>
-                                <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                                
                             </button>
                             <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                 <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
-                                <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                                
                             </button>
                         </div>
 
@@ -5066,13 +5114,13 @@
                         <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </div>
-                        <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                        
                     </button>
                     <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                         <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-trash"></i>
                         </div>
-                        <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                        
                     </button>
                 </div>
 
@@ -9681,13 +9729,13 @@
                       <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                         <i class="fa-solid fa-pen"></i>
                       </div>
-                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-gray-500">Sửa</span>
+                      
                     </button>
                     <button onclick="deleteFavoritePlace('${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
                       <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                         <i class="fa-solid fa-trash"></i>
                       </div>
-                      <span class="text-[10px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                      
                     </button>
                   </div>
                   
@@ -11324,9 +11372,14 @@
           else if (tx.date.includes(" "))
             txTime = tx.date.split(" ")[1].substring(0, 5);
 
+          const imgHtml =
+            tx.image && tx.image.length > 50
+              ? `<img src="${tx.image}" class="w-full h-full object-cover rounded-xl border custom-border cursor-pointer hover:opacity-80 transition-opacity" onclick="event.stopPropagation(); openImageModal(this.src)">`
+              : cat.icon;
+
           html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('transactions')">
                   <div class="w-12 h-12 rounded-2xl ${isInc ? "bg-success-100 text-success-600 dark:bg-success-900/30" : "bg-danger-100 text-danger-600 dark:bg-danger-900/30"} flex items-center justify-center text-xl shrink-0">
-                      ${tx.image && tx.image.length > 50 ? `<img src="${tx.image}" class="w-full h-full object-cover rounded-2xl border custom-border">` : cat.icon}
+                      ${imgHtml}
                   </div>
                   <div class="flex-1 min-w-0">
                       <p class="font-bold custom-text text-sm truncate">${cat.name}</p>
@@ -11340,7 +11393,18 @@
         });
 
         if (!html) {
-          html = `<div class="text-center py-8 opacity-60"><i class="fa-regular fa-calendar-xmark text-5xl text-gray-400 mb-3"></i><p class="text-sm font-bold custom-text-secondary">Trống trơn, đại ka cứ nghỉ ngơi xả láng!</p></div>`;
+          html = `
+    <div class="text-center py-8 opacity-60">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/7931/7931508.png"
+        alt="Không có dữ liệu"
+        class="w-52 mx-auto mb-4 select-none pointer-events-none"
+      />
+      <p class="text-sm font-bold custom-text-secondary">
+        Trống trơn, đại ka cứ nghỉ ngơi xả láng!
+      </p>
+    </div>
+  `;
         }
 
         contentBox.innerHTML = html;
@@ -12262,6 +12326,438 @@
         };
 
         setTimeout(applyBackgrounds, 300);
+      })();
+    </script>
+
+    <script>
+      (function () {
+        let taskCalCurrentDate = new Date();
+
+        window.changeTaskCalMonth = (dir) => {
+          taskCalCurrentDate.setMonth(taskCalCurrentDate.getMonth() + dir);
+          window.renderTasks();
+          if (typeof playSound === "function") playSound("click");
+        };
+
+        window.renderTasks = () => {
+          const year = taskCalCurrentDate.getFullYear();
+          const month = taskCalCurrentDate.getMonth();
+
+          const titleEl = document.getElementById("task-cal-month-year");
+          if (titleEl) titleEl.innerText = `Tháng ${month + 1}/${year}`;
+
+          const firstDay = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+          let emptyCells = firstDay === 0 ? 6 : firstDay - 1;
+          let html = "";
+
+          for (let i = 0; i < emptyCells; i++) {
+            html += `<div class="aspect-square rounded-xl bg-transparent"></div>`;
+          }
+
+          const todayStr = (
+            typeof getToday === "function"
+              ? getToday()
+              : new Date().toISOString()
+          ).split("T")[0];
+
+          for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const isToday = dateStr === todayStr;
+
+            // ĐÃ FIX BỆNH MÙ DATA: Trỏ thẳng vào state.tasks thay vì window.state
+            const dayTasks = state.tasks
+              ? state.tasks.filter((t) => t.date.startsWith(dateStr))
+              : [];
+
+            let dotsHtml = "";
+            let hasPending = false;
+            let hasCompleted = false;
+
+            dayTasks.forEach((t) => {
+              if (t.isCompleted) hasCompleted = true;
+              else hasPending = true;
+            });
+
+            if (hasPending)
+              dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm"></div>`;
+            if (hasCompleted)
+              dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm"></div>`;
+
+            let cellClass = isToday
+              ? "custom-primary text-white custom-shadow-sm border-transparent scale-105 z-10"
+              : "custom-bg-input dark:bg-gray-800 custom-text border custom-border hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer";
+
+            html += `
+                <div onclick="showTaskDayEvents('${dateStr}')" class="aspect-square rounded-[14px] flex flex-col items-center p-1 sm:p-2 border transition-all active:scale-90 ${cellClass}">
+                    <span class="text-sm sm:text-base font-bold mt-1 sm:mt-0">${d}</span>
+                    <div class="flex gap-0.5 mt-auto pb-1 justify-center flex-wrap w-full">${dotsHtml}</div>
+                </div>
+            `;
+          }
+
+          const gridEl = document.getElementById("task-cal-grid");
+          if (gridEl) gridEl.innerHTML = html;
+
+          const detailEl = document.getElementById("task-cal-day-detail");
+          if (detailEl) detailEl.classList.add("hidden");
+        };
+
+        window.showTaskDayEvents = (dateStr) => {
+          const detailBox = document.getElementById("task-cal-day-detail");
+          const contentBox = document.getElementById("task-cdd-content");
+
+          const [y, m, d] = dateStr.split("-");
+          document.getElementById("task-cdd-title").innerHTML =
+            `<i class="fa-solid fa-clipboard-list text-primary-500"></i> Công việc ngày ${d}/${m}/${y}`;
+
+          // ĐÃ FIX BỆNH MÙ DATA
+          const dayTasks = state.tasks
+            ? state.tasks.filter((t) => t.date.startsWith(dateStr))
+            : [];
+
+          dayTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+          if (dayTasks.length === 0) {
+            contentBox.innerHTML = `<div class="text-center py-8 opacity-60"><i class="fa-solid fa-mug-hot text-5xl text-gray-400 mb-3"></i><p class="text-sm font-bold custom-text-secondary">Ngày này trống trơn, tha hồ xõa!</p></div>`;
+          } else {
+            contentBox.innerHTML = dayTasks
+              .map((t) => {
+                const isFin = t.type === "expense";
+                const isInc = t.type === "income";
+                let badge = "";
+                if (isFin)
+                  badge = `<span class="bg-rose-100 text-rose-600 dark:bg-rose-900/30 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-rose-200 dark:border-rose-800"><i class="fa-solid fa-arrow-trend-up"></i> Chi tiền</span>`;
+                if (isInc)
+                  badge = `<span class="bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-emerald-200 dark:border-emerald-800"><i class="fa-solid fa-arrow-trend-down"></i> Thu tiền</span>`;
+
+                let tTime = "";
+                if (t.date.includes("T"))
+                  tTime = t.date.split("T")[1].substring(0, 5);
+                else if (t.date.includes(" "))
+                  tTime = t.date.split(" ")[1].substring(0, 5);
+
+                return `
+                <div class="relative overflow-hidden rounded-2xl custom-shadow-sm border custom-border swipe-item custom-bg-card dark:bg-gray-800 mb-3">
+                    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                        ${
+                          !t.isCompleted
+                            ? `
+                        <button onclick="completeTask('${t.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
+                            <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center text-lg mb-1 active:scale-90 transition-transform shadow-md">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-[9px] font-bold custom-text-secondary group-active:text-indigo-500">Xong</span>
+                        </button>`
+                            : ""
+                        }
+                        
+                        <button onclick="deleteTask('${t.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
+                            <div class="w-10 h-10 rounded-full bg-danger-500 text-white flex items-center justify-center text-lg mb-1 active:scale-90 transition-transform shadow-md">
+                                <i class="fa-solid fa-trash"></i>
+                            </div>
+                            <span class="text-[9px] font-bold custom-text-secondary group-active:text-danger-500">Xóa</span>
+                        </button>
+                    </div>
+                    
+                    <div class="relative p-4 w-full h-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card flex items-start gap-4 ${t.isCompleted ? "opacity-60" : ""}">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 border custom-border shadow-inner ${t.isCompleted ? "bg-success-50 text-success-500" : "bg-gray-50 dark:bg-gray-700 custom-text"}">
+                            ${t.isCompleted ? '<i class="fa-solid fa-check-double"></i>' : isFin ? "💸" : isInc ? "💰" : "📌"}
+                        </div>
+                        <div class="flex-1 min-w-0 mt-0.5">
+                            <p class="font-black text-sm custom-text truncate ${t.isCompleted ? "line-through" : ""}">${t.name}</p>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                <span class="text-[10px] custom-text-secondary font-medium"><i class="fa-regular fa-clock"></i> ${tTime}</span>
+                                ${badge}
+                            </div>
+                            ${isFin || isInc ? `<p class="text-xs font-bold mt-1.5 ${isFin ? "text-rose-500" : "text-emerald-500"}">${isInc ? "+" : "-"}${formatMoney(t.amount)}</p>` : ""}
+                        </div>
+                    </div>
+                </div>`;
+              })
+              .join("");
+
+            setTimeout(() => {
+              if (typeof initSwipeActions === "function") initSwipeActions();
+            }, 100);
+          }
+
+          detailBox.classList.remove("hidden");
+          setTimeout(() => {
+            detailBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 100);
+          if (typeof playSound === "function") playSound("pop");
+        };
+
+        // ĐÃ FIX: TỰ ĐỘNG MỞ DANH SÁCH NGÀY ĐÓ RA KHI THÊM CÔNG VIỆC MỚI
+        const oldOpenModalTask = window.openModal;
+        window.openModal = function (type, id = null, preset = null) {
+          oldOpenModalTask(type, id, preset);
+
+          if (type === "task") {
+            setTimeout(() => {
+              const frm = document.getElementById("frm-task");
+              if (frm) {
+                const oldSubmit = frm.onsubmit;
+                frm.onsubmit = (e) => {
+                  // Lưu form cũ
+                  oldSubmit(e);
+                  // Auto bật cái list của ngày vừa chọn lên
+                  const addedDate = document
+                    .getElementById("task-date")
+                    .value.split("T")[0];
+                  if (state.currentView === "tasks") {
+                    showTaskDayEvents(addedDate);
+                  }
+                };
+              }
+            }, 100);
+          }
+        };
+      })();
+    </script>
+
+    <!-- DÁN ĐÈ CỤC NÀY LÊN CỤC CŨ NHA ĐẠI KA -->
+    <script>
+      (function () {
+        // ==========================================
+        // 1. HÀM MỞ BẢN ĐỒ VÀ ZOOM ĐẾN GIAO DỊCH (ĐÃ FIX ZOOM)
+        // ==========================================
+        window.viewTransactionOnMap = (txId, lat, lng) => {
+          if (!lat || !lng) {
+            alert("Giao dịch này không có gắn vị trí (GPS) đại ka ơi!");
+            return;
+          }
+
+          // Chuyển sang Tab Bản đồ
+          switchView("map");
+          if (typeof setMapMode === "function") setMapMode("marker");
+
+          // Trị bệnh ngáo tọa độ của Leaflet khi nằm trong display:none
+          setTimeout(() => {
+            if (window.myMap || myMap) {
+              const mapObj = window.myMap || myMap;
+              mapObj.invalidateSize(); // Ép bản đồ load lại kích thước thật
+
+              const target = L.latLng(lat, lng);
+              mapObj.flyTo(target, 18, { duration: 1.5 }); // Zoom sát rạt (level 18)
+
+              // Vẽ thêm cái vòng tròn màu tím chớp chớp ngay tâm để ông dễ nhìn
+              const highlightCircle = L.circleMarker(target, {
+                radius: 25,
+                color: "#a855f7",
+                fillColor: "#a855f7",
+                fillOpacity: 0.5,
+                className: "animate-ping", // Hiệu ứng tỏa sóng chớp chớp
+              }).addTo(mapObj);
+
+              if (typeof playSound === "function") playSound("pop");
+
+              // 3 giây sau tự động xóa cái vòng chớp đi cho đỡ rối
+              setTimeout(() => mapObj.removeLayer(highlightCircle), 3000);
+            }
+          }, 500);
+        };
+
+        // ==========================================
+        // 2. HÀM MỞ DANH SÁCH & HIGHLIGHT GIAO DỊCH (ĐÃ FIX SELECTOR MÙ)
+        // ==========================================
+        window.viewAndHighlightTransaction = (txId) => {
+          // Gỡ sạch phễu lọc để giao dịch hiện hình
+          document.getElementById("filter-search").value = "";
+          if (document.getElementById("tx-date-picker"))
+            document.getElementById("tx-date-picker").value = "";
+          window.dateFilter = "all";
+          window.walletFilter = "all";
+
+          switchView("transactions");
+
+          setTimeout(() => {
+            // Đã fix: Bắt đích danh thẻ giao dịch (.swipe-content hoặc dạng Story), bỏ qua cái nút ẩn
+            const txEl = document.querySelector(
+              `div.swipe-content[onclick*="${txId}"], div.aspect-\\[3\\/4\\][onclick*="${txId}"]`,
+            );
+
+            if (txEl) {
+              // Cuộn tới giữa màn hình
+              txEl.scrollIntoView({ behavior: "smooth", block: "center" });
+
+              // Lưu lại màu cũ
+              const oldBorder = txEl.style.border;
+              const oldBg = txEl.style.backgroundColor;
+              const oldTransform = txEl.style.transform;
+
+              // TÔ ĐẬM LÊN CHÓI LÓA TỪNG MILIMET
+              txEl.style.transition = "all 0.3s ease";
+              txEl.style.border = "3px solid #a855f7"; // Viền tím lè
+              txEl.style.backgroundColor = "rgba(168, 85, 247, 0.15)"; // Nền ám tím
+              txEl.style.transform = "scale(1.02)"; // Giật bự lên xíu
+
+              if (typeof playSound === "function") playSound("success");
+
+              // Trả về bình thường sau 2.5 giây
+              setTimeout(() => {
+                txEl.style.border = oldBorder;
+                txEl.style.backgroundColor = oldBg;
+                txEl.style.transform = oldTransform;
+              }, 2500);
+            } else {
+              alert("Lỗi: Không tìm thấy giao dịch trên màn hình!");
+            }
+          }, 400);
+        };
+
+        // ==========================================
+        // 3. GHI ĐÈ HÀM RENDER SỰ KIỆN TRONG LỊCH
+        // ==========================================
+        window.showDayEvents = (dateStr) => {
+          const detailBox = document.getElementById("cal-day-detail");
+          const contentBox = document.getElementById("cdd-content");
+
+          const [y, m, d] = dateStr.split("-");
+          document.getElementById("cdd-title").innerHTML =
+            `<i class="fa-solid fa-calendar-check text-primary-500"></i> Lịch trình ngày ${d}/${m}/${y}`;
+
+          const dayTasks = state.tasks.filter((t) =>
+            t.date.startsWith(dateStr),
+          );
+          const dayDebts = state.debts.filter(
+            (db) => db.status === "active" && db.dueDate === dateStr,
+          );
+          const dayRuns = (state.runs || []).filter((r) =>
+            r.date.startsWith(dateStr),
+          );
+          const dayTrips = state.trips.filter(
+            (tr) => dateStr >= tr.startDate && dateStr <= tr.endDate,
+          );
+          const dayTxs = state.transactions.filter(
+            (tx) => tx.date.startsWith(dateStr) && tx.category !== "transfer",
+          );
+
+          let html = "";
+
+          // CHUYẾN ĐI
+          dayTrips.forEach((tr) => {
+            html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('trips')">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-plane-departure"></i></div>
+                  <div><p class="font-bold custom-text text-sm">Chuyến đi: ${tr.name}</p><p class="text-[10px] font-bold uppercase text-emerald-500 mt-1">${tr.startDate.split("-").reverse().join("/")} ➔ ${tr.endDate.split("-").reverse().join("/")}</p></div>
+              </div>`;
+          });
+
+          // NỢ NẦN
+          dayDebts.forEach((db) => {
+            const isLend = db.type === "lend";
+            const remain = db.amount - (db.paidAmount || 0);
+            html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('debts')">
+                  <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-handshake"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm">Hạn chót: ${isLend ? "Thu nợ từ" : "Trả nợ cho"} ${db.person}</p><p class="font-black text-rose-500 text-sm mt-1">${formatMoney(remain)}</p></div>
+              </div>`;
+          });
+
+          // CÔNG VIỆC
+          dayTasks.forEach((t) => {
+            let tTime = "";
+            if (t.date.includes("T"))
+              tTime = t.date.split("T")[1].substring(0, 5);
+            else if (t.date.includes(" "))
+              tTime = t.date.split(" ")[1].substring(0, 5);
+            html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${t.isCompleted ? "opacity-50" : ""}" onclick="switchView('tasks')">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid ${t.isCompleted ? "fa-check" : "fa-thumbtack"}"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm ${t.isCompleted ? "line-through" : ""}">${t.name}</p><p class="text-[10px] custom-text-secondary mt-1 font-bold"><i class="fa-regular fa-clock"></i> ${tTime || "Cả ngày"}</p></div>
+                  ${t.type === "expense" || t.type === "income" ? `<p class="font-black text-sm ${t.type === "income" ? "text-success-500" : "text-danger-500"}">${t.type === "income" ? "+" : "-"}${formatMoney(t.amount)}</p>` : ""}
+              </div>`;
+          });
+
+          // CHẠY BỘ
+          dayRuns.forEach((r) => {
+            html += `<div class="p-4 custom-bg-card rounded-2xl border custom-border shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onclick="switchView('running')">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/30 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-shoe-prints"></i></div>
+                  <div class="flex-1"><p class="font-bold custom-text text-sm">Chạy bộ ${r.distance.toFixed(2)} km</p><p class="text-[10px] custom-text-secondary mt-1 font-bold">Pace: ${formatPace(r.pace)} • Đốt: ${Math.round(r.calories)} kcal</p></div>
+              </div>`;
+          });
+
+          // THU CHI
+          dayTxs.forEach((tx) => {
+            const isInc = tx.type === "income";
+            const cat = state.categories.find((c) => c.id === tx.category) || {
+              name: "Khác",
+              icon: "📦",
+            };
+
+            let txTime = "";
+            if (tx.date.includes("T"))
+              txTime = tx.date.split("T")[1].substring(0, 5);
+            else if (tx.date.includes(" "))
+              txTime = tx.date.split(" ")[1].substring(0, 5);
+
+            const imgHtml =
+              tx.image && tx.image.length > 50
+                ? `<img src="${tx.image}" class="w-full h-full object-cover rounded-xl border custom-border cursor-pointer hover:opacity-80 transition-opacity" onclick="event.stopPropagation(); openImageModal(this.src)">`
+                : cat.icon;
+
+            const latStr = tx.lat ? tx.lat : "null";
+            const lngStr = tx.lng ? tx.lng : "null";
+
+            html += `
+            <div class="relative overflow-hidden rounded-2xl mb-3 border custom-border shadow-sm swipe-item custom-bg-card dark:bg-gray-800">
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-2 pr-3 z-0">
+                    <button onclick="viewTransactionOnMap('${tx.id}', ${latStr}, ${lngStr})" class="flex flex-col items-center justify-center group outline-none w-14 h-full">
+                        <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg mb-1 active:scale-90 transition-transform shadow-md">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        
+                    </button>
+                    <button onclick="viewAndHighlightTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-14 h-full">
+                        <div class="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center text-lg mb-1 active:scale-90 transition-transform shadow-md">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                        </div>
+                        
+                    </button>
+                </div>
+                
+                <div class="relative p-4 w-full h-full transition-transform duration-200 ease-out z-10 swipe-content custom-bg-card dark:bg-gray-800 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-700/50" onclick="openModal('transaction', '${tx.id}')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl ${isInc ? "bg-success-100 text-success-600 dark:bg-success-900/30" : "bg-danger-100 text-danger-600 dark:bg-danger-900/30"} flex items-center justify-center text-xl shrink-0 overflow-hidden border border-white/50 shadow-inner">
+                            ${imgHtml}
+                        </div>
+                        <div class="flex-1 min-w-0 mt-0.5">
+                            <p class="font-bold custom-text text-sm truncate">${cat.name}</p>
+                            <p class="text-[10px] custom-text-secondary mt-1 font-bold truncate">${tx.note || "Thu chi"}</p>
+                        </div>
+                        <div class="text-right shrink-0 ml-2 mt-0.5">
+                            <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                            <p class="text-[9px] custom-text-secondary mt-1 font-bold"><i class="fa-regular fa-clock"></i> ${txTime}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+          });
+
+          if (!html) {
+            html = `
+    <div class="text-center py-8 opacity-60">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/7931/7931508.png"
+        alt="Không có dữ liệu"
+        class="w-52 mx-auto mb-4 select-none pointer-events-none"
+      />
+      <p class="text-sm font-bold custom-text-secondary">
+        Trống trơn, đại ka cứ nghỉ ngơi xả láng!
+      </p>
+    </div>
+  `;
+          }
+
+          contentBox.innerHTML = html;
+          detailBox.classList.remove("hidden");
+
+          setTimeout(() => {
+            detailBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            if (typeof initSwipeActions === "function") initSwipeActions();
+          }, 100);
+          if (typeof playSound === "function") playSound("pop");
+        };
       })();
     </script>
   </body>
