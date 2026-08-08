@@ -270,6 +270,89 @@
         animation-duration: 18s;
       }
 
+      /* ============ GIAO DIỆN SLIDING NAVIGATION (APP STORE STYLE) ============ */
+      #mobile-bottom-bar nav {
+        position: relative;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+      }
+
+      /* Cục phát sáng chạy ngầm đằng sau - ĐÃ FIX TỰ ĐỘNG HÚT MÀU THEME */
+      #nav-glider {
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 0;
+        border-radius: 1.25rem;
+        /* Dùng var(--primary-hue) để lấy đúng cái màu chủ đề ông đang chọn */
+        background: hsla(
+          var(--primary-hue),
+          var(--primary-sat, 100%),
+          50%,
+          0.15
+        );
+        box-shadow:
+          0 0 15px hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.4),
+          inset 0 0 10px
+            hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.3);
+        border: 1px solid
+          hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.3);
+        transition:
+          left 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+          width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+          transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+          background 0.2s ease,
+          box-shadow 0.2s ease;
+        z-index: 0;
+        pointer-events: none;
+        transform-origin: center;
+      }
+
+      /* Hiệu ứng Phồng bự ra khi ấn giữ */
+      #nav-glider.squished {
+        transform: scale(1.15, 1.1) !important;
+        background: hsla(
+          var(--primary-hue),
+          var(--primary-sat, 100%),
+          50%,
+          0.25
+        ) !important;
+        box-shadow:
+          0 0 25px hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.7),
+          inset 0 0 15px
+            hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.6) !important;
+      }
+
+      .nav-item-mobile {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 76px;
+        padding: 0 12px;
+        height: 100%;
+        gap: 4px;
+        transition: color 0.3s ease;
+      }
+
+      .nav-item-mobile i {
+        font-size: 22px;
+        transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .nav-item-mobile span {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+      }
+
+      .nav-item-mobile.active i {
+        transform: scale(1.15) translateY(-2px);
+      }
+
       /* Animation Transform GPU */
       @keyframes blobMove1 {
         0% {
@@ -630,107 +713,141 @@
           class="hidden md:block h-28 w-full shrink-0"
         ></div>
         <div class="md:hidden h-4 w-full shrink-0"></div>
+
         <div
           id="view-dashboard"
           class="view-section active space-y-6 max-w-7xl mx-auto"
         >
-          <div
-            class="md:hidden custom-gradient from-gray-900 to-gray-800 dark:from-primary-600 dark:to-purple-700 rounded-3xl p-6 text-white custom-shadow-lg shadow-gray-900/20 dark:shadow-primary-500/20 relative overflow-hidden"
-          >
+          <!-- DÒNG 1: 4 KPI CARDS THEO SPATIAL UI -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-2">
+            <!-- Thu -->
             <div
-              class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl"
-            ></div>
-            <p class="text-white/70 text-sm font-medium mb-1">
-              Thực dư trong thời gian này
-            </p>
-            <h3
-              id="dash-balance-mobile"
-              class="text-4xl font-black mb-6 tracking-tight text-white"
+              class="custom-bg-card dark:bg-[#13151b] rounded-2xl p-4 border border-gray-200 dark:border-[#2a2c36] relative overflow-hidden flex flex-col justify-between h-28 shadow-sm"
             >
-              0 ₫
-            </h3>
-            <div class="flex gap-4">
-              <div
-                class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/10"
-              >
-                <p class="text-white/60 text-xs mb-1 flex items-center gap-1">
-                  <i class="fa-solid fa-arrow-trend-down text-success-500"></i>
-                  Thu
-                </p>
-                <p id="dash-income-mobile" class="font-bold text-sm text-white">
-                  0 ₫
-                </p>
-              </div>
-              <div
-                class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-sm border border-white/10"
-              >
-                <p class="text-white/60 text-xs mb-1 flex items-center gap-1">
-                  <i class="fa-solid fa-arrow-trend-up text-danger-500"></i> Chi
-                </p>
+              <div class="flex justify-between items-start z-10">
                 <p
-                  id="dash-expense-mobile"
-                  class="font-bold text-sm text-white"
+                  class="text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400"
                 >
-                  0 ₫
+                  Tổng thu
                 </p>
+                <i
+                  class="fa-solid fa-eye text-gray-400 dark:text-gray-600 text-xs"
+                ></i>
               </div>
-            </div>
-          </div>
-
-          <div class="hidden md:grid grid-cols-3 gap-6">
-            <div
-              class="custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800"
-            >
-              <div
-                class="w-12 h-12 rounded-2xl custom-bg-primary-soft dark:bg-primary-500/10 text-primary-500 flex items-center justify-center text-xl mb-4"
-              >
-                <i class="fa-solid fa-wallet"></i>
-              </div>
-              <p class="text-sm custom-text-secondary font-medium">
-                Thực dư trong kỳ
-              </p>
               <h3
-                id="dash-balance"
-                class="text-3xl font-black mt-1 custom-text"
+                id="dash-inc-num"
+                class="text-lg sm:text-xl font-black custom-text z-10 my-1 truncate"
               >
                 0 ₫
               </h3>
-            </div>
-            <div
-              class="custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800"
-            >
-              <div
-                class="w-12 h-12 rounded-2xl bg-success-50 dark:bg-success-500/10 text-success-500 flex items-center justify-center text-xl mb-4"
+              <p
+                id="dash-inc-pct"
+                class="text-[9px] sm:text-[10px] font-bold text-emerald-500 z-10 flex items-center gap-1 truncate"
               >
-                <i class="fa-solid fa-arrow-down"></i>
-              </div>
-              <p class="text-sm custom-text-secondary font-medium">
-                Tổng thu nhập
+                <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
               </p>
+              <div
+                class="absolute bottom-0 left-0 w-full h-12 opacity-40 dark:opacity-30 pointer-events-none"
+              >
+                <canvas id="spark-inc"></canvas>
+              </div>
+            </div>
+            <!-- Chi -->
+            <div
+              class="custom-bg-card dark:bg-[#13151b] rounded-2xl p-4 border border-gray-200 dark:border-[#2a2c36] relative overflow-hidden flex flex-col justify-between h-28 shadow-sm"
+            >
+              <div class="flex justify-between items-start z-10">
+                <p
+                  class="text-[11px] sm:text-xs font-bold text-rose-600 dark:text-rose-400"
+                >
+                  Tổng chi
+                </p>
+                <i
+                  class="fa-solid fa-eye text-gray-400 dark:text-gray-600 text-xs"
+                ></i>
+              </div>
               <h3
-                id="dash-income"
-                class="text-3xl font-black mt-1 text-success-500"
+                id="dash-exp-num"
+                class="text-lg sm:text-xl font-black custom-text z-10 my-1 truncate"
               >
                 0 ₫
               </h3>
-            </div>
-            <div
-              class="custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800"
-            >
-              <div
-                class="w-12 h-12 rounded-2xl bg-danger-50 dark:bg-danger-500/10 text-danger-500 flex items-center justify-center text-xl mb-4"
+              <p
+                id="dash-exp-pct"
+                class="text-[9px] sm:text-[10px] font-bold text-rose-500 z-10 flex items-center gap-1 truncate"
               >
-                <i class="fa-solid fa-arrow-up"></i>
-              </div>
-              <p class="text-sm custom-text-secondary font-medium">
-                Tổng chi tiêu
+                <i class="fa-solid fa-caret-down"></i> 0% so với kỳ trước
               </p>
+              <div
+                class="absolute bottom-0 left-0 w-full h-12 opacity-40 dark:opacity-30 pointer-events-none"
+              >
+                <canvas id="spark-exp"></canvas>
+              </div>
+            </div>
+            <!-- Số dư -->
+            <div
+              class="custom-bg-card dark:bg-[#13151b] rounded-2xl p-4 border border-gray-200 dark:border-[#2a2c36] relative overflow-hidden flex flex-col justify-between h-28 shadow-sm"
+            >
+              <div class="flex justify-between items-start z-10">
+                <p
+                  class="text-[11px] sm:text-xs font-bold text-blue-600 dark:text-blue-400"
+                >
+                  Số dư
+                </p>
+                <i
+                  class="fa-solid fa-eye text-gray-400 dark:text-gray-600 text-xs"
+                ></i>
+              </div>
               <h3
-                id="dash-expense"
-                class="text-3xl font-black mt-1 text-danger-500"
+                id="dash-bal-num"
+                class="text-lg sm:text-xl font-black custom-text z-10 my-1 truncate"
               >
                 0 ₫
               </h3>
+              <p
+                id="dash-bal-pct"
+                class="text-[9px] sm:text-[10px] font-bold text-blue-500 z-10 flex items-center gap-1 truncate"
+              >
+                <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
+              </p>
+              <div
+                class="absolute bottom-0 left-0 w-full h-12 opacity-40 dark:opacity-30 pointer-events-none"
+              >
+                <canvas id="spark-bal"></canvas>
+              </div>
+            </div>
+            <!-- Giao dịch -->
+            <div
+              class="custom-bg-card dark:bg-[#13151b] rounded-2xl p-4 border border-gray-200 dark:border-[#2a2c36] relative overflow-hidden flex flex-col justify-between h-28 shadow-sm"
+            >
+              <div class="flex justify-between items-start z-10">
+                <p
+                  class="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400"
+                >
+                  Giao dịch
+                </p>
+                <i
+                  class="fa-solid fa-sliders text-gray-400 dark:text-gray-600 text-xs"
+                ></i>
+              </div>
+              <h3
+                id="dash-tx-num"
+                class="text-lg sm:text-xl font-black custom-text z-10 my-1 truncate"
+              >
+                0
+              </h3>
+              <p
+                id="dash-tx-pct"
+                class="text-[9px] sm:text-[10px] font-bold text-emerald-500 z-10 flex items-center gap-1 truncate"
+              >
+                <i class="fa-solid fa-caret-up"></i> 0 gd so với kỳ trước
+              </p>
+              <div
+                class="absolute bottom-1 left-3 right-3 flex items-end justify-between h-8 opacity-40 dark:opacity-60 z-0 gap-0.5"
+                id="dash-bar-mini"
+              >
+                <!-- Render bằng JS -->
+              </div>
             </div>
           </div>
 
@@ -846,9 +963,135 @@
                   Năm
                 </button>
               </div>
+
               <div class="h-64 relative w-full" id="chart-container">
                 <canvas id="expenseChart"></canvas>
               </div>
+            </div>
+
+            <!-- BẢN ĐỒ CHI TIÊU MINI -->
+            <div
+              class="relative w-full h-48 rounded-2xl overflow-hidden border custom-border bg-gray-100 dark:bg-gray-800 shadow-sm group cursor-pointer"
+              onclick="switchView('map')"
+            >
+              <div
+                id="dash-mini-map"
+                class="absolute inset-0 z-0 pointer-events-none"
+              ></div>
+              <div
+                class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/90 to-transparent z-10 pointer-events-none"
+              ></div>
+              <div
+                class="absolute bottom-3 left-4 right-3 z-20 pointer-events-none flex justify-between items-end"
+              >
+                <div class="min-w-0 flex-1 pr-2">
+                  <p
+                    class="text-[9px] font-bold text-white/80 uppercase tracking-widest drop-shadow-md mb-0.5 flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-map-location-dot text-sky-400"></i>
+                    Khu vực đốt tiền
+                  </p>
+                  <p
+                    id="dash-map-top-area"
+                    class="text-sm font-black text-white drop-shadow-md truncate w-full"
+                  >
+                    Đang phân tích...
+                  </p>
+                </div>
+                <i
+                  class="fa-solid fa-chevron-right text-white/50 text-xs shrink-0 mb-1"
+                ></i>
+              </div>
+            </div>
+
+            <!-- TOP DANH MỤC & TOP ĐỊA ĐIỂM -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Top Danh Mục -->
+              <div
+                class="custom-bg-card dark:bg-gray-800 rounded-3xl p-6 border custom-border dark:border-gray-800 custom-shadow-sm flex flex-col"
+              >
+                <div class="flex justify-between items-center mb-5">
+                  <h4 class="font-bold text-sm custom-text">
+                    Top danh mục chi tiêu
+                  </h4>
+                  <button
+                    onclick="switchView('transactions')"
+                    class="text-[10px] font-bold custom-text-secondary custom-bg-input dark:bg-gray-700 px-2 py-1 rounded-md border custom-border"
+                  >
+                    Xem tất cả
+                  </button>
+                </div>
+                <div id="dash-top-categories" class="flex-1 space-y-4"></div>
+              </div>
+
+              <!-- Top Địa Điểm -->
+              <div
+                class="custom-bg-card dark:bg-gray-800 rounded-3xl p-6 border custom-border dark:border-gray-800 custom-shadow-sm flex flex-col"
+              >
+                <div class="flex justify-between items-center mb-5">
+                  <h4 class="font-bold text-sm custom-text">
+                    Top địa điểm chi tiêu
+                  </h4>
+                  <button
+                    onclick="switchView('transactions')"
+                    class="text-[10px] font-bold custom-text-secondary custom-bg-input dark:bg-gray-700 px-2 py-1 rounded-md border custom-border"
+                  >
+                    Xem tất cả
+                  </button>
+                </div>
+                <div id="dash-top-locations" class="flex-1 space-y-3"></div>
+              </div>
+            </div>
+
+            <!-- KHU VỰC TRỢ LÝ NHẮC NHỞ (GOM CHUNG ALERTS) -->
+            <div id="dash-smart-alerts" class="flex flex-col gap-3 mb-6">
+              <!-- JS sẽ bơm các thông báo gọn gàng vào đây -->
+            </div>
+            <!-- BIỂU ĐỒ XU HƯỚNG THU CHI (LINE CHART) -->
+            <div
+              class="custom-bg-card dark:bg-gray-800 rounded-3xl p-6 border custom-border dark:border-gray-800 custom-shadow-sm flex flex-col"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h4 class="font-bold text-lg custom-text">Xu hướng chi tiêu</h4>
+                <select
+                  id="dash-trend-time"
+                  onchange="renderDashboard()"
+                  class="text-[10px] font-bold custom-text-secondary custom-bg-input dark:bg-gray-700 px-3 py-1.5 rounded-lg border custom-border outline-none cursor-pointer hover:brightness-95 transition-all"
+                >
+                  <option value="month">Theo ngày (Tháng này)</option>
+                  <option value="year">Theo tháng (Năm này)</option>
+                </select>
+              </div>
+
+              <!-- Chú thích (Legend) -->
+              <div class="flex gap-5 mb-2 pl-1">
+                <span
+                  class="text-xs font-bold custom-text-secondary flex items-center gap-2"
+                  ><div
+                    class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm border border-emerald-500/50"
+                  ></div>
+                  Thu</span
+                >
+                <span
+                  class="text-xs font-bold custom-text-secondary flex items-center gap-2"
+                  ><div
+                    class="w-3 h-3 rounded-full bg-rose-500 shadow-sm border border-rose-500/50"
+                  ></div>
+                  Chi</span
+                >
+              </div>
+
+              <!-- Khung vẽ Chart -->
+              <div class="flex-1 h-64 w-full relative">
+                <canvas id="dash-trend-chart"></canvas>
+              </div>
+
+              <button
+                onclick="switchView('transactions')"
+                class="mt-4 w-full py-3 custom-bg-input dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border active:scale-[0.98]"
+              >
+                Xem báo cáo phân tích &rarr;
+              </button>
             </div>
             <div
               class="custom-bg-card dark:bg-gray-800 p-6 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-800 flex flex-col"
@@ -2490,7 +2733,7 @@
       class="md:hidden fixed bottom-6 left-4 right-4 z-40 flex items-center gap-2 transition-transform duration-300"
     >
       <nav
-        class="flex-1 custom-bg-navbar dark:bg-gray-800 rounded-full custom-shadow border custom-border dark:border-gray-700 flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+        class="flex-1 custom-bg-body dark:bg-[#0f1115]/85 backdrop-blur-2xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gray-200/50 dark:border-white/10 flex items-center h-[72px] px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
         id="mobile-nav-pill"
       ></nav>
 
@@ -3180,40 +3423,173 @@
       ];
 
       function renderNav() {
+        // --- 1. RENDER DESKTOP NAV ---
         document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
           (item) => `
-                                  <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
-                                    <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
-                                    <span>${item.label}</span>
-                                  </button>
-                                `,
+            <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
+              <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+              <span>${item.label}</span>
+            </button>
+          `,
         ).join("");
 
-        const pillItems = [
-          { id: "dashboard", icon: "fa-gauge-high" },
-          { id: "transactions", icon: "fa-receipt" },
-          { id: "calendar", icon: "fa-calendar-days" },
-          { id: "map", icon: "fa-map-location-dot" },
-          { id: "grab", icon: "fa-motorcycle" },
-          { id: "favorites", icon: "fa-heart" },
-          { id: "budgets", icon: "fa-money-bill-wave" },
-          { id: "running", icon: "fa-person-running" },
-          { id: "debts", icon: "fa-hand-holding-dollar" },
-          { id: "tasks", icon: "fa-clipboard-check" },
-          { id: "goals", icon: "fa-bullseye" },
-          { id: "trips", icon: "fa-plane-departure" },
-          { id: "wallets", icon: "fa-wallet" },
-        ];
-        let pillHtml = "";
-        pillItems.forEach((item) => {
-          const isActive = state.currentView === item.id;
-          pillHtml += `
-                      <button onclick="switchView('${item.id}')" class="flex flex-col items-center justify-center w-12 h-full shrink-0 transition-transform active:scale-90">
-                        <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"}"></i>
-                      </button>`;
-        });
+        // --- 2. RENDER MOBILE NAV (SLIDING GLIDER) ---
         const navPill = document.getElementById("mobile-nav-pill");
-        if (navPill) navPill.innerHTML = pillHtml;
+        if (!navPill) return;
+
+        // Chỉ sinh ra HTML 1 lần duy nhất lúc app load để gắn sự kiện Touch
+        if (navPill.children.length === 0) {
+          const pillItems = [
+            { id: "dashboard", icon: "fa-house" },
+            { id: "transactions", icon: "fa-receipt" },
+            { id: "budgets", icon: "fa-chart-pie" },
+            { id: "calendar", icon: "fa-calendar-days" },
+            { id: "map", icon: "fa-map-location-dot" },
+            { id: "grab", icon: "fa-motorcycle" },
+            { id: "favorites", icon: "fa-heart" },
+            { id: "running", icon: "fa-person-running" },
+            { id: "debts", icon: "fa-hand-holding-dollar" },
+            { id: "tasks", icon: "fa-clipboard-check" },
+            { id: "goals", icon: "fa-bullseye" },
+            { id: "trips", icon: "fa-plane-departure" },
+            { id: "wallets", icon: "fa-wallet" },
+          ];
+
+          // Cục #nav-glider chính là cái bệ phát sáng sẽ chạy vòng vòng
+          let pillHtml = `<div id="nav-glider"></div>`;
+          pillItems.forEach((item) => {
+            pillHtml += `
+                <button id="nav-btn-${item.id}" class="nav-item-mobile text-gray-500">
+                  <i class="fa-solid ${item.icon} pointer-events-none"></i>
+                  
+                </button>`;
+          });
+          navPill.innerHTML = pillHtml;
+
+          // ===============================================
+          // SỰ KIỆN CHẠM, LƯỚT VÀ PHỒNG TO Y NHƯ APP STORE
+          // ===============================================
+          window.isDraggingNav = false;
+
+          // Bắt đầu ấn vào thanh Navbar -> Phồng to ra
+          navPill.addEventListener(
+            "touchstart",
+            (e) => {
+              window.isDraggingNav = true;
+              const glider = document.getElementById("nav-glider");
+              if (glider) glider.classList.add("squished"); // Thêm class ép phồng to ra
+
+              // Nhận diện ngay nút đang chạm dưới ngón tay
+              const touch = e.touches[0];
+              const elem = document.elementFromPoint(
+                touch.clientX,
+                touch.clientY,
+              );
+              const btn = elem ? elem.closest(".nav-item-mobile") : null;
+              if (btn) {
+                const viewId = btn.id.replace("nav-btn-", "");
+                if (state.currentView !== viewId) switchView(viewId);
+              }
+            },
+            { passive: true },
+          );
+
+          // Khi rê ngón tay qua lại -> Đọc tọa độ liên tục để switch tab mượt mà
+          navPill.addEventListener(
+            "touchmove",
+            (e) => {
+              if (!window.isDraggingNav) return;
+
+              const touch = e.touches[0];
+              const elem = document.elementFromPoint(
+                touch.clientX,
+                touch.clientY,
+              );
+              if (elem) {
+                const btn = elem.closest(".nav-item-mobile");
+                if (btn) {
+                  const viewId = btn.id.replace("nav-btn-", "");
+                  // Trượt ngón tay tới nút mới nào là nhảy tab đó ngay lập tức
+                  if (state.currentView !== viewId) {
+                    switchView(viewId);
+                    if (navigator.vibrate) navigator.vibrate(20); // Rung haptic nhẹ trên điện thoại
+                  }
+                }
+              }
+            },
+            { passive: true },
+          );
+
+          // Khi thả tay ra -> Dẹp chế độ phồng to, căn giữa lại
+          const stopDrag = () => {
+            window.isDraggingNav = false;
+            const glider = document.getElementById("nav-glider");
+            if (glider) glider.classList.remove("squished"); // Thu nhỏ lại bình thường
+
+            // Hết kéo thì tự động cuộn để đẩy nút được chọn ra chính giữa
+            const activeBtn = document.getElementById(
+              `nav-btn-${state.currentView}`,
+            );
+            if (activeBtn) {
+              const scrollLeft =
+                activeBtn.offsetLeft -
+                navPill.offsetWidth / 2 +
+                activeBtn.offsetWidth / 2;
+              navPill.scrollTo({ left: scrollLeft, behavior: "smooth" });
+            }
+          };
+
+          navPill.addEventListener("touchend", stopDrag, { passive: true });
+          navPill.addEventListener("touchcancel", stopDrag, { passive: true });
+        }
+
+        // --- 3. ĐIỀU KHIỂN CỤC SÁNG TRƯỢT TỚI NÚT ĐANG CHỌN ---
+        const pillItemsList = [
+          "dashboard",
+          "transactions",
+          "budgets",
+          "calendar",
+          "map",
+          "grab",
+          "favorites",
+          "running",
+          "debts",
+          "tasks",
+          "goals",
+          "trips",
+          "wallets",
+        ];
+
+        setTimeout(() => {
+          pillItemsList.forEach((id) => {
+            const btn = document.getElementById(`nav-btn-${id}`);
+            if (!btn) return;
+
+            if (state.currentView === id) {
+              // ĐÃ FIX: Dùng text-primary-500 để chữ và icon đổi màu theo Theme
+              btn.classList.add("active", "text-primary-500");
+              btn.classList.remove("text-gray-500", "dark:text-gray-400");
+
+              const glider = document.getElementById("nav-glider");
+              if (glider) {
+                glider.style.left = `${btn.offsetLeft}px`;
+                glider.style.width = `${btn.offsetWidth}px`;
+
+                if (!window.isDraggingNav) {
+                  const scrollLeft =
+                    btn.offsetLeft -
+                    navPill.offsetWidth / 2 +
+                    btn.offsetWidth / 2;
+                  navPill.scrollTo({ left: scrollLeft, behavior: "smooth" });
+                }
+              }
+            } else {
+              // Màu icon khi không được chọn (Thích ứng Sáng/Tối)
+              btn.classList.remove("active", "text-primary-500");
+              btn.classList.add("text-gray-500", "dark:text-gray-400");
+            }
+          });
+        }, 50);
       }
 
       function switchView(viewId) {
@@ -3353,13 +3729,13 @@
                                   <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                   </div>
-                                  
+
                                 </button>
                                 <button onclick="deleteCategory('${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                   <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                   </div>
-                                  
+
                                 </button>
                               </div>
 
@@ -3938,9 +4314,167 @@
           .reduce((a, b) => a + b.amount, 0);
         const netBalance = inc - exp;
 
-        animateMoney("dash-income", inc, 1000);
-        animateMoney("dash-expense", exp, 1000);
-        animateMoney("dash-balance", netBalance, 1200);
+        // 2. CẬP NHẬT 4 KPI CARDS VÀ VẼ SPARKLINE (ĐÃ FIX LỖI BIẾN)
+        animateMoney("dash-inc-num", inc, 1000);
+        animateMoney("dash-exp-num", exp, 1000);
+        animateMoney("dash-bal-num", netBalance, 1200);
+
+        const txEl = document.getElementById("dash-tx-num");
+        if (txEl) txEl.innerText = filteredTx.length;
+
+        // --- TÍNH TOÁN KỲ TRƯỚC (Dựa theo tháng trước để làm chuẩn) ---
+        const nowKPI = new Date();
+        const prevMonthKPI =
+          nowKPI.getMonth() === 0 ? 11 : nowKPI.getMonth() - 1;
+        const prevYearKPI =
+          nowKPI.getMonth() === 0
+            ? nowKPI.getFullYear() - 1
+            : nowKPI.getFullYear();
+
+        const prevTxsKPI = state.transactions.filter(
+          (t) =>
+            t.category !== "transfer" &&
+            new Date(t.date).getMonth() === prevMonthKPI &&
+            new Date(t.date).getFullYear() === prevYearKPI,
+        );
+
+        const prevInc = prevTxsKPI
+          .filter((t) => t.type === "income")
+          .reduce((a, b) => a + b.amount, 0);
+        const prevExp = prevTxsKPI
+          .filter((t) => t.type === "expense")
+          .reduce((a, b) => a + b.amount, 0);
+        const prevBal = prevInc - prevExp;
+
+        // Tính % thật
+        const setRealPct = (id, cur, prev, reverseColor = false) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          let pct = 0;
+          let isUp = true;
+          if (prev === 0) {
+            pct = cur > 0 ? 100 : 0;
+            isUp = cur >= 0;
+          } else {
+            const diff = cur - prev;
+            pct = Math.abs((diff / prev) * 100).toFixed(1);
+            isUp = diff >= 0;
+          }
+
+          let colorClass = isUp ? "text-emerald-500" : "text-rose-500";
+          if (reverseColor)
+            colorClass = isUp ? "text-rose-500" : "text-emerald-500"; // Đảo màu: Chi tăng là xấu (Đỏ)
+          if (cur === 0 && prev === 0) colorClass = "text-gray-500";
+
+          el.innerHTML = `<i class="fa-solid fa-caret-${isUp ? "up" : "down"}"></i> ${pct}% so với kỳ trước`;
+          el.className = `text-[9px] sm:text-[10px] font-bold z-10 flex items-center gap-1 truncate ${colorClass}`;
+        };
+
+        // GỌI ĐÚNG TÊN BIẾN CỦA ĐẠI KA LÀ inc, exp, netBalance
+        setRealPct("dash-inc-pct", inc, prevInc);
+        setRealPct("dash-exp-pct", exp, prevExp, true);
+        setRealPct("dash-bal-pct", netBalance, prevBal);
+
+        // Giao dịch % thật
+        const txPctEl = document.getElementById("dash-tx-pct");
+        if (txPctEl) {
+          const txDiff = filteredTx.length - prevTxsKPI.length;
+          const txUp = txDiff >= 0;
+          txPctEl.innerHTML = `<i class="fa-solid fa-caret-${txUp ? "up" : "down"}"></i> ${Math.abs(txDiff)} gd so với kỳ trước`;
+          txPctEl.className = `text-[9px] sm:text-[10px] font-bold z-10 flex items-center gap-1 truncate ${txUp ? "text-emerald-500" : "text-rose-500"}`;
+        }
+
+        // TÍNH TOÁN DỮ LIỆU 7 NGÀY QUA CHO 4 ĐƯỜNG SPARKLINE CON
+        let sparkIncData = Array(7).fill(0);
+        let sparkExpData = Array(7).fill(0);
+        let sparkBalData = Array(7).fill(0);
+        let sparkTxData = Array(7).fill(0);
+
+        let last7DaysStr = Array.from({ length: 7 }, (_, i) => {
+          let d = new Date(nowKPI.getTime() - i * 86400000);
+          return d.toISOString().split("T")[0];
+        }).reverse();
+
+        state.transactions.forEach((t) => {
+          if (t.category === "transfer") return;
+          const tDate = t.date.split(" ")[0] || t.date.split("T")[0];
+          const idx = last7DaysStr.indexOf(tDate);
+          if (idx > -1) {
+            if (t.type === "income") sparkIncData[idx] += t.amount;
+            if (t.type === "expense") sparkExpData[idx] += t.amount;
+            sparkTxData[idx] += 1;
+          }
+        });
+
+        for (let i = 0; i < 7; i++) {
+          sparkBalData[i] = sparkIncData[i] - sparkExpData[i];
+        }
+
+        // Vẽ Mini Bars cho thẻ Giao dịch (Tím)
+        let miniBarsHtml = "";
+        const maxTx = Math.max(...sparkTxData, 1);
+        sparkTxData.forEach((val) => {
+          const h = val === 0 ? 5 : Math.max((val / maxTx) * 100, 20);
+          miniBarsHtml += `<div class="w-1.5 bg-gradient-to-t from-purple-700 to-purple-400 rounded-sm transition-all duration-500" style="height: ${h}%"></div>`;
+        });
+        const barContainer = document.getElementById("dash-bar-mini");
+        if (barContainer) barContainer.innerHTML = miniBarsHtml;
+
+        // Vẽ 3 đường Sparkline bằng Chart.js (Data thật)
+        const drawSparkline = (canvasId, colorHex, dataArr) => {
+          const ctx = document.getElementById(canvasId);
+          if (!ctx) return;
+          if (window[canvasId + "Inst"]) window[canvasId + "Inst"].destroy();
+
+          const gradient = ctx
+            .getContext("2d")
+            .createLinearGradient(0, 0, 0, 50);
+          gradient.addColorStop(0, colorHex + "80");
+          gradient.addColorStop(1, colorHex + "00");
+
+          const maxVal = Math.max(...dataArr);
+
+          window[canvasId + "Inst"] = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: ["1", "2", "3", "4", "5", "6", "7"],
+              datasets: [
+                {
+                  data: dataArr,
+                  borderColor: colorHex,
+                  backgroundColor: gradient,
+                  borderWidth: 2,
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 1.5,
+                  pointBackgroundColor: colorHex,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false },
+              },
+              scales: {
+                x: { display: false },
+                y: {
+                  display: false,
+                  min: 0,
+                  suggestedMax: maxVal > 0 ? maxVal : 10,
+                },
+              },
+              layout: { padding: 2 },
+              animation: { duration: 1000 },
+            },
+          });
+        };
+
+        drawSparkline("spark-inc", "#10b981", sparkIncData); // Thu - Xanh lá
+        drawSparkline("spark-exp", "#f43f5e", sparkExpData); // Chi - Đỏ
+        drawSparkline("spark-bal", "#3b82f6", sparkBalData); // Dư - Xanh dương
 
         // HIỆU ỨNG NHẢY SỐ CHO BẢN MOBILE
         if (document.getElementById("dash-balance-mobile")) {
@@ -3987,106 +4521,121 @@
           )
           .reduce((a, b) => a + b.amount, 0);
 
-        let insightHtml = "";
-        if (prevMonthExp > 0) {
-          const diff = curMonthExp - prevMonthExp;
-          const pct = ((Math.abs(diff) / prevMonthExp) * 100).toFixed(0);
-          if (diff > 0) {
-            insightHtml = `<i class="fa-solid fa-triangle-exertion text-rose-500 mr-1"></i> Tháng này ông đã tiêu <span class="text-rose-500 font-black">nhiều hơn</span> tháng trước ${pct}% (↑ ${formatMoney(diff)})`;
-          } else if (diff < 0) {
-            insightHtml = `<i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Ngon! Tháng này ông đã tiết kiệm, tiêu <span class="text-emerald-500 font-black">ít hơn</span> tháng trước ${pct}% (↓ ${formatMoney(Math.abs(diff))})`;
-          } else {
-            insightHtml = `<i class="fa-solid fa-scale-balanced text-primary-500 mr-1"></i> Chi tiêu tháng này bằng khít khịt tháng trước luôn nha.`;
-          }
+        // ==========================================
+        // TRỢ LÝ NHẮC NHỞ GỌN NHẸ (DẠNG THẺ VUÔNG WIDGET iOS)
+        // ==========================================
+        let alertsContainer = document.getElementById("dash-smart-alerts");
+        if (!alertsContainer) {
+          document
+            .getElementById("view-dashboard")
+            .insertAdjacentHTML(
+              "afterbegin",
+              `<div id="dash-smart-alerts" class="flex flex-nowrap overflow-x-auto gap-4  pb-2 snap-x snap-mandatory scrollbar-hide px-1" style="scrollbar-width: none;"></div>`,
+            );
+          alertsContainer = document.getElementById("dash-smart-alerts");
         } else {
-          insightHtml = `<i class="fa-solid fa-circle-info custom-text-secondary mr-1"></i> Chưa có dữ liệu chi tiêu tháng trước để so sánh phân tích.`;
+          alertsContainer.className =
+            "flex flex-nowrap overflow-x-auto gap-4  pb-2 snap-x snap-mandatory scrollbar-hide px-1";
+          alertsContainer.style.scrollbarWidth = "none";
         }
 
-        let insightBox = document.getElementById("dash-insight-box");
-        if (!insightBox) {
-          document.getElementById("view-dashboard").insertAdjacentHTML(
-            "afterbegin",
-            `
-                        <div id="dash-insight-box" class="p-4 custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm border custom-border dark:border-gray-700/50 text-xs font-bold custom-text-secondary dark:text-gray-400"></div>
-                      `,
-          );
-          insightBox = document.getElementById("dash-insight-box");
-        }
-        insightBox.innerHTML = insightHtml;
+        let alertsHtml = "";
 
-        // --- THÊM WIDGET NHẮC VIỆC HÔM NAY VÀO DASHBOARD ---
+        // Class CSS xài chung cho 3 cái thẻ vuông (Đã ép thành hình vuông với aspect-square)
+        const squareClass =
+          "w-[140px] aspect-square shrink-0 snap-start rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden transition-transform active:scale-95 cursor-pointer hover:scale-[1.02]";
+
+        // 1. CẢNH BÁO ĐỎ - NGHIỆN QUÁN RUỘT (Thẻ màu Hồng)
+        if (state.favorites && state.favorites.length > 0) {
+          const favStatsDash = state.favorites
+            .map((fav) => {
+              const txsFav = state.transactions.filter(
+                (t) =>
+                  t.favId === fav.id &&
+                  new Date(t.date).getMonth() === curM &&
+                  new Date(t.date).getFullYear() === curY,
+              );
+              const totalSpent = txsFav.reduce((sum, t) => sum + t.amount, 0);
+              return { ...fav, totalSpent };
+            })
+            .sort((a, b) => b.totalSpent - a.totalSpent);
+
+          if (favStatsDash.length > 0 && favStatsDash[0].totalSpent >= 500000) {
+            alertsHtml += `
+                    <div class="${squareClass} bg-[#fff0f2] dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800" onclick="switchView('favorites')">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-rose-500/10 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+                        <div class="w-12 h-12 rounded-full bg-[#ffccd5] dark:bg-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-300 text-xl shrink-0 border border-[#ffb3c1] dark:border-rose-700 shadow-inner mb-2">
+                            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+                        </div>
+                        <div class="w-full">
+                            <p class="text-[10px] font-black text-[#d90429] dark:text-rose-400 truncate uppercase mb-0.5">${favStatsDash[0].name}</p>
+                            <p class="font-black text-rose-600 text-sm leading-tight">${formatMoney(favStatsDash[0].totalSpent)}</p>
+                        </div>
+                    </div>`;
+          }
+        }
+
+        // 2. NHẮC VIỆC CẦN LÀM (Thẻ màu Cam)
         const todayStrForTask = getToday().split("T")[0];
         const urgentTasks = state.tasks.filter(
           (t) => !t.isCompleted && t.date.split("T")[0] <= todayStrForTask,
         );
-
-        let taskWidget = document.getElementById("dash-task-widget");
-        if (!taskWidget) {
-          insightBox.insertAdjacentHTML(
-            "afterend",
-            `<div id="dash-task-widget" class="mt-4" onclick="switchView('tasks')"></div>`,
-          );
-          taskWidget = document.getElementById("dash-task-widget");
-        }
-
         if (urgentTasks.length > 0) {
-          taskWidget.innerHTML = `
-                          <div class="p-4 bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl custom-shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-all text-white flex items-center justify-between">
-                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-xl shadow-inner border border-white/30">
-                                   <i class="fa-solid fa-fire"></i>
-                                </div>
-                                <div>
-                                   <p class="font-black text-base">Hôm nay có ${urgentTasks.length} việc cần làm!</p>
-                                   <p class="text-xs text-white/80 font-medium">Bấm vào để xử lý ngay cho nóng</p>
-                                </div>
-                             </div>
-                             <i class="fa-solid fa-chevron-right text-white/50"></i>
-                          </div>
-                        `;
-        } else {
-          taskWidget.innerHTML = ``; // Ẩn nếu không có việc
+          alertsHtml += `
+                <div class="${squareClass} bg-gradient-to-br from-[#f97316] to-[#f59e0b] shadow-md border border-orange-400" onclick="switchView('tasks')">
+                    <div class="absolute top-0 left-0 w-16 h-16 bg-white/10 rounded-br-full -ml-4 -mt-4 pointer-events-none"></div>
+                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white text-xl border border-white/30 shrink-0 shadow-inner mb-2">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="text-white w-full mt-1">
+                        <h4 class="font-black text-sm leading-tight drop-shadow-sm">${urgentTasks.length} việc<br>cần làm</h4>
+                    </div>
+                </div>`;
         }
 
-        // --- CẢNH BÁO QUÁN RUỘT (Nghiện ngập tháng này) ---
-        let favWarningHtml = "";
-        if (state.favorites && state.favorites.length > 0) {
-          const favStatsDash = state.favorites
-            .map((fav) => {
-              // Chỉ đếm chi tiêu của THÁNG NÀY
-              const txs = state.transactions.filter(
-                (t) =>
-                  t.favId === fav.id && // Logic mới chuẩn xác
-                  new Date(t.date).getMonth() === curM &&
-                  new Date(t.date).getFullYear() === curY,
-              );
-              const totalSpent = txs.reduce((sum, t) => sum + t.amount, 0);
-              return { ...fav, totalSpent, visits: txs.length };
-            })
-            .sort((a, b) => b.totalSpent - a.totalSpent);
-
-          // Cảnh báo nếu cúng cho 1 quán > 500k trong tháng
-          if (favStatsDash.length > 0 && favStatsDash[0].totalSpent >= 500000) {
-            favWarningHtml = `
-                      <div class="mt-4 p-4 bg-gradient-to-r from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 rounded-3xl border border-rose-200 dark:border-rose-800 flex gap-4 items-center shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform" onclick="switchView('favorites')">
-                          <div class="w-12 h-12 rounded-2xl bg-rose-200 dark:bg-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-300 text-2xl shrink-0 animate-bounce shadow-inner border border-rose-300"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                          <div class="flex-1">
-                              <p class="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest bg-rose-200/50 dark:bg-rose-800/50 inline-block px-2 py-0.5 rounded mb-1">Báo động đỏ!</p>
-                              <p class="text-xs text-rose-700 dark:text-rose-300 font-medium leading-tight">Tháng này ông đã cúng cho <b>${favStatsDash[0].name}</b> hết <span class="font-black text-danger-500">${formatMoney(favStatsDash[0].totalSpent)}</span> rồi. Nghiện vừa thôi đại ka!</p>
-                          </div>
-                      </div>`;
+        // 3. INSIGHT SO SÁNH THÁNG TRƯỚC (Thẻ con nhộng màu trắng/xám)
+        if (prevExp > 0) {
+          const diff = curExp - prevExp;
+          const pct = ((Math.abs(diff) / prevExp) * 100).toFixed(0);
+          if (diff > 0) {
+            alertsHtml += `
+                    <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border">
+                        <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center text-xl shrink-0 mb-2 border border-rose-100 dark:border-rose-800">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-0.5">Chi nhiều hơn</p>
+                        <p class="text-sm font-black text-rose-500">${pct}%</p>
+                    </div>`;
+          } else if (diff < 0) {
+            alertsHtml += `
+                    <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border">
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center text-xl shrink-0 mb-2 border border-emerald-100 dark:border-emerald-800">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-0.5">Tiết kiệm hơn</p>
+                        <p class="text-sm font-black text-emerald-500">${pct}%</p>
+                    </div>`;
           }
+        } else {
+          alertsHtml += `
+                <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border cursor-default hover:scale-100 active:scale-100">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 flex items-center justify-center text-xl shrink-0 mb-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">Chưa có dữ liệu tháng trước</span>
+                </div>`;
         }
 
-        let favWidget = document.getElementById("dash-fav-widget");
-        if (!favWidget) {
-          taskWidget.insertAdjacentHTML(
-            "afterend",
-            `<div id="dash-fav-widget"></div>`,
-          );
-          favWidget = document.getElementById("dash-fav-widget");
-        }
-        favWidget.innerHTML = favWarningHtml;
+        alertsContainer.innerHTML = alertsHtml;
+
+        // Dọn dẹp tàn dư cũ
+        const oldInsight = document.getElementById("dash-insight-box");
+        const oldTask = document.getElementById("dash-task-widget");
+        const oldFav = document.getElementById("dash-fav-widget");
+        if (oldInsight) oldInsight.remove();
+        if (oldTask) oldTask.remove();
+        if (oldFav) oldFav.remove();
+        // ==========================================
 
         if (chartInstance) chartInstance.destroy();
 
@@ -4256,6 +4805,193 @@
               `;
         }
 
+        // ==========================================
+        // VẼ BIỂU ĐỒ XU HƯỚNG THU CHI (LINE CHART)
+        // ==========================================
+        const trendCtx = document.getElementById("dash-trend-chart");
+        if (trendCtx) {
+          if (window.dashTrendChartInstance)
+            window.dashTrendChartInstance.destroy();
+
+          const timeRange =
+            document.getElementById("dash-trend-time")?.value || "month";
+          let trendLabels = [];
+          let incDataLine = [];
+          let expDataLine = [];
+
+          const now = new Date();
+          const currM = now.getMonth();
+          const currY = now.getFullYear();
+
+          if (timeRange === "month") {
+            // Gom dữ liệu theo từng ngày trong tháng hiện tại
+            const daysInMonth = new Date(currY, currM + 1, 0).getDate();
+            const groupedInc = {};
+            const groupedExp = {};
+
+            // Trải sẵn các ngày từ mùng 1 đến cuối tháng mang giá trị 0
+            for (let i = 1; i <= daysInMonth; i++) {
+              let dStr = `${String(i).padStart(2, "0")}/${String(currM + 1).padStart(2, "0")}`;
+              trendLabels.push(dStr);
+              groupedInc[dStr] = 0;
+              groupedExp[dStr] = 0;
+            }
+
+            // Lọc giao dịch tháng này
+            const curMonthTxs = state.transactions.filter(
+              (t) =>
+                t.category !== "transfer" &&
+                new Date(t.date).getMonth() === currM &&
+                new Date(t.date).getFullYear() === currY,
+            );
+
+            curMonthTxs.forEach((t) => {
+              const d = new Date(t.date);
+              const dStr = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+              if (t.type === "income") groupedInc[dStr] += t.amount;
+              if (t.type === "expense") groupedExp[dStr] += t.amount;
+            });
+
+            incDataLine = trendLabels.map((l) => groupedInc[l]);
+            expDataLine = trendLabels.map((l) => groupedExp[l]);
+          } else {
+            // Gom dữ liệu theo 12 tháng trong năm
+            trendLabels = [
+              "T1",
+              "T2",
+              "T3",
+              "T4",
+              "T5",
+              "T6",
+              "T7",
+              "T8",
+              "T9",
+              "T10",
+              "T11",
+              "T12",
+            ];
+            incDataLine = Array(12).fill(0);
+            expDataLine = Array(12).fill(0);
+
+            const yearTxs = state.transactions.filter(
+              (t) =>
+                t.category !== "transfer" &&
+                new Date(t.date).getFullYear() === currY,
+            );
+            yearTxs.forEach((t) => {
+              const m = new Date(t.date).getMonth();
+              if (t.type === "income") incDataLine[m] += t.amount;
+              if (t.type === "expense") expDataLine[m] += t.amount;
+            });
+          }
+
+          // Tạo hiệu ứng Gradient bóng đổ cho 2 đường
+          const ctxCanvas = trendCtx.getContext("2d");
+          const gradientInc = ctxCanvas.createLinearGradient(0, 0, 0, 300);
+          gradientInc.addColorStop(0, "rgba(16, 185, 129, 0.4)"); // Xanh Emerald
+          gradientInc.addColorStop(1, "rgba(16, 185, 129, 0)");
+
+          const gradientExp = ctxCanvas.createLinearGradient(0, 0, 0, 300);
+          gradientExp.addColorStop(0, "rgba(244, 63, 94, 0.4)"); // Đỏ Rose
+          gradientExp.addColorStop(1, "rgba(244, 63, 94, 0)");
+
+          const bodyStyles = getComputedStyle(document.body);
+          const gridColor =
+            bodyStyles.getPropertyValue("--border-color").trim() || "#f1f5f9";
+          const textColor =
+            bodyStyles.getPropertyValue("--text-secondary").trim() || "#94a3b8";
+
+          window.dashTrendChartInstance = new Chart(trendCtx, {
+            type: "line",
+            data: {
+              labels: trendLabels,
+              datasets: [
+                {
+                  label: "Thu",
+                  data: incDataLine,
+                  borderColor: "#10b981",
+                  backgroundColor: gradientInc,
+                  borderWidth: 2.5,
+                  fill: true,
+                  tension: 0.4, // Làm cong đường nối giống ảnh
+                  pointRadius: 2,
+                  pointHoverRadius: 6,
+                  pointBackgroundColor: "#10b981",
+                  pointBorderColor: "#fff",
+                },
+                {
+                  label: "Chi",
+                  data: expDataLine,
+                  borderColor: "#f43f5e",
+                  backgroundColor: gradientExp,
+                  borderWidth: 2.5,
+                  fill: true,
+                  tension: 0.4, // Làm cong đường nối giống ảnh
+                  pointRadius: 2,
+                  pointHoverRadius: 6,
+                  pointBackgroundColor: "#f43f5e",
+                  pointBorderColor: "#fff",
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: {
+                mode: "index",
+                intersect: false, // Trỏ chuột dọc trục là hiện tooltip cả 2 đường
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: "rgba(15, 23, 42, 0.9)",
+                  titleColor: "#fff",
+                  bodyColor: "#fff",
+                  padding: 10,
+                  cornerRadius: 8,
+                  callbacks: {
+                    label: function (context) {
+                      let label = context.dataset.label || "";
+                      if (label) label += ": ";
+                      if (context.parsed.y !== null) {
+                        label += new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(context.parsed.y);
+                      }
+                      return label;
+                    },
+                  },
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: gridColor, borderDash: [5, 5] },
+                  ticks: {
+                    color: textColor,
+                    font: { size: 10, weight: "bold" },
+                    callback: function (value) {
+                      // Tự động rút gọn số tiền thành chữ M (Triệu) hoặc k (Ngàn)
+                      if (value >= 1000000) return value / 1000000 + "M";
+                      if (value >= 1000) return value / 1000 + "k";
+                      return value;
+                    },
+                  },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: {
+                    color: textColor,
+                    font: { size: 10, weight: "bold" },
+                    maxTicksLimit: 6, // Giới hạn chỉ hiện tối đa 6 mốc ngày để không bị kẹt chữ
+                  },
+                },
+              },
+            },
+          });
+        }
+
         const recent = state.transactions.slice(0, 5);
         document.getElementById("dash-recent-tx").innerHTML =
           recent.length === 0
@@ -4313,6 +5049,217 @@
                 </div>`;
                 })
                 .join("");
+
+        // ==========================================
+        // VẼ KHỐI TOP DANH MỤC CHI TIÊU
+        // ==========================================
+        let topCatHtml = "";
+        const barColors = [
+          "#f97316",
+          "#3b82f6",
+          "#a855f7",
+          "#ef4444",
+          "#84cc16",
+        ];
+
+        // Sắp xếp danh mục theo số tiền từ lớn đến bé
+        const sortedCats = Object.entries(expByCat).sort((a, b) => b[1] - a[1]);
+
+        sortedCats.slice(0, 5).forEach(([catId, amt], index) => {
+          const cat = state.categories.find((c) => c.id === catId) || {
+            name: "Khác",
+            icon: "📦",
+          };
+          const pct = exp > 0 ? ((amt / exp) * 100).toFixed(0) : 0;
+          const bColor = barColors[index % barColors.length];
+
+          topCatHtml += `
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm font-black text-amber-500 w-3 text-center">${index + 1}</span>
+                    <div class="w-10 h-10 rounded-xl custom-bg-input dark:bg-gray-700 flex items-center justify-center text-lg shadow-inner" style="color: ${bColor}">${cat.icon}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-bold custom-text truncate">${cat.name}</span>
+                            <span class="text-sm font-bold text-emerald-500 tracking-tight">${formatMoney(amt)}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="h-1.5 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full" style="width: ${pct}%; background-color: ${bColor}"></div>
+                            </div>
+                            <span class="text-[10px] custom-text-secondary font-bold w-6 text-right">${pct}%</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        if (!topCatHtml)
+          topCatHtml = `<p class="text-xs custom-text-secondary text-center py-4">Chưa có giao dịch chi tiêu</p>`;
+        topCatHtml += `<button onclick="switchView('transactions')" class="mt-2 w-full py-3 custom-bg-input dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border">Xem tất cả danh mục &rarr;</button>`;
+
+        const topCatContainer = document.getElementById("dash-top-categories");
+        if (topCatContainer) topCatContainer.innerHTML = topCatHtml;
+
+        // ==========================================
+        // VẼ KHỐI TOP ĐỊA ĐIỂM CHI TIÊU (AUTO LOGO)
+        // ==========================================
+        const extractDistrict = (address) => {
+          if (!address) return "Chưa rõ khu vực";
+          const parts = address.split(",");
+          let dist = parts.find(
+            (p) =>
+              p.toLowerCase().includes("quận") ||
+              p.toLowerCase().includes("huyện") ||
+              p.toLowerCase().includes("thành phố"),
+          );
+          return dist ? dist.trim() : "Chưa rõ khu vực";
+        };
+
+        const getBrandLogo = (name) => {
+          const n = name.toLowerCase();
+          if (n.includes("highland"))
+            return `<img src="https://upload.wikimedia.org/wikipedia/vi/thumb/4/41/Highlands_Coffee_logo.svg/1024px-Highlands_Coffee_logo.svg.png" class="w-full h-full object-cover p-1 bg-white">`;
+          if (n.includes("circle k"))
+            return `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Circle_K_logo.svg/1200px-Circle_K_logo.svg.png" class="w-full h-full object-contain p-0.5 bg-white">`;
+          if (n.includes("grab"))
+            return `<div class="w-full h-full bg-green-600 flex items-center justify-center text-white text-[10px] font-black">Grab</div>`;
+          if (n.includes("co.op") || n.includes("coop"))
+            return `<div class="w-full h-full bg-emerald-500 flex items-center justify-center text-white text-[9px] font-black">Co.op</div>`;
+          if (n.includes("cgv"))
+            return `<div class="w-full h-full bg-red-600 flex items-center justify-center text-white text-[11px] font-black">CGV</div>`;
+          if (n.includes("shopee"))
+            return `<div class="w-full h-full bg-orange-500 flex items-center justify-center text-white text-[8px] font-black">Shopee</div>`;
+          if (n.includes("gs25"))
+            return `<div class="w-full h-full bg-blue-600 flex items-center justify-center text-white text-[11px] font-black">GS25</div>`;
+          return `<div class="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center custom-text-secondary font-black text-sm uppercase">${name.charAt(0)}</div>`;
+        };
+
+        const expsOnly = filteredTx.filter(
+          (t) => t.type === "expense" && t.category !== "transfer",
+        );
+        const expsWithLoc = expsOnly.filter((t) => t.locationName);
+        const locGroup = expsWithLoc.reduce((acc, t) => {
+          const shopName = t.locationName.split(",")[0].trim();
+          const district = extractDistrict(t.locationName);
+          const catName =
+            state.categories.find((c) => c.id === t.category)?.name || "Khác";
+
+          if (!acc[shopName])
+            acc[shopName] = {
+              amt: 0,
+              catName: catName,
+              district: district,
+              lat: t.lat,
+              lng: t.lng,
+            };
+          acc[shopName].amt += t.amount;
+          return acc;
+        }, {});
+
+        const sortedLocs = Object.entries(locGroup)
+          .sort((a, b) => b[1].amt - a[1].amt)
+          .slice(0, 5);
+
+        let topLocHtml = "";
+        sortedLocs.forEach(([shopName, data]) => {
+          topLocHtml += `
+                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" onclick="viewTransactionOnMap('dummy', ${data.lat}, ${data.lng})">
+                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-white shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm flex items-center justify-center">
+                            ${getBrandLogo(shopName)}
+                        </div>
+                        <div class="min-w-0 pr-2">
+                            <p class="text-sm font-bold custom-text truncate">${shopName}</p>
+                            <p class="text-[10px] font-medium custom-text-secondary truncate mt-0.5">${data.catName} • ${data.district}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 shrink-0">
+                        <p class="text-sm font-bold text-rose-500 tracking-tight">-${formatMoney(data.amt)}</p>
+                        <div class="w-8 h-8 rounded-lg custom-bg-input border custom-border flex items-center justify-center">
+                            <i class="fa-solid fa-location-dot text-amber-500 text-xs"></i>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        if (!topLocHtml)
+          topLocHtml = `<p class="text-xs custom-text-secondary text-center py-4">Chưa có giao dịch gắn vị trí</p>`;
+        const topLocContainer = document.getElementById("dash-top-locations");
+        if (topLocContainer) topLocContainer.innerHTML = topLocHtml;
+        // RENDER BẢN ĐỒ CHI TIÊU MINI TRÊN DASHBOARD
+        setTimeout(() => {
+          const mapContainer = document.getElementById("dash-mini-map");
+          if (mapContainer) {
+            // Xóa map cũ nếu có để chống lỗi
+            if (window.dashMapObj) {
+              window.dashMapObj.off();
+              window.dashMapObj.remove();
+            }
+
+            // Lọc lấy các giao dịch chi tiêu có định vị GPS
+            let txsWithLocation = filteredTx.filter(
+              (t) => t.lat && t.lng && t.type === "expense",
+            );
+
+            // Tạo bản đồ (Đóng băng tương tác để vuốt màn hình không bị vướng)
+            window.dashMapObj = L.map("dash-mini-map", {
+              zoomControl: false,
+              attributionControl: false,
+              dragging: false,
+              scrollWheelZoom: false,
+              doubleClickZoom: false,
+              touchZoom: false,
+            });
+
+            const isDark = document.documentElement.classList.contains("dark");
+            const tileUrl = isDark
+              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+            L.tileLayer(tileUrl).addTo(window.dashMapObj);
+
+            if (txsWithLocation.length === 0) {
+              window.dashMapObj.setView([10.823, 106.629], 11);
+              const topAreaEl = document.getElementById("dash-map-top-area");
+              if (topAreaEl)
+                topAreaEl.innerHTML = `<span class="text-gray-300">Chưa có giao dịch gắn GPS</span>`;
+            } else {
+              // Chấm điểm đỏ lên bản đồ
+              txsWithLocation.forEach((tx) => {
+                L.circleMarker([tx.lat, tx.lng], {
+                  radius: 4,
+                  fillColor: "#f43f5e",
+                  color: "#ffffff",
+                  weight: 1.5,
+                  fillOpacity: 0.9,
+                }).addTo(window.dashMapObj);
+              });
+
+              // Tính toán khu vực tốn nhiều tiền nhất
+              const groupedArea = txsWithLocation.reduce((acc, tx) => {
+                let area = "Không xác định";
+                if (tx.locationName)
+                  area =
+                    typeof getWardName === "function"
+                      ? getWardName(tx.locationName)
+                      : tx.locationName;
+                acc[area] = (acc[area] || 0) + tx.amount;
+                return acc;
+              }, {});
+
+              const topArea = Object.entries(groupedArea).sort(
+                (a, b) => b[1] - a[1],
+              )[0];
+              const topAreaEl = document.getElementById("dash-map-top-area");
+              if (topAreaEl && topArea)
+                topAreaEl.innerHTML = `${topArea[0]} <span class="text-rose-400 font-bold ml-1 text-[11px]">-${formatMoney(topArea[1])}</span>`;
+
+              // Zoom bản đồ ôm gọn các điểm
+              const bounds = L.latLngBounds(
+                txsWithLocation.map((t) => [t.lat, t.lng]),
+              );
+              window.dashMapObj.fitBounds(bounds, { padding: [15, 15] });
+            }
+          }
+        }, 300);
       }
 
       let currentBaseLayer = null;
@@ -4963,10 +5910,10 @@
                     : `background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.8));`;
 
                   return `
-                    <div onclick="openModal('transaction', '${tx.id}')" 
+                    <div onclick="openModal('transaction', '${tx.id}')"
                          class="aspect-[3/4] rounded-3xl ${hasImage ? "bg-cover bg-center" : "bg-gray-800"} relative overflow-hidden shadow-md cursor-pointer border custom-border dark:border-gray-700 hover:scale-[1.02] active:scale-95 transition-all group"
                          style="${bgStyle}">
-                        
+
                         <!-- Lớp phủ tối (Overlay) để nổi bật chữ -->
                         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-black/50 transition-colors"></div>
 
@@ -5027,13 +5974,13 @@
                                 <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                 </div>
-                                
+
                             </button>
                             <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                 <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
-                                
+
                             </button>
                         </div>
 
@@ -5114,13 +6061,13 @@
                         <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </div>
-                        
+
                     </button>
                     <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                         <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-trash"></i>
                         </div>
-                        
+
                     </button>
                 </div>
 
@@ -8913,6 +9860,8 @@
             { id: "itinerary", name: "Lịch trình" },
             { id: "fund", name: "Quỹ chung" },
             { id: "settings", name: "Cài đặt" },
+            { id: "diary", name: "Nhật ký" },
+            { id: "map", name: "Bản đồ" },
           ];
 
           const navHtml = `
@@ -9195,6 +10144,21 @@
             }
             tabContentHtml = `<div class="p-4">${sharedFundHtml}</div>`;
           }
+          // TAB NHẬT KÝ ẢNH
+          else if (currentTripTab === "diary") {
+            tabContentHtml = `<div id="trip-diary-grid" class="columns-2 sm:columns-3 gap-3 p-4 pb-20"></div>`;
+            setTimeout(() => {
+              if (typeof renderTripDiary === "function")
+                renderTripDiary(trip.id);
+            }, 50);
+          }
+          // TAB BẢN ĐỒ GIS
+          else if (currentTripTab === "map") {
+            tabContentHtml = `<div id="trip-leaflet-map" class="w-full h-full  border custom-border shadow-md z-0  "></div>`;
+            setTimeout(() => {
+              if (typeof renderTripMap === "function") renderTripMap(trip.id);
+            }, 50);
+          }
 
           // CÀI ĐẶT
           // CÀI ĐẶT CHUYẾN ĐI (TRIP SETTINGS)
@@ -9277,6 +10241,23 @@
                 <button onclick="openModal('transaction', null, '${trip.id}')" class="w-14 h-14 custom-primary rounded-full shadow-[0_8px_20px_rgba(var(--primary-hue),_100%,_50%,_0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
                     <i class="fa-solid fa-plus"></i>
                 </button>
+            `;
+          } else if (currentTripTab === "diary") {
+            fabHtml = `
+              <button onclick="triggerTripCheckin('${trip.id}')" class="w-14 h-14 bg-amber-500 rounded-full shadow-[0_8px_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
+                  <i class="fa-solid fa-camera-retro"></i>
+              </button>
+            `;
+          } else if (currentTripTab === "map") {
+            // Ở Tab Bản đồ, đẻ ra 2 nút: 1 nút đổi chế độ, 1 nút chụp ảnh
+            fabHtml = `
+              <button onclick="toggleTripMapMode('${trip.id}')" class="w-14 h-14 ${window.currentTripMapMode === "checkin" ? "bg-indigo-500 shadow-[0_8px_20px_rgba(99,102,241,0.4)]" : "bg-rose-500 shadow-[0_8px_20px_rgba(244,63,94,0.4)]"} rounded-full flex items-center justify-center text-white text-xl active:scale-90 transition-transform mb-3" title="Đổi chế độ bản đồ">
+                  <i class="fa-solid ${window.currentTripMapMode === "checkin" ? "fa-route" : "fa-camera-retro"}"></i>
+              </button>
+              
+              <button onclick="triggerTripCheckin('${trip.id}')" class="w-14 h-14 bg-amber-500 rounded-full shadow-[0_8px_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform ${window.currentTripMapMode === "itinerary" ? "hidden" : ""}">
+                  <i class="fa-solid fa-camera-retro"></i>
+              </button>
             `;
           } else if (currentTripTab === "itinerary") {
             fabHtml = `
@@ -9418,17 +10399,76 @@
         playSound("pop");
       };
 
+      // Khai báo biến toàn cục để nhớ xem bản đồ đang mở chế độ nào
+      window.currentTripMapMode = "checkin";
+
       window.toggleItinerary = (tripId, itemId) => {
         const trip = state.trips.find((t) => t.id === tripId);
         if (!trip || !trip.itinerary) return;
 
         const item = trip.itinerary.find((i) => i.id === itemId);
         if (item) {
-          item.isCompleted = !item.isCompleted; // Đảo trạng thái Hoàn thành
+          if (!item.isCompleted) {
+            // ĐANG TỪ CHƯA XONG -> HOÀN THÀNH
+            if (
+              confirm(
+                "Đại ka có muốn lấy định vị GPS hiện tại để vẽ lên bản đồ hành trình không?",
+              )
+            ) {
+              if (navigator.geolocation) {
+                // Đổi icon thành cục xoay xoay cho user biết đang load
+                const btnIcon = document.querySelector(
+                  `button[onclick="toggleItinerary('${tripId}', '${itemId}')"] i`,
+                );
+                if (btnIcon)
+                  btnIcon.className =
+                    "fa-solid fa-spinner fa-spin text-gray-500 text-xs";
+
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    item.lat = pos.coords.latitude;
+                    item.lng = pos.coords.longitude;
+                    item.isCompleted = true;
+                    saveData();
+                    renderTripDetailContent(trip);
+                    playSound("success");
+                  },
+                  (err) => {
+                    alert(
+                      "Không lấy được GPS (Hãy bật vị trí). App sẽ chỉ lưu trạng thái hoàn thành!",
+                    );
+                    item.isCompleted = true;
+                    saveData();
+                    renderTripDetailContent(trip);
+                    playSound("click");
+                  },
+                  { enableHighAccuracy: true, timeout: 5000 },
+                );
+                return; // Dừng ở đây chờ GPS phản hồi
+              }
+            }
+            // Nếu bấm Không hoặc trình duyệt không hỗ trợ
+            item.isCompleted = true;
+          } else {
+            // TỪ HOÀN THÀNH -> CHƯA XONG (Hủy bỏ thì xóa luôn GPS)
+            item.isCompleted = false;
+            delete item.lat;
+            delete item.lng;
+          }
+
           saveData();
           renderTripDetailContent(trip);
           playSound("click");
         }
+      };
+
+      // Hàm đảo chế độ Bản đồ (Lịch trình <-> Check-in)
+      window.toggleTripMapMode = (tripId) => {
+        window.currentTripMapMode =
+          window.currentTripMapMode === "checkin" ? "itinerary" : "checkin";
+        playSound("pop");
+        renderTripDetailContent(); // Cập nhật lại màu của cái nút bấm
+        if (typeof renderTripMap === "function") renderTripMap(tripId); // Vẽ lại bản đồ
       };
 
       window.deleteItinerary = (tripId, itemId) => {
@@ -12757,6 +13797,419 @@
             if (typeof initSwipeActions === "function") initSwipeActions();
           }, 100);
           if (typeof playSound === "function") playSound("pop");
+        };
+      })();
+    </script>
+
+    <!-- BỘ NÃO XỬ LÝ NHẬT KÝ & BẢN ĐỒ CHUYẾN ĐI -->
+    <script>
+      (function () {
+        const style = document.createElement("style");
+        style.innerHTML = `
+        #trip-diary-grid > div { break-inside: avoid; margin-bottom: 0.75rem; }
+        .trip-marker-container { width: 44px; height: 44px; position: relative; }
+        .trip-marker-icon { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .trip-marker-container::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 6px 0; border-style: solid; border-color: white transparent transparent transparent; }
+    `;
+        document.head.appendChild(style);
+
+        const modalHtml = `
+        <div id="modal-checkin" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] hidden items-end justify-center sm:items-center transition-all duration-300">
+            <div class="bg-white dark:bg-gray-900 w-full sm:w-[400px] rounded-t-[2rem] sm:rounded-[2rem] p-5 animate-slideUpSheet sm:animate-popIn shadow-2xl border border-gray-100 dark:border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black text-lg custom-text"><i class="fa-solid fa-camera-retro text-amber-500"></i> Check-in Chuyến đi</h3>
+                    <button onclick="closeCheckinModal()" class="w-8 h-8 custom-bg-body rounded-full flex items-center justify-center hover:scale-110 transition-transform"><i class="fa-solid fa-xmark custom-text-secondary"></i></button>
+                </div>
+                
+                <div class="relative w-full h-48 custom-bg-input rounded-2xl mb-4 overflow-hidden border border-dashed custom-border flex items-center justify-center">
+                    <img id="checkin-preview" src="" class="w-full h-full object-cover hidden">
+                    <div id="checkin-loading" class="text-center custom-text-secondary hidden">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-primary-500"></i>
+                        <p class="text-xs font-bold">Đang nén ảnh & Lấy GPS...</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl mb-4 flex gap-3 items-center border border-blue-100 dark:border-blue-800">
+                    <i class="fa-solid fa-location-dot text-rose-500 text-xl animate-bounce"></i>
+                    <p id="checkin-location-text" class="text-xs font-bold custom-text flex-1">Đang chờ vị trí...</p>
+                </div>
+
+                <textarea id="checkin-caption" placeholder="Cảm nghĩ về nơi này? (Không bắt buộc)" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus text-sm mb-4 resize-none h-20"></textarea>
+                
+                <button id="btn-save-checkin" onclick="saveCheckin()" class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 rounded-2xl font-black text-white text-base shadow-lg active:scale-95 transition-all opacity-50 pointer-events-none">Lưu Nhật Ký</button>
+                <input type="file" id="checkin-file-input" accept="image/*" class="hidden" onchange="processCheckinImage(this)">
+            </div>
+        </div>
+    `;
+        document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+        window.currentTripIdForCheckin = null;
+        let tempCheckinData = {
+          image: null,
+          lat: null,
+          lng: null,
+          locationName: "Chưa xác định",
+          timestamp: null,
+        };
+        let tripLeafletMap = null;
+
+        window.triggerTripCheckin = (tripId) => {
+          window.currentTripIdForCheckin = tripId;
+          document.getElementById("checkin-file-input").click();
+        };
+
+        window.processCheckinImage = async (input) => {
+          const file = input.files[0];
+          if (!file) return;
+
+          const modal = document.getElementById("modal-checkin");
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          document.getElementById("checkin-preview").classList.add("hidden");
+          document.getElementById("checkin-loading").classList.remove("hidden");
+          document
+            .getElementById("btn-save-checkin")
+            .classList.add("opacity-50", "pointer-events-none");
+          document.getElementById("checkin-location-text").innerText =
+            "Đang định vị GPS...";
+
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const MAX_WIDTH = 800;
+              const scaleSize = MAX_WIDTH / img.width;
+              canvas.width = MAX_WIDTH;
+              canvas.height = img.height * scaleSize;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+              tempCheckinData.image = canvas.toDataURL("image/jpeg", 0.2);
+              tempCheckinData.timestamp = new Date().toISOString();
+
+              document.getElementById("checkin-preview").src =
+                tempCheckinData.image;
+              document
+                .getElementById("checkin-preview")
+                .classList.remove("hidden");
+              document
+                .getElementById("checkin-loading")
+                .classList.add("hidden");
+
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  async (pos) => {
+                    tempCheckinData.lat = pos.coords.latitude;
+                    tempCheckinData.lng = pos.coords.longitude;
+                    try {
+                      const res = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${tempCheckinData.lat}&lon=${tempCheckinData.lng}`,
+                      );
+                      const data = await res.json();
+                      tempCheckinData.locationName =
+                        data.address.road ||
+                        data.address.suburb ||
+                        data.address.city ||
+                        "Vị trí không tên";
+                    } catch (e) {
+                      tempCheckinData.locationName =
+                        "Tọa độ: " +
+                        tempCheckinData.lat.toFixed(4) +
+                        ", " +
+                        tempCheckinData.lng.toFixed(4);
+                    }
+                    document.getElementById("checkin-location-text").innerText =
+                      tempCheckinData.locationName;
+                    document
+                      .getElementById("btn-save-checkin")
+                      .classList.remove("opacity-50", "pointer-events-none");
+                  },
+                  (err) => {
+                    tempCheckinData.locationName =
+                      "Không có quyền truy cập GPS";
+                    document.getElementById("checkin-location-text").innerText =
+                      tempCheckinData.locationName;
+                    document
+                      .getElementById("btn-save-checkin")
+                      .classList.remove("opacity-50", "pointer-events-none");
+                  },
+                  { timeout: 10000 },
+                );
+              }
+            };
+          };
+        };
+
+        window.saveCheckin = () => {
+          tempCheckinData.caption =
+            document.getElementById("checkin-caption").value;
+          tempCheckinData.id = "chk_" + new Date().getTime();
+
+          const tripIndex = state.trips.findIndex(
+            (t) => t.id === currentTripIdForCheckin,
+          );
+          if (tripIndex !== -1) {
+            if (!state.trips[tripIndex].checkins)
+              state.trips[tripIndex].checkins = [];
+            state.trips[tripIndex].checkins.unshift({ ...tempCheckinData });
+            saveData();
+            if (typeof playSound === "function") playSound("success");
+            closeCheckinModal();
+            if (window.currentTripTab === "diary")
+              renderTripDiary(currentTripIdForCheckin);
+            if (window.currentTripTab === "map")
+              renderTripMap(currentTripIdForCheckin);
+          }
+        };
+
+        window.closeCheckinModal = () => {
+          document.getElementById("modal-checkin").classList.add("hidden");
+          document.getElementById("modal-checkin").classList.remove("flex");
+          document.getElementById("checkin-file-input").value = "";
+        };
+
+        window.renderTripDiary = (tripId) => {
+          const trip = state.trips.find((t) => t.id === tripId);
+          const grid = document.getElementById("trip-diary-grid");
+          if (!grid || !trip) return;
+
+          const checkins = trip.checkins || [];
+          if (checkins.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-10 opacity-50"><i class="fa-solid fa-camera-retro text-5xl mb-3"></i><p class="text-sm font-bold">Chưa có ảnh nào. Check-in ngay đi đại ka!</p></div>`;
+            return;
+          }
+
+          grid.innerHTML = checkins
+            .map((chk) => {
+              let tTime = "";
+              if (chk.timestamp)
+                tTime = chk.timestamp.split("T")[1].substring(0, 5);
+              return `
+            <div class="custom-bg-card rounded-2xl border custom-border shadow-sm overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform relative" onclick="openImageModal('${chk.image}')">
+                <img src="${chk.image}" class="w-full h-auto object-cover">
+                <div class="p-3">
+                    ${chk.caption ? `<p class="text-xs font-black custom-text mb-2 italic">"${chk.caption}"</p>` : ""}
+                    <div class="flex items-start gap-1.5 text-[9px] font-bold custom-text-secondary">
+                        <i class="fa-solid fa-location-dot text-rose-500 mt-0.5"></i>
+                        <span>${chk.locationName} • ${tTime}</span>
+                    </div>
+                </div>
+                <button onclick="event.stopPropagation(); deleteCheckin('${tripId}', '${chk.id}')" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-danger-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger-600"><i class="fa-solid fa-trash text-[10px]"></i></button>
+            </div>`;
+            })
+            .join("");
+        };
+
+        window.deleteCheckin = (tripId, chkId) => {
+          if (confirm("Xóa bức ảnh check-in này?")) {
+            const trip = state.trips.find((t) => t.id === tripId);
+            if (trip) {
+              trip.checkins = trip.checkins.filter((c) => c.id !== chkId);
+              saveData();
+              renderTripDiary(tripId);
+            }
+          }
+        };
+
+        window.renderTripMap = (tripId) => {
+          const trip = state.trips.find((t) => t.id === tripId);
+          if (!trip || !document.getElementById("trip-leaflet-map")) return;
+
+          if (window.tripLeafletMap) {
+            window.tripLeafletMap.off();
+            window.tripLeafletMap.remove();
+            window.tripLeafletMap = null;
+          }
+
+          window.tripLeafletMap = L.map("trip-leaflet-map", {
+            zoomControl: false,
+          });
+
+          const isDark = document.documentElement.classList.contains("dark");
+          const tileUrl = isDark
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+          L.tileLayer(tileUrl, { attribution: "&copy; OpenStreetMap" }).addTo(
+            window.tripLeafletMap,
+          );
+
+          setTimeout(() => {
+            window.tripLeafletMap.invalidateSize();
+
+            // ==========================================
+            // CHẾ ĐỘ 1: BẢN ĐỒ ẢNH CHECK-IN (MẶC ĐỊNH)
+            // ==========================================
+            if (window.currentTripMapMode === "checkin") {
+              const checkins = (trip.checkins || []).filter(
+                (c) => c.lat && c.lng,
+              );
+              if (checkins.length === 0) {
+                window.tripLeafletMap.setView([10.823, 106.629], 12);
+                return;
+              }
+
+              const routeCoords = checkins
+                .slice()
+                .reverse()
+                .map((c) => [c.lat, c.lng]);
+              if (routeCoords.length > 1) {
+                L.polyline(routeCoords, {
+                  color: "#f59e0b",
+                  weight: 4,
+                  dashArray: "8, 8",
+                  opacity: 0.8,
+                }).addTo(window.tripLeafletMap);
+              }
+
+              // Gom nhóm 50m
+              const TOLERANCE_METERS = 50;
+              const clusteredGroups = [];
+
+              checkins.forEach((chk) => {
+                const chkLatLng = L.latLng(chk.lat, chk.lng);
+                let foundGroup = false;
+                for (let i = 0; i < clusteredGroups.length; i++) {
+                  const repChk = clusteredGroups[i][0];
+                  const repLatLng = L.latLng(repChk.lat, repChk.lng);
+                  if (chkLatLng.distanceTo(repLatLng) <= TOLERANCE_METERS) {
+                    clusteredGroups[i].push(chk);
+                    foundGroup = true;
+                    break;
+                  }
+                }
+                if (!foundGroup) clusteredGroups.push([chk]);
+              });
+
+              clusteredGroups.forEach((group) => {
+                const repChk = group[0];
+                const count = group.length;
+                let markerHtml = "";
+
+                if (count === 1) {
+                  markerHtml = `
+                    <div style="position: relative; width: 48px; height: 48px;">
+                        <div style="width: 48px; height: 48px; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; z-index: 10;">
+                            <img src="${repChk.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #e5e7eb;">
+                        </div>
+                        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid white; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                    </div>`;
+                } else {
+                  markerHtml = `
+                    <div style="position: relative; width: 44px; height: 44px;">
+                        <div style="width: 44px; height: 44px; background: #f59e0b; border-radius: 50%; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 18px;">
+                            ${count}
+                        </div>
+                        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #f59e0b; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                    </div>`;
+                }
+
+                const icon = L.divIcon({
+                  html: markerHtml,
+                  className: "",
+                  iconSize: [48, 58],
+                  iconAnchor: [24, 58],
+                });
+
+                let popupContent = `<div class="font-sans min-w-[220px] max-w-[280px] relative"><div class="font-bold custom-text-secondary text-[11px] uppercase tracking-wider mb-2 flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-2"><span><i class="fa-solid fa-camera-retro text-amber-500"></i> ${count > 1 ? count + " Bức ảnh" : "Chi tiết Check-in"}</span></div><div class="max-h-[250px] overflow-y-auto custom-scrollbar pr-1 space-y-3 mb-2">`;
+                group.forEach((chk) => {
+                  let tTime = chk.timestamp
+                    ? chk.timestamp.split("T")[1].substring(0, 5)
+                    : "";
+                  popupContent += `<div class="flex gap-3 bg-gray-50 dark:bg-gray-800 p-2 rounded-2xl border custom-border shadow-sm"><img src="${chk.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm shrink-0 cursor-pointer border custom-border" onclick="openImageModal(this.src)"><div class="flex-1 min-w-0 py-0.5"><p class="text-[11px] font-bold custom-text truncate leading-tight">${chk.locationName}</p><p class="text-[10px] custom-text-secondary mt-1 line-clamp-2 italic">"${chk.caption || "Chuyến đi tuyệt vời!"}"</p><p class="text-[9px] font-bold text-gray-400 mt-1"><i class="fa-regular fa-clock"></i> ${tTime}</p></div></div>`;
+                });
+                popupContent += `</div></div>`;
+
+                const marker = L.marker([repChk.lat, repChk.lng], {
+                  icon,
+                }).addTo(window.tripLeafletMap);
+                marker.bindPopup(popupContent);
+                marker.on("click", function (e) {
+                  if (window.tripLeafletMap.getZoom() < 15) {
+                    marker.closePopup();
+                    window.tripLeafletMap.flyTo(e.latlng, 16, {
+                      duration: 0.5,
+                    });
+                  }
+                });
+              });
+
+              if (checkins.length === 1)
+                window.tripLeafletMap.setView(
+                  [checkins[0].lat, checkins[0].lng],
+                  16,
+                );
+              else
+                window.tripLeafletMap.fitBounds(
+                  L.polyline(routeCoords).getBounds(),
+                  { padding: [40, 40] },
+                );
+            }
+
+            // ==========================================
+            // CHẾ ĐỘ 2: BẢN ĐỒ LỊCH TRÌNH GPS
+            // ==========================================
+            else if (window.currentTripMapMode === "itinerary") {
+              const points = (trip.itinerary || []).filter(
+                (i) => i.isCompleted && i.lat && i.lng,
+              );
+              if (points.length === 0) {
+                window.tripLeafletMap.setView([10.823, 106.629], 12);
+                // Không cảnh báo để tránh phiền phức, chỉ hiện trống
+                return;
+              }
+
+              const routeCoords = points.map((p) => [p.lat, p.lng]);
+
+              // Vẽ đường màu Xanh chàm nối các điểm
+              if (routeCoords.length > 1) {
+                L.polyline(routeCoords, {
+                  color: "#6366f1", // Màu chàm (indigo)
+                  weight: 5,
+                  opacity: 0.9,
+                  dashArray: "10, 10",
+                  lineJoin: "round",
+                }).addTo(window.tripLeafletMap);
+              }
+
+              // Vẽ Điểm ghim
+              points.forEach((pt, index) => {
+                const markerHtml = `
+                      <div style="position: relative; width: 36px; height: 36px;">
+                          <div style="width: 36px; height: 36px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 16px; position: relative; z-index: 10;">
+                              ${index + 1}
+                          </div>
+                          <div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #6366f1; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                      </div>
+                  `;
+                const icon = L.divIcon({
+                  html: markerHtml,
+                  className: "",
+                  iconSize: [36, 44],
+                  iconAnchor: [18, 44],
+                });
+
+                L.marker([pt.lat, pt.lng], { icon })
+                  .addTo(window.tripLeafletMap)
+                  .bindPopup(
+                    `<div class="font-black text-sm custom-text text-center p-2">${pt.name}</div>`,
+                  );
+              });
+
+              if (points.length === 1)
+                window.tripLeafletMap.setView(
+                  [points[0].lat, points[0].lng],
+                  16,
+                );
+              else
+                window.tripLeafletMap.fitBounds(
+                  L.polyline(routeCoords).getBounds(),
+                  { padding: [40, 40] },
+                );
+            }
+          }, 150);
         };
       })();
     </script>
