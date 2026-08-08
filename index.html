@@ -102,6 +102,22 @@
         overscroll-behavior-y: none;
       }
 
+      #mobile-nav-pill {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 2px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+      }
+
+      #mobile-nav-pill > .mobile-nav-item {
+        flex: 0 0 48px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+      }
+
       .view-section:not(.active) {
         display: none !important;
       }
@@ -268,89 +284,6 @@
         left: 30%;
         animation-name: blobMove5;
         animation-duration: 18s;
-      }
-
-      /* ============ GIAO DIỆN SLIDING NAVIGATION (APP STORE STYLE) ============ */
-      #mobile-bottom-bar nav {
-        position: relative;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-      }
-
-      /* Cục phát sáng chạy ngầm đằng sau - ĐÃ FIX TỰ ĐỘNG HÚT MÀU THEME */
-      #nav-glider {
-        position: absolute;
-        top: 8px;
-        bottom: 8px;
-        left: 0;
-        border-radius: 1.25rem;
-        /* Dùng var(--primary-hue) để lấy đúng cái màu chủ đề ông đang chọn */
-        background: hsla(
-          var(--primary-hue),
-          var(--primary-sat, 100%),
-          50%,
-          0.15
-        );
-        box-shadow:
-          0 0 15px hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.4),
-          inset 0 0 10px
-            hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.3);
-        border: 1px solid
-          hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.3);
-        transition:
-          left 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-          width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-          transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
-          background 0.2s ease,
-          box-shadow 0.2s ease;
-        z-index: 0;
-        pointer-events: none;
-        transform-origin: center;
-      }
-
-      /* Hiệu ứng Phồng bự ra khi ấn giữ */
-      #nav-glider.squished {
-        transform: scale(1.15, 1.1) !important;
-        background: hsla(
-          var(--primary-hue),
-          var(--primary-sat, 100%),
-          50%,
-          0.25
-        ) !important;
-        box-shadow:
-          0 0 25px hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.7),
-          inset 0 0 15px
-            hsla(var(--primary-hue), var(--primary-sat, 100%), 50%, 0.6) !important;
-      }
-
-      .nav-item-mobile {
-        position: relative;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-width: 76px;
-        padding: 0 12px;
-        height: 100%;
-        gap: 4px;
-        transition: color 0.3s ease;
-      }
-
-      .nav-item-mobile i {
-        font-size: 22px;
-        transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      }
-
-      .nav-item-mobile span {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-        white-space: nowrap;
-      }
-
-      .nav-item-mobile.active i {
-        transform: scale(1.15) translateY(-2px);
       }
 
       /* Animation Transform GPU */
@@ -2733,7 +2666,7 @@
       class="md:hidden fixed bottom-6 left-4 right-4 z-40 flex items-center gap-2 transition-transform duration-300"
     >
       <nav
-        class="flex-1 custom-bg-body dark:bg-[#0f1115]/85 backdrop-blur-2xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gray-200/50 dark:border-white/10 flex items-center h-[72px] px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+        class="flex-1 custom-bg-navbar dark:bg-gray-800 rounded-full custom-shadow border custom-border dark:border-gray-700 flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
         id="mobile-nav-pill"
       ></nav>
 
@@ -3423,173 +3356,45 @@
       ];
 
       function renderNav() {
-        // --- 1. RENDER DESKTOP NAV ---
         document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
           (item) => `
-            <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
-              <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
-              <span>${item.label}</span>
-            </button>
-          `,
+                                  <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
+                                    <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+                                    <span>${item.label}</span>
+                                  </button>
+                                `,
         ).join("");
 
-        // --- 2. RENDER MOBILE NAV (SLIDING GLIDER) ---
-        const navPill = document.getElementById("mobile-nav-pill");
-        if (!navPill) return;
-
-        // Chỉ sinh ra HTML 1 lần duy nhất lúc app load để gắn sự kiện Touch
-        if (navPill.children.length === 0) {
-          const pillItems = [
-            { id: "dashboard", icon: "fa-house" },
-            { id: "transactions", icon: "fa-receipt" },
-            { id: "budgets", icon: "fa-chart-pie" },
-            { id: "calendar", icon: "fa-calendar-days" },
-            { id: "map", icon: "fa-map-location-dot" },
-            { id: "grab", icon: "fa-motorcycle" },
-            { id: "favorites", icon: "fa-heart" },
-            { id: "running", icon: "fa-person-running" },
-            { id: "debts", icon: "fa-hand-holding-dollar" },
-            { id: "tasks", icon: "fa-clipboard-check" },
-            { id: "goals", icon: "fa-bullseye" },
-            { id: "trips", icon: "fa-plane-departure" },
-            { id: "wallets", icon: "fa-wallet" },
-          ];
-
-          // Cục #nav-glider chính là cái bệ phát sáng sẽ chạy vòng vòng
-          let pillHtml = `<div id="nav-glider"></div>`;
-          pillItems.forEach((item) => {
-            pillHtml += `
-                <button id="nav-btn-${item.id}" class="nav-item-mobile text-gray-500">
-                  <i class="fa-solid ${item.icon} pointer-events-none"></i>
-                  
-                </button>`;
-          });
-          navPill.innerHTML = pillHtml;
-
-          // ===============================================
-          // SỰ KIỆN CHẠM, LƯỚT VÀ PHỒNG TO Y NHƯ APP STORE
-          // ===============================================
-          window.isDraggingNav = false;
-
-          // Bắt đầu ấn vào thanh Navbar -> Phồng to ra
-          navPill.addEventListener(
-            "touchstart",
-            (e) => {
-              window.isDraggingNav = true;
-              const glider = document.getElementById("nav-glider");
-              if (glider) glider.classList.add("squished"); // Thêm class ép phồng to ra
-
-              // Nhận diện ngay nút đang chạm dưới ngón tay
-              const touch = e.touches[0];
-              const elem = document.elementFromPoint(
-                touch.clientX,
-                touch.clientY,
-              );
-              const btn = elem ? elem.closest(".nav-item-mobile") : null;
-              if (btn) {
-                const viewId = btn.id.replace("nav-btn-", "");
-                if (state.currentView !== viewId) switchView(viewId);
-              }
-            },
-            { passive: true },
-          );
-
-          // Khi rê ngón tay qua lại -> Đọc tọa độ liên tục để switch tab mượt mà
-          navPill.addEventListener(
-            "touchmove",
-            (e) => {
-              if (!window.isDraggingNav) return;
-
-              const touch = e.touches[0];
-              const elem = document.elementFromPoint(
-                touch.clientX,
-                touch.clientY,
-              );
-              if (elem) {
-                const btn = elem.closest(".nav-item-mobile");
-                if (btn) {
-                  const viewId = btn.id.replace("nav-btn-", "");
-                  // Trượt ngón tay tới nút mới nào là nhảy tab đó ngay lập tức
-                  if (state.currentView !== viewId) {
-                    switchView(viewId);
-                    if (navigator.vibrate) navigator.vibrate(20); // Rung haptic nhẹ trên điện thoại
-                  }
-                }
-              }
-            },
-            { passive: true },
-          );
-
-          // Khi thả tay ra -> Dẹp chế độ phồng to, căn giữa lại
-          const stopDrag = () => {
-            window.isDraggingNav = false;
-            const glider = document.getElementById("nav-glider");
-            if (glider) glider.classList.remove("squished"); // Thu nhỏ lại bình thường
-
-            // Hết kéo thì tự động cuộn để đẩy nút được chọn ra chính giữa
-            const activeBtn = document.getElementById(
-              `nav-btn-${state.currentView}`,
-            );
-            if (activeBtn) {
-              const scrollLeft =
-                activeBtn.offsetLeft -
-                navPill.offsetWidth / 2 +
-                activeBtn.offsetWidth / 2;
-              navPill.scrollTo({ left: scrollLeft, behavior: "smooth" });
-            }
-          };
-
-          navPill.addEventListener("touchend", stopDrag, { passive: true });
-          navPill.addEventListener("touchcancel", stopDrag, { passive: true });
-        }
-
-        // --- 3. ĐIỀU KHIỂN CỤC SÁNG TRƯỢT TỚI NÚT ĐANG CHỌN ---
-        const pillItemsList = [
-          "dashboard",
-          "transactions",
-          "budgets",
-          "calendar",
-          "map",
-          "grab",
-          "favorites",
-          "running",
-          "debts",
-          "tasks",
-          "goals",
-          "trips",
-          "wallets",
+        const pillItems = [
+          { id: "dashboard", icon: "fa-gauge-high" },
+          { id: "transactions", icon: "fa-receipt" },
+          { id: "calendar", icon: "fa-calendar-days" },
+          { id: "map", icon: "fa-map-location-dot" },
+          { id: "grab", icon: "fa-motorcycle" },
+          { id: "favorites", icon: "fa-heart" },
+          { id: "budgets", icon: "fa-money-bill-wave" },
+          { id: "running", icon: "fa-person-running" },
+          { id: "debts", icon: "fa-hand-holding-dollar" },
+          { id: "tasks", icon: "fa-clipboard-check" },
+          { id: "goals", icon: "fa-bullseye" },
+          { id: "trips", icon: "fa-plane-departure" },
+          { id: "wallets", icon: "fa-wallet" },
         ];
-
-        setTimeout(() => {
-          pillItemsList.forEach((id) => {
-            const btn = document.getElementById(`nav-btn-${id}`);
-            if (!btn) return;
-
-            if (state.currentView === id) {
-              // ĐÃ FIX: Dùng text-primary-500 để chữ và icon đổi màu theo Theme
-              btn.classList.add("active", "text-primary-500");
-              btn.classList.remove("text-gray-500", "dark:text-gray-400");
-
-              const glider = document.getElementById("nav-glider");
-              if (glider) {
-                glider.style.left = `${btn.offsetLeft}px`;
-                glider.style.width = `${btn.offsetWidth}px`;
-
-                if (!window.isDraggingNav) {
-                  const scrollLeft =
-                    btn.offsetLeft -
-                    navPill.offsetWidth / 2 +
-                    btn.offsetWidth / 2;
-                  navPill.scrollTo({ left: scrollLeft, behavior: "smooth" });
-                }
-              }
-            } else {
-              // Màu icon khi không được chọn (Thích ứng Sáng/Tối)
-              btn.classList.remove("active", "text-primary-500");
-              btn.classList.add("text-gray-500", "dark:text-gray-400");
-            }
-          });
-        }, 50);
+        let pillHtml = "";
+        pillItems.forEach((item) => {
+          const isActive = state.currentView === item.id;
+          pillHtml += `
+  <button
+    onclick="switchView('${item.id}')"
+    class="mobile-nav-item flex-none w-12 h-12 flex items-center justify-center rounded-full transition-transform duration-150 active:scale-90"
+  >
+    <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${
+      isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"
+    }"></i>
+  </button>`;
+        });
+        const navPill = document.getElementById("mobile-nav-pill");
+        if (navPill) navPill.innerHTML = pillHtml;
       }
 
       function switchView(viewId) {
