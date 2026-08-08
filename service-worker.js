@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v39'; // Tăng version lên v28 để ép đè cái lỗi cũ
+const CACHE_NAME = 'finmaster-v40'; // Tăng version lên v28 để ép đè cái lỗi cũ
 
 // Các file nằm ngay trên máy của ông
 const STATIC_ASSETS = [
