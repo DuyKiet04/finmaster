@@ -10087,7 +10087,7 @@
 
           // Gắn Nút Nổi (FAB) vào góc dưới phải của màn hình
           const fabContainerHtml = fabHtml
-            ? `<div class="absolute bottom-6 right-6 flex flex-col gap-3 z-50">${fabHtml}</div>`
+            ? `<div class="fixed bottom-6 right-6 flex flex-col gap-3 z-[60]">${fabHtml}</div>`
             : "";
 
           // --- 5. RENDER TOÀN BỘ VÀO KHUNG ---
@@ -13707,16 +13707,41 @@
                     tempCheckinData.lat = pos.coords.latitude;
                     tempCheckinData.lng = pos.coords.longitude;
                     try {
+                      // Đã thêm zoom=18&addressdetails=1 để lấy chi tiết y như bên Giao dịch
                       const res = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${tempCheckinData.lat}&lon=${tempCheckinData.lng}`,
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${tempCheckinData.lat}&lon=${tempCheckinData.lng}&zoom=18&addressdetails=1`,
                       );
                       const data = await res.json();
-                      tempCheckinData.locationName =
-                        data.address.road ||
-                        data.address.suburb ||
-                        data.address.city ||
-                        "Vị trí không tên";
+
+                      // Check an toàn lỡ API trả về rỗng do bị chặn
+                      if (data && data.address) {
+                        const addr = data.address;
+                        const road = addr.road || addr.pedestrian || "";
+                        const ward =
+                          addr.suburb ||
+                          addr.quarter ||
+                          addr.neighbourhood ||
+                          "";
+
+                        if (road && ward) {
+                          tempCheckinData.locationName = `${road}, ${ward}`;
+                        } else if (road) {
+                          tempCheckinData.locationName = road;
+                        } else if (ward) {
+                          tempCheckinData.locationName = ward;
+                        } else {
+                          tempCheckinData.locationName =
+                            addr.city ||
+                            addr.town ||
+                            addr.village ||
+                            "Vị trí hiện tại";
+                        }
+                      } else {
+                        tempCheckinData.locationName =
+                          "Không xác định được đường";
+                      }
                     } catch (e) {
+                      // Mất mạng hoặc lỗi API thì mới văng tọa độ
                       tempCheckinData.locationName =
                         "Tọa độ: " +
                         tempCheckinData.lat.toFixed(4) +
@@ -13787,8 +13812,13 @@
           grid.innerHTML = checkins
             .map((chk) => {
               let tTime = "";
-              if (chk.timestamp)
-                tTime = chk.timestamp.split("T")[1].substring(0, 5);
+              if (chk.timestamp) {
+                const d = new Date(chk.timestamp);
+                tTime = d.toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+              }
               return `
             <div class="custom-bg-card rounded-2xl border custom-border shadow-sm overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform relative" onclick="openImageModal('${chk.image}')">
                 <img src="${chk.image}" class="w-full h-auto object-cover">
@@ -13917,9 +13947,14 @@
 
                 let popupContent = `<div class="font-sans min-w-[220px] max-w-[280px] relative"><div class="font-bold custom-text-secondary text-[11px] uppercase tracking-wider mb-2 flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-2"><span><i class="fa-solid fa-camera-retro text-amber-500"></i> ${count > 1 ? count + " Bức ảnh" : "Chi tiết Check-in"}</span></div><div class="max-h-[250px] overflow-y-auto custom-scrollbar pr-1 space-y-3 mb-2">`;
                 group.forEach((chk) => {
-                  let tTime = chk.timestamp
-                    ? chk.timestamp.split("T")[1].substring(0, 5)
-                    : "";
+                  let tTime = "";
+                  if (chk.timestamp) {
+                    const d = new Date(chk.timestamp);
+                    tTime = d.toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                  }
                   popupContent += `<div class="flex gap-3 bg-gray-50 dark:bg-gray-800 p-2 rounded-2xl border custom-border shadow-sm"><img src="${chk.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm shrink-0 cursor-pointer border custom-border" onclick="openImageModal(this.src)"><div class="flex-1 min-w-0 py-0.5"><p class="text-[11px] font-bold custom-text truncate leading-tight">${chk.locationName}</p><p class="text-[10px] custom-text-secondary mt-1 line-clamp-2 italic">"${chk.caption || "Chuyến đi tuyệt vời!"}"</p><p class="text-[9px] font-bold text-gray-400 mt-1"><i class="fa-regular fa-clock"></i> ${tTime}</p></div></div>`;
                 });
                 popupContent += `</div></div>`;

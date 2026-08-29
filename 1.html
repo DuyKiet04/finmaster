@@ -102,6 +102,22 @@
         overscroll-behavior-y: none;
       }
 
+      #mobile-nav-pill {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 2px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+      }
+
+      #mobile-nav-pill > .mobile-nav-item {
+        flex: 0 0 48px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+      }
+
       .view-section:not(.active) {
         display: none !important;
       }
@@ -110,9 +126,6 @@
         animation: fadeIn 0.3s;
       }
 
-      /* -- ÁP DỤNG MÀU CHO TOÀN BỘ LỚP BẢN ĐỒ (CẢ NỀN LẪN CHỮ) -- */
-
-      /* --- ÉP MÀU CHO CÁI BAO BÊN NGOÀI POPUP --- */
       .leaflet-popup-content-wrapper {
         background-color: var(--bg-card, #ffffff) !important;
         border-radius: 1.25rem !important; /* Bo tròn đều cho giống form của app */
@@ -3342,11 +3355,11 @@
       function renderNav() {
         document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
           (item) => `
-                                  <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
-                                    <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
-                                    <span>${item.label}</span>
-                                  </button>
-                                `,
+                                  <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800/50"}">
+                                    <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+                                    <span>${item.label}</span>
+                                  </button>
+                                `,
         ).join("");
 
         const pillItems = [
@@ -3368,9 +3381,14 @@
         pillItems.forEach((item) => {
           const isActive = state.currentView === item.id;
           pillHtml += `
-                      <button onclick="switchView('${item.id}')" class="flex flex-col items-center justify-center w-12 h-full shrink-0 transition-transform active:scale-90">
-                        <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"}"></i>
-                      </button>`;
+  <button
+    onclick="switchView('${item.id}')"
+    class="mobile-nav-item flex-none w-12 h-12 flex items-center justify-center rounded-full transition-transform duration-150 active:scale-90"
+  >
+    <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${
+      isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"
+    }"></i>
+  </button>`;
         });
         const navPill = document.getElementById("mobile-nav-pill");
         if (navPill) navPill.innerHTML = pillHtml;
@@ -3513,13 +3531,13 @@
                                   <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                   </div>
-                                  
+
                                 </button>
                                 <button onclick="deleteCategory('${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                   <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                   </div>
-                                  
+
                                 </button>
                               </div>
 
@@ -5694,10 +5712,10 @@
                     : `background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.8));`;
 
                   return `
-                    <div onclick="openModal('transaction', '${tx.id}')" 
+                    <div onclick="openModal('transaction', '${tx.id}')"
                          class="aspect-[3/4] rounded-3xl ${hasImage ? "bg-cover bg-center" : "bg-gray-800"} relative overflow-hidden shadow-md cursor-pointer border custom-border dark:border-gray-700 hover:scale-[1.02] active:scale-95 transition-all group"
                          style="${bgStyle}">
-                        
+
                         <!-- Lớp phủ tối (Overlay) để nổi bật chữ -->
                         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-black/50 transition-colors"></div>
 
@@ -5758,13 +5776,13 @@
                                 <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                 </div>
-                                
+
                             </button>
                             <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                 <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
-                                
+
                             </button>
                         </div>
 
@@ -5845,13 +5863,13 @@
                         <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </div>
-                        
+
                     </button>
                     <button onclick="deleteBudget('${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                         <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-trash"></i>
                         </div>
-                        
+
                     </button>
                 </div>
 
@@ -10026,12 +10044,23 @@
                     <i class="fa-solid fa-plus"></i>
                 </button>
             `;
-          } else if (currentTripTab === "diary" || currentTripTab === "map") {
+          } else if (currentTripTab === "diary") {
             fabHtml = `
-      <button onclick="triggerTripCheckin('${trip.id}')" class="w-14 h-14 bg-amber-500 rounded-full shadow-[0_8px_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
-          <i class="fa-solid fa-camera-retro"></i>
-      </button>
-    `;
+              <button onclick="triggerTripCheckin('${trip.id}')" class="w-14 h-14 bg-amber-500 rounded-full shadow-[0_8px_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
+                  <i class="fa-solid fa-camera-retro"></i>
+              </button>
+            `;
+          } else if (currentTripTab === "map") {
+            // Ở Tab Bản đồ, đẻ ra 2 nút: 1 nút đổi chế độ, 1 nút chụp ảnh
+            fabHtml = `
+              <button onclick="toggleTripMapMode('${trip.id}')" class="w-14 h-14 ${window.currentTripMapMode === "checkin" ? "bg-indigo-500 shadow-[0_8px_20px_rgba(99,102,241,0.4)]" : "bg-rose-500 shadow-[0_8px_20px_rgba(244,63,94,0.4)]"} rounded-full flex items-center justify-center text-white text-xl active:scale-90 transition-transform mb-3" title="Đổi chế độ bản đồ">
+                  <i class="fa-solid ${window.currentTripMapMode === "checkin" ? "fa-route" : "fa-camera-retro"}"></i>
+              </button>
+              
+              <button onclick="triggerTripCheckin('${trip.id}')" class="w-14 h-14 bg-amber-500 rounded-full shadow-[0_8px_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform ${window.currentTripMapMode === "itinerary" ? "hidden" : ""}">
+                  <i class="fa-solid fa-camera-retro"></i>
+              </button>
+            `;
           } else if (currentTripTab === "itinerary") {
             fabHtml = `
                 <button onclick="openModal('itinerary', null, '${trip.id}')" class="w-14 h-14 custom-primary rounded-full shadow-[0_8px_20px_rgba(var(--primary-hue),_100%,_50%,_0.4)] flex items-center justify-center text-white text-xl active:scale-90 transition-transform">
@@ -10058,7 +10087,7 @@
 
           // Gắn Nút Nổi (FAB) vào góc dưới phải của màn hình
           const fabContainerHtml = fabHtml
-            ? `<div class="absolute bottom-6 right-6 flex flex-col gap-3 z-50">${fabHtml}</div>`
+            ? `<div class="fixed bottom-6 right-6 flex flex-col gap-3 z-[60]">${fabHtml}</div>`
             : "";
 
           // --- 5. RENDER TOÀN BỘ VÀO KHUNG ---
@@ -10172,17 +10201,76 @@
         playSound("pop");
       };
 
+      // Khai báo biến toàn cục để nhớ xem bản đồ đang mở chế độ nào
+      window.currentTripMapMode = "checkin";
+
       window.toggleItinerary = (tripId, itemId) => {
         const trip = state.trips.find((t) => t.id === tripId);
         if (!trip || !trip.itinerary) return;
 
         const item = trip.itinerary.find((i) => i.id === itemId);
         if (item) {
-          item.isCompleted = !item.isCompleted; // Đảo trạng thái Hoàn thành
+          if (!item.isCompleted) {
+            // ĐANG TỪ CHƯA XONG -> HOÀN THÀNH
+            if (
+              confirm(
+                "Đại ka có muốn lấy định vị GPS hiện tại để vẽ lên bản đồ hành trình không?",
+              )
+            ) {
+              if (navigator.geolocation) {
+                // Đổi icon thành cục xoay xoay cho user biết đang load
+                const btnIcon = document.querySelector(
+                  `button[onclick="toggleItinerary('${tripId}', '${itemId}')"] i`,
+                );
+                if (btnIcon)
+                  btnIcon.className =
+                    "fa-solid fa-spinner fa-spin text-gray-500 text-xs";
+
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    item.lat = pos.coords.latitude;
+                    item.lng = pos.coords.longitude;
+                    item.isCompleted = true;
+                    saveData();
+                    renderTripDetailContent(trip);
+                    playSound("success");
+                  },
+                  (err) => {
+                    alert(
+                      "Không lấy được GPS (Hãy bật vị trí). App sẽ chỉ lưu trạng thái hoàn thành!",
+                    );
+                    item.isCompleted = true;
+                    saveData();
+                    renderTripDetailContent(trip);
+                    playSound("click");
+                  },
+                  { enableHighAccuracy: true, timeout: 5000 },
+                );
+                return; // Dừng ở đây chờ GPS phản hồi
+              }
+            }
+            // Nếu bấm Không hoặc trình duyệt không hỗ trợ
+            item.isCompleted = true;
+          } else {
+            // TỪ HOÀN THÀNH -> CHƯA XONG (Hủy bỏ thì xóa luôn GPS)
+            item.isCompleted = false;
+            delete item.lat;
+            delete item.lng;
+          }
+
           saveData();
           renderTripDetailContent(trip);
           playSound("click");
         }
+      };
+
+      // Hàm đảo chế độ Bản đồ (Lịch trình <-> Check-in)
+      window.toggleTripMapMode = (tripId) => {
+        window.currentTripMapMode =
+          window.currentTripMapMode === "checkin" ? "itinerary" : "checkin";
+        playSound("pop");
+        renderTripDetailContent(); // Cập nhật lại màu của cái nút bấm
+        if (typeof renderTripMap === "function") renderTripMap(tripId); // Vẽ lại bản đồ
       };
 
       window.deleteItinerary = (tripId, itemId) => {
@@ -13601,7 +13689,7 @@
               const ctx = canvas.getContext("2d");
               ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-              tempCheckinData.image = canvas.toDataURL("image/jpeg", 0.6);
+              tempCheckinData.image = canvas.toDataURL("image/jpeg", 0.2);
               tempCheckinData.timestamp = new Date().toISOString();
 
               document.getElementById("checkin-preview").src =
@@ -13619,16 +13707,41 @@
                     tempCheckinData.lat = pos.coords.latitude;
                     tempCheckinData.lng = pos.coords.longitude;
                     try {
+                      // Đã thêm zoom=18&addressdetails=1 để lấy chi tiết y như bên Giao dịch
                       const res = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${tempCheckinData.lat}&lon=${tempCheckinData.lng}`,
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${tempCheckinData.lat}&lon=${tempCheckinData.lng}&zoom=18&addressdetails=1`,
                       );
                       const data = await res.json();
-                      tempCheckinData.locationName =
-                        data.address.road ||
-                        data.address.suburb ||
-                        data.address.city ||
-                        "Vị trí không tên";
+
+                      // Check an toàn lỡ API trả về rỗng do bị chặn
+                      if (data && data.address) {
+                        const addr = data.address;
+                        const road = addr.road || addr.pedestrian || "";
+                        const ward =
+                          addr.suburb ||
+                          addr.quarter ||
+                          addr.neighbourhood ||
+                          "";
+
+                        if (road && ward) {
+                          tempCheckinData.locationName = `${road}, ${ward}`;
+                        } else if (road) {
+                          tempCheckinData.locationName = road;
+                        } else if (ward) {
+                          tempCheckinData.locationName = ward;
+                        } else {
+                          tempCheckinData.locationName =
+                            addr.city ||
+                            addr.town ||
+                            addr.village ||
+                            "Vị trí hiện tại";
+                        }
+                      } else {
+                        tempCheckinData.locationName =
+                          "Không xác định được đường";
+                      }
                     } catch (e) {
+                      // Mất mạng hoặc lỗi API thì mới văng tọa độ
                       tempCheckinData.locationName =
                         "Tọa độ: " +
                         tempCheckinData.lat.toFixed(4) +
@@ -13699,8 +13812,13 @@
           grid.innerHTML = checkins
             .map((chk) => {
               let tTime = "";
-              if (chk.timestamp)
-                tTime = chk.timestamp.split("T")[1].substring(0, 5);
+              if (chk.timestamp) {
+                const d = new Date(chk.timestamp);
+                tTime = d.toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+              }
               return `
             <div class="custom-bg-card rounded-2xl border custom-border shadow-sm overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform relative" onclick="openImageModal('${chk.image}')">
                 <img src="${chk.image}" class="w-full h-auto object-cover">
@@ -13732,76 +13850,203 @@
           const trip = state.trips.find((t) => t.id === tripId);
           if (!trip || !document.getElementById("trip-leaflet-map")) return;
 
-          // 1. DỌN DẸP BẢN ĐỒ CŨ (Mấu chốt để chữa bệnh trắng màn hình)
-          if (tripLeafletMap) {
-            tripLeafletMap.off();
-            tripLeafletMap.remove(); // Xóa sạch instance cũ
-            tripLeafletMap = null;
+          if (window.tripLeafletMap) {
+            window.tripLeafletMap.off();
+            window.tripLeafletMap.remove();
+            window.tripLeafletMap = null;
           }
 
-          // 2. KHỞI TẠO BẢN ĐỒ MỚI
-          tripLeafletMap = L.map("trip-leaflet-map", { zoomControl: false });
+          window.tripLeafletMap = L.map("trip-leaflet-map", {
+            zoomControl: false,
+          });
 
-          // Bonus: Tự động đổi màu map theo Dark/Light mode cho ngầu
           const isDark = document.documentElement.classList.contains("dark");
           const tileUrl = isDark
             ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
           L.tileLayer(tileUrl, { attribution: "&copy; OpenStreetMap" }).addTo(
-            tripLeafletMap,
+            window.tripLeafletMap,
           );
 
-          const checkins = (trip.checkins || []).filter((c) => c.lat && c.lng);
-
-          // 3. ĐỢI DOM RENDER XONG MỚI INVALIDATESIZE VÀ VẼ
           setTimeout(() => {
-            tripLeafletMap.invalidateSize(); // Ép Leaflet tính toán lại kích thước thật
+            window.tripLeafletMap.invalidateSize();
 
-            if (checkins.length === 0) {
-              // Nếu chưa có ảnh check-in, set mặc định bay về TPHCM
-              tripLeafletMap.setView([10.823, 106.629], 12);
-              return;
-            }
+            // ==========================================
+            // CHẾ ĐỘ 1: BẢN ĐỒ ẢNH CHECK-IN (MẶC ĐỊNH)
+            // ==========================================
+            if (window.currentTripMapMode === "checkin") {
+              const checkins = (trip.checkins || []).filter(
+                (c) => c.lat && c.lng,
+              );
+              if (checkins.length === 0) {
+                window.tripLeafletMap.setView([10.823, 106.629], 12);
+                return;
+              }
 
-            const routeCoords = checkins
-              .slice()
-              .reverse()
-              .map((c) => [c.lat, c.lng]);
+              const routeCoords = checkins
+                .slice()
+                .reverse()
+                .map((c) => [c.lat, c.lng]);
+              if (routeCoords.length > 1) {
+                L.polyline(routeCoords, {
+                  color: "#f59e0b",
+                  weight: 4,
+                  dashArray: "8, 8",
+                  opacity: 0.8,
+                }).addTo(window.tripLeafletMap);
+              }
 
-            // Vẽ đường lộ trình
-            if (routeCoords.length > 1) {
-              L.polyline(routeCoords, {
-                color: "#f59e0b",
-                weight: 4,
-                dashArray: "8, 8",
-                opacity: 0.8,
-              }).addTo(tripLeafletMap);
-            }
+              // Gom nhóm 50m
+              const TOLERANCE_METERS = 50;
+              const clusteredGroups = [];
 
-            // Gắn Marker Ảnh
-            checkins.forEach((chk) => {
-              const icon = L.divIcon({
-                html: `<div class="trip-marker-container"><img src="${chk.image}" class="trip-marker-icon"></div>`,
-                className: "",
-                iconSize: [44, 52],
-                iconAnchor: [22, 52],
+              checkins.forEach((chk) => {
+                const chkLatLng = L.latLng(chk.lat, chk.lng);
+                let foundGroup = false;
+                for (let i = 0; i < clusteredGroups.length; i++) {
+                  const repChk = clusteredGroups[i][0];
+                  const repLatLng = L.latLng(repChk.lat, repChk.lng);
+                  if (chkLatLng.distanceTo(repLatLng) <= TOLERANCE_METERS) {
+                    clusteredGroups[i].push(chk);
+                    foundGroup = true;
+                    break;
+                  }
+                }
+                if (!foundGroup) clusteredGroups.push([chk]);
               });
-              L.marker([chk.lat, chk.lng], { icon })
-                .addTo(tripLeafletMap)
-                .bindPopup(
-                  `<b>${chk.locationName}</b><br><i>${chk.caption || "Chuyến đi tuyệt vời!"}</i>`,
+
+              clusteredGroups.forEach((group) => {
+                const repChk = group[0];
+                const count = group.length;
+                let markerHtml = "";
+
+                if (count === 1) {
+                  markerHtml = `
+                    <div style="position: relative; width: 48px; height: 48px;">
+                        <div style="width: 48px; height: 48px; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; z-index: 10;">
+                            <img src="${repChk.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #e5e7eb;">
+                        </div>
+                        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid white; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                    </div>`;
+                } else {
+                  markerHtml = `
+                    <div style="position: relative; width: 44px; height: 44px;">
+                        <div style="width: 44px; height: 44px; background: #f59e0b; border-radius: 50%; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 18px;">
+                            ${count}
+                        </div>
+                        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #f59e0b; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                    </div>`;
+                }
+
+                const icon = L.divIcon({
+                  html: markerHtml,
+                  className: "",
+                  iconSize: [48, 58],
+                  iconAnchor: [24, 58],
+                });
+
+                let popupContent = `<div class="font-sans min-w-[220px] max-w-[280px] relative"><div class="font-bold custom-text-secondary text-[11px] uppercase tracking-wider mb-2 flex items-center justify-between border-b border-gray-200 dark:border-gray-600 pb-2"><span><i class="fa-solid fa-camera-retro text-amber-500"></i> ${count > 1 ? count + " Bức ảnh" : "Chi tiết Check-in"}</span></div><div class="max-h-[250px] overflow-y-auto custom-scrollbar pr-1 space-y-3 mb-2">`;
+                group.forEach((chk) => {
+                  let tTime = "";
+                  if (chk.timestamp) {
+                    const d = new Date(chk.timestamp);
+                    tTime = d.toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                  }
+                  popupContent += `<div class="flex gap-3 bg-gray-50 dark:bg-gray-800 p-2 rounded-2xl border custom-border shadow-sm"><img src="${chk.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm shrink-0 cursor-pointer border custom-border" onclick="openImageModal(this.src)"><div class="flex-1 min-w-0 py-0.5"><p class="text-[11px] font-bold custom-text truncate leading-tight">${chk.locationName}</p><p class="text-[10px] custom-text-secondary mt-1 line-clamp-2 italic">"${chk.caption || "Chuyến đi tuyệt vời!"}"</p><p class="text-[9px] font-bold text-gray-400 mt-1"><i class="fa-regular fa-clock"></i> ${tTime}</p></div></div>`;
+                });
+                popupContent += `</div></div>`;
+
+                const marker = L.marker([repChk.lat, repChk.lng], {
+                  icon,
+                }).addTo(window.tripLeafletMap);
+                marker.bindPopup(popupContent);
+                marker.on("click", function (e) {
+                  if (window.tripLeafletMap.getZoom() < 15) {
+                    marker.closePopup();
+                    window.tripLeafletMap.flyTo(e.latlng, 16, {
+                      duration: 0.5,
+                    });
+                  }
+                });
+              });
+
+              if (checkins.length === 1)
+                window.tripLeafletMap.setView(
+                  [checkins[0].lat, checkins[0].lng],
+                  16,
                 );
-            });
-
-            // Focus camera (Zoom)
-            if (checkins.length === 1) {
-              tripLeafletMap.setView([checkins[0].lat, checkins[0].lng], 16);
-            } else {
-              tripLeafletMap.fitBounds(L.polyline(routeCoords).getBounds(), {
-                padding: [30, 30],
-              });
+              else
+                window.tripLeafletMap.fitBounds(
+                  L.polyline(routeCoords).getBounds(),
+                  { padding: [40, 40] },
+                );
             }
-          }, 150); // Delay 150ms để chắc chắn khung HTML đã hiện hình 100%
+
+            // ==========================================
+            // CHẾ ĐỘ 2: BẢN ĐỒ LỊCH TRÌNH GPS
+            // ==========================================
+            else if (window.currentTripMapMode === "itinerary") {
+              const points = (trip.itinerary || []).filter(
+                (i) => i.isCompleted && i.lat && i.lng,
+              );
+              if (points.length === 0) {
+                window.tripLeafletMap.setView([10.823, 106.629], 12);
+                // Không cảnh báo để tránh phiền phức, chỉ hiện trống
+                return;
+              }
+
+              const routeCoords = points.map((p) => [p.lat, p.lng]);
+
+              // Vẽ đường màu Xanh chàm nối các điểm
+              if (routeCoords.length > 1) {
+                L.polyline(routeCoords, {
+                  color: "#6366f1", // Màu chàm (indigo)
+                  weight: 5,
+                  opacity: 0.9,
+                  dashArray: "10, 10",
+                  lineJoin: "round",
+                }).addTo(window.tripLeafletMap);
+              }
+
+              // Vẽ Điểm ghim
+              points.forEach((pt, index) => {
+                const markerHtml = `
+                      <div style="position: relative; width: 36px; height: 36px;">
+                          <div style="width: 36px; height: 36px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 16px; position: relative; z-index: 10;">
+                              ${index + 1}
+                          </div>
+                          <div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #6366f1; z-index: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>
+                      </div>
+                  `;
+                const icon = L.divIcon({
+                  html: markerHtml,
+                  className: "",
+                  iconSize: [36, 44],
+                  iconAnchor: [18, 44],
+                });
+
+                L.marker([pt.lat, pt.lng], { icon })
+                  .addTo(window.tripLeafletMap)
+                  .bindPopup(
+                    `<div class="font-black text-sm custom-text text-center p-2">${pt.name}</div>`,
+                  );
+              });
+
+              if (points.length === 1)
+                window.tripLeafletMap.setView(
+                  [points[0].lat, points[0].lng],
+                  16,
+                );
+              else
+                window.tripLeafletMap.fitBounds(
+                  L.polyline(routeCoords).getBounds(),
+                  { padding: [40, 40] },
+                );
+            }
+          }, 150);
         };
       })();
     </script>
