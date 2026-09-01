@@ -4397,7 +4397,7 @@
 
         // 3. INSIGHT SO SÁNH THÁNG TRƯỚC (Thẻ con nhộng màu trắng/xám)
         if (prevExp > 0) {
-          const diff = curExp - prevExp;
+          const diff = exp - prevExp;
           const pct = ((Math.abs(diff) / prevExp) * 100).toFixed(0);
           if (diff > 0) {
             alertsHtml += `
@@ -4590,7 +4590,6 @@
 
           chartInstance = new Chart(ctx, config);
         } else {
-          ctx.getContext("2d").clearRect(0, 0, ctx.width, ctx.height);
           document.getElementById("chart-container").innerHTML = `
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
                   <img

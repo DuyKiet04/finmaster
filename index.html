@@ -4397,7 +4397,7 @@
 
         // 3. INSIGHT SO SÁNH THÁNG TRƯỚC (Thẻ con nhộng màu trắng/xám)
         if (prevExp > 0) {
-          const diff = curExp - prevExp;
+          const diff = exp - prevExp;
           const pct = ((Math.abs(diff) / prevExp) * 100).toFixed(0);
           if (diff > 0) {
             alertsHtml += `
@@ -4590,7 +4590,6 @@
 
           chartInstance = new Chart(ctx, config);
         } else {
-          ctx.getContext("2d").clearRect(0, 0, ctx.width, ctx.height);
           document.getElementById("chart-container").innerHTML = `
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
                   <img
@@ -5486,53 +5485,81 @@
                 '<i class="fa-solid fa-check text-success-500"></i>';
 
               try {
+                // Đã ép tiếng Việt và zoom level 18 để lấy chi tiết nhất
+                // Thay bằng email thật của đại ka hoặc 1 cái email bất kỳ để máy chủ OSM nó cho qua trạm
                 const res = await fetch(
-                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=vi&email=finmaster.app@gmail.com`,
                 );
+
+                if (!res.ok) throw new Error("API sập");
+
                 const data = await res.json();
-                const addr = data.address;
+                const addr = data.address || {};
 
-                const road = addr.road || addr.pedestrian || "";
-                const ward =
-                  addr.suburb || addr.quarter || addr.neighbourhood || "";
+                // In ra console để đại ka F12 soi data thực tế của OSM
+                console.log("📍 NOMINATIM ADDRESS:", addr);
 
+                // 1. Moi tên đường
+                const road =
+                  addr.road || addr.pedestrian || addr.cycleway || "";
+
+                // 2. Thuật toán moi Phường/Xã chuẩn Việt Nam
+                let ward = "";
+                const possibleWards = [
+                  addr.quarter,
+                  addr.suburb,
+                  addr.village,
+                  addr.neighbourhood,
+                ];
+                for (let w of possibleWards) {
+                  // Ưu tiên lấy field nào có chứa hẳn chữ Phường, Xã, Thị trấn
+                  if (
+                    w &&
+                    (w.toLowerCase().includes("phường") ||
+                      w.toLowerCase().includes("xã") ||
+                      w.toLowerCase().includes("thị trấn"))
+                  ) {
+                    ward = w;
+                    break;
+                  }
+                }
+                // Nếu xui quá OSM nó chỉ ghi mỗi tên (VD: "Tân Phong") mà không có chữ Phường thì lấy đại thằng đầu tiên có data
+                if (!ward) {
+                  ward =
+                    addr.quarter ||
+                    addr.suburb ||
+                    addr.village ||
+                    addr.neighbourhood ||
+                    "";
+                }
+
+                // 3. Moi Quận / Huyện làm fallback
+                const district =
+                  addr.city_district || addr.district || addr.county || "";
+
+                // 4. Lắp ráp logic
                 let locStr = "";
-                if (road && ward) locStr = `${road}, ${ward}`;
-                else if (road) locStr = road;
-                else if (ward) locStr = ward;
-                else locStr = addr.amenity || addr.village || "Vị trí hiện tại";
-
-                nameEl.value = locStr;
-
-                const catSelect = document.getElementById("m-cat");
-                let detected = false;
-                if (
-                  addr.amenity === "cafe" ||
-                  addr.amenity === "restaurant" ||
-                  addr.amenity === "fast_food"
-                ) {
-                  catSelect.value = "c1";
-                  detected = true;
-                } else if (
-                  addr.amenity === "hospital" ||
-                  addr.amenity === "pharmacy"
-                ) {
-                  catSelect.value = "c5";
-                  detected = true;
-                } else if (
-                  addr.amenity === "cinema" ||
-                  addr.amenity === "theatre"
-                ) {
-                  catSelect.value = "c4";
-                  detected = true;
+                if (road && ward) {
+                  locStr = `${road}, ${ward}`;
+                } else if (road && district) {
+                  locStr = `${road}, ${district}`;
+                } else if (road) {
+                  locStr = road;
+                } else if (ward) {
+                  locStr = ward;
+                } else {
+                  locStr =
+                    district ||
+                    addr.city ||
+                    addr.town ||
+                    addr.village ||
+                    "Khu vực chưa có dữ liệu";
                 }
 
-                if (detected && hintEl) {
-                  hintEl.classList.remove("hidden");
-                  playSound("success");
-                }
+                // Gán kết quả vào ô Input / State (Tùy hàm mà gán vào nameEl.value hoặc tempCheckinData.locationName)
               } catch (e) {
-                nameEl.value = "Tính năng không sử dụng được khi offline";
+                // Lỗi mạng, API sập, hoặc bị chặn IP
+                nameEl.value = "Chưa xác định được tên đường";
               }
             },
             () => {
@@ -5690,10 +5717,11 @@
           // RENDER GIAO DIỆN STORY (GRID MODE)
           // ==========================================
           if (window.txViewMode === "grid") {
-            container.className = "p-4 bg-transparent"; // Xóa viền bao ngoài
+            container.className = "p-1 sm:p-2 bg-transparent"; // Xóa viền bao ngoài
 
+            // Dùng columns-2 thay vì grid để tạo hiệu ứng Masonry (sole gạch) y hệt ảnh
             container.innerHTML =
-              `<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">` +
+              `<div class="columns-2 sm:columns-3 gap-3 space-y-3">` +
               filteredTx
                 .map((tx) => {
                   const isInc = tx.type === "income";
@@ -5704,46 +5732,60 @@
                     icon: "📦",
                     color: "bg-gray-100 text-gray-600",
                   };
-
-                  // Nếu không có ảnh, tạo màu nền gradient cơ bản từ màu danh mục
                   const hasImage = tx.image && tx.image.length > 50;
-                  const bgStyle = hasImage
-                    ? `background-image: url('${tx.image}');`
-                    : `background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.8));`;
+
+                  let txTime = "";
+                  if (tx.date.includes("T"))
+                    txTime = tx.date.split("T")[1].substring(0, 5);
+                  else if (tx.date.includes(" "))
+                    txTime = tx.date.split(" ")[1].substring(0, 5);
 
                   return `
-                    <div onclick="openModal('transaction', '${tx.id}')"
-                         class="aspect-[3/4] rounded-3xl ${hasImage ? "bg-cover bg-center" : "bg-gray-800"} relative overflow-hidden shadow-md cursor-pointer border custom-border dark:border-gray-700 hover:scale-[1.02] active:scale-95 transition-all group"
-                         style="${bgStyle}">
+                <div onclick="openModal('transaction', '${tx.id}')"
+                     class="break-inside-avoid relative flex flex-col rounded-[16px] overflow-hidden custom-bg-card border custom-border shadow-sm cursor-pointer group transition-transform hover:scale-[1.02] active:scale-95">
+                     
+                    <!-- Nút xóa (Hiện khi hover) -->
+                    <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-danger-500/90 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-danger-600">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
 
-                        <!-- Lớp phủ tối (Overlay) để nổi bật chữ -->
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-black/50 transition-colors"></div>
+                    <!-- KHU VỰC ẢNH (Phía trên) -->
+                    <div class="relative w-full ${hasImage ? "" : "h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"}">
+                        ${
+                          hasImage
+                            ? `<img src="${tx.image}" class="w-full h-auto object-cover max-h-60">`
+                            : `<div class="w-full h-full flex items-center justify-center text-4xl opacity-50">${cat.icon}</div>`
+                        }
+                        
+                        <!-- Lớp phủ Gradient đen phía trên để làm nổi bật chữ -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none"></div>
 
-                        <!-- Top Left: Logo & Danh mục -->
-                        <div class="absolute top-3 left-3 flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full ${cat.color} flex items-center justify-center text-sm shadow-md border border-white/30 backdrop-blur-md">
+                        <!-- Header trên cùng ảnh (Icon + Tên danh mục giả làm Avatar) -->
+                        <div class="absolute top-2.5 left-2.5 right-10 flex items-center gap-2 z-10">
+                            <div class="w-6 h-6 rounded-full ${cat.color} flex items-center justify-center text-[10px] shadow-md border border-white/20 backdrop-blur-md shrink-0">
                                 ${cat.icon}
                             </div>
-                            <span class="text-white text-[10px] font-black drop-shadow-md truncate max-w-[70px] uppercase tracking-wider">${cat.name}</span>
-                        </div>
-
-                        <!-- Nút Xóa (Góc trên phải, hiện khi hover) -->
-                        <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-danger-500/80 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger-600 z-20">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-
-                        <!-- Bottom Content -->
-                        <div class="absolute bottom-4 left-4 right-4 flex flex-col gap-1.5">
-                            <p class="font-black text-xl ${isInc ? "text-success-400" : "text-white"} drop-shadow-lg leading-none">
-                                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
-                            </p>
-                            <p class="text-sm font-bold text-gray-200 truncate drop-shadow-md">${tx.note || "Giao dịch"}</p>
-                            <div class="flex flex-col gap-1 mt-1">
-                                <span class="text-[10px] text-gray-300 drop-shadow-md font-medium"><i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}</span>
-                                ${tx.locationName ? `<span class="text-[10px] text-rose-300 drop-shadow-md font-medium truncate"><i class="fa-solid fa-location-dot"></i> ${formatShortAddress(tx.locationName)}</span>` : ""}
-                            </div>
+                            <span class="text-white text-xs font-bold drop-shadow-md truncate tracking-wide">${cat.name}</span>
                         </div>
                     </div>
+
+                    <!-- KHU VỰC TEXT (Phía dưới) -->
+                    <div class="p-3 flex flex-col gap-2">
+                        <p class="font-bold text-sm custom-text leading-tight line-clamp-2">${tx.note || "Không có ghi chú"}</p>
+                        
+                        <div class="flex items-center justify-between mt-1">
+                            <!-- Nút Like ảo đổi thành Icon đồng hồ + Thời gian -->
+                            <div class="flex items-center gap-1.5 text-[10px] font-bold custom-text-secondary bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+    <i class="fa-regular fa-clock text-gray-500"></i> ${txTime || "--:--"}
+</div>
+                            
+                            <!-- Nút Share ảo đổi thành Số tiền -->
+                            <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text dark:text-gray-100"}">
+                                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 `;
                 })
                 .join("") +
@@ -13791,7 +13833,7 @@
               renderTripMap(currentTripIdForCheckin);
           }
         };
-        // alolo
+
         window.closeCheckinModal = () => {
           document.getElementById("modal-checkin").classList.add("hidden");
           document.getElementById("modal-checkin").classList.remove("flex");
