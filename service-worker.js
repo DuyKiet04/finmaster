@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v42'; // Tăng version lên v28 để ép đè cái lỗi cũ
+const CACHE_NAME = 'finmaster-v98'; // Tăng version lên v28 để ép đè cái lỗi cũ
 
 // Các file nằm ngay trên máy của ông
 const STATIC_ASSETS = [
@@ -53,6 +53,10 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
     // Bỏ qua các đường dẫn không hợp lệ
+
+    if (!e.request.url.startsWith(self.location.origin)) {
+    return; // Để trình duyệt tự fetch bình thường, không can thiệp
+  }
     if (!e.request.url.startsWith('http')) return;
 
     // 🔥 BÙA HỘ MỆNH Ở ĐÂY: Nếu là lệnh POST (như đẩy data lên Google) thì tha cho nó đi luôn, cấm lưu Cache!
