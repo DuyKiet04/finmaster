@@ -2257,7 +2257,7 @@
           class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[250] hidden items-end justify-center sm:items-center transition-all duration-300"
         >
           <div
-            class="bg-white dark:bg-gray-900 w-full sm:w-[400px] rounded-t-[2rem] sm:rounded-[2rem] p-5 animate-slideUpSheet sm:animate-popIn shadow-2xl border border-gray-100 dark:border-gray-800"
+            class="custom-bg-card ark:bg-gray-900 w-full sm:w-[400px] rounded-t-[2rem] sm:rounded-[2rem] p-5 animate-slideUpSheet sm:animate-popIn shadow-2xl dark:border-gray-800"
           >
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-black text-lg custom-text">
@@ -2298,7 +2298,7 @@
             </div>
 
             <div
-              class="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl mb-4 flex gap-3 items-center border border-emerald-100 dark:border-emerald-800"
+              class="custom-bg-input ark:bg-emerald-900/20 p-3 rounded-xl mb-4 flex gap-3 items-center border border-emerald-100 dark:border-emerald-800"
             >
               <i
                 class="fa-solid fa-location-dot text-emerald-500 text-xl animate-bounce"
@@ -2340,7 +2340,7 @@
             <button
               id="btn-save-cm"
               onclick="saveCMPoint()"
-              class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 rounded-2xl font-black text-white text-base shadow-lg active:scale-95 transition-all opacity-50 pointer-events-none"
+              class="w-full py-4 custom-primary over:bg-emerald-600 rounded-2xl font-black text-white text-base shadow-lg active:scale-95 transition-all opacity-50 pointer-events-none"
             >
               Lưu Lên Bản Đồ
             </button>
@@ -5928,6 +5928,7 @@
         document.getElementById("filter-dropdown").classList.add("hidden");
       };
       function renderTransactions() {
+        window.lastDateGroup = ""; // Reset biến nhóm ngày mỗi lần render lại
         const searchInput = document
           .getElementById("filter-search")
           .value.trim()
@@ -6051,7 +6052,79 @@
                   else if (tx.date.includes(" "))
                     txTime = tx.date.split(" ")[1].substring(0, 5);
 
-                  return `
+                  // ==========================================
+                  // TÍNH TOÁN HEADER NGÀY (STICKY DATE)
+                  // ==========================================
+                  let headerHtml = "";
+
+                  // Chỉ nhóm theo ngày nếu đang chọn sắp xếp theo Ngày
+                  if (
+                    window.txSortOrder === "date_desc" ||
+                    window.txSortOrder === "date_asc"
+                  ) {
+                    const d = new Date(tx.date);
+                    const dateStr = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+                    // Nếu phát hiện sang một ngày mới -> Cắt dòng, chèn Header
+                    if (dateStr !== window.lastDateGroup) {
+                      window.lastDateGroup = dateStr;
+
+                      // Gom tiền của ngày đó
+                      const dayTxs = filteredTx.filter((t) => {
+                        const td = new Date(t.date);
+                        return (
+                          `${td.getFullYear()}-${td.getMonth()}-${td.getDate()}` ===
+                          dateStr
+                        );
+                      });
+                      const dInc = dayTxs
+                        .filter((t) => t.type === "income")
+                        .reduce((a, b) => a + b.amount, 0);
+                      const dExp = dayTxs
+                        .filter((t) => t.type === "expense")
+                        .reduce((a, b) => a + b.amount, 0);
+
+                      // Dịch thứ/ngày/tháng
+                      const today = new Date();
+                      const yesterday = new Date();
+                      yesterday.setDate(yesterday.getDate() - 1);
+                      let dayName = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+
+                      if (d.toDateString() === today.toDateString())
+                        dayName = "Hôm nay - " + dayName;
+                      else if (d.toDateString() === yesterday.toDateString())
+                        dayName = "Hôm qua - " + dayName;
+                      else {
+                        const days = [
+                          "CN",
+                          "Thứ 2",
+                          "Thứ 3",
+                          "Thứ 4",
+                          "Thứ 5",
+                          "Thứ 6",
+                          "Thứ 7",
+                        ];
+                        dayName = days[d.getDay()] + " - " + dayName;
+                      }
+
+                      // Render cái thanh Sticky dính lên đỉnh
+                      headerHtml = `
+                <div class="sticky top-0 z-30 pt-1 pb-2 custom-bg-body w-full">
+                    <div class="custom-bg-card border custom-border px-3 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex justify-between items-center bg-opacity-95 backdrop-blur-sm">
+                        <span class="text-xs font-black custom-text">${dayName}</span>
+                        <div class="text-[10px] font-bold flex gap-2 tracking-wide">
+                            ${dInc > 0 ? `<span class="text-success-500">+${formatMoney(dInc)}</span>` : ""}
+                            ${dInc > 0 && dExp > 0 ? `<span class="custom-text-secondary">|</span>` : ""}
+                            ${dExp > 0 ? `<span class="text-danger-500">-${formatMoney(dExp)}</span>` : ""}
+                        </div>
+                    </div>
+                </div>`;
+                    }
+                  }
+
+                  return (
+                    headerHtml +
+                    `
                 <div onclick="openModal('transaction', '${tx.id}')"
                      class="break-inside-avoid relative flex flex-col rounded-[16px] overflow-hidden custom-bg-card border custom-border shadow-sm cursor-pointer group transition-transform hover:scale-[1.02] active:scale-95">
                      
@@ -6109,7 +6182,8 @@
                         </div>
                     </div>
                 </div>
-                `;
+                `
+                  );
                 })
                 .join("") +
               `</div>`;
@@ -14205,8 +14279,7 @@
           .classList.add("opacity-50", "pointer-events-none");
         document.getElementById("cm-point-name").value = "";
         document.getElementById("cm-point-note").value = "";
-        document.getElementById("cm-loc-text").innerText =
-          "Đang quét vệ tinh...";
+        document.getElementById("cm-loc-text").innerText = "Đang lấy vị trí...";
 
         // Nén ảnh kịch kim cho bản đồ
         const reader = new FileReader();
@@ -14355,8 +14428,8 @@
                       
                       <div class="flex gap-2">
                           <button onclick="deleteCMPoint('${pt.id}')" class="w-10 h-10 rounded-xl bg-danger-50 text-danger-500 hover:bg-danger-100 flex items-center justify-center border border-danger-100"><i class="fa-solid fa-trash"></i></button>
-                          <a href="https://www.google.com/maps/dir/?api=1&destination=${pt.lat},${pt.lng}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md no-underline">
-                              <i class="fa-solid fa-diamond-turn-right"></i> Chỉ đường
+                          <a href="https://www.google.com/maps/dir/?api=1&destination=${pt.lat},${pt.lng}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 custom-primary text-white font-bold text-xs rounded-xl shadow-md no-underline">
+                              <i class="fa-solid fa-diamond-turn-right text-white"></i> Chỉ đường
                           </a>
                       </div>
                   </div>
