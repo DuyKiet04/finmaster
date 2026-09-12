@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -3411,6 +3412,7 @@
             state.grabShifts = savedData.grabShifts || [];
             state.trips = savedData.trips || [];
             state.transactions = savedData.transactions || [];
+            state.workData = savedData.workData || null;
             state.runs = savedData.runs || [];
             state.wallets =
               savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
@@ -3510,6 +3512,7 @@
           favorites: state.favorites || [],
           runs: state.runs || [],
           runPBs: state.runPBs || null,
+          workData: state.workData,
         };
 
         // localforage lưu ngầm dưới IndexedDB
@@ -3594,6 +3597,7 @@
         { id: "dashboard", icon: "fa-chart-pie", label: "Tổng quan" },
         { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
         { id: "calendar", icon: "fa-calendar-days", label: "Lịch trình" },
+        { id: "work", icon: "fa-building", label: "Công sở & Lương" },
         { id: "map", icon: "fa-map-location-dot", label: "Bản đồ" },
         { id: "custommaps", icon: "fa-map-pin", label: "Bản đồ cá nhân" },
         { id: "grab", icon: "fa-motorcycle", label: "Tài xế Grab" },
@@ -3627,6 +3631,7 @@
           { id: "dashboard", icon: "fa-gauge-high" },
           { id: "transactions", icon: "fa-receipt" },
           { id: "calendar", icon: "fa-calendar-days" },
+          { id: "work", icon: "fa-briefcase" },
           { id: "map", icon: "fa-map-location-dot" },
           { id: "custommaps", icon: "fa-map-pin" },
           { id: "grab", icon: "fa-motorcycle" },
@@ -3668,7 +3673,8 @@
           viewId === "calendar" ||
           viewId === "settings" ||
           viewId === "grab" ||
-          viewId === "custommaps"
+          viewId === "custommaps" ||
+          viewId === "work"
         ) {
           fabMobile?.classList.add("hidden");
           fabDesktop?.classList.add("hidden");
@@ -7965,44 +7971,54 @@
           body.innerHTML = warningHtml + listHtml;
           if (typeof initSwipeActions === "function") initSwipeActions();
         } else if (type === "walletAction") {
-          title.innerText = "Chuyển Tiền / Thêm Ví";
+          title.innerText = "Chuyển Tiền";
           const options = state.wallets
             .map(
               (w) =>
                 `<option value="${w.id}">${w.name} (${formatMoney(w.balance)})</option>`,
             )
             .join("");
+
           window.switchWalletTab = (tab) => {
-            const tabT = document.getElementById("tab-transfer"),
-              tabA = document.getElementById("tab-add");
-            const formT = document.getElementById("form-transfer-container"),
-              formA = document.getElementById("form-add-container");
-            if (tab === "transfer") {
-              tabT.className =
-                "flex-1 py-3 font-bold rounded-xl transition-all custom-primary custom-shadow-sm";
-              tabA.className =
-                "flex-1 py-3 font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95";
-              formT.classList.remove("hidden");
-              formA.classList.add("hidden");
-              document.getElementById("modal-title").innerText = "Chuyển Tiền";
-            } else {
-              tabA.className =
-                "flex-1 py-3 font-bold rounded-xl transition-all custom-primary custom-shadow-sm";
-              tabT.className =
-                "flex-1 py-3 font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95";
-              formA.classList.remove("hidden");
-              formT.classList.add("hidden");
-              document.getElementById("modal-title").innerText = "Thêm Ví Mới";
-            }
+            const tabs = ["transfer", "add", "topup"];
+            tabs.forEach((t) => {
+              const btn = document.getElementById("tab-" + t);
+              const frm = document.getElementById("form-" + t + "-container");
+              if (!btn || !frm) return;
+              if (t === tab) {
+                btn.className =
+                  "py-2.5 rounded-xl text-xs font-bold transition-all custom-primary text-white shadow-md";
+                frm.classList.remove("hidden");
+              } else {
+                btn.className =
+                  "py-2.5 rounded-xl text-xs font-bold transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700";
+                frm.classList.add("hidden");
+              }
+            });
+
+            const mTitle = document.getElementById("modal-title");
+            if (tab === "transfer") mTitle.innerText = "Chuyển Tiền";
+            else if (tab === "add") mTitle.innerText = "Thêm Ví Mới";
+            else if (tab === "topup") mTitle.innerText = "Nạp Tiền Vào Ví";
           };
+
           body.innerHTML = `
-              <div class="flex custom-bg-input p-1.5 rounded-2xl mb-6 border custom-border">
-                <button type="button" id="tab-transfer" onclick="switchWalletTab('transfer')" class="flex-1 py-3 font-bold rounded-xl transition-all custom-primary custom-shadow-sm">Chuyển tiền</button>
-                <button type="button" id="tab-add" onclick="switchWalletTab('add')" class="flex-1 py-3 font-bold rounded-xl transition-all custom-text-secondary hover:brightness-95">Thêm ví</button>
+              <!-- MENU 3 TÍNH NĂNG -->
+              <div class="grid grid-cols-3 gap-2 custom-bg-input p-1.5 rounded-2xl mb-6 border custom-border">
+                  <button type="button" onclick="switchWalletTab('transfer')" id="tab-transfer" class="py-2.5 rounded-xl text-xs font-bold transition-all custom-primary text-white shadow-md">
+                      Chuyển tiền
+                  </button>
+                  <button type="button" onclick="switchWalletTab('add')" id="tab-add" class="py-2.5 rounded-xl text-xs font-bold transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700">
+                      Thêm ví
+                  </button>
+                  <button type="button" onclick="switchWalletTab('topup')" id="tab-topup" class="py-2.5 rounded-xl text-xs font-bold transition-all text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700">
+                      Nạp tiền
+                  </button>
               </div>
 
+              <!-- FORM CHUYỂN TIỀN -->
               <div id="form-transfer-container">
-                <form id="frm-transfer" class="space-y-5">
+                <form id="frm-transfer" class="space-y-5 animate-fadeIn">
                   <div class="flex gap-4 items-center">
                     <div class="flex-1">
                       <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Từ ví</label>
@@ -8015,49 +8031,65 @@
                     </div>
                   </div>
                   <div>
-                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số tiền (VNĐ)</label>
+                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số tiền </label>
                     <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="tr-amt" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
                   </div>
                   <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">Xác Nhận Chuyển</button>
                 </form>
               </div>
 
+              <!-- FORM THÊM VÍ -->
               <div id="form-add-container" class="hidden">
-                <form id="frm-w" class="space-y-5">
+                <form id="frm-w" class="space-y-5 animate-fadeIn">
                   <div class="flex gap-4">
-                    <!-- Chỗ nhập Tên ví cũ -->
                     <div class="flex-1">
-                      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên Ví / Ngân hàng</label>
+                      <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Tên Ví</label>
                       <input type="text" id="w-n" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-medium custom-text custom-focus" placeholder="VD: Techcombank">
                     </div>
                   </div>
-
                   <div class="flex gap-4">
-                    <!-- Nhập số dư -->
                     <div class="flex-1">
                       <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Số dư ban đầu</label>
                       <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="w-b" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus custom-placeholder" placeholder="0">
                     </div>
-                    <!-- Thêm chỗ nhập 4 số cuối -->
                     <div class="w-1/3">
                       <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">4 Số cuối</label>
                       <input type="text" id="w-last4" maxlength="4" class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-black text-xl custom-text custom-focus text-center" placeholder="0000">
                     </div>
                   </div>
-
-                  <!-- Checkbox quỹ chung -->
                   <div class="flex items-center gap-3 bg-pink-50 dark:bg-pink-900/20 p-4 rounded-xl border border-pink-100 dark:border-pink-800">
                     <input type="checkbox" id="w-shared" class="w-5 h-5 accent-pink-500 cursor-pointer">
                     <label for="w-shared" class="font-bold text-pink-600 dark:text-pink-400 cursor-pointer select-none">
-                      <i class="fa-solid fa-heart"></i> Là quỹ chung (Split Bill)
+                      <i class="fa-solid fa-heart"></i> Là quỹ chung 
                     </label>
                   </div>
-
                   <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all">Lưu Ví Mới</button>
                 </form>
               </div>
-            `;
 
+              <!-- FORM NẠP TIỀN MỚI -->
+              <div id="form-topup-container" class="hidden">
+                  <form id="frm-topup" class="space-y-4 animate-fadeIn">
+                      <div>
+                          <label class="block text-xs font-bold custom-text-secondary uppercase mb-1.5">Chọn ví cần nạp</label>
+                          <select id="topup-wallet-select" required class="w-full p-4 custom-bg-input border custom-border rounded-2xl outline-none font-bold custom-text custom-focus appearance-none">${options}</select>
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold custom-text-secondary uppercase mb-1.5">Số tiền nạp</label>
+                          <input type="text" inputmode="numeric" oninput="formatInputCurrency(event)" id="topup-amount" required placeholder="0" class="w-full p-4 text-xl font-black text-success-500 custom-bg-input border custom-border rounded-2xl outline-none custom-focus text-right">
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold custom-text-secondary uppercase mb-1.5">Ghi chú</label>
+                          <input type="text" id="topup-note" placeholder="VD: Rút ATM nạp vào ví..." value="Nạp tiền vào ví" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus text-sm">
+                      </div>
+                      <button type="submit" class="w-full py-4 custom-primary text-white rounded-2xl font-black text-lg custom-shadow-lg active:scale-95 transition-all mt-4">
+                          Xác Nhận Nạp
+                      </button>
+                  </form>
+              </div>
+          `;
+
+          // Gán event listener cho form transfer
           document.getElementById("frm-transfer").onsubmit = (e) => {
             e.preventDefault();
             const from = document.getElementById("tr-from").value,
@@ -8093,8 +8125,11 @@
             });
             saveData();
             closeModal();
+            renderWallets();
             switchView(state.currentView);
           };
+
+          // Gán event listener cho form add wallet
           document.getElementById("frm-w").onsubmit = (e) => {
             e.preventDefault();
             const name = document.getElementById("w-n").value;
@@ -8104,12 +8139,56 @@
               balance: getRawNumber(
                 document.getElementById("w-b").value || "0",
               ),
-              last4: document.getElementById("w-last4").value || "0000", // LƯU THÊM MỤC NÀY
+              last4: document.getElementById("w-last4").value || "0000",
               isShared: document.getElementById("w-shared").checked,
             });
             saveData();
             closeModal();
             renderWallets();
+          };
+
+          // Gán event listener cho form nạp tiền
+          document.getElementById("frm-topup").onsubmit = (e) => {
+            e.preventDefault();
+            const wId = document.getElementById("topup-wallet-select").value;
+            const amt = getRawNumber(
+              document.getElementById("topup-amount").value,
+            );
+
+            if (amt <= 0)
+              return alert("Số tiền nạp phải lớn hơn 0 nhé đại ka!");
+
+            const wallet = state.wallets.find((w) => w.id === wId);
+            if (!wallet) return;
+
+            // Tạo 1 giao dịch Thu Nhập để lưu vết
+            const newTx = {
+              id: generateId(),
+              type: "income",
+              amount: amt,
+              category: "c7", // Tạm nhét vào Lương/Thu nhập
+              walletId: wId,
+              date: getToday().replace("T", " "),
+              note:
+                document.getElementById("topup-note").value ||
+                "Nạp tiền vào ví",
+              locationName: "",
+            };
+
+            if (!state.transactions) state.transactions = [];
+            state.transactions.unshift(newTx);
+
+            // Bơm thẳng tiền vào số dư ví
+            wallet.balance += amt;
+
+            // Lưu & Cập nhật UI
+            saveData();
+            closeModal();
+
+            if (typeof renderWallets === "function") renderWallets();
+            if (typeof renderTransactions === "function") renderTransactions();
+            if (typeof renderDashboard === "function") renderDashboard();
+            if (typeof playSound === "function") playSound("success");
           };
         }
       }
@@ -14931,5 +15010,6 @@
         };
       })();
     </script>
+    <script src="work.js"></script>
   </body>
 </html>
