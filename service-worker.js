@@ -1,36 +1,36 @@
-const CACHE_NAME = 'finmaster-v102'; // Tăng version lên v28 để ép đè cái lỗi cũ
+const CACHE_NAME = 'finmaster-v101'; // Lên 103 để ép nó cởi bộ quần áo cũ ra!
 
-// Các file nằm ngay trên máy của ông
+// 1. NHÉT HẾT CODE Ở MÁY VÀO ĐÂY (Thiếu 1 file là offline lỗi 1 file)
 const STATIC_ASSETS = [
     './',
     './index.html',
-    './manifest.json'
+    './manifest.json',
+    './work.js',        // <--- Bắt buộc phải có
+    './12.js',          // <--- File Tailwind ông tải về
+    './chart.js',       // <--- File ChartJS ông tải về
+    './theme.css',   // <--- Nếu ông có file CSS riêng thì bỏ dấu // ở đầu đi
 ];
 
-// Danh sách TOÀN BỘ thư viện bên ngoài ông đang xài trong HTML
+// 2. Danh sách thư viện bên ngoài
 const CDN_ASSETS = [
     'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js',
-    'https://cdn.tailwindcss.com',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdn.jsdelivr.net/npm/chart.js',
     'https://unpkg.com/leaflet/dist/leaflet.css',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css',
     'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
     'https://npmcdn.com/flatpickr/dist/themes/dark.css',
     'https://cdn.jsdelivr.net/npm/flatpickr',
     'https://unpkg.com/leaflet/dist/leaflet.js',
-    'https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js',
+    'https://unpkg.com/leaflet-heat@0.2.0/dist/leaflet-heat.js',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'
 ];
 
 self.addEventListener('install', (e) => {
-    self.skipWaiting(); // Ép kích hoạt ngay lập tức
+    self.skipWaiting(); 
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            // Lưu file nội bộ
             cache.addAll(STATIC_ASSETS);
             
-            // Ép lưu các file CDN (bỏ qua lỗi CORS bằng mode: 'no-cors')
             CDN_ASSETS.forEach((url) => {
                 fetch(url, { mode: 'no-cors' })
                     .then((response) => cache.put(url, response))
@@ -41,35 +41,30 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-    // Xóa sạch các bộ nhớ đệm đời cũ
     e.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
                 keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim()) // Thêm dòng này để giành quyền điều khiển ngay lập tức
     );
 });
 
 self.addEventListener('fetch', (e) => {
-    // Bỏ qua các đường dẫn không hợp lệ
-
-    if (!e.request.url.startsWith(self.location.origin)) {
-    return; // Để trình duyệt tự fetch bình thường, không can thiệp
-  }
+    // Chỉ xử lý link HTTP/HTTPS, bỏ qua chrome-extension:// v.v..
     if (!e.request.url.startsWith('http')) return;
 
-    // 🔥 BÙA HỘ MỆNH Ở ĐÂY: Nếu là lệnh POST (như đẩy data lên Google) thì tha cho nó đi luôn, cấm lưu Cache!
+    // Tha cho lệnh POST (cấm lưu cache khi đẩy data đi)
     if (e.request.method !== 'GET') {
         return; 
     }
 
+    // ĐÃ XÓA CÁI LỆNH CHẶN ORIGIN NGU NGỐC Ở ĐÂY ĐỂ NÓ LOAD ĐƯỢC FONTAWESOME!
+
     e.respondWith(
         caches.match(e.request).then((cachedRes) => {
-            // Lấy từ kho ra xài luôn nếu có
             if (cachedRes) return cachedRes;
 
-            // Nếu chưa có thì tải từ mạng, tải xong cất vào kho luôn
             return fetch(e.request).then((networkRes) => {
                 const resClone = networkRes.clone();
                 caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
