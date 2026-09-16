@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v101'; // Lên 103 để ép nó cởi bộ quần áo cũ ra!
+const CACHE_NAME = 'finmaster-v102'; // Lên 103 để ép nó cởi bộ quần áo cũ ra!
 
 // 1. NHÉT HẾT CODE Ở MÁY VÀO ĐÂY (Thiếu 1 file là offline lỗi 1 file)
 const STATIC_ASSETS = [
@@ -26,7 +26,12 @@ const CDN_ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-    self.skipWaiting(); 
+    // Nghe ngóng xem khi nào đại ka bấm nút "Cập nhật" trên màn hình thì mới kích hoạt bản mới
+self.addEventListener('message', (event) => {
+    if (event.data === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             cache.addAll(STATIC_ASSETS);
