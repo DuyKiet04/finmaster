@@ -99,6 +99,20 @@
         scrollbar-width: none;
       }
 
+      @keyframes iosPopIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.95) translateY(10px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .animate-iosPopIn {
+        animation: iosPopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+      }
+
       body {
         overscroll-behavior-y: none;
       }
@@ -461,81 +475,273 @@
   >
     <div
       id="login-overlay"
-      class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center hidden"
+      class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-3xl flex flex-col items-center justify-center hidden transition-opacity duration-300 font-sans select-none"
     >
-      <h2 class="text-white text-xl font-medium mb-12">Nhập mật mã</h2>
-
-      <div id="pin-dots" class="flex gap-4 mb-12">
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
-        <div class="w-4 h-4 rounded-full border border-white/50"></div>
+      <!-- Giao diện Khóa Tài Khoản (Đếm ngược) -->
+      <div
+        id="lockout-ui"
+        class="hidden flex-col items-center justify-center animate-iosPopIn w-full max-w-sm px-6"
+      >
+        <div class="mb-6 flex justify-center">
+          <i class="fa-solid fa-lock text-3xl text-white/50"></i>
+        </div>
+        <h2
+          class="text-white text-[22px] font-medium mb-3 text-center tracking-wide"
+        >
+          Tài khoản không khả dụng
+        </h2>
+        <p class="text-white/60 text-sm text-center mb-8 px-4 leading-relaxed">
+          Bạn đã nhập sai quá nhiều lần.<br />Vui lòng thử lại sau thời gian đếm
+          ngược.
+        </p>
+        <div
+          class="text-[56px] font-light text-white font-mono tracking-wider"
+          id="lockout-timer"
+        >
+          03:00
+        </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-6 mb-8">
+      <!-- Giao diện Nhập PIN bình thường -->
+      <div
+        id="pincode-ui"
+        class="flex flex-col items-center w-full max-w-sm mt-8"
+      >
+        <h2 class="text-white text-[22px] font-medium mb-8 tracking-wide">
+          Nhập mật mã
+        </h2>
+
+        <!-- Chấm tròn mã PIN -->
+        <div id="pin-dots" class="flex gap-6 mb-16 h-4 items-center">
+          <!-- 
+        JS render class:
+        Trống: class="w-3.5 h-3.5 rounded-full border border-white"
+        Có số: class="w-3.5 h-3.5 rounded-full bg-white"
+      -->
+        </div>
+
+        <!-- Bàn phím số chuẩn iOS -->
+        <div class="grid grid-cols-3 gap-x-7 gap-y-4 mb-12">
+          <!-- Nút 1 -->
+          <button
+            onclick="pressPin(1)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">1</span>
+            <span
+              class="text-[10px] font-bold text-transparent leading-none mt-1"
+              >.</span
+            >
+          </button>
+
+          <!-- Nút 2 -->
+          <button
+            onclick="pressPin(2)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">2</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >ABC</span
+            >
+          </button>
+
+          <!-- Nút 3 -->
+          <button
+            onclick="pressPin(3)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">3</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >DEF</span
+            >
+          </button>
+
+          <!-- Nút 4 -->
+          <button
+            onclick="pressPin(4)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">4</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >GHI</span
+            >
+          </button>
+
+          <!-- Nút 5 -->
+          <button
+            onclick="pressPin(5)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">5</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >JKL</span
+            >
+          </button>
+
+          <!-- Nút 6 -->
+          <button
+            onclick="pressPin(6)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">6</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >MNO</span
+            >
+          </button>
+
+          <!-- Nút 7 -->
+          <button
+            onclick="pressPin(7)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">7</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >PQRS</span
+            >
+          </button>
+
+          <!-- Nút 8 -->
+          <button
+            onclick="pressPin(8)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">8</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >TUV</span
+            >
+          </button>
+
+          <!-- Nút 9 -->
+          <button
+            onclick="pressPin(9)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">9</span>
+            <span
+              class="text-[9px] font-bold tracking-[0.15em] text-white/60 uppercase leading-none mt-1"
+              >WXYZ</span
+            >
+          </button>
+
+          <!-- Ô trống -->
+          <div class="w-[75px] h-[75px]"></div>
+
+          <!-- Nút 0 -->
+          <button
+            onclick="pressPin(0)"
+            class="w-[75px] h-[75px] rounded-full bg-[#333333]/80 active:bg-[#777777] text-white transition-colors duration-75 flex flex-col items-center justify-center pt-1.5"
+          >
+            <span class="text-[32px] font-normal leading-none">0</span>
+            <span
+              class="text-[10px] font-bold text-transparent leading-none mt-1"
+              >.</span
+            >
+          </button>
+
+          <!-- Nút Xóa (Delete) -->
+          <button
+            onclick="deletePin()"
+            class="w-[75px] h-[75px] rounded-full text-white font-medium text-lg tracking-wide active:text-white/40 transition-colors duration-75 flex items-center justify-center"
+          >
+            Xóa
+          </button>
+        </div>
+
+        <!-- Nút Quên mật khẩu dạng Link -->
         <button
-          onclick="pressPin(1)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
+          onclick="openForgotPinModal()"
+          class="text-white/80 hover:text-white font-medium text-sm transition-colors active:text-white/40"
         >
-          1
+          Thêm Tùy chọn Mật mã?
         </button>
-        <button
-          onclick="pressPin(2)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          2
-        </button>
-        <button
-          onclick="pressPin(3)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          3
-        </button>
-        <button
-          onclick="pressPin(4)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          4
-        </button>
-        <button
-          onclick="pressPin(5)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          5
-        </button>
-        <button
-          onclick="pressPin(6)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          6
-        </button>
-        <button
-          onclick="pressPin(7)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          7
-        </button>
-        <button
-          onclick="pressPin(8)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          8
-        </button>
-        <button
-          onclick="pressPin(9)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          9
-        </button>
-        <div class="w-20 h-20"></div>
-        <button
-          onclick="pressPin(0)"
-          class="w-20 h-20 rounded-full bg-white/10 text-white text-3xl font-light transition-all active:scale-95 flex items-center justify-center"
-        >
-          0
-        </button>
+      </div>
+    </div>
+
+    <!-- =========================================
+     KHUNG QUÊN MẬT KHẨU (NẰM TRÊN CÙNG)
+     ========================================= -->
+    <div
+      id="forgot-pin-modal"
+      class="fixed inset-0 z-[1001] bg-black/60 backdrop-blur-md flex flex-col items-center justify-center hidden font-sans select-none px-4"
+    >
+      <div
+        class="w-full max-w-[340px] bg-[#1C1C1E]/95 backdrop-blur-3xl rounded-[32px] p-6 animate-iosPopIn border border-white/10 shadow-2xl"
+      >
+        <!-- Nút Đóng -->
+        <div class="flex justify-end mb-2">
+          <button
+            onclick="closeForgotPinModal()"
+            class="w-7 h-7 rounded-full bg-[#3a3a3c] text-white/60 hover:bg-[#444446] active:bg-[#555557] flex items-center justify-center text-sm transition-colors"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Bước 1: Xác thực -->
+        <div id="fp-step-1">
+          <div class="mb-5 flex justify-center">
+            <i class="fa-solid fa-shield-halved text-4xl text-[#0A84FF]"></i>
+          </div>
+          <h3 class="text-[20px] font-semibold text-white text-center mb-2">
+            Khôi phục mật mã
+          </h3>
+          <p class="text-[13px] text-white/60 text-center mb-6 leading-relaxed">
+            Nhập 1 trong các thông tin sau để chứng minh chính chủ:<br />
+            <span class="text-white font-medium">Email nhận thông báo</span>,
+            <span class="text-white font-medium">Username</span>, hoặc
+            <span class="text-white font-medium">Tên Ví bất kỳ</span>.
+          </p>
+
+          <input
+            type="text"
+            id="fp-verify-input"
+            placeholder="Nhập thông tin xác thực"
+            class="w-full bg-[#2C2C2E] text-white rounded-xl px-4 py-3.5 outline-none focus:bg-[#3A3A3C] transition-colors font-medium text-center text-[15px] mb-4 placeholder:text-white/40"
+          />
+
+          <button
+            onclick="verifyForgotPin()"
+            class="w-full py-3.5 bg-[#0A84FF] text-white rounded-xl font-semibold text-[15px] active:bg-[#0071E3] transition-colors"
+          >
+            Xác Thực
+          </button>
+        </div>
+
+        <!-- Bước 2: Đặt PIN mới -->
+        <div id="fp-step-2" class="hidden">
+          <div class="mb-5 flex justify-center">
+            <i class="fa-solid fa-key text-4xl text-[#30D158]"></i>
+          </div>
+          <h3 class="text-[20px] font-semibold text-white text-center mb-1">
+            Xác thực thành công
+          </h3>
+          <p class="text-[13px] text-white/60 text-center mb-6">
+            Vui lòng đặt mật mã mới của bạn.
+          </p>
+
+          <input
+            type="password"
+            id="fp-new-pin"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            placeholder="Mật mã mới"
+            class="w-full bg-[#2C2C2E] text-white rounded-xl px-4 py-3.5 outline-none focus:bg-[#3A3A3C] transition-colors font-bold text-center text-xl tracking-[0.3em] mb-4 placeholder:text-white/30 placeholder:tracking-normal placeholder:font-normal placeholder:text-[15px]"
+          />
+
+          <button
+            onclick="saveRecoveredPin()"
+            class="w-full py-3.5 bg-[#30D158] text-white rounded-xl font-semibold text-[15px] active:bg-[#24A845] transition-colors"
+          >
+            Cập Nhật Mật Mã
+          </button>
+        </div>
       </div>
     </div>
     <div
@@ -3614,6 +3820,7 @@
         { id: "wallets", icon: "fa-wallet", label: "Ví", desktopOnly: true },
         { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
         { id: "trips", icon: "fa-plane-departure", label: "Chuyến đi" },
+        { id: "gallery", icon: "fa-images", label: "Thư viện ảnh" },
         { id: "settings", icon: "fa-gear", label: "Cài đặt" },
       ];
 
@@ -3642,6 +3849,7 @@
           { id: "tasks", icon: "fa-clipboard-check" },
           { id: "goals", icon: "fa-bullseye" },
           { id: "trips", icon: "fa-plane-departure" },
+          { id: "gallery", icon: "fa-images" },
           { id: "wallets", icon: "fa-wallet" },
         ];
         let pillHtml = "";
@@ -8599,11 +8807,85 @@
       });
       document.addEventListener("DOMContentLoaded", initApp);
 
+      // ==========================================
+      // BỘ NÃO BẢO MẬT & MÀN HÌNH KHÓA CAO CẤP
+      // ==========================================
       const PASS_KEY = "finmaster_pass";
-      let currentPin = "";
-      const CORRECT_PIN = localStorage.getItem(PASS_KEY) || "0000";
+      const LOCK_ATTEMPTS_KEY = "fm_wrong_attempts";
+      const LOCK_TIME_KEY = "fm_lock_until";
 
+      let currentPin = "";
+      let wrongAttempts = parseInt(
+        localStorage.getItem(LOCK_ATTEMPTS_KEY) || "0",
+      );
+      let lockoutTimerInterval = null;
+
+      // 1. Thuật toán kiểm tra và đếm ngược thời gian Khóa
+      function checkLockoutStatus() {
+        const lockTimeStr = localStorage.getItem(LOCK_TIME_KEY);
+        // NẾU KHÔNG CÓ ÁN PHẠT NÀO TRONG Ổ CỨNG -> BỎ QUA LUÔN (Không reset mã PIN)
+        if (!lockTimeStr) return false;
+
+        const lockUntil = parseInt(lockTimeStr);
+        const now = Date.now();
+
+        if (lockUntil > now) {
+          // Đang bị khóa
+          document.getElementById("pincode-ui").classList.add("hidden");
+          document
+            .getElementById("lockout-ui")
+            .classList.remove("hidden", "flex");
+          document.getElementById("lockout-ui").classList.add("flex");
+
+          if (lockoutTimerInterval) clearInterval(lockoutTimerInterval);
+
+          lockoutTimerInterval = setInterval(() => {
+            const remainingSecs = Math.floor(
+              (parseInt(localStorage.getItem(LOCK_TIME_KEY)) - Date.now()) /
+                1000,
+            );
+            if (remainingSecs <= 0) {
+              clearInterval(lockoutTimerInterval);
+              unlockScreenFromPenalty();
+            } else {
+              const m = Math.floor(remainingSecs / 60)
+                .toString()
+                .padStart(2, "0");
+              const s = (remainingSecs % 60).toString().padStart(2, "0");
+              document.getElementById("lockout-timer").innerText = `${m}:${s}`;
+            }
+          }, 1000);
+          return true; // Bị khóa
+        } else {
+          // Nếu đã qua thời gian khóa, tự động ân xá
+          unlockScreenFromPenalty();
+          return false; // Không khóa
+        }
+      }
+      function unlockScreenFromPenalty() {
+        localStorage.removeItem(LOCK_TIME_KEY);
+        // KHÔNG reset wrongAttempts về 0 vội, để nó cộng dồn nếu cố tình sai tiếp
+        document.getElementById("lockout-ui").classList.add("hidden");
+        document.getElementById("lockout-ui").classList.remove("flex");
+        document.getElementById("pincode-ui").classList.remove("hidden");
+        currentPin = "";
+        updateDots();
+      }
+
+      function triggerLockout() {
+        let penaltyMinutes = 3; // Sai 3 lần phạt 3 phút
+        if (wrongAttempts >= 5) penaltyMinutes = 60; // Cộng dồn sai 5 lần phạt 1 TIẾNG!
+
+        const lockUntil = Date.now() + penaltyMinutes * 60 * 1000;
+        localStorage.setItem(LOCK_TIME_KEY, lockUntil.toString());
+        if (typeof playSound === "function") playSound("trash"); // Kêu âm thanh báo lỗi
+        checkLockoutStatus();
+      }
+
+      // 2. Thuật toán gõ phím
       function pressPin(num) {
+        if (checkLockoutStatus()) return; // Đang khóa đéo cho bấm
+
         const savedPass = localStorage.getItem(PASS_KEY) || "0000";
         const requiredLength = savedPass.length;
 
@@ -8614,15 +8896,32 @@
 
         if (currentPin.length === requiredLength) {
           if (currentPin === savedPass) {
+            // Đúng Pass!
+            wrongAttempts = 0; // Reset án tích
+            localStorage.removeItem(LOCK_ATTEMPTS_KEY);
             runSplashSequence();
           } else {
-            alert("Sai mã PIN!");
-            currentPin = "";
-            updateDots();
+            // Sai Pass!
+            wrongAttempts++;
+            localStorage.setItem(LOCK_ATTEMPTS_KEY, wrongAttempts.toString());
+
+            if (wrongAttempts === 3 || wrongAttempts >= 5) {
+              triggerLockout();
+            } else {
+              alert(`Sai mã PIN! (Nhập sai ${wrongAttempts} lần)`);
+              currentPin = "";
+              updateDots();
+            }
           }
-          currentPin = "";
-          updateDots();
         }
+      }
+
+      // Nút Xóa lùi
+      function deletePin() {
+        if (checkLockoutStatus() || currentPin.length === 0) return;
+        currentPin = currentPin.slice(0, -1);
+        updateDots();
+        if (typeof playSound === "function") playSound("click");
       }
 
       function updateDots() {
@@ -8637,34 +8936,113 @@
           const dot = document.createElement("div");
           dot.className =
             i < currentPin.length
-              ? "w-4 h-4 rounded-full bg-white"
-              : "w-4 h-4 rounded-full border border-white/50";
+              ? "w-4 h-4 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all"
+              : "w-4 h-4 rounded-full border border-white/40 transition-all";
           container.appendChild(dot);
         }
       }
 
       function runSplashSequence() {
-        document.getElementById("login-overlay").classList.add("hidden");
+        document.getElementById("login-overlay").classList.add("opacity-0");
+        setTimeout(() => {
+          document.getElementById("login-overlay").classList.add("hidden");
+        }, 300);
 
         const splash = document.getElementById("splash-screen");
         if (!splash) return;
-
         splash.classList.remove("hidden");
         splash.style.opacity = "1";
 
         setTimeout(() => {
           splash.style.opacity = "0";
-          setTimeout(() => {
-            splash.classList.add("hidden");
-          }, 500);
-        }, 2000);
+          setTimeout(() => splash.classList.add("hidden"), 500);
+        }, 1500);
       }
 
+      // Khởi động kiểm tra khi load web
       document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem(PASS_KEY)) {
           document.getElementById("login-overlay").classList.remove("hidden");
+          updateDots(); // Vẽ chấm tròn sẵn
+          checkLockoutStatus(); // Check xem có đang chịu án phạt không
         }
       });
+
+      // ==========================================
+      // BỘ NÃO QUÊN MẬT KHẨU (FORGOT PIN)
+      // ==========================================
+      function openForgotPinModal() {
+        document.getElementById("forgot-pin-modal").classList.remove("hidden");
+        document.getElementById("forgot-pin-modal").classList.add("flex");
+        document.getElementById("fp-step-1").classList.remove("hidden");
+        document.getElementById("fp-step-2").classList.add("hidden");
+        document.getElementById("fp-verify-input").value = "";
+        document.getElementById("fp-new-pin").value = "";
+      }
+
+      function closeForgotPinModal() {
+        document.getElementById("forgot-pin-modal").classList.add("hidden");
+        document.getElementById("forgot-pin-modal").classList.remove("flex");
+      }
+
+      // Xác thực Database lấy từ kho lạnh IndexedDB (Vì lúc này App chưa kịp load State)
+      async function verifyForgotPin() {
+        const inputVal = document
+          .getElementById("fp-verify-input")
+          .value.trim()
+          .toLowerCase();
+        if (!inputVal) return alert("Chưa nhập thông tin đại ka ơi!");
+
+        try {
+          // Cạy két sắt lấy data ra kiểm tra
+          const savedData = await localforage.getItem("finmaster_data");
+
+          const pName = (savedData?.userProfile?.name || "").toLowerCase();
+          const pEmail = (
+            savedData?.notificationSettings?.email || ""
+          ).toLowerCase();
+          const wallets = savedData?.wallets || [];
+          const walletNames = wallets.map((w) => w.name.toLowerCase());
+
+          // Thuật toán quét Trùng khớp
+          const isMatch =
+            inputVal === "finmaster" ||
+            (inputVal === pName && pName !== "") ||
+            (inputVal === pEmail && pEmail !== "") ||
+            walletNames.includes(inputVal);
+
+          if (isMatch) {
+            // Mở khóa qua Màn 2
+            document.getElementById("fp-step-1").classList.add("hidden");
+            document.getElementById("fp-step-2").classList.remove("hidden");
+            if (typeof playSound === "function") playSound("success");
+          } else {
+            alert("Thông tin không khớp với bất kỳ dữ liệu nào trong App!");
+            if (typeof playSound === "function") playSound("trash");
+          }
+        } catch (error) {
+          alert("Lỗi truy xuất dữ liệu hệ thống!");
+        }
+      }
+
+      function saveRecoveredPin() {
+        const newPass = document.getElementById("fp-new-pin").value;
+        if (newPass && /^\d+$/.test(newPass)) {
+          // Lưu Pass Mới
+          localStorage.setItem(PASS_KEY, newPass);
+
+          // Xóa sạch mọi án tích phạt Khóa tài khoản (Ân xá toàn diện)
+          wrongAttempts = 0;
+          localStorage.removeItem(LOCK_ATTEMPTS_KEY);
+          localStorage.removeItem(LOCK_TIME_KEY);
+
+          alert("✅ Khôi phục thành công! Hệ thống sẽ khởi động lại.");
+          closeForgotPinModal();
+          window.location.reload(); // Ép load lại toàn bộ app để lấy Pass mới vào xài
+        } else {
+          alert("Mật mã mới chỉ được nhập số, không bỏ trống!");
+        }
+      }
 
       function openChangePassword() {
         const modal = document.getElementById("global-modal");
@@ -8900,6 +9278,66 @@
         return mb.toFixed(2) + " MB";
       }
 
+      function getAppStorageDetails() {
+        // Hàm tính kích thước thực của 1 chuỗi string (Base64 Ảnh hoặc Text)
+        const getByteSize = (str) => new Blob([str]).size;
+
+        const dataString = JSON.stringify(state);
+        const totalBytes = getByteSize(dataString);
+
+        // Quét toàn bộ hệ thống để gom từng Byte ảnh Base64
+        let totalImageBytes = 0;
+
+        // Quét giao dịch
+        state.transactions.forEach((tx) => {
+          if (tx.image && tx.image.length > 50)
+            totalImageBytes += getByteSize(tx.image);
+        });
+
+        // Quét sổ quán ruột
+        (state.favorites || []).forEach((f) => {
+          if (f.image && f.image.length > 50)
+            totalImageBytes += getByteSize(f.image);
+        });
+
+        // Quét check-in chuyến đi
+        (state.trips || []).forEach((tr) => {
+          if (tr.checkins) {
+            tr.checkins.forEach((chk) => {
+              if (chk.image && chk.image.length > 50)
+                totalImageBytes += getByteSize(chk.image);
+            });
+          }
+        });
+
+        // Quét điểm bản đồ
+        (state.mapPoints || []).forEach((pt) => {
+          if (pt.image && pt.image.length > 50)
+            totalImageBytes += getByteSize(pt.image);
+        });
+
+        // Quét ký sự công việc (work.js)
+        if (state.workData && state.workData.logs) {
+          state.workData.logs.forEach((l) => {
+            if (l.journalImage && l.journalImage.length > 50)
+              totalImageBytes += getByteSize(l.journalImage);
+            if (l.journalImages && l.journalImages.length > 0) {
+              l.journalImages.forEach((img) => {
+                if (img.length > 50) totalImageBytes += getByteSize(img);
+              });
+            }
+          });
+        }
+
+        const dataBytes = totalBytes - totalImageBytes;
+
+        return {
+          total: (totalBytes / 1024 / 1024).toFixed(2),
+          images: (totalImageBytes / 1024 / 1024).toFixed(2),
+          data: (dataBytes / 1024 / 1024).toFixed(2),
+        };
+      }
+
       async function updateStorageUI() {
         const stats = getAppStorageDetails();
         const statsEl = document.getElementById("text-free-size");
@@ -8908,56 +9346,62 @@
 
         if (!statsEl || !barImages || !barData) return;
 
+        // In số liệu TEXT
+        document.getElementById("text-img-size").innerText =
+          parseFloat(stats.images) > 0
+            ? parseFloat(stats.images).toFixed(2) + " MB"
+            : "0 MB";
+        document.getElementById("text-data-size").innerText =
+          parseFloat(stats.data) > 0
+            ? parseFloat(stats.data).toFixed(2) + " MB"
+            : "0 MB";
+
+        // Tính dung lượng trống thật sự của thiết bị (Quota)
         if (navigator.storage && navigator.storage.estimate) {
-          const estimate = await navigator.storage.estimate();
-          const totalQuotaMB = estimate.quota / (1024 * 1024);
-          const usedMB = parseFloat(stats.total);
-          const freeMB = totalQuotaMB - usedMB;
+          try {
+            const estimate = await navigator.storage.estimate();
+            const totalQuotaMB = estimate.quota / (1024 * 1024);
+            const usedMB = estimate.usage / (1024 * 1024); // Số liệu thật trình duyệt báo
+            const freeMB = totalQuotaMB - usedMB;
 
-          statsEl.innerText =
-            freeMB >= 1024
-              ? (freeMB / 1024).toFixed(2) + " GB"
-              : freeMB.toFixed(2) + " MB";
+            // Hiển thị còn trống
+            statsEl.innerText =
+              freeMB >= 1024
+                ? (freeMB / 1024).toFixed(2) + " GB"
+                : freeMB.toFixed(2) + " MB";
 
-          document.getElementById("text-img-size").innerText =
-            parseFloat(stats.images).toFixed(3) + " MB";
-          document.getElementById("text-data-size").innerText =
-            parseFloat(stats.data).toFixed(3) + " MB";
+            // VẼ THANH TIẾN TRÌNH: Tính % dựa trên TỔNG DUNG LƯỢNG TRÌNH DUYỆT CẤP, không phải dựa trên tổng file của App
+            // App mới tạo file quá nhỏ (<1MB) so với Quota quá khủng (Hàng GB) nên thanh luôn bằng 0
+            // Giải pháp: Ép thanh progress bar hiển thị TỐI THIỂU 2% nếu có dữ liệu để mắt thường nhìn thấy được
+            let imgPct = (parseFloat(stats.images) / totalQuotaMB) * 100;
+            let dataPct = (parseFloat(stats.data) / totalQuotaMB) * 100;
 
-          const imgPct = Math.max(
-            5,
-            (parseFloat(stats.images) / totalQuotaMB) * 100,
-          );
-          const dataPct = Math.max(
-            5,
-            (parseFloat(stats.data) / totalQuotaMB) * 100,
-          );
+            if (parseFloat(stats.images) > 0 && imgPct < 3) imgPct = 3;
+            if (parseFloat(stats.data) > 0 && dataPct < 3) dataPct = 3;
+
+            barImages.style.width =
+              parseFloat(stats.images) > 0 ? imgPct + "%" : "0%";
+            barData.style.width =
+              parseFloat(stats.data) > 0 ? dataPct + "%" : "0%";
+          } catch (error) {
+            statsEl.innerText = "Không thể tính dung lượng";
+          }
+        } else {
+          statsEl.innerText = "Trình duyệt không hỗ trợ";
+
+          // Nếu trình duyệt (thường là iOS cũ) không hỗ trợ estimate, vẽ tỷ lệ biểu đồ Nội bộ
+          const total = parseFloat(stats.total) || 1;
+          let imgPct = (parseFloat(stats.images) / total) * 100;
+          let dataPct = (parseFloat(stats.data) / total) * 100;
+
+          if (parseFloat(stats.images) > 0 && imgPct < 5) imgPct = 5;
+          if (parseFloat(stats.data) > 0 && dataPct < 5) dataPct = 5;
 
           barImages.style.width =
-            (parseFloat(stats.images) > 0 ? imgPct : 0) + "%";
+            parseFloat(stats.images) > 0 ? imgPct + "%" : "0%";
           barData.style.width =
-            (parseFloat(stats.data) > 0 ? dataPct : 0) + "%";
-        } else {
-          statsEl.innerText = "Trình duyệt không hỗ trợ xem dung lượng";
+            parseFloat(stats.data) > 0 ? dataPct + "%" : "0%";
         }
-      }
-      function getAppStorageDetails() {
-        const dataString = JSON.stringify(state);
-
-        const totalBytes = new Blob([dataString]).size;
-
-        const totalImageBytes = state.transactions.reduce((sum, tx) => {
-          return sum + (tx.image ? tx.image.length : 0);
-        }, 0);
-
-        const dataBytes = totalBytes - totalImageBytes;
-
-        return {
-          total: (totalBytes / 1024 / 1024).toFixed(2),
-          images: (totalImageBytes / 1024 / 1024).toFixed(2),
-          data: (dataBytes / 1024 / 1024).toFixed(2),
-          percentImg: ((totalImageBytes / totalBytes) * 100).toFixed(1),
-        };
       }
       function requestNotificationPermission() {
         if (!("Notification" in window))
@@ -9044,7 +9488,6 @@
       //   };
       // });
 
-      
       function changeThemeColor(themeClass, hueValue) {
         document.documentElement.style.setProperty("--primary-hue", hueValue);
 
@@ -15015,54 +15458,124 @@
     <!-- ========================================== -->
     <!-- TOAST THÔNG BÁO CẬP NHẬT PWA XỊN XÒ -->
     <!-- ========================================== -->
-    <div id="pwa-update-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 custom-bg-card border custom-border px-4 py-3 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4 transition-all duration-500 translate-y-32 opacity-0">
-        <div class="flex flex-col">
-            <span class="text-sm font-black custom-text">✨ Có bản cập nhật mới!</span>
-            <span class="text-[10px] custom-text-secondary font-bold">Nâng cấp để trải nghiệm mượt hơn</span>
+    <!-- ========================================== -->
+    <!-- TOAST THÔNG BÁO CẬP NHẬT PWA RỚT TỪ TRÊN XUỐNG -->
+    <!-- ========================================== -->
+    <div
+      id="pwa-update-toast"
+      class="fixed top-6 left-1/2 -translate-x-1/2 w-[92%] max-w-sm custom-bg-card backdrop-blur-xl border custom-border p-3 rounded-[1.25rem] shadow-[0_20px_40px_rgba(0,0,0,0.15)] z-[9999] flex items-center justify-between gap-3 transition-all duration-700 -translate-y-40 opacity-0 pointer-events-none"
+    >
+      <div class="flex items-center gap-3 pl-1">
+        <!-- Icon Reload -->
+        <div
+          id="pwa-icon"
+          class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-500 transition-all duration-300"
+        >
+          <i class="fa-solid fa-arrows-rotate text-lg"></i>
         </div>
-        <button onclick="pwaUpdateApp()" class="bg-primary-500 hover:bg-primary-600 text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-all">
-            Cập nhật
-        </button>
+
+        <!-- Text Content -->
+        <div class="flex flex-col" id="pwa-text-box">
+          <span class="text-sm font-black custom-text tracking-tight">
+            ✨ Có bản cập nhật mới!
+          </span>
+          <span class="text-[11px] custom-text-secondary font-bold mt-0.5">
+            Trải nghiệm mượt mà hơn
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button
+        id="pwa-btn"
+        onclick="pwaUpdateApp()"
+        class="bg-primary-500 hover:bg-primary-600 text-white text-xs font-black px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg active:scale-90 transition-all duration-200 pointer-events-auto flex-shrink-0"
+      >
+        Cập nhật
+      </button>
     </div>
 
     <script>
-    // ==========================================
-    // BỘ NÃO BẮT SÓNG BẢN CẬP NHẬT
-    // ==========================================
-    let pwaNewWorker;
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js').then(reg => {
-            reg.addEventListener('updatefound', () => {
-                pwaNewWorker = reg.installing;
-                pwaNewWorker.addEventListener('statechange', () => {
-                    // Cài xong bản mới ở hậu trường + Đang có bản cũ chạy trên màn hình
-                    if (pwaNewWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // Hiển thị cục Toast lên!
-                        const toast = document.getElementById('pwa-update-toast');
-                        toast.classList.remove('translate-y-32', 'opacity-0');
-                    }
-                });
+      // ==========================================
+      // BỘ NÃO BẮT SÓNG BẢN CẬP NHẬT
+      // ==========================================
+      let pwaNewWorker;
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./service-worker.js").then((reg) => {
+          reg.addEventListener("updatefound", () => {
+            pwaNewWorker = reg.installing;
+            pwaNewWorker.addEventListener("statechange", () => {
+              // Cài xong bản mới ở hậu trường + Đang có bản cũ chạy trên màn hình
+              if (
+                pwaNewWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
+                // RỚT TỪ TRÊN XUỐNG
+                const toast = document.getElementById("pwa-update-toast");
+                toast.classList.remove(
+                  "-translate-y-40",
+                  "opacity-0",
+                  "pointer-events-none",
+                );
+                // Thêm tí hiệu ứng nảy nảy (bounce)
+                toast.classList.add("translate-y-0");
+                if (typeof playSound === "function") playSound("pop");
+              }
             });
+          });
         });
 
-        // Bắt sự kiện: Khi bản mới chiếm quyền thành công -> Tự động F5 lại web!
+        // Bắt sự kiện: Khi bản mới chiếm quyền thành công -> Hiện thông báo thành công rồi F5
         let pwaRefreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!pwaRefreshing) {
-                window.location.reload();
-                pwaRefreshing = true;
-            }
-        });
-    }
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!pwaRefreshing) {
+            pwaRefreshing = true;
 
-    // Nút bấm "Cập nhật": Bắn tín hiệu chém đầu bản cũ, kích hoạt bản mới
-    function pwaUpdateApp() {
+            // Đổi giao diện thành Thành Công
+            const icon = document.getElementById("pwa-icon");
+            const btn = document.getElementById("pwa-btn");
+            const textBox = document.getElementById("pwa-text-box");
+
+            icon.className =
+              "flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-500 scale-110 transition-all duration-300";
+            icon.innerHTML = '<i class="fa-solid fa-check text-xl"></i>';
+
+            textBox.innerHTML = `
+                <span class="text-sm font-black text-emerald-600 tracking-tight">Cập nhật thành công!</span>
+                <span class="text-[11px] custom-text-secondary font-bold mt-0.5">Đang tải lại dữ liệu...</span>
+            `;
+            btn.classList.add("hidden");
+
+            if (typeof playSound === "function") playSound("success");
+
+            // Chờ 1.5 giây cho ông nhìn thấy chữ thành công rồi mới F5
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          }
+        });
+      }
+
+      // Nút bấm "Cập nhật": Xoay tròn loading rồi Bắn tín hiệu chém đầu bản cũ
+      function pwaUpdateApp() {
         if (pwaNewWorker) {
-            pwaNewWorker.postMessage('SKIP_WAITING');
-            document.getElementById('pwa-update-toast').innerHTML = '<span class="text-sm font-bold text-primary-500 px-4">Đang nạp dữ liệu...</span>';
+          const btn = document.getElementById("pwa-btn");
+          const icon = document.getElementById("pwa-icon");
+
+          // Hiệu ứng Loading
+          btn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin text-base"></i>';
+          btn.classList.add("opacity-80", "pointer-events-none");
+          icon.innerHTML = '<i class="fa-solid fa-gear fa-spin text-lg"></i>';
+
+          if (typeof playSound === "function") playSound("click");
+
+          // Bắn tín hiệu bắt Service Worker thay áo mới
+          pwaNewWorker.postMessage("SKIP_WAITING");
         }
-    }
+      }
     </script>
     <script src="work.js"></script>
+    <script src="image.js"></script>
   </body>
 </html>

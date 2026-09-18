@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v102'; // Lên 103 để ép nó cởi bộ quần áo cũ ra!
+const CACHE_NAME = 'finmaster-v108'; // Lên 103 để ép nó cởi bộ quần áo cũ ra!
 
 // 1. NHÉT HẾT CODE Ở MÁY VÀO ĐÂY (Thiếu 1 file là offline lỗi 1 file)
 const STATIC_ASSETS = [
