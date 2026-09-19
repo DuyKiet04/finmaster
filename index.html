@@ -65,6 +65,13 @@
     <link rel="stylesheet" href="theme.css" />
     <link rel="icon" href="data:," />
 
+    <!-- Thư viện Cắt ảnh Cropper.js -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
@@ -205,6 +212,12 @@
         height: 36px !important;
         margin-left: 2px;
         margin-top: 2px;
+      }
+
+      #app-custom-bg {
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
       }
       .dark .marker-cluster div {
         border-color: #1f2937; /* Đổi viền trắng thành đen xám khi Dark mode */
@@ -664,7 +677,7 @@
             <div
               class="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white/80 group-hover:text-emerald-400 group-hover:border-emerald-500/50 transition-all active:scale-90"
             >
-              <i class="fa-solid fa-face-viewfinder text-xl"></i>
+              <i class="fa-solid fa-camera text-xl"></i>
             </div>
             <span
               class="text-[10px] font-bold text-white/60 group-hover:text-emerald-400 uppercase tracking-wider"
@@ -823,7 +836,8 @@
       >
         <!-- <i class="fa-solid fa-wallet"></i> -->
         <img
-          src="https://duykiet04.github.io/anh/dk.jpg"
+          id="splash-avatar"
+          src="https://duykiet04.github.io/anh/logo3.png"
           alt=""
           class="object-cover w-full h-full rounded-3xl"
         />
@@ -2623,176 +2637,260 @@
             </button>
           </div>
         </div>
+        <!-- ========================================== -->
+        <!-- MÀN HÌNH CÀI ĐẶT (SETTINGS) CHUẨN SUPER APP -->
+        <!-- ========================================== -->
         <div
           id="view-settings"
-          class="view-section max-w-3xl mx-auto space-y-6"
+          class="view-section max-w-3xl mx-auto space-y-6 pb-24 pt-2"
         >
+          <!-- KHỐI 1: TÀI KHOẢN & BẢO MẬT (HERO CARD) -->
           <div
-            class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800"
+            class="relative overflow-hidden custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm border custom-border dark:border-gray-700"
           >
-            <h4
-              class="font-bold text-lg mb-6 flex items-center gap-2 custom-text"
+            <!-- Nền Gradient vát cong nửa trên -->
+            <div
+              class="absolute top-0 inset-x-0 h-32 custom-primary pacity-90"
+            ></div>
+
+            <!-- Avatar & Tên -->
+            <div
+              class="relative pt-16 px-6 pb-6 flex flex-col items-center sm:flex-row sm:items-end gap-5"
             >
-              <i class="fa-solid fa-user-astronaut text-primary-500"></i> Hồ sơ
-            </h4>
-            <div class="flex items-center gap-6">
-              <div class="relative shrink-0">
-                <img
-                  id="profile-img"
-                  src="https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80"
-                  class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover aspect-square border-4 border-primary-100 dark:border-primary-900/30 custom-shadow-sm"
-                />
+              <div class="relative shrink-0 group">
+                <div
+                  class="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-white dark:bg-gray-800 shadow-xl relative z-10"
+                >
+                  <img
+                    id="profile-img"
+                    src="https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80"
+                    class="w-full h-full rounded-full object-cover aspect-square"
+                  />
+                </div>
                 <button
                   onclick="document.getElementById('avatar-input').click()"
-                  class="absolute bottom-0 right-0 w-8 h-8 custom-primary rounded-full flex items-center justify-center custom-shadow transition-transform active:scale-90 border-2 border-white dark:border-gray-800"
+                  class="absolute bottom-1 right-1 w-9 h-9 bg-gray-900 text-white dark:bg-white dark:text-gray-900 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90 z-20 border-2 border-white dark:border-gray-800"
                 >
-                  <i class="fa-solid fa-camera text-xs"></i>
+                  <i class="fa-solid fa-camera text-sm"></i>
                 </button>
                 <input
                   type="file"
                   id="avatar-input"
                   accept="image/*"
-                  capture="user"
                   class="hidden"
                   onchange="updateAvatar(event)"
                 />
               </div>
-              <div>
+              <div class="text-center sm:text-left pb-1 flex-1">
                 <h3
-                  class="text-xl sm:text-2xl font-black custom-text dark:text-white"
+                  class="text-2xl font-black custom-text"
                   id="profile-name-disp"
                 >
                   Người dùng
                 </h3>
                 <p
-                  class="text-sm custom-text-secondary font-medium mt-1 custom-bg-input dark:bg-gray-700 px-2 py-1 rounded-md inline-block border custom-border"
+                  class="text-xs font-bold text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full inline-flex items-center gap-1.5 mt-2 border border-primary-100 dark:border-primary-800/50"
                 >
+                  <i class="fa-solid fa-crown text-amber-500"></i> Thành viên
                   FinMaster
                 </p>
               </div>
             </div>
 
-            <!-- Nút Thiết lập Face ID -->
-            <button
-              onclick="registerFaceID()"
-              class="w-full mt-5 py-3 custom-bg-input dark:bg-gray-700/50 rounded-xl border custom-border dark:border-gray-700 flex items-center justify-between px-4 transition-colors active:scale-95"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-800"
-                >
-                  <i class="fa-solid fa-face-viewfinder"></i>
-                </div>
-                <span class="font-bold text-sm custom-text"
-                  >Thiết lập Face ID (Mở khóa App)</span
-                >
-              </div>
-              <i
-                class="fa-solid fa-chevron-right text-xs custom-text-secondary"
-              ></i>
-            </button>
-            <!-- Nút cập nhật chỉ số cơ thể -->
-            <button
-              onclick="openModal('physical')"
-              class="w-full mt-5 py-3 custom-bg-input dark:bg-gray-700/50 rounded-xl border custom-border dark:border-gray-700 flex items-center justify-between px-4 transition-colors active:scale-95"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"
-                >
-                  <i class="fa-solid fa-child-reaching"></i>
-                </div>
-                <span class="font-bold text-sm custom-text"
-                  >Cập nhật chỉ số cơ thể</span
-                >
-              </div>
-              <i
-                class="fa-solid fa-chevron-right text-xs custom-text-secondary"
-              ></i>
-            </button>
-          </div>
-
-          <div
-            class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800"
-          >
-            <div class="flex justify-between items-center mb-6">
-              <h4 class="font-bold text-lg flex items-center gap-2 custom-text">
-                <i class="fa-solid fa-tags text-primary-500"></i> Quản lý danh
-                mục
-              </h4>
-              <button
-                onclick="openModal('category')"
-                class="w-8 h-8 custom-primary rounded-full custom-shadow flex items-center justify-center text-xl transition-transform active:scale-90 text-sm"
+            <!-- List Menu Chức năng (Chuẩn iOS List) -->
+            <div class="px-4 pb-4">
+              <div
+                class="custom-bg-input rounded-2xl border custom-border overflow-hidden"
               >
-                <i class="fa-solid fa-plus"></i>
-              </button>
+                <!-- Face ID -->
+                <button
+                  onclick="registerFaceID()"
+                  class="w-full p-4 flex items-center justify-between transition-colors hover:bg-black/5 dark:hover:bg-white/5 border-b custom-border active:bg-gray-200 dark:active:bg-gray-600"
+                >
+                  <div class="flex items-center gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400 flex items-center justify-center shadow-sm"
+                    >
+                      <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <span class="font-bold text-sm custom-text"
+                      >Thiết lập Face ID</span
+                    >
+                  </div>
+                  <i
+                    class="fa-solid fa-chevron-right text-xs text-gray-400"
+                  ></i>
+                </button>
+                <!-- Body Index -->
+                <button
+                  onclick="openModal('physical')"
+                  class="w-full p-4 flex items-center justify-between transition-colors hover:bg-black/5 dark:hover:bg-white/5 active:bg-gray-200 dark:active:bg-gray-600"
+                >
+                  <div class="flex items-center gap-3.5">
+                    <div
+                      class="w-9 h-9 rounded-xl bg-cyan-100 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-400 flex items-center justify-center shadow-sm"
+                    >
+                      <i class="fa-solid fa-child-reaching"></i>
+                    </div>
+                    <span class="font-bold text-sm custom-text"
+                      >Chỉ số cơ thể
+                    </span>
+                  </div>
+                  <i
+                    class="fa-solid fa-chevron-right text-xs text-gray-400"
+                  ></i>
+                </button>
+              </div>
             </div>
-            <div
-              id="settings-cat-list"
-              class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar"
-            ></div>
           </div>
 
+          <!-- KHỐI 2: DỊCH VỤ VÀ TIỆN ÍCH (APP GRID) -->
           <div
-            class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800"
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
           >
             <h4
-              class="font-bold text-lg mb-6 flex items-center gap-2 custom-text"
+              class="font-black text-sm uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2"
             >
-              <i class="fa-solid fa-layer-group text-primary-500"></i> Dịch vụ
-              khác
+              <i class="fa-solid fa-shapes text-primary-500"></i> Tiện ích mở
+              rộng
             </h4>
 
-            <!-- Grid nút dịch vụ + đổi nền -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
-              <!-- Random Số -->
+            <!-- Grid chuẩn Icon App -->
+            <div
+              class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-y-6 gap-x-2 place-items-center"
+            >
+              <!-- Cài mã PIN -->
               <button
-                onclick="openService('https://tkb04.blogspot.com/', 'Random')"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
-                title="Random Số"
+                onclick="openChangePassword()"
+                class="flex flex-col items-center gap-2 group outline-none"
+                title="Đổi mã PIN"
               >
                 <div
-                  class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
                 >
-                  <i class="fa-solid fa-dice"></i>
+                  <i class="fa-solid fa-key"></i>
                 </div>
                 <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                  >Random</span
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
+                  >Mã PIN</span
                 >
               </button>
-              <!-- Nút Hóa đơn định kỳ -->
+
+              <!-- Thông báo -->
+              <button
+                onclick="requestNotificationPermission()"
+                class="flex flex-col items-center gap-2 group outline-none"
+                title="Bật thông báo"
+              >
+                <div
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
+                >
+                  <i class="fa-solid fa-bell"></i>
+                </div>
+                <span
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
+                  >Nhắc nhở</span
+                >
+              </button>
+
+              <!-- Định kỳ -->
               <button
                 onclick="openModal('recurring')"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                class="flex flex-col items-center gap-2 group outline-none"
                 title="Hóa đơn định kỳ"
               >
                 <div
-                  class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
                 >
                   <i class="fa-solid fa-arrows-rotate"></i>
                 </div>
                 <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
                   >Định kỳ</span
                 >
               </button>
+
+              <!-- Quán Ruột -->
               <button
                 onclick="openModal('favoritePlaces')"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700 shadow-sm"
+                class="flex flex-col items-center gap-2 group outline-none"
                 title="Quán Ruột"
               >
                 <div
-                  class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-12 transition-transform"
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
                 >
                   <i class="fa-solid fa-heart"></i>
                 </div>
-                <span class="text-xs font-bold text-gray-600 dark:text-gray-300"
+                <span
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
                   >Quán ruột</span
                 >
               </button>
 
-              <!-- Tác Giả -->
+              <!-- Đổi ảnh nền -->
+              <div class="relative">
+                <button
+                  onclick="document.getElementById('bg-image-input').click()"
+                  class="flex flex-col items-center gap-2 group outline-none"
+                  title="Đổi ảnh nền"
+                >
+                  <div
+                    class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
+                  >
+                    <i class="fa-solid fa-image"></i>
+                  </div>
+                  <span
+                    class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
+                    >Hình nền</span
+                  >
+                </button>
+                <button
+                  id="btn-remove-bg"
+                  onclick="removeBackgroundImage()"
+                  class="hidden absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-sm active:scale-90"
+                  title="Xóa nền"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <!-- Nền động AI -->
+              <button
+                onclick="toggleAnimatedBg()"
+                class="flex flex-col items-center gap-2 group outline-none"
+                title="Bật/Tắt Nền Động"
+              >
+                <div
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-fuchsia-400 to-fuchsia-600 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
+                >
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <span
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
+                  >Nền AI</span
+                >
+              </button>
+
+              <!-- Random -->
+              <button
+                onclick="
+                  openService('https://tkb04.blogspot.com/', 'Random Số')
+                "
+                class="flex flex-col items-center gap-2 group outline-none"
+                title="Random Số"
+              >
+                <div
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
+                >
+                  <i class="fa-solid fa-dice"></i>
+                </div>
+                <span
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
+                  >Random</span
+                >
+              </button>
+
+              <!-- Tác giả -->
               <button
                 onclick="
                   openService(
@@ -2800,88 +2898,21 @@
                     'Tác Giả',
                   )
                 "
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
+                class="flex flex-col items-center gap-2 group outline-none"
                 title="Tác Giả"
               >
                 <div
-                  class="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
+                  class="w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-200 to-zinc-400 text-gray-800 flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform group-active:scale-95 border border-white/20"
                 >
-                  <i class="fa-solid fa-user"></i>
+                  <i class="fa-solid fa-code"></i>
                 </div>
                 <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                  class="text-[10px] font-bold custom-text-secondary group-hover:custom-text"
                   >Tác giả</span
                 >
               </button>
-
-              <!-- Đổi mã PIN -->
-              <button
-                onclick="openChangePassword()"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
-                title="Đổi mã PIN"
-              >
-                <div
-                  class="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                >
-                  <i class="fa-solid fa-key"></i>
-                </div>
-                <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                  >PIN</span
-                >
-              </button>
-
-              <!-- Bật thông báo -->
-              <button
-                onclick="requestNotificationPermission()"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700"
-                title="Bật thông báo"
-              >
-                <div
-                  class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                >
-                  <i class="fa-solid fa-bell"></i>
-                </div>
-                <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                  >Thông báo</span
-                >
-              </button>
-
-              <!-- Đổi ảnh nền -->
-              <button
-                onclick="document.getElementById('bg-image-input').click()"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700 col-span-1"
-                title="Đổi ảnh nền"
-              >
-                <div
-                  class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                >
-                  <i class="fa-solid fa-image"></i>
-                </div>
-                <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                  >Hình nền</span
-                >
-              </button>
-              <!-- Nút Nền động Gemini -->
-              <button
-                onclick="toggleAnimatedBg()"
-                class="group flex flex-col items-center justify-center gap-2 p-4 dark:bg-gray-700/50 rounded-3xl hover:brightness-95 dark:hover:bg-gray-700 transition-all border custom-border dark:border-gray-700 col-span-1"
-                title="Bật/Tắt Nền Động"
-              >
-                <div
-                  class="w-10 h-10 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                >
-                  <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-                <span
-                  class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                  >Nền động</span
-                >
-              </button>
             </div>
-
+            <!-- Nơi chứa input chọn ảnh nền (Ẩn) -->
             <input
               type="file"
               id="bg-image-input"
@@ -2889,333 +2920,310 @@
               class="hidden"
               onchange="updateBackgroundImage(event)"
             />
+          </div>
 
-            <!-- Nút Xóa nền -->
-            <div class="flex justify-center mt-4">
-              <button
-                id="btn-remove-bg"
-                onclick="removeBackgroundImage()"
-                class="hidden text-xs bg-red-100 hover:bg-red-200 text-red-600 px-5 py-2 rounded-2xl active:scale-95 transition-all font-medium items-center gap-2"
+          <!-- KHỐI 3: DANH MỤC GIAO DỊCH -->
+          <div
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <h4
+                class="font-black text-sm uppercase tracking-widest text-gray-400 flex items-center gap-2"
               >
-                <i class="fa-solid fa-trash"></i> Xóa nền
+                <i class="fa-solid fa-tags text-primary-500"></i> Quản lý danh
+                mục
+              </h4>
+              <button
+                onclick="openModal('category')"
+                class="w-8 h-8 custom-primary custom-text dark:bg-primary-900/40 dark:text-primary-400 rounded-full flex items-center justify-center transition-transform active:scale-90 text-sm border custom-border"
+              >
+                <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-
-            <!-- Chủ đề giao diện -->
-            <div class="mt-8 border-t custom-border dark:border-gray-700 pt-6">
-              <h4 class="font-bold text-lg mb-5 custom-text">
-                🎨 Chủ đề giao diện
-              </h4>
-
-              <div
-                class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-7 gap-4 place-items-center"
-              >
-                <!-- Các nút màu giữ nguyên -->
-                <button
-                  onclick="changeThemeColor('default', '240')"
-                  class="group relative w-14 h-14 rounded-full bg-indigo-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-indigo-500/50"
-                  title="Default"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-red', '0')"
-                  class="group relative w-14 h-14 rounded-full bg-red-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-red-500/50"
-                  title="Red"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-green', '160')"
-                  class="group relative w-14 h-14 rounded-full bg-emerald-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-emerald-500/50"
-                  title="Green"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-orange', '40')"
-                  class="group relative w-14 h-14 rounded-full bg-amber-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-500/50"
-                  title="Orange"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-purple', '271')"
-                  class="group relative w-14 h-14 rounded-full bg-purple-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-purple-500/50"
-                  title="Purple"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-cyan', '188')"
-                  class="group relative w-14 h-14 rounded-full bg-cyan-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-cyan-500/50"
-                  title="Cyan"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-pink', '326')"
-                  class="group relative w-14 h-14 rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50"
-                  title="Pink"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-spring', '85')"
-                  class="group relative w-14 h-14 rounded-full bg-lime-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-lime-500/50"
-                  title="Spring"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-neon', '300')"
-                  class="group relative w-14 h-14 rounded-full bg-fuchsia-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-fuchsia-500/50"
-                  title="Neon"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-ocean', '250')"
-                  class="group relative w-14 h-14 rounded-full bg-violet-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-violet-600/50"
-                  title="Ocean"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-sunset', '18')"
-                  class="group relative w-14 h-14 rounded-full bg-orange-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-orange-600/50"
-                  title="Sunset"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-lavender', '195')"
-                  class="group relative w-14 h-14 rounded-full bg-sky-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-sky-600/50"
-                  title="Lavender"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-rosegold', '315')"
-                  class="group relative w-14 h-14 rounded-full bg-pink-500 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-pink-500/50"
-                  title="Rose Gold"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-
-                <button
-                  onclick="changeThemeColor('theme-emerald', '38')"
-                  class="group relative w-14 h-14 rounded-full bg-amber-600 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50"
-                  title="Emerald"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-                <button
-                  onclick="changeThemeColor('theme-ios26', '125')"
-                  class="group relative w-14 h-14 rounded-full bg-white/30 border-4 border-white dark:border-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 hover:shadow-amber-600/50"
-                  title="Ios26"
-                >
-                  <span
-                    class="absolute inset-2 rounded-full border border-white/40"
-                  ></span>
-                </button>
-              </div>
+            <div
+              id="settings-cat-list"
+              class="space-y-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar border-y border-dashed custom-border py-2"
+            >
+              <!-- Data đổ vào đây -->
             </div>
           </div>
+
+          <!-- KHỐI 4: QUẢN LÝ SIÊU APP (MODULES) -->
           <div
-            class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800"
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
+          >
+            <div class="flex justify-between items-center mb-5">
+              <h4
+                class="font-black text-sm uppercase tracking-widest text-gray-400 flex items-center gap-2"
+              >
+                <i class="fa-solid fa-puzzle-piece text-primary-500"></i> Menu
+                Ứng dụng
+              </h4>
+            </div>
+
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+              id="module-toggles-container"
+            >
+              <!-- JS sẽ bơm các thanh gạt công tắc vào đây -->
+            </div>
+          </div>
+
+          <!-- KHỐI 5: LƯU TRỮ VÀ DỮ LIỆU (DANGER ZONE) -->
+          <div
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
           >
             <h4
-              class="font-bold text-lg mb-6 flex items-center gap-3 custom-text"
+              class="font-black text-sm uppercase tracking-widest text-gray-400 flex items-center gap-2 mb-6"
             >
-              <div
-                class="w-10 h-10 rounded-full custom-bg-primary-soft dark:bg-primary-500/20 flex items-center justify-center"
-              >
-                <i class="fa-solid fa-database text-primary-500"></i>
-              </div>
-              <span>Dữ liệu hệ thống</span>
+              <i class="fa-solid fa-database text-primary-500"></i> Dữ liệu hệ
+              thống
             </h4>
 
             <div
-              id="storage-container"
-              class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 border custom-border dark:border-gray-800 mt-3 mb-3"
+              class="custom-bg-input rounded-2xl p-5 border custom-border mb-6"
             >
-              <h4 class="font-bold text-lg mb-4 custom-text">
-                Dung lượng sử dụng
-              </h4>
-
+              <div class="flex justify-between items-end mb-3">
+                <h4 class="font-bold text-sm custom-text">Bộ nhớ trong</h4>
+                <span
+                  id="text-free-size"
+                  class="font-black text-lg text-emerald-500"
+                  >0 MB</span
+                >
+              </div>
+              <!-- Progress Bar -->
               <div
-                class="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex mb-4"
+                class="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex mb-4 border border-white/10 shadow-inner"
               >
                 <div
                   id="bar-images"
-                  class="h-full bg-orange-500 transition-all duration-500"
+                  class="h-full bg-gradient-to-r from-orange-400 to-orange-500 transition-all duration-500"
                   style="width: 0%"
                 ></div>
                 <div
                   id="bar-data"
-                  class="h-full bg-blue-500 transition-all duration-500"
+                  class="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-500"
                   style="width: 0%"
                 ></div>
               </div>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <div
-                      class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"
-                    ></div>
-                    <span class="text-sm font-medium custom-text"
-                      >Còn trống</span
-                    >
-                  </div>
-                  <span
-                    id="text-free-size"
-                    class="font-bold text-sm custom-text-secondary"
-                    >0 MB</span
+              <!-- Chú thích -->
+              <div
+                class="flex justify-between items-center text-[11px] font-bold"
+              >
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+                  <span class="custom-text-secondary"
+                    >Ảnh:
+                    <span id="text-img-size" class="custom-text"
+                      >0 MB</span
+                    ></span
                   >
                 </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
-                    <span class="text-sm font-medium custom-text"
-                      >Hình ảnh</span
-                    >
-                  </div>
-                  <span id="text-img-size" class="font-bold text-sm custom-text"
-                    >0 MB</span
-                  >
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span class="text-sm font-medium custom-text"
-                      >Dữ liệu (Số/Chữ)</span
-                    >
-                  </div>
-                  <span
-                    id="text-data-size"
-                    class="font-bold text-sm custom-text"
-                    >0 MB</span
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                  <span class="custom-text-secondary"
+                    >Data:
+                    <span id="text-data-size" class="custom-text"
+                      >0 MB</span
+                    ></span
                   >
                 </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Các nút thao tác dữ liệu (Thiết kế dạng nút nhỏ gọn xếp ngang) -->
+            <div class="flex flex-wrap sm:flex-nowrap gap-3">
               <button
                 onclick="exportToExcel()"
-                class="flex items-center gap-4 p-4 rounded-2xl custom-bg-input dark:bg-gray-700/50 border custom-border dark:border-gray-700 hover:bg-green-50 transition-all"
+                class="flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/40 border border-green-200 dark:border-green-800 rounded-xl transition-all active:scale-95 group"
               >
-                <div
-                  class="w-10 h-10 rounded-full bg-green-200 text-white flex items-center justify-center shadow-md"
+                <i
+                  class="fa-solid fa-file-excel text-green-600 text-xl group-hover:scale-110 transition-transform"
+                ></i>
+                <span
+                  class="text-[10px] font-bold text-green-700 dark:text-green-400"
+                  >Xuất Excel</span
                 >
-                  <i class="fa-solid fa-file-excel text-green-700"></i>
-                </div>
-
-                <div class="text-left">
-                  <p class="font-bold text-green-700 dark:text-green-400">
-                    Xuất Excel
-                  </p>
-                  <p class="text-xs custom-text-secondary dark:text-gray-400">
-                    Tải dữ liệu về máy
-                  </p>
-                </div>
-              </button>
-
-              <button
-                onclick="clearAllData()"
-                class="flex items-center gap-4 p-4 rounded-2xl custom-bg-input dark:bg-gray-700/50 border custom-border dark:border-gray-700 hover:bg-red-50 transition-all"
-              >
-                <div
-                  class="w-10 h-10 rounded-full bg-red-200 text-white flex items-center justify-center shadow-md"
-                >
-                  <i class="fa-solid fa-database text-red-700"></i>
-                </div>
-
-                <div class="text-left">
-                  <p class="font-bold text-red-700 dark:text-red-400">
-                    Xóa toàn bộ
-                  </p>
-                  <p class="text-xs custom-text-secondary dark:text-gray-400">
-                    Xóa tất cả dữ liệu
-                  </p>
-                </div>
               </button>
 
               <button
                 onclick="cleanOldImages()"
-                class="flex items-center gap-4 p-4 rounded-2xl custom-bg-input dark:bg-gray-700/50 border custom-border dark:border-gray-700 hover:bg-orange-50 transition-all"
+                class="flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1.5 bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/40 border border-orange-200 dark:border-orange-800 rounded-xl transition-all active:scale-95 group"
               >
-                <div
-                  class="w-10 h-10 rounded-full bg-orange-300 text-white flex items-center justify-center shadow-md"
+                <i
+                  class="fa-solid fa-images text-orange-600 text-xl group-hover:scale-110 transition-transform"
+                ></i>
+                <span
+                  class="text-[10px] font-bold text-orange-700 dark:text-orange-400"
+                  >Dọn Ảnh Cũ</span
                 >
-                  <i class="fa-solid fa-images text-orange-700"></i>
-                </div>
+              </button>
 
-                <div class="text-left">
-                  <p class="font-bold text-orange-700 dark:text-orange-400">
-                    Xóa ảnh cũ
-                  </p>
-                  <p class="text-xs custom-text-secondary dark:text-gray-400">
-                    Dọn ảnh không sử dụng
-                  </p>
-                </div>
+              <button
+                onclick="clearAllData()"
+                class="flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-xl transition-all active:scale-95 group"
+              >
+                <i
+                  class="fa-solid fa-skull-crossbones text-red-600 text-xl group-hover:scale-110 transition-transform"
+                ></i>
+                <span
+                  class="text-[10px] font-bold text-red-700 dark:text-red-400"
+                  >Xóa App</span
+                >
               </button>
             </div>
           </div>
+
+          <!-- THEME MÀU -->
           <div
-            class="custom-bg-card dark:bg-gray-800 rounded-3xl custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-800"
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
           >
             <h4
-              class="font-bold text-lg mb-6 flex items-center gap-2 custom-text"
+              class="font-black text-sm uppercase tracking-widest text-gray-400 flex items-center gap-2 mb-6"
+            >
+              <i class="fa-solid fa-palette text-primary-500"></i> Chủ đề Màu
+              Sắc
+            </h4>
+            <div
+              class="grid grid-cols-5 sm:grid-cols-7 gap-3 place-items-center"
+            >
+              <!-- Default -->
+              <button
+                onclick="changeThemeColor('default', '240')"
+                class="group relative w-12 h-12 rounded-full bg-indigo-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-red', '0')"
+                class="group relative w-12 h-12 rounded-full bg-red-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-green', '160')"
+                class="group relative w-12 h-12 rounded-full bg-emerald-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-orange', '40')"
+                class="group relative w-12 h-12 rounded-full bg-amber-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-purple', '271')"
+                class="group relative w-12 h-12 rounded-full bg-purple-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-cyan', '188')"
+                class="group relative w-12 h-12 rounded-full bg-cyan-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-pink', '326')"
+                class="group relative w-12 h-12 rounded-full bg-pink-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-spring', '85')"
+                class="group relative w-12 h-12 rounded-full bg-lime-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-neon', '300')"
+                class="group relative w-12 h-12 rounded-full bg-fuchsia-500 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-ocean', '250')"
+                class="group relative w-12 h-12 rounded-full bg-violet-600 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-sunset', '18')"
+                class="group relative w-12 h-12 rounded-full bg-orange-600 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-lavender', '195')"
+                class="group relative w-12 h-12 rounded-full bg-sky-600 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-rosegold', '315')"
+                class="group relative w-12 h-12 rounded-full bg-pink-400 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-emerald', '38')"
+                class="group relative w-12 h-12 rounded-full bg-teal-600 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+              <button
+                onclick="changeThemeColor('theme-ios26', '125')"
+                class="group relative w-12 h-12 rounded-full bg-zinc-300 dark:bg-zinc-700 shadow-md hover:scale-110 active:scale-95 transition-transform"
+              >
+                <span
+                  class="absolute inset-1.5 rounded-full border-2 border-white/50"
+                ></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- LOG HOẠT ĐỘNG -->
+          <div
+            class="custom-bg-card dark:bg-gray-800 rounded-[2rem] custom-shadow-sm p-6 sm:p-8 border custom-border dark:border-gray-700"
+          >
+            <h4
+              class="font-black text-sm uppercase tracking-widest text-gray-400 flex items-center gap-2 mb-6"
             >
               <i class="fa-solid fa-clock-rotate-left text-primary-500"></i>
               Nhật ký hoạt động
             </h4>
             <div
               id="logs-container"
-              class="max-h-80 overflow-y-auto space-y-4 pr-2 text-sm"
+              class="max-h-80 overflow-y-auto space-y-4 pr-2 text-sm custom-scrollbar"
             ></div>
           </div>
         </div>
@@ -3411,6 +3419,21 @@
         currentView: "dashboard",
         dashFilter: { time: "month", chart: "doughnut" },
         userProfile: { name: "Đại Ka", avatar: "" },
+        moduleSettings: {
+          calendar: true,
+          work: false,
+          map: true,
+          custommaps: false,
+          grab: false,
+          favorites: false,
+          budgets: true,
+          running: false,
+          debts: false,
+          tasks: false,
+          goals: true,
+          trips: false,
+          gallery: false,
+        },
       };
 
       let chartInstance = null;
@@ -3544,10 +3567,21 @@
         renderDashboard();
       };
 
+      // 1. Hàm trượt mượt mà lên đầu trang
+      window.scrollToTop = () => {
+        const scrollArea = document.getElementById("main-scroll-area");
+        if (scrollArea) {
+          scrollArea.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        if (typeof playSound === "function") playSound("click");
+      };
+
+      // 2. Thuật toán ẩn hiện nút theo thanh điều hướng
       function initScrollHideUI() {
         const scrollArea = document.getElementById("main-scroll-area");
         const header = document.getElementById("main-header");
         const bottomBar = document.getElementById("mobile-bottom-bar");
+        const scrollTopBtn = document.getElementById("btn-scroll-top"); // Bắt cái nút mới đẻ
 
         if (!scrollArea) return;
 
@@ -3557,28 +3591,56 @@
             const st = scrollArea.scrollTop;
             const searchBar = document.getElementById("tx-search-bar");
 
-            // Đặt mốc 60px làm chuẩn (gần sát đỉnh).
+            // Mốc 60px: Nếu cuộn xuống sâu hơn 60px
             if (st > 60) {
-              // 1. Đã cuộn xuống: Ẩn Header và Bottom Nav
+              // 1. Giấu Header & Nav dưới đáy
               header?.classList.add("-translate-y-full");
               bottomBar?.classList.add("translate-y-24");
 
-              // 2. Ép thanh tìm kiếm dính cứng lên đỉnh làm Header mới
+              // 2. Kêu gọi nút Scroll To Top trồi lên (Chính là tính năng ông muốn)
+              if (scrollTopBtn) {
+                scrollTopBtn.classList.remove(
+                  "opacity-0",
+                  "translate-y-20",
+                  "pointer-events-none",
+                );
+                scrollTopBtn.classList.add(
+                  "opacity-100",
+                  "translate-y-0",
+                  "pointer-events-auto",
+                );
+              }
+
+              // Ép thanh tìm kiếm dính cứng lên đỉnh
               if (searchBar && state.currentView === "transactions") {
                 searchBar.classList.add(
                   "sticky",
                   "top-2",
                   "z-50",
                   "drop-shadow-md",
-                  "custom-bg-body", // Bơm thêm nền để lúc cuộn chữ không bị đè lên nhau
                 );
               }
             } else {
-              // 3. Về sát vị trí ban đầu (<= 60px): Hiện lại Nav và Header
+              // NẾU CUỘN NGƯỢC LÊN LẠI SÁT ĐỈNH (<= 60px)
+              // 1. Kéo Header & Nav hiện lại
               header?.classList.remove("-translate-y-full");
               bottomBar?.classList.remove("translate-y-24");
 
-              // 4. Gỡ dính, trả thanh tìm kiếm về chỗ cũ
+              // 2. Nhấn chìm nút Scroll To Top xuống lại
+              if (scrollTopBtn) {
+                scrollTopBtn.classList.add(
+                  "opacity-0",
+                  "translate-y-20",
+                  "pointer-events-none",
+                );
+                scrollTopBtn.classList.remove(
+                  "opacity-100",
+                  "translate-y-0",
+                  "pointer-events-auto",
+                );
+              }
+
+              // Gỡ dính thanh tìm kiếm
               if (searchBar) {
                 searchBar.classList.remove(
                   "sticky",
@@ -3725,6 +3787,8 @@
             if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
             if (savedData.userProfile)
               state.userProfile = savedData.userProfile;
+            if (savedData.moduleSettings)
+              state.moduleSettings = savedData.moduleSettings;
             if (savedData.currentTheme)
               state.currentTheme = savedData.currentTheme;
             if (savedData.primaryHue) state.primaryHue = savedData.primaryHue;
@@ -3802,6 +3866,7 @@
           tasks: state.tasks,
           dashFilter: state.dashFilter,
           userProfile: state.userProfile,
+          moduleSettings: state.moduleSettings || {},
           debts: state.debts,
           currentTheme: state.currentTheme, // Thêm dòng này
           primaryHue: state.primaryHue,
@@ -3915,14 +3980,30 @@
       ];
 
       function renderNav() {
-        document.getElementById("desktop-nav").innerHTML = NAV_ITEMS.map(
-          (item) => `
-                                  <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary  dark:hover:bg-gray-800/50"}">
-                                    <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
-                                    <span>${item.label}</span>
-                                  </button>
-                                `,
-        ).join("");
+        // 1. Phân loại: 3 Thằng này là MẶC ĐỊNH SỐNG CÒN (Luôn luôn hiện)
+        const coreModules = [
+          "dashboard",
+          "transactions",
+          "settings",
+          "wallets",
+        ];
+
+        // Lọc Menu Desktop
+        const filteredNavItems = NAV_ITEMS.filter((item) => {
+          if (coreModules.includes(item.id)) return true;
+          return state.moduleSettings[item.id] !== false; // Nếu công tắc đang Bật thì cho hiện
+        });
+
+        document.getElementById("desktop-nav").innerHTML = filteredNavItems
+          .map(
+            (item) => `
+            <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 text-left font-medium ${state.currentView === item.id ? "custom-bg-input dark:bg-gray-700/50 custom-text dark:text-white font-bold" : "custom-text-secondary  dark:hover:bg-gray-800/50"}">
+              <i class="fa-solid ${item.icon} w-6 text-center ${state.currentView === item.id ? "text-primary-500" : ""}"></i>
+              <span>${item.label}</span>
+            </button>
+          `,
+          )
+          .join("");
 
         const pillItems = [
           { id: "dashboard", icon: "fa-gauge-high" },
@@ -3942,19 +4023,22 @@
           { id: "gallery", icon: "fa-images" },
           { id: "wallets", icon: "fa-wallet" },
         ];
+
+        // Lọc Menu Mobile dưới đáy
+        const filteredPills = pillItems.filter((item) => {
+          if (coreModules.includes(item.id)) return true;
+          return state.moduleSettings[item.id] !== false;
+        });
+
         let pillHtml = "";
-        pillItems.forEach((item) => {
+        filteredPills.forEach((item) => {
           const isActive = state.currentView === item.id;
           pillHtml += `
-  <button
-    onclick="switchView('${item.id}')"
-    class="mobile-nav-item flex-none w-12 h-12 flex items-center justify-center rounded-full transition-transform duration-150 active:scale-90"
-  >
-    <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${
-      isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"
-    }"></i>
-  </button>`;
+            <button onclick="switchView('${item.id}')" class="mobile-nav-item flex-none w-12 h-12 flex items-center justify-center rounded-full transition-transform duration-150 active:scale-90">
+              <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"}"></i>
+            </button>`;
         });
+
         const navPill = document.getElementById("mobile-nav-pill");
         if (navPill) navPill.innerHTML = pillHtml;
       }
@@ -4055,11 +4139,14 @@
           state.userProfile.avatar ||
           "https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80";
 
-        // Update cả Header (cho Desktop) và Bottom Nav (cho Mobile)
+        // Update cả Header (cho Desktop), Bottom Nav (cho Mobile) và Màn hình Splash
         const hAvt = document.getElementById("header-avatar");
         const navAvt = document.getElementById("nav-avatar");
+        const splashAvt = document.getElementById("splash-avatar");
+
         if (hAvt) hAvt.src = avatarUrl;
         if (navAvt) navAvt.src = avatarUrl;
+        if (splashAvt) splashAvt.src = avatarUrl;
       }
 
       async function updateAvatar(e) {
@@ -4083,8 +4170,13 @@
           hAvt.src =
             state.userProfile.avatar ||
             "https://img.magnific.com/vector-mien-phi/hinh-minh-hoa-cau-be-toc-do-tuoi-cuoi_1308-176664.jpg?semt=ais_hybrid&w=740&q=80";
-        document.getElementById("profile-name-disp").innerText =
-          state.userProfile.name;
+        // Bơm tên kèm theo cái nút Bút chì để đổi tên
+        document.getElementById("profile-name-disp").innerHTML = `
+            ${state.userProfile.name || "Đại Ka"} 
+            <button onclick="editProfileName()" class="ml-1.5 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-primary-500 flex items-center justify-center text-[10px] shadow-sm active:scale-90 transition-all inline-flex align-middle border custom-border">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+        `;
         if (state.userProfile.avatar)
           document.getElementById("profile-img").src = state.userProfile.avatar;
 
@@ -4166,66 +4258,118 @@
         }
 
         notifyFormContainer.innerHTML = `
-                        <h4 class="font-bold text-lg mb-6 flex items-center gap-2 custom-text">
-                            <i class="fa-solid fa-envelope-open-text text-primary-500"></i> Cấu hình Nhắc nhở Email (Đầy đủ)
-                        </h4>
-                        <form id="frm-email-notify" class="space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Email nhận thông báo</label>
-                                    <input type="email" id="set-email" value="${state.notificationSettings.email || ""}" placeholder="VD: mailcuaong@gmail.com" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-medium custom-text border custom-border custom-focus">
+            <h4 class="font-black text-sm uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-envelope-open-text text-primary-500"></i> Nhắc nhở Email
+            </h4>
+            <form id="frm-email-notify" class="space-y-5">
+                <!-- Cấu hình nhận -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5">Email nhận thông báo</label>
+                        <input type="email" id="set-email" value="${state.notificationSettings.email || ""}" placeholder="VD: mailcuaong@gmail.com" class="w-full p-4 custom-bg-input rounded-2xl outline-none font-bold custom-text border custom-border custom-focus transition-all duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold custom-text-secondary uppercase tracking-widest mb-1.5">Giờ nhận bản tin</label>
+                        <input type="time" id="set-time" value="${state.notificationSettings.time || "07:00"}" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black text-lg custom-text border custom-border custom-focus transition-all duration-200">
+                    </div>
+                </div>
+
+                <!-- Danh sách Công tắc gạt (Chuẩn iOS) -->
+                <div class="pt-2 border-t custom-border dark:border-gray-700/80 border-dashed">
+                    <label class="block text-[10px] font-bold custom-text-secondary uppercase tracking-widest mb-3 mt-4">Hạng mục nhắc nhở</label>
+                    
+                    <div class="custom-bg-input rounded-2xl border custom-border overflow-hidden">
+                        <!-- 1. Công việc -->
+                        <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-clipboard-list"></i>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold custom-text-secondary uppercase mb-1">Giờ nhận bản tin (Mục 1)</label>
-                                    <input type="time" id="set-time" value="${state.notificationSettings.time || "07:00"}" required class="w-full p-4 custom-bg-input rounded-2xl outline-none font-black custom-text border custom-border custom-focus text-lg">
+                                <span class="font-bold text-sm custom-text">1. Bản tin Công việc sáng</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-task" ${state.notificationSettings.notifyTasks ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
+
+                        <!-- 2. Ngân sách -->
+                        <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
                                 </div>
+                                <span class="font-bold text-sm custom-text">2. Cảnh báo "Cháy túi"</span>
                             </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-budget" ${state.notificationSettings.notifyBudgets ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-rose-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
 
-                            <div class="space-y-3 mt-4">
-                                <label class="block text-xs font-bold custom-text-secondary uppercase mb-2"> Hạng mục nhắc nhở</label>
-
-                                <!-- 1. BẢN TIN CÔNG VIỆC -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-clipboard-list text-blue-500 w-5 text-center"></i> 1. Bản tin Công việc buổi sáng </span>
-                                    <input type="checkbox" id="chk-task" ${state.notificationSettings.notifyTasks ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
-
-                                <!-- 2. CẢNH BÁO CHÁY TÚI -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-rose-500 w-5 text-center"></i> 2. Cảnh báo "Cháy túi" </span>
-                                    <input type="checkbox" id="chk-budget" ${state.notificationSettings.notifyBudgets ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
-
-                                <!-- 3. KỶ LUẬT MỤC TIÊU -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-bullseye text-indigo-500 w-5 text-center"></i> 3. Nhắc nhở Kỷ luật Mục tiêu </span>
-                                    <input type="checkbox" id="chk-goal" ${state.notificationSettings.notifyGoals !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
-
-                                <!-- 4. ĐÒI NỢ / TRẢ NỢ -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-handshake text-amber-500 w-5 text-center"></i> 4. Nhắc nhở "Đòi nợ / Trả nợ" </span>
-                                    <input type="checkbox" id="chk-debt" ${state.notificationSettings.notifyDebts ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
-
-                                <!-- 5. CHUYẾN ĐI & QUỶ CHUNG -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-plane-departure text-pink-500 w-5 text-center"></i> 5. Thông báo Chuyến đi & Quỹ chung </span>
-                                    <input type="checkbox" id="chk-trip" ${state.notificationSettings.notifyTrips !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
-
-                                <!-- 6. BÁO CÁO CUỐI THÁNG -->
-                                <label class="flex items-center justify-between p-3 custom-bg-input rounded-xl border custom-border cursor-pointer  dark:hover:bg-gray-700/50 transition-colors">
-                                    <span class="font-bold text-sm custom-text flex items-center gap-2"><i class="fa-solid fa-chart-pie text-emerald-500 w-5 text-center"></i> 6. Báo cáo Tài chính Cuối tháng </span>
-                                    <input type="checkbox" id="chk-report" ${state.notificationSettings.notifyReports !== false ? "checked" : ""} class="w-5 h-5 accent-primary-500 cursor-pointer">
-                                </label>
+                        <!-- 3. Mục tiêu -->
+                        <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <span class="font-bold text-sm custom-text">3. Kỷ luật Mục tiêu</span>
                             </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-goal" ${state.notificationSettings.notifyGoals !== false ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-indigo-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
 
-                            <button type="submit" class="w-full py-4 custom-primary rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-all">
-                                Lưu Cấu Hình Nhắc Nhở
-                            </button>
-                        </form>
-                    `;
+                        <!-- 4. Đòi nợ -->
+                        <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-handshake"></i>
+                                </div>
+                                <span class="font-bold text-sm custom-text">4. Đòi nợ / Trả nợ</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-debt" ${state.notificationSettings.notifyDebts ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-amber-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
+
+                        <!-- 5. Chuyến đi -->
+                        <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-pink-100 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-plane-departure"></i>
+                                </div>
+                                <span class="font-bold text-sm custom-text">5. Chuyến đi & Quỹ chung</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-trip" ${state.notificationSettings.notifyTrips !== false ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-pink-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
+
+                        <!-- 6. Báo cáo -->
+                        <div class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400 flex items-center justify-center shadow-sm">
+                                    <i class="fa-solid fa-chart-pie"></i>
+                                </div>
+                                <span class="font-bold text-sm custom-text">6. Báo cáo Cuối tháng</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                                <input type="checkbox" id="chk-report" ${state.notificationSettings.notifyReports !== false ? "checked" : ""} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all shadow-sm border border-black/5 dark:border-white/10"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 custom-primary text-white rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-transform duration-200 hover:brightness-110">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu Cấu Hình Nhắc Nhở
+                </button>
+            </form>
+        `;
 
         document.getElementById("frm-email-notify").onsubmit = (e) => {
           e.preventDefault();
@@ -4311,6 +4455,20 @@
           img > 0 ? img.toFixed(3) + " MB" : "0 MB";
         document.getElementById("text-data-size").innerText =
           data > 0 ? data.toFixed(3) + " MB" : "0 MB";
+
+        // Thuật toán đổi tên Hồ sơ
+        window.editProfileName = () => {
+          const newName = prompt(
+            "Đại ka muốn đổi tên thành gì?",
+            state.userProfile.name,
+          );
+          if (newName !== null && newName.trim() !== "") {
+            state.userProfile.name = newName.trim();
+            saveData(); // Lưu thẳng vào ổ cứng
+            renderSettings(); // Vẽ lại giao diện Cài đặt
+            if (typeof playSound === "function") playSound("success");
+          }
+        };
       }
 
       function deleteCategory(id) {
@@ -13685,13 +13843,21 @@
           bgDiv.style.opacity = "1";
         }
         // 3. NẾU DÙNG ẢNH NỀN GỐC
+        // 3. NẾU DÙNG ẢNH NỀN GỐC
         else if (state.userProfile && state.userProfile.bgImage) {
           bgDiv.classList.add("bg-cover", "bg-center", "bg-no-repeat");
+
+          // Ép CSS thuần cực mạnh để chống lặp ảnh và bắt buộc phóng vừa khít màn hình
           bgDiv.style.backgroundImage = `url(${state.userProfile.bgImage})`;
+          bgDiv.style.backgroundSize = "cover";
+          bgDiv.style.backgroundPosition = "center";
+          bgDiv.style.backgroundRepeat = "no-repeat";
+
           bgDiv.style.opacity = "1";
           bgDiv.style.filter = state.darkMode
             ? "brightness(0.3) blur(1px)"
             : "brightness(0.7) blur(1px)";
+
           if (rmvBtn) rmvBtn.classList.remove("hidden");
         }
       };
@@ -13785,6 +13951,41 @@
       <!-- JS sẽ bơm nội dung y hệt ảnh mẫu vào đây -->
     </div>
 
+    <!-- MÀN HÌNH CẮT ẢNH NỀN -->
+    <div
+      id="bg-crop-overlay"
+      class="fixed inset-0 z-[10005] bg-black flex flex-col hidden transition-opacity duration-300 opacity-0"
+    >
+      <!-- Header -->
+      <div
+        class="flex justify-between items-center p-4 bg-black/80 text-white z-50"
+      >
+        <button
+          onclick="closeBgCropModal()"
+          class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 active:scale-90 transition-transform"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <h3 class="font-bold text-sm tracking-wide">Căn chỉnh hình nền</h3>
+        <button
+          onclick="applyCroppedBg()"
+          class="px-4 py-2 bg-primary-500 rounded-full font-bold text-sm active:scale-95 transition-transform text-white"
+        >
+          Xong
+        </button>
+      </div>
+      <!-- Vùng cắt ảnh -->
+      <div class="flex-1 w-full h-full relative bg-black overflow-hidden">
+        <img id="bg-crop-target" src="" class="block max-w-full" />
+      </div>
+      <!-- Footer hướng dẫn -->
+      <div class="p-6 bg-black/80 text-white/50 text-xs text-center z-50">
+        <i class="fa-solid fa-expand mb-2 text-lg text-white/70"></i>
+        <p>
+          Dùng 2 ngón tay để thu phóng.<br />Kéo ảnh để chọn vùng ưng ý nhất.
+        </p>
+      </div>
+    </div>
     <!-- ========================================== -->
     <!-- MÀN HÌNH ĐẾM NGƯỢC 3-2-1 -->
     <div
@@ -14203,23 +14404,100 @@
           if (typeof playSound === "function") playSound("success");
         };
 
-        window.updateBackgroundImage = async (e) => {
+        let bgCropperInstance = null;
+
+        // 1. Bắt sự kiện người dùng chọn ảnh và mở màn hình Cắt
+        window.updateBackgroundImage = (e) => {
           const file = e.target.files[0];
           if (!file) return;
-          try {
-            if (typeof playSound === "function") playSound("pop");
-            const compressedBg = await compressImage(file);
-            if (!state.userProfile) state.userProfile = {};
-            state.userProfile.bgImage = compressedBg;
-            state.userProfile.useAnimatedBg = false;
-            saveData();
-            applyBackgrounds();
-            if (typeof playSound === "function") playSound("success");
-          } catch (err) {
-            alert("Lỗi khi xử lý ảnh nền!");
-          }
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const overlay = document.getElementById("bg-crop-overlay");
+            const imgEl = document.getElementById("bg-crop-target");
+
+            // Hiện ảnh lên màn hình cắt
+            imgEl.src = event.target.result;
+            overlay.classList.remove("hidden");
+            setTimeout(() => overlay.classList.remove("opacity-0"), 10); // Hiệu ứng mờ dần
+
+            if (bgCropperInstance) bgCropperInstance.destroy();
+
+            // Kích hoạt thần chú Cropper.js
+            // Kích hoạt thần chú Cropper.js (Đã tháo xích)
+            bgCropperInstance = new Cropper(imgEl, {
+              viewMode: 1, // Đổi từ 3 sang 1 để thả cửa cho phép zoom/kéo ảnh ra ngoài viền
+              dragMode: "move", // Bật chế độ dùng ngón tay kéo lê tấm ảnh
+              aspectRatio: window.innerWidth / window.innerHeight,
+              autoCropArea: 1,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: false, // Khóa chết cái khung sáng ở giữa
+              cropBoxResizable: false, // Không cho bóp méo khung cắt
+              toggleDragModeOnDblclick: false,
+              zoomOnTouch: true, // Bật tính năng dùng 2 ngón tay thu phóng trên màn hình cảm ứng
+              zoomOnWheel: true, // Bật lăn chuột thu phóng trên máy tính
+            });
+          };
+          reader.readAsDataURL(file);
+          e.target.value = ""; // Reset thẻ input để lần sau chọn lại ảnh đó vẫn ăn
         };
 
+        // 2. Nút X(Hủy) cắt ảnh
+        window.closeBgCropModal = () => {
+          const overlay = document.getElementById("bg-crop-overlay");
+          overlay.classList.add("opacity-0");
+          setTimeout(() => {
+            overlay.classList.add("hidden");
+            if (bgCropperInstance) {
+              bgCropperInstance.destroy();
+              bgCropperInstance = null;
+            }
+          }, 300);
+        };
+
+        // 3. Nút XONG: Xuất ảnh đã cắt và lưu làm Hình nền
+        window.applyCroppedBg = async () => {
+          if (!bgCropperInstance) return;
+
+          if (typeof playSound === "function") playSound("pop");
+          document.querySelector(
+            "#bg-crop-overlay button:last-child",
+          ).innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+          // Xuất khung ảnh ra với độ phân giải giới hạn (Cao nhất 1200px) để không tràn bộ nhớ đệm
+          const canvas = bgCropperInstance.getCroppedCanvas({
+            maxWidth: 800,
+            maxHeight: 1600,
+            fillColor: "#000000",
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: "high",
+          });
+
+          // Nén thành Base64 (Chất lượng 80% là đủ nét căng màn điện thoại)
+          const base64Img = canvas.toDataURL("image/jpeg", 0.8);
+
+          if (!state.userProfile) state.userProfile = {};
+
+          // Lưu vào bộ nhớ
+          state.userProfile.bgImage = base64Img;
+          state.userProfile.useAnimatedBg = false; // Tắt nền động đi
+
+          saveData();
+          applyBackgrounds(); // Áp dụng ngay lập tức
+
+          if (typeof playSound === "function") playSound("success");
+
+          // Dọn dẹp trả lại UI
+          document.querySelector(
+            "#bg-crop-overlay button:last-child",
+          ).innerText = "Xong";
+          closeBgCropModal();
+        };
+
+        // 4. Hàm xóa ảnh nền về mặc định (Giữ nguyên)
         window.removeBackgroundImage = () => {
           if (
             confirm(
@@ -15545,9 +15823,15 @@
         };
       })();
     </script>
-    <!-- ========================================== -->
-    <!-- TOAST THÔNG BÁO CẬP NHẬT PWA XỊN XÒ -->
-    <!-- ========================================== -->
+
+    <!-- NÚT LƯỚT LÊN ĐẦU TRANG (GÓC TRÁI DƯỚI) -->
+    <button
+      id="btn-scroll-top"
+      onclick="scrollToTop()"
+      class="fixed bottom-3 left-4 w-12 h-12 custom-primary rounded-full custom-shadow-lg flex items-center justify-center text-white text-xl z-50 transition-all duration-300 opacity-0 translate-y-20 pointer-events-none hover:brightness-110 active:scale-90"
+    >
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
     <!-- ========================================== -->
     <!-- TOAST THÔNG BÁO CẬP NHẬT PWA RỚT TỪ TRÊN XUỐNG -->
     <!-- ========================================== -->
@@ -15863,6 +16147,143 @@
           }
         }, 300); // Tốc độ quét: 300ms/lần (Tối ưu để không nóng máy)
       }
+    </script>
+
+    <!-- BỘ NÃO QUẢN LÝ MODULE BẬT/TẮT -->
+    <script>
+      // Danh sách các Module cho phép Bật/Tắt
+      const OPTIONAL_MODULES = [
+        {
+          id: "calendar",
+          name: "Lịch trình",
+          icon: "fa-calendar-days",
+          color: "text-blue-500",
+        },
+        {
+          id: "tasks",
+          name: "Quản lý Công việc",
+          icon: "fa-clipboard-check",
+          color: "text-indigo-500",
+        },
+        {
+          id: "debts",
+          name: "Sổ Nợ & Cho vay",
+          icon: "fa-hand-holding-dollar",
+          color: "text-rose-500",
+        },
+        {
+          id: "goals",
+          name: "Mục tiêu Tiết kiệm",
+          icon: "fa-bullseye",
+          color: "text-amber-500",
+        },
+        {
+          id: "budgets",
+          name: "Ngân sách chi tiêu",
+          icon: "fa-wallet",
+          color: "text-emerald-500",
+        },
+        {
+          id: "favorites",
+          name: "Sổ tay Quán ruột",
+          icon: "fa-heart",
+          color: "text-pink-500",
+        },
+        {
+          id: "map",
+          name: "Bản đồ nhiệt & Vị trí",
+          icon: "fa-map-location-dot",
+          color: "text-cyan-500",
+        },
+        {
+          id: "custommaps",
+          name: "Tự tạo Bản đồ",
+          icon: "fa-map-pin",
+          color: "text-purple-500",
+        },
+        {
+          id: "trips",
+          name: "Lên kế hoạch Chuyến đi",
+          icon: "fa-plane-departure",
+          color: "text-orange-500",
+        },
+        {
+          id: "grab",
+          name: "Chốt ca Tài xế Grab",
+          icon: "fa-motorcycle",
+          color: "text-green-600",
+        },
+        {
+          id: "running",
+          name: "Theo dõi Chạy bộ",
+          icon: "fa-person-running",
+          color: "text-red-500",
+        },
+        {
+          id: "work",
+          name: "Chấm công & Ký sự",
+          icon: "fa-briefcase",
+          color: "text-teal-500",
+        },
+        {
+          id: "gallery",
+          name: "Thư viện Ảnh",
+          icon: "fa-images",
+          color: "text-fuchsia-500",
+        },
+      ];
+
+      // Hàm vẽ danh sách công tắc ra màn hình cài đặt
+      function renderModuleToggles() {
+        const container = document.getElementById("module-toggles-container");
+        if (!container) return;
+
+        container.innerHTML = OPTIONAL_MODULES.map((mod) => {
+          // Nếu chưa có trong state thì mặc định là Bật (true)
+          const isChecked = state.moduleSettings[mod.id] !== false;
+
+          return `
+                <div class="flex items-center justify-between p-3 custom-bg-card border custom-border rounded-2xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full custom-bg-input flex items-center justify-center ${mod.color} border custom-border">
+                            <i class="fa-solid ${mod.icon}"></i>
+                        </div>
+                        <span class="text-sm font-bold custom-text">${mod.name}</span>
+                    </div>
+                    
+                    <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                        <input type="checkbox" onchange="toggleAppModule('${mod.id}', this.checked)" ${isChecked ? "checked" : ""} class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all border custom-border shadow-sm"></div>
+                    </label>
+                </div>`;
+        }).join("");
+      }
+
+      // Hàm bắt sự kiện khi gạt công tắc
+      window.toggleAppModule = function (moduleId, isEnabled) {
+        // Cập nhật vào Não
+        state.moduleSettings[moduleId] = isEnabled;
+
+        // Lưu Data
+        saveData();
+
+        // Re-render thanh điều hướng dưới đáy MÀ KHÔNG CẦN F5 TRANG!
+        renderNav();
+
+        if (typeof playSound === "function") playSound("pop");
+
+        // Nếu người dùng đang đứng ở trang bị tắt, đá văng về màn hình Tổng quan
+        if (!isEnabled && state.currentView === moduleId) {
+          switchView("dashboard");
+        }
+      };
+
+      // Bóc lột hàm renderSettings gốc để nó vẽ luôn đống công tắc này mỗi khi mở Cài đặt
+      const origRenderSettings = window.renderSettings;
+      window.renderSettings = function () {
+        if (origRenderSettings) origRenderSettings();
+        renderModuleToggles();
+      };
     </script>
     <script src="work.js"></script>
     <script src="image.js"></script>
