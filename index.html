@@ -6245,8 +6245,10 @@
 
         if (!btn || !nameEl) return;
 
+        // Xóa giá trị cũ để reset trạng thái
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-        nameEl.placeholder = "Đang tự động định vị...";
+        nameEl.value = "";
+        nameEl.placeholder = "Đang bắt vệ tinh GPS...";
 
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
@@ -6257,29 +6259,22 @@
               lngEl.value = lng;
               btn.innerHTML =
                 '<i class="fa-solid fa-check text-success-500"></i>';
+              nameEl.placeholder = "Đang giải mã địa chỉ...";
 
               try {
-                // ĐÃ ĐỔI SANG API PHOTON KOMOOT (Không bị chặn IP gắt như Nominatim)
+                // Đã tối ưu gọi API Photon cực nhanh
                 const res = await fetch(
                   `https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`,
                 );
-
                 if (!res.ok) throw new Error("API sập");
 
                 const data = await res.json();
-                console.log("📍 PHOTON ADDRESS:", data);
-
                 if (data.features && data.features.length > 0) {
                   const props = data.features[0].properties;
-
-                  // 1. Moi tên đường hoặc tên địa danh (Nhà hát, Công viên...)
                   const street = props.street || props.name || "";
-
-                  // 2. Moi Phường / Xã / Quận
                   const district =
                     props.district || props.locality || props.city || "";
 
-                  // 3. Lắp ráp logic
                   let locStr = "";
                   if (street && district && street !== district) {
                     locStr = `${street}, ${district}`;
@@ -6288,25 +6283,40 @@
                   } else if (district) {
                     locStr = district;
                   } else {
-                    locStr = "Khu vực chưa có dữ liệu";
+                    locStr = "Khu vực chưa có tên";
                   }
-
-                  // 4. Gán kết quả vào ô Input
                   nameEl.value = locStr;
                 } else {
-                  throw new Error("Không có dữ liệu vị trí này");
+                  throw new Error("Không có dữ liệu");
                 }
               } catch (e) {
                 console.error("Lỗi lấy địa chỉ:", e);
-                nameEl.value = "Chưa xác định được tên đường";
+                // Nếu API sập thì văng tọa độ ra cho ông thấy
+                nameEl.value = `Tọa độ: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
               }
             },
-            () => {
+            (err) => {
+              // Bắt đúng từng loại bệnh để báo lỗi chính xác
               btn.innerHTML =
                 '<i class="fa-solid fa-location-crosshairs text-danger-500"></i>';
-              nameEl.placeholder = "Chưa bật định vị GPS!";
+
+              if (err.code === 1) {
+                nameEl.value = "Bị từ chối quyền GPS (Bật trong Cài đặt)!";
+              } else if (err.code === 2) {
+                nameEl.value = "Không tìm thấy tín hiệu vệ tinh!";
+              } else if (err.code === 3) {
+                nameEl.value = "Quá thời gian lấy GPS, bấm lại lần nữa!";
+              } else {
+                nameEl.value = "Lỗi định vị chưa xác định!";
+              }
+              // Đổi màu text thành màu đỏ cho nó cảnh báo
+              nameEl.classList.add("text-danger-500");
             },
+            // 🔥 ĐÂY CHÍNH LÀ PHẦN SỬA LỖI CỐT LÕI: Ép điện thoại phải vắt kiệt sức lực để tìm GPS
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
           );
+        } else {
+          nameEl.value = "Trình duyệt không hỗ trợ GPS";
         }
       }
       function setTxFilter(val) {
