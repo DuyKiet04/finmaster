@@ -2962,7 +2962,7 @@
             </div>
 
             <div
-              class="space-y-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar border-y border-dashed custom-border py-2"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
               id="module-toggles-container"
             >
               <!-- JS sẽ bơm các thanh gạt công tắc vào đây -->
@@ -3425,7 +3425,6 @@
           map: true,
           custommaps: false,
           grab: false,
-          diary: false,
           favorites: false,
           budgets: true,
           running: false,
@@ -3534,65 +3533,6 @@
       function getRawNumber(str) {
         if (!str) return 0;
         return parseInt(str.toString().replace(/\./g, ""), 10);
-      }
-
-      function initSwipeActions() {
-        const swipeItems = document.querySelectorAll(".swipe-item");
-        swipeItems.forEach((item) => {
-          const content = item.querySelector(".swipe-content");
-          // Bắt theo flex shrink-0 để không bị phụ thuộc vào class cố định
-          const actionsBox =
-            item.querySelector(".shrink-0.snap-end") ||
-            item.querySelector(".absolute.inset-y-0.right-0");
-          if (!content || !actionsBox) return;
-
-          let startX = 0,
-            currentX = 0,
-            isDragging = false;
-
-          item.addEventListener(
-            "touchstart",
-            (e) => {
-              startX = e.touches[0].clientX;
-              isDragging = true;
-              content.classList.remove("transition-transform", "duration-200");
-            },
-            { passive: true },
-          );
-
-          item.addEventListener(
-            "touchmove",
-            (e) => {
-              if (!isDragging) return;
-              currentX = e.touches[0].clientX;
-              let diffX = currentX - startX;
-              const maxOpen = -(actionsBox.offsetWidth + 10);
-
-              if (diffX < 0) {
-                content.style.transform = `translateX(${Math.max(diffX, maxOpen - 20)}px)`;
-              } else {
-                content.style.transform = `translateX(0px)`;
-              }
-            },
-            { passive: true },
-          );
-
-          item.addEventListener("touchend", () => {
-            if (!isDragging) return;
-            isDragging = false;
-            content.classList.add("transition-transform", "duration-200");
-
-            let diffX = currentX - startX;
-            const maxOpen = -(actionsBox.offsetWidth + 10);
-            const threshold = maxOpen / 2;
-
-            if (diffX < threshold) {
-              content.style.transform = `translateX(${maxOpen}px)`;
-            } else {
-              content.style.transform = `translateX(0px)`;
-            }
-          });
-        });
       }
 
       function getSelectedMonth() {
@@ -3724,20 +3664,20 @@
 
         // Sắp xếp thứ tự các tab đúng y như trên thanh điều hướng để vuốt cho mượt
         const SWIPE_VIEWS = [
-          // "dashboard",
-          // "transactions",
-          // "calendar",
-          // "map",
-          // "grab",
-          // "favorites",
-          // "budgets",
-          // "running",
-          // "debts",
-          // "tasks",
-          // "goals",
-          // "trips",
-          // "wallets",
-          // "settings",
+          "dashboard",
+          "transactions",
+          "calendar",
+          "map",
+          "grab",
+          "favorites",
+          "budgets",
+          "running",
+          "debts",
+          "tasks",
+          "goals",
+          "trips",
+          "wallets",
+          "settings",
         ];
 
         document.addEventListener(
@@ -4023,7 +3963,6 @@
         { id: "custommaps", icon: "fa-map-pin", label: "Bản đồ cá nhân" },
         { id: "grab", icon: "fa-motorcycle", label: "Tài xế Grab" },
         { id: "favorites", icon: "fa-heart", label: "Quán ruột" },
-        { id: "diary", icon: "fa-book-open" },
         {
           id: "budgets",
           icon: "fa-bullseye",
@@ -4074,7 +4013,6 @@
           { id: "map", icon: "fa-map-location-dot" },
           { id: "custommaps", icon: "fa-map-pin" },
           { id: "grab", icon: "fa-motorcycle" },
-          { id: "diary", icon: "fa-book-open" },
           { id: "favorites", icon: "fa-heart" },
           { id: "budgets", icon: "fa-money-bill-wave" },
           { id: "running", icon: "fa-person-running" },
@@ -4095,8 +4033,6 @@
         let pillHtml = "";
         filteredPills.forEach((item) => {
           const isActive = state.currentView === item.id;
-          const onClickAction =
-            item.id === "diary" ? "openDiary()" : `switchView('${item.id}')`;
           pillHtml += `
             <button onclick="switchView('${item.id}')" class="mobile-nav-item flex-none w-12 h-12 flex items-center justify-center rounded-full transition-transform duration-150 active:scale-90">
               <i class="fa-solid ${item.icon} text-[20px] transition-colors duration-200 ${isActive ? "text-[#3b82f6] custom-icon-active" : "custom-icon"}"></i>
@@ -4108,10 +4044,6 @@
       }
 
       function switchView(viewId) {
-        if (viewId === "diary") {
-          if (typeof openDiary === "function") window.openDiary();
-          return;
-        }
         state.currentView = viewId;
 
         // Ẩn/Hiện nút cộng FAB
@@ -4124,8 +4056,7 @@
           viewId === "settings" ||
           viewId === "grab" ||
           viewId === "custommaps" ||
-          viewId === "work" ||
-          viewId === "diary"
+          viewId === "work"
         ) {
           fabMobile?.classList.add("hidden");
           fabDesktop?.classList.add("hidden");
@@ -4347,7 +4278,7 @@
                 <div class="pt-2 border-t custom-border dark:border-gray-700/80 border-dashed">
                     <label class="block text-[10px] font-bold custom-text-secondary uppercase tracking-widest mb-3 mt-4">Hạng mục nhắc nhở</label>
                     
-                    <div class="custom-bg-input rounded-2xl border custom-border space-y-2.5 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar border-y border-dashed custom-border py-2">
+                    <div class="custom-bg-input rounded-2xl border custom-border overflow-hidden">
                         <!-- 1. Công việc -->
                         <div class="flex items-center justify-between p-4 border-b custom-border hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div class="flex items-center gap-3.5">
@@ -4435,7 +4366,7 @@
                 </div>
 
                 <button type="submit" class="w-full py-4 custom-primary text-white rounded-2xl font-black text-lg custom-shadow-lg mt-4 active:scale-95 transition-transform duration-200 hover:brightness-110">
-                    <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu Cấu Hình
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu Cấu Hình Nhắc Nhở
                 </button>
             </form>
         `;
@@ -6735,9 +6666,68 @@
           else {
             container.className = "border custom-border rounded-3xl"; // Trả lại viền bao ngoài
 
-            // GỌI HÀM VUỐT CSS MỚI TINH TỪ tx-detail.js THAY CHO MỚ HỖN ĐỘN CŨ
             container.innerHTML = filteredTx
-              .map((tx) => createSwipeableTxCard(tx))
+              .map((tx) => {
+                const isInc = tx.type === "income";
+                const cat = state.categories.find(
+                  (c) => c.id === tx.category,
+                ) || {
+                  name: "Khác",
+                  icon: "📦",
+                  color: "bg-gray-100 text-gray-600",
+                };
+                const wallet = state.wallets.find(
+                  (w) => w.id === tx.walletId,
+                ) || { name: "Ví đã xóa", icon: "💳" };
+
+                return `
+                    <div class="relative overflow-hidden border-b custom-border dark:border-gray-800/50 swipe-item last:border-0">
+                        <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                            <button onclick="openModal('transaction', '${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                                <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                                    <i class="fa-solid fa-pen"></i>
+                                </div>
+                            </button>
+                            <button onclick="deleteTransaction('${tx.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                                <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="relative custom-bg-card dark:bg-gray-800 p-4 flex items-center gap-4 transition-transform duration-200 swipe-content z-10 custom-shadow-sm cursor-pointer  dark:hover:bg-gray-700/50" onclick="openModal('transaction', '${tx.id}')">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
+                                ${tx.image && tx.image.length > 50 ? `<img src="${tx.image}" class="w-full h-full object-cover" onclick="event.stopPropagation(); openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+                            </div>
+                            <div class="flex-1 min-w-0 py-0.5">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <p class="font-bold text-sm custom-text dark:text-white truncate">${cat.name}</p>
+                                    <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
+                                </div>
+                                <p class="text-[11px] custom-text-secondary truncate mb-1.5">${tx.note || "Không có ghi chú"}</p>
+                                
+                                <!-- Đã tách Thời gian và Địa chỉ thành 2 dòng riêng biệt -->
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-[10px] custom-text-secondary font-medium truncate flex items-center gap-1.5">
+                                        <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
+                                    </p>
+                                    ${
+                                      tx.locationName
+                                        ? `
+                                    <p class="text-[10px] custom-text-secondary font-medium truncate flex items-center gap-1.5">
+                                        <i class="fa-solid fa-location-dot text-rose-500"></i> <span>${formatShortAddress(tx.locationName)}</span>
+                                    </p>`
+                                        : ""
+                                    }
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0 ml-2">
+                                <p class="font-black text-base ${isInc ? "text-success-500" : "custom-text dark:text-white"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+              })
               .join("");
 
             if (typeof initSwipeActions === "function") initSwipeActions();
@@ -16031,8 +16021,8 @@
         document.getElementById("face-id-overlay").classList.add("hidden");
 
         document.getElementById("pincode-ui").style.display = "flex";
-        const lockoutUi = document.getElementById("lockout-ui");
-        if (lockoutUi) lockoutUi.style.display = "";
+          const lockoutUi = document.getElementById("lockout-ui");
+          if(lockoutUi) lockoutUi.style.display = "";
 
         // Trả lại khung viền mặc định
         document.getElementById("face-cam-frame").className =
@@ -16063,10 +16053,11 @@
         const video = document.getElementById("face-video");
         const canvas = document.getElementById("face-canvas");
         const frame = document.getElementById("face-cam-frame");
+
         document.getElementById("pincode-ui").style.display = "none";
-        const lockoutUi = document.getElementById("lockout-ui");
-        if (lockoutUi) lockoutUnlockMaybe = lockoutUi.style.display;
-        if (lockoutUi) lockoutUi.style.display = "none";
+          const lockoutUi = document.getElementById("lockout-ui");
+          if(lockoutUi) lockoutUnlockMaybe = lockoutUi.style.display;
+          if(lockoutUi) lockoutUi.style.display = "none";
 
         overlay.classList.remove("hidden");
         statusEl.innerText = "Đang nạp bộ não AI...";
@@ -16244,12 +16235,6 @@
           color: "text-green-600",
         },
         {
-          id: "diary",
-          name: "Xem nhật ký của bạn",
-          icon: "fa-book-open",
-          color: "text-orange-600",
-        },
-        {
           id: "running",
           name: "Theo dõi Chạy bộ",
           icon: "fa-person-running",
@@ -16325,6 +16310,5 @@
     <script src="tx-detail.js"></script>
     <script src="work.js"></script>
     <script src="image.js"></script>
-    <script src="./diary.js"></script>
   </body>
 </html>
