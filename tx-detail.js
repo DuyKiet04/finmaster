@@ -39,7 +39,7 @@ if (document.readyState === "loading") {
 }
 
 // ==========================================
-// 2. THUẬT TOÁN VUỐT THẺ (VẬT LÝ MESSENGER - GIỮ NGUYÊN VÌ ĐÃ QUÁ MƯỢT)
+// 2. THUẬT TOÁN VUỐT THẺ VẬT LÝ (ĐÃ FIX LỖI KẸT THẺ)
 // ==========================================
 window.initSwipeActions = () => {
     const swipeItems = document.querySelectorAll(".swipe-item");
@@ -53,10 +53,13 @@ window.initSwipeActions = () => {
         let startX = 0, startY = 0;
         let currentTranslate = 0, startTranslate = 0;
         let isDragging = false, isScrolling = false; 
-
-        const maxOpen = actionsBox.offsetWidth;
+        let maxOpen = 0; // Đưa biến ra ngoài chờ sẵn
 
         item.addEventListener("touchstart", (e) => {
+            // FIX TẠI ĐÂY: Chỉ đo độ rộng cụm nút khi ngón tay BẮT ĐẦU CHẠM VÀO THẺ
+            // Lúc này thẻ chắc chắn đang hiện trên màn hình nên đo mới chuẩn!
+            maxOpen = actionsBox.offsetWidth || 150; // Dự phòng cứng 150px nếu lỗi DOM
+
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             isDragging = true;
@@ -65,7 +68,7 @@ window.initSwipeActions = () => {
             content.style.transition = "none";
 
             if (currentlyOpenContent && currentlyOpenContent !== content) {
-                currentlyOpenContent.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
+                currentlyOpenContent.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
                 currentlyOpenContent.style.transform = "translateX(0px)";
                 currentlyOpenContent.dataset.translate = 0;
                 currentlyOpenContent = null;
@@ -81,10 +84,10 @@ window.initSwipeActions = () => {
             if (isScrolling) { isDragging = false; return; }
 
             let targetTranslate = startTranslate + diffX;
-            if (targetTranslate > 0) targetTranslate = targetTranslate * 0.2; 
+            if (targetTranslate > 0) targetTranslate = targetTranslate * 0.15; 
             else if (targetTranslate < -maxOpen) {
                 const overpull = targetTranslate + maxOpen;
-                targetTranslate = -maxOpen + (overpull * 0.2); 
+                targetTranslate = -maxOpen + (overpull * 0.15); 
             }
             content.style.transform = `translateX(${targetTranslate}px)`;
         }, { passive: true });
