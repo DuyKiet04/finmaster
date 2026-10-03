@@ -39,13 +39,17 @@ if (document.readyState === "loading") {
 }
 
 // ==========================================
-// 2. THUẬT TOÁN VUỐT THẺ VẬT LÝ (ĐÃ FIX LỖI KẸT THẺ)
+// 2. THUẬT TOÁN VUỐT THẺ VẬT LÝ (TỰ ĐỘNG NHẬN DIỆN MỌI NƠI)
 // ==========================================
-window.initSwipeActions = () => {
-    const swipeItems = document.querySelectorAll(".swipe-item");
-    let currentlyOpenContent = null; 
+window.currentlyOpenContent = null; // Biến toàn cục để nhớ thẻ nào đang mở
 
+window.initSwipeActions = () => {
+    // 🔥 CHỈ TÌM NHỮNG THẺ CHƯA ĐƯỢC GẮN ĐỘNG CƠ (tránh gắn trùng 2 lần gây giật lag)
+    const swipeItems = document.querySelectorAll(".swipe-item:not(.swipe-inited)");
+    
     swipeItems.forEach((item) => {
+        item.classList.add("swipe-inited"); // Đóng mộc "Đã kiểm định"
+        
         const content = item.querySelector(".swipe-content");
         const actionsBox = item.querySelector(".actions-container");
         if (!content || !actionsBox) return;
@@ -53,13 +57,10 @@ window.initSwipeActions = () => {
         let startX = 0, startY = 0;
         let currentTranslate = 0, startTranslate = 0;
         let isDragging = false, isScrolling = false; 
-        let maxOpen = 0; // Đưa biến ra ngoài chờ sẵn
+        let maxOpen = 0; 
 
         item.addEventListener("touchstart", (e) => {
-            // FIX TẠI ĐÂY: Chỉ đo độ rộng cụm nút khi ngón tay BẮT ĐẦU CHẠM VÀO THẺ
-            // Lúc này thẻ chắc chắn đang hiện trên màn hình nên đo mới chuẩn!
-            maxOpen = actionsBox.offsetWidth || 150; // Dự phòng cứng 150px nếu lỗi DOM
-
+            maxOpen = actionsBox.offsetWidth || 150; 
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             isDragging = true;
@@ -67,11 +68,11 @@ window.initSwipeActions = () => {
             startTranslate = currentTranslate;
             content.style.transition = "none";
 
-            if (currentlyOpenContent && currentlyOpenContent !== content) {
-                currentlyOpenContent.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
-                currentlyOpenContent.style.transform = "translateX(0px)";
-                currentlyOpenContent.dataset.translate = 0;
-                currentlyOpenContent = null;
+            if (window.currentlyOpenContent && window.currentlyOpenContent !== content) {
+                window.currentlyOpenContent.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
+                window.currentlyOpenContent.style.transform = "translateX(0px)";
+                window.currentlyOpenContent.dataset.translate = 0;
+                window.currentlyOpenContent = null;
             }
         }, { passive: true });
 
@@ -103,16 +104,35 @@ window.initSwipeActions = () => {
 
             if (currentTranslate < -(maxOpen / 2.5)) {
                 currentTranslate = -maxOpen;
-                currentlyOpenContent = content;
+                window.currentlyOpenContent = content;
             } else {
                 currentTranslate = 0;
-                if (currentlyOpenContent === content) currentlyOpenContent = null;
+                if (window.currentlyOpenContent === content) window.currentlyOpenContent = null;
             }
             content.dataset.translate = currentTranslate;
             content.style.transform = `translateX(${currentTranslate}px)`;
         });
     });
 };
+
+// 🔥 SIÊU VŨ KHÍ: TỰ ĐỘNG BẮT SỰ KIỆN TOÀN APP (MUTATION OBSERVER) 🔥
+if (!window.swipeObserverInited) {
+    window.swipeObserverInited = true;
+    const observer = new MutationObserver((mutations) => {
+        let shouldInit = false;
+        mutations.forEach(m => {
+            if (m.addedNodes.length > 0) shouldInit = true;
+        });
+        
+        if (shouldInit) {
+            // Đợi HTML vẽ xong hẳn (20ms) rồi mới gắn động cơ
+            setTimeout(() => { window.initSwipeActions(); }, 20);
+        }
+    });
+    
+    // Khởi động Camera giám sát toàn bộ màn hình
+    observer.observe(document.body, { childList: true, subtree: true });
+}
 
 // ==========================================
 // 3. COMPONENT: VẼ 1 THẺ GIAO DỊCH (GỌN GÀNG, BO GÓC SANG TRỌNG)
