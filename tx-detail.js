@@ -147,8 +147,12 @@ window.createSwipeableTxCard = (tx) => {
     const amtStr = typeof window.formatMoney === 'function' ? window.formatMoney(tx.amount) : tx.amount;
 
     const hasImage = tx.image && tx.image.length > 50;
+    
+    // 🔥 ĐÃ ÁP DỤNG CÔNG NGHỆ LÕI BLOB VÀ LAZY LOAD Ở ĐÂY 🔥
+    const fastImgUrl = hasImage && typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image;
+    
     const imgHtml = hasImage 
-        ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal(this.src)">` 
+        ? `<img src="${fastImgUrl}" loading="lazy" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal('${fastImgUrl}')">` 
         : `<span class="text-2xl drop-shadow-sm">${cat.icon}</span>`;
 
     let splitInfoHtml = "";
@@ -156,12 +160,15 @@ window.createSwipeableTxCard = (tx) => {
         splitInfoHtml = `<div class="mt-1 flex flex-wrap gap-1">${tx.splitDetails.map(d => `<span class="custom-bg-primary-soft text-primary-600 dark:text-primary-400 border border-primary-200/50 dark:border-primary-800/50 text-[9px] px-1.5 py-0.5 rounded font-bold">${d}</span>`).join("")}</div>`;
     }
 
+    const latStr = tx.lat ? tx.lat : "null";
+    const lngStr = tx.lng ? tx.lng : "null";
+
     return `
     <div class="relative mb-3 swipe-item group bg-transparent">
         
         <!-- LỚP ĐÁY: 3 NÚT TRÒN ĐỘC LẬP -->
         <div class="actions-container absolute inset-y-0 right-0 flex items-center justify-end gap-2 pr-1 z-0 w-[180px]">
-            <button onclick="openTxDetail('${tx.id}')" class="w-11 h-11 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 flex items-center justify-center text-lg shadow-sm active:scale-90 transition-transform"><i class="fa-solid fa-info"></i></button>
+            <button onclick="viewTransactionOnMap('${tx.id}', ${latStr}, ${lngStr})" class="w-11 h-11 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 flex items-center justify-center text-lg shadow-sm active:scale-90 transition-transform" title="Bản đồ"><i class="fa-solid fa-map-location-dot"></i></button>
             <button onclick="openEditTransaction('${tx.id}')" class="w-11 h-11 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 flex items-center justify-center text-lg shadow-sm active:scale-90 transition-transform"><i class="fa-solid fa-pen"></i></button>
             <button onclick="deleteTransaction('${tx.id}')" class="w-11 h-11 rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400 flex items-center justify-center text-lg shadow-sm active:scale-90 transition-transform"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -287,15 +294,15 @@ window.openTxDetail = (txId) => {
             </div>` : ''}
         </div>
 
-        <!-- Khối Ảnh Hóa Đơn -->
+        <!-- Ảnh Hóa Đơn -->
         ${tx.image && tx.image.length > 50 ? `
         <div class="custom-bg-card rounded-[2rem] border custom-border p-5 shadow-sm">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center text-pink-500"><i class="fa-solid fa-camera text-sm"></i></div>
                 <span class="text-xs font-bold custom-text-secondary uppercase">Chứng từ đính kèm</span>
             </div>
-            <div class="relative rounded-2xl overflow-hidden border custom-border shadow-sm group cursor-pointer" onclick="openImageModal('${tx.image}')">
-                <img src="${tx.image}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="relative rounded-2xl overflow-hidden border custom-border shadow-sm group cursor-pointer" onclick="openImageModal('${typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image}')">
+                <img src="${typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div class="bg-white/90 text-black px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-sm"><i class="fa-solid fa-expand mr-1"></i> Phóng to</div>
                 </div>

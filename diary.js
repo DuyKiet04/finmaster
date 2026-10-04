@@ -256,27 +256,43 @@ window.fastGetLocationDiary = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&zoom=18&addressdetails=1`);
+                // 🔥 ĐÃ ĐỔI SANG MÁY CHỦ BIGDATACLOUD (Bao test thoải mái, không bị block IP)
+                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=vi`);
                 const data = await res.json();
-                const addr = data.address || {};
-                const road = addr.road || addr.pedestrian || "";
-                const ward = addr.suburb || addr.quarter || addr.village || addr.city_district || "";
                 
-                let finalLoc = road && ward ? `${road}, ${ward}` : road || ward || "Vị trí hiện tại";
+                // Trích xuất dữ liệu phường/quận/thành phố
+                const ward = data.locality || "";
+                const city = data.city || data.principalSubdivision || "";
+                
+                let finalLoc = ward && city ? `${ward}, ${city}` : ward || city || "Vị trí hiện tại";
+                
+                // Dùng hàm rút gọn tên nếu có
+                finalLoc = typeof window.formatShortAddress === 'function' ? window.formatShortAddress(finalLoc) : finalLoc;
                 
                 btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                // Đổi nút sang màu xanh lá báo thành công
+                btn.classList.replace("text-rose-500", "text-success-500");
+                btn.classList.replace("dark:text-rose-400", "dark:text-success-400");
+                
                 locText.innerText = finalLoc;
                 locText.classList.remove("hidden");
-                // Gắn ngầm location vào dataset của ô input
+                
+                // Gắn ngầm location vào dataset để lát đăng bài lưu vào state
                 document.getElementById("diary-status-input").dataset.location = finalLoc;
+                
                 if(typeof playSound === 'function') playSound("success");
             } catch (err) {
                 btn.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
+                alert("Lỗi mạng: Không thể dịch tọa độ sang tên địa điểm!");
             }
-        }, () => {
+        }, (error) => {
             btn.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
-            alert("Vui lòng bật định vị GPS!");
-        }, { timeout: 10000 });
+            alert(`Lỗi GPS: ${error.message}`);
+        }, 
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
+        alert("Trình duyệt không hỗ trợ GPS!");
     }
 };
 

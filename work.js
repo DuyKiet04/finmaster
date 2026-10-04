@@ -174,6 +174,11 @@
 
         const workTransAll = state.transactions.filter(t => {
             if (t.type !== 'expense') return false;
+            
+            // ĐỘNG CƠ MỚI: Nếu user có gạt công tắc "Đi làm" (t.isWork = true)
+            if (t.isWork) return true;
+
+            // ĐỘNG CƠ CŨ (Dự phòng cho data ngày xưa): Quét tên danh mục
             const cat = state.categories.find(c => c.id === t.category);
             return cat && normalizeStr(cat.name).includes("lam");
         });

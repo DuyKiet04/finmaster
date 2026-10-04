@@ -1236,7 +1236,7 @@
                     Top danh mục chi tiêu
                   </h4>
                   <button
-                    onclick="openAnalytics()"
+                    onclick="switchView('transactions')"
                     class="text-[10px] font-bold custom-text-secondary custom-bg-input dark:bg-gray-700 px-2 py-1 rounded-md border custom-border"
                   >
                     Xem tất cả
@@ -1254,7 +1254,7 @@
                     Top địa điểm chi tiêu
                   </h4>
                   <button
-                    onclick="openLocAnalytics()"
+                    onclick="switchView('transactions')"
                     class="text-[10px] font-bold custom-text-secondary custom-bg-input dark:bg-gray-700 px-2 py-1 rounded-md border custom-border"
                   >
                     Xem tất cả
@@ -1308,7 +1308,7 @@
               </div>
 
               <button
-                onclick="openTrendAnalytics()"
+                onclick="switchView('transactions')"
                 class="mt-4 w-full py-3 custom-bg-input dark:bg-gray-700/50 dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border active:scale-[0.98]"
               >
                 Xem báo cáo phân tích &rarr;
@@ -3494,53 +3494,6 @@
           currency: "VND",
         }).format(amount || 0);
 
-      // ====================================================================
-      // CÔNG NGHỆ LÕI: HÓA PHÉP BASE64 THÀNH BLOB (TĂNG TỐC RENDER X5)
-      // ====================================================================
-      window.imageCache = new Map(); // Kho cache thông minh, không tạo URL ảo 2 lần cho 1 ảnh
-
-      window.getFastImage = (base64Str) => {
-        // Nếu không phải là Base64 hoặc chuỗi quá ngắn thì trả về nguyên gốc
-        if (
-          !base64Str ||
-          base64Str.length < 1000 ||
-          !base64Str.startsWith("data:image")
-        ) {
-          return base64Str;
-        }
-
-        // Nếu ảnh này đã được hóa phép trước đó rồi -> Lấy luôn trong kho ra xài!
-        if (window.imageCache.has(base64Str)) {
-          return window.imageCache.get(base64Str);
-        }
-
-        try {
-          const parts = base64Str.split(";base64,");
-          const contentType = parts[0].split(":")[1];
-          const raw = window.atob(parts[1]);
-          const rawLength = raw.length;
-          const uInt8Array = new Uint8Array(rawLength);
-
-          for (let i = 0; i < rawLength; ++i) {
-            uInt8Array[i] = raw.charCodeAt(i);
-          }
-
-          // Ép thành File Ảo (Blob)
-          const blob = new Blob([uInt8Array], { type: contentType });
-
-          // Đẻ ra đường link ảo cực ngắn
-          const fastUrl = URL.createObjectURL(blob);
-
-          // Lưu vào kho để mẻ sau cuộn tới không phải tính lại
-          window.imageCache.set(base64Str, fastUrl);
-
-          return fastUrl;
-        } catch (e) {
-          console.error("Lỗi hóa phép ảnh:", e);
-          return base64Str; // Bị lỗi thì đành xài chuỗi gốc
-        }
-      };
-
       // 1. Hàm cắt địa chỉ SIÊU THÔNG MINH (Lấy: Tên quán/Tên đường + Phường/Xã)
       window.formatShortAddress = (address) => {
         if (!address) return "";
@@ -3845,112 +3798,68 @@
         }
       }
 
-      // =======================================================
-      // BỘ NÃO KHỞI TẠO VÀ ĐỒNG BỘ DỮ LIỆU (ĐÃ TÁCH MỠ DATABASE)
-      // =======================================================
       async function initApp() {
         const splash = document.getElementById("splash-screen");
 
         try {
-          // --- BƯỚC 1: MIGRATION (CHUYỂN NHÀ TỪ CỤC MỠ CŨ SANG 3 KHO MỚI) ---
-          const oldFatData = await localforage.getItem("finmaster_data");
-          if (oldFatData) {
-            console.log("Đang tiến hành tách mỡ Database cũ...");
-            // Băm cục mỡ ra làm 3
-            const cData = {
-              wallets:
-                oldFatData.wallets ||
-                JSON.parse(JSON.stringify(DEFAULT_WALLETS)),
-              categories:
-                oldFatData.categories ||
-                JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-              budgets: oldFatData.budgets || [],
-              goals:
-                oldFatData.goals || JSON.parse(JSON.stringify(DEFAULT_GOALS)),
-              userProfile: oldFatData.userProfile || {
-                name: "Đại Ka",
-                avatar: "",
-              },
-              moduleSettings: oldFatData.moduleSettings || {},
-              dashFilter: oldFatData.dashFilter || {
-                time: "month",
-                chart: "doughnut",
-              },
-              currentTheme: oldFatData.currentTheme || "default",
-              primaryHue: oldFatData.primaryHue || "240",
-              notificationSettings: oldFatData.notificationSettings || {},
+          // --- 1. CHUYỂN NHÀ DỮ LIỆU (Migration) ---
+          const oldData = localStorage.getItem("finmaster_data");
+          if (oldData) {
+            await localforage.setItem("finmaster_data", JSON.parse(oldData));
+            const oldSettings = localStorage.getItem("finmaster_settings");
+            if (oldSettings)
+              await localforage.setItem(
+                "finmaster_settings",
+                JSON.parse(oldSettings),
+              );
+
+            // Chuyển xong thì đốt nhà cũ cho nhẹ máy
+            localStorage.removeItem("finmaster_data");
+            localStorage.removeItem("finmaster_settings");
+            console.log("Đã di dời dữ liệu sang IndexedDB an toàn!");
+          }
+
+          // --- 2. ĐỌC DỮ LIỆU TỪ INDEXEDDB ---
+          const savedData = await localforage.getItem("finmaster_data");
+          if (savedData) {
+            // Khởi tạo State cho Bản đồ tự chế
+            state.customMaps = savedData.customMaps || [];
+            state.mapPoints = savedData.mapPoints || [];
+            state.debts = savedData.debts || [];
+            state.badges = savedData.badges || [];
+            state.grabShifts = savedData.grabShifts || [];
+            state.trips = savedData.trips || [];
+            state.transactions = savedData.transactions || [];
+            state.workData = savedData.workData || null;
+            state.runs = savedData.runs || [];
+            state.wallets =
+              savedData.wallets || JSON.parse(JSON.stringify(DEFAULT_WALLETS));
+            state.categories =
+              savedData.categories ||
+              JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            state.budgets = savedData.budgets || [];
+            state.goals =
+              savedData.goals || JSON.parse(JSON.stringify(DEFAULT_GOALS));
+            state.logs = savedData.logs || [];
+            state.tasks = savedData.tasks || [];
+            if (savedData.notificationSettings)
+              state.notificationSettings = savedData.notificationSettings;
+            if (savedData.dashFilter) state.dashFilter = savedData.dashFilter;
+            if (savedData.userProfile)
+              state.userProfile = savedData.userProfile;
+            if (savedData.moduleSettings)
+              state.moduleSettings = savedData.moduleSettings;
+            if (savedData.currentTheme)
+              state.currentTheme = savedData.currentTheme;
+            if (savedData.primaryHue) state.primaryHue = savedData.primaryHue;
+            state.favorites = savedData.favorites || [];
+            state.runs = savedData.runs || [];
+            state.runPBs = savedData.runPBs || {
+              pb1k: null,
+              pb5k: null,
+              pb10k: null,
+              pb21k: null,
             };
-            const tData = oldFatData.transactions || [];
-            const eData = {
-              customMaps: oldFatData.customMaps || [],
-              mapPoints: oldFatData.mapPoints || [],
-              debts: oldFatData.debts || [],
-              trips: oldFatData.trips || [],
-              grabShifts: oldFatData.grabShifts || [],
-              logs: oldFatData.logs || [],
-              tasks: oldFatData.tasks || [],
-              favorites: oldFatData.favorites || [],
-              runs: oldFatData.runs || [],
-              runPBs: oldFatData.runPBs || {
-                pb1k: null,
-                pb5k: null,
-                pb10k: null,
-                pb21k: null,
-              },
-              workData: oldFatData.workData || null,
-              badges: oldFatData.badges || [],
-              diaryNotes: oldFatData.diaryNotes || [],
-            };
-
-            // Lưu vào 3 kho mới
-            await Promise.all([
-              localforage.setItem("fm_core", cData),
-              localforage.setItem("fm_txs", tData),
-              localforage.setItem("fm_extra", eData),
-            ]);
-
-            // Xóa cục mỡ cũ cho nhẹ máy
-            await localforage.removeItem("finmaster_data");
-            console.log("✅ Tách mỡ Database thành công!");
-          }
-
-          // --- BƯỚC 2: TẢI SONG SONG TỪ 3 KHO (TỐC ĐỘ BÀN THỜ) ---
-          const [core, txs, extra] = await Promise.all([
-            localforage.getItem("fm_core"),
-            localforage.getItem("fm_txs"),
-            localforage.getItem("fm_extra"),
-          ]);
-
-          // Lắp ráp lại vào bộ nhớ State để App chạy
-          if (core) {
-            state.wallets = core.wallets;
-            state.categories = core.categories;
-            state.budgets = core.budgets;
-            state.goals = core.goals;
-            state.userProfile = core.userProfile;
-            state.moduleSettings = core.moduleSettings;
-            state.dashFilter = core.dashFilter;
-            state.currentTheme = core.currentTheme;
-            state.primaryHue = core.primaryHue;
-            state.notificationSettings = core.notificationSettings;
-          }
-          if (txs) {
-            state.transactions = txs;
-          }
-          if (extra) {
-            state.customMaps = extra.customMaps;
-            state.mapPoints = extra.mapPoints;
-            state.debts = extra.debts;
-            state.trips = extra.trips;
-            state.grabShifts = extra.grabShifts;
-            state.logs = extra.logs;
-            state.tasks = extra.tasks;
-            state.favorites = extra.favorites;
-            state.runs = extra.runs;
-            state.runPBs = extra.runPBs;
-            state.workData = extra.workData;
-            state.badges = extra.badges;
-            state.diaryNotes = extra.diaryNotes;
           }
 
           const savedSettings = await localforage.getItem("finmaster_settings");
@@ -3968,6 +3877,7 @@
             day: "numeric",
           });
 
+        // THAY BẰNG ĐOẠN NÀY
         const todayStr = getToday().split("T")[0];
         const dashDate = document.getElementById("dash-date-picker");
         const txDate = document.getElementById("tx-date-picker");
@@ -3985,10 +3895,11 @@
               splash.classList.add("hidden");
             }, 500);
           }
-        }, 1500);
+        }, 2000);
 
-        if (typeof processRecurringTransactions === "function")
+        if (typeof processRecurringTransactions === "function") {
           processRecurringTransactions();
+        }
         if (typeof updateStorageStats === "function") updateStorageStats();
         if (typeof checkAllNotifications === "function")
           checkAllNotifications();
@@ -3998,53 +3909,44 @@
         initGlobalSwipe();
       }
 
-      // =======================================================
-      // HÀM LƯU DỮ LIỆU ĐA THREAD (TĂNG TỐC ĐỘ SAVE X10 LẦN)
-      // =======================================================
       function saveData() {
-        const coreData = {
+        const dataToSave = {
+          customMaps: state.customMaps,
+          mapPoints: state.mapPoints,
+          transactions: state.transactions,
           wallets: state.wallets,
           categories: state.categories,
           budgets: state.budgets,
-          goals: state.goals,
-          userProfile: state.userProfile,
-          moduleSettings: state.moduleSettings,
-          dashFilter: state.dashFilter,
-          currentTheme: state.currentTheme,
-          primaryHue: state.primaryHue,
-          notificationSettings: state.notificationSettings,
-        };
-        const txData = state.transactions;
-        const extraData = {
-          customMaps: state.customMaps,
-          mapPoints: state.mapPoints,
-          debts: state.debts,
           trips: state.trips,
-          grabShifts: state.grabShifts,
+          grabShifts: state.grabShifts || [],
+          goals: state.goals,
+          notificationSettings: state.notificationSettings,
+          badges: state.badges || [],
           logs: state.logs,
           tasks: state.tasks,
-          favorites: state.favorites,
-          runs: state.runs,
-          runPBs: state.runPBs,
+          dashFilter: state.dashFilter,
+          userProfile: state.userProfile,
+          moduleSettings: state.moduleSettings || {},
+          debts: state.debts,
+          currentTheme: state.currentTheme, // Thêm dòng này
+          primaryHue: state.primaryHue,
+          favorites: state.favorites || [],
+          runs: state.runs || [],
+          runPBs: state.runPBs || null,
           workData: state.workData,
-          badges: state.badges,
-          diaryNotes: state.diaryNotes,
         };
 
-        // Bắn lệnh lưu cả 3 kho CÙNG MỘT LÚC (Bất đồng bộ)
-        Promise.all([
-          localforage.setItem("fm_core", coreData),
-          localforage.setItem("fm_txs", txData),
-          localforage.setItem("fm_extra", extraData),
-          localforage.setItem("finmaster_settings", {
-            darkMode: state.darkMode,
-          }),
-        ]).catch((err) => console.error("Lỗi lưu dữ liệu:", err));
+        // localforage lưu ngầm dưới IndexedDB
+        localforage
+          .setItem("finmaster_data", dataToSave)
+          .catch((err) => console.error("Lỗi lưu dữ liệu:", err));
+        localforage
+          .setItem("finmaster_settings", { darkMode: state.darkMode })
+          .catch((err) => console.error("Lỗi lưu cài đặt:", err));
 
         updateGlobalHeader();
       }
 
-      // aloooooooooooooooooo
       function addLog(action, details) {
         state.logs.unshift({
           id: generateId(),
@@ -4352,7 +4254,7 @@
             .map(
               (c) => `
                             <div class="relative overflow-hidden rounded-2xl border custom-border dark:border-gray-700 swipe-item custom-bg-card dark:bg-gray-800">
-                              <div class="actions-container  absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                              <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                                 <button onclick="openModal('category', '${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                   <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
@@ -5787,7 +5689,7 @@
 
         if (!topCatHtml)
           topCatHtml = `<p class="text-xs custom-text-secondary text-center py-4">Chưa có giao dịch chi tiêu</p>`;
-        topCatHtml += `<button onclick="openAnalytics()" class="mt-2 w-full py-3 custom-bg-input dark:bg-gray-700/50  dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border">Xem tất cả danh mục &rarr;</button>`;
+        topCatHtml += `<button onclick="switchView('transactions')" class="mt-2 w-full py-3 custom-bg-input dark:bg-gray-700/50  dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border">Xem tất cả danh mục &rarr;</button>`;
 
         const topCatContainer = document.getElementById("dash-top-categories");
         if (topCatContainer) topCatContainer.innerHTML = topCatHtml;
@@ -6566,19 +6468,8 @@
         renderTransactions();
         document.getElementById("filter-dropdown").classList.add("hidden");
       };
-      // ====================================================================
-      // BIẾN TOÀN CỤC CHO LAZY LOADING (PHÂN TRANG TỰ ĐỘNG)
-      // ====================================================================
-      window.txPageSize = 20; // Số lượng giao dịch load mỗi lần
-      window.currentTxPage = 1; // Trang hiện tại
-      window.currentFilteredTxs = []; // Chứa danh sách đã lọc để load dần
-      window.txObserver = null; // Cảm biến theo dõi vuốt đáy
-
-      // ====================================================================
-      // BỘ NÃO RENDER DANH SÁCH CHÍNH (ĐÃ NÂNG CẤP LAZY LOAD)
-      // ====================================================================
       function renderTransactions() {
-        window.lastDateGroup = "";
+        window.lastDateGroup = ""; // Reset biến nhóm ngày mỗi lần render lại
         const searchInput = document
           .getElementById("filter-search")
           .value.trim()
@@ -6587,14 +6478,13 @@
           str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const searchNoAccent = removeAccents(searchInput);
 
-        const specificDate = document.getElementById("tx-date-picker")?.value;
+        const specificDate = document.getElementById("tx-date-picker").value;
         const today = new Date().toISOString().split("T")[0];
         const yesterday = new Date(Date.now() - 86400000)
           .toISOString()
           .split("T")[0];
 
-        // 1. LỌC DỮ LIỆU
-        let filteredTx = state.transactions.filter((t) => {
+        const filteredTx = state.transactions.filter((t) => {
           if (t.category === "transfer") return false;
 
           let matchS = false;
@@ -6608,12 +6498,22 @@
               .find((w) => w.id === t.walletId)
               ?.name.toLowerCase() || "";
 
-          if (["thu", "thu nhập", "thu chi", "thu tiền"].includes(searchInput))
+          if (
+            searchInput === "thu" ||
+            searchInput === "thu nhập" ||
+            searchInput === "thu chi" ||
+            searchInput === "thu tiền"
+          ) {
             matchS = t.type === "income";
-          else if (["chi", "chi tiêu", "chi tiền"].includes(searchInput))
+          } else if (
+            searchInput === "chi" ||
+            searchInput === "chi tiêu" ||
+            searchInput === "chi tiền"
+          ) {
             matchS = t.type === "expense";
-          else if (searchInput === "") matchS = true;
-          else {
+          } else if (searchInput === "") {
+            matchS = true;
+          } else {
             matchS =
               note.includes(searchInput) ||
               catName.includes(searchInput) ||
@@ -6636,18 +6536,16 @@
           return matchS && matchDate && matchWallet;
         });
 
-        // 2. SẮP XẾP
+        // ==========================================
+        // THUẬT TOÁN SẮP XẾP GIAO DỊCH
+        // ==========================================
         filteredTx.sort((a, b) => {
-          if (window.txSortOrder === "amount_desc") return b.amount - a.amount;
-          if (window.txSortOrder === "amount_asc") return a.amount - b.amount;
+          if (window.txSortOrder === "amount_desc") return b.amount - a.amount; // Cao đến thấp
+          if (window.txSortOrder === "amount_asc") return a.amount - b.amount; // Thấp đến cao
           if (window.txSortOrder === "date_asc")
-            return new Date(a.date) - new Date(b.date);
-          return new Date(b.date) - new Date(a.date);
+            return new Date(a.date) - new Date(b.date); // Cũ đến mới
+          return new Date(b.date) - new Date(a.date); // Mới nhất (Mặc định)
         });
-
-        // 3. LƯU LẠI DANH SÁCH ĐỂ LOAD DẦN & TÍNH TỔNG TIỀN
-        window.currentFilteredTxs = filteredTx;
-        window.currentTxPage = 1;
 
         const inc = filteredTx
           .filter((t) => t.type === "income")
@@ -6660,247 +6558,193 @@
         document.getElementById("sum-exp").innerText = formatMoney(exp);
 
         const container = document.getElementById("tx-list-container");
-        const emptyState = document.getElementById("tx-empty");
 
         if (filteredTx.length === 0) {
           container.innerHTML = "";
-          container.className = "border custom-border rounded-3xl";
-          emptyState.classList.remove("hidden");
-          return;
-        }
+          container.className = "border custom-border"; // Reset class
+          document.getElementById("tx-empty").classList.remove("hidden");
+        } else {
+          document.getElementById("tx-empty").classList.add("hidden");
 
-        emptyState.classList.add("hidden");
-
-        // 4. CHỈ LẤY 20 ITEM ĐẦU TIÊN ĐỂ VẼ RA TRƯỚC
-        const pageTxs = filteredTx.slice(0, window.txPageSize);
-        const html = window.generateTxHtml(pageTxs);
-
-        // Chuẩn bị Khung chứa (Phân tách giữa List và Grid)
-        let innerWrapperClass =
-          window.txViewMode === "grid"
-            ? "columns-2 sm:columns-3 gap-3 space-y-0"
-            : "space-y-0"; // List mode
-
-        container.className =
-          window.txViewMode === "grid"
-            ? "p-1 sm:p-2 bg-transparent border-0"
-            : "border custom-border rounded-3xl bg-transparent";
-
-        // Bơm 20 item đầu + Gắn CẢM BIẾN (Sensor) ở dưới đáy
-        container.innerHTML = `
-            <div id="tx-inner-list" class="${innerWrapperClass}">${html}</div>
-            <div id="tx-load-sensor" class="w-full h-14 flex items-center justify-center mt-2 opacity-50">
-                <i id="tx-loading-icon" class="fa-solid fa-circle-notch fa-spin text-2xl text-primary-500 hidden"></i>
-            </div>
-        `;
-
-        // Gắn Động cơ vuốt cho 20 item đầu
-        if (typeof window.initSwipeActions === "function")
-          window.initSwipeActions();
-
-        // Kích hoạt Cảm biến theo dõi
-        window.initTxObserver();
-      }
-
-      // ====================================================================
-      // HÀM TẠO HTML (DÙNG CHUNG CHO LẦN ĐẦU VÀ CÁC LẦN LOAD THÊM)
-      // ====================================================================
-      window.generateTxHtml = (txList) => {
-        let html = "";
-
-        txList.forEach((tx) => {
-          const isInc = tx.type === "income";
-          const cat = state.categories.find((c) => c.id === tx.category) || {
-            name: "Khác",
-            icon: "📦",
-            color: "bg-gray-100 text-gray-600",
-          };
-          const hasImage = tx.image && tx.image.length > 50;
-
-          // Xử lý Ngày tháng gom nhóm (Sticky Header)
-          let headerHtml = "";
-          if (
-            window.txSortOrder === "date_desc" ||
-            window.txSortOrder === "date_asc"
-          ) {
-            const d = new Date(tx.date);
-            const dateStr = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-
-            if (dateStr !== window.lastDateGroup) {
-              window.lastDateGroup = dateStr;
-
-              // Tính tổng thu/chi của ngày đó dựa trên mảng FULL
-              const dayTxs = window.currentFilteredTxs.filter((t) => {
-                const td = new Date(t.date);
-                return (
-                  `${td.getFullYear()}-${td.getMonth()}-${td.getDate()}` ===
-                  dateStr
-                );
-              });
-              const dInc = dayTxs
-                .filter((t) => t.type === "income")
-                .reduce((a, b) => a + b.amount, 0);
-              const dExp = dayTxs
-                .filter((t) => t.type === "expense")
-                .reduce((a, b) => a + b.amount, 0);
-
-              const todayObj = new Date();
-              const yesterdayObj = new Date(Date.now() - 86400000);
-              let dayName = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-
-              if (d.toDateString() === todayObj.toDateString())
-                dayName = "Hôm nay - " + dayName;
-              else if (d.toDateString() === yesterdayObj.toDateString())
-                dayName = "Hôm qua - " + dayName;
-              else {
-                const days = [
-                  "CN",
-                  "Thứ 2",
-                  "Thứ 3",
-                  "Thứ 4",
-                  "Thứ 5",
-                  "Thứ 6",
-                  "Thứ 7",
-                ];
-                dayName = days[d.getDay()] + " - " + dayName;
-              }
-
-              headerHtml = `
-                    <div class="sticky top-0 z-30 pt-1 pb-2 custom-bg-body w-full col-span-full break-inside-avoid">
-                        <div class="px-2 py-1.5 flex justify-between items-center backdrop-blur-md bg-white/50 dark:bg-gray-900/50 rounded-lg">
-                            <span class="text-[11px] font-black custom-text uppercase tracking-wider opacity-80">${dayName}</span>
-                            <div class="text-[10px] font-bold flex gap-2 tracking-wide opacity-80">
-                                ${dInc > 0 ? `<span class="text-emerald-500">+${formatMoney(dInc)}</span>` : ""}
-                                ${dInc > 0 && dExp > 0 ? `<span class="text-gray-300 dark:text-gray-600">|</span>` : ""}
-                                ${dExp > 0 ? `<span class="text-rose-500">-${formatMoney(dExp)}</span>` : ""}
-                            </div>
-                        </div>
-                    </div>`;
-            }
-          }
-
-          // Sinh HTML thẻ (Tùy theo Mode)
+          // ==========================================
+          // RENDER GIAO DIỆN STORY (GRID MODE)
+          // ==========================================
           if (window.txViewMode === "grid") {
-            let txTime = "";
-            if (tx.date.includes("T"))
-              txTime = tx.date.split("T")[1].substring(0, 5);
-            else if (tx.date.includes(" "))
-              txTime = tx.date.split(" ")[1].substring(0, 5);
+            container.className = "p-1 sm:p-2 bg-transparent"; // Xóa viền bao ngoài
 
-            html +=
-              headerHtml +
-              `
-                <div onclick="openModal('transaction', '${tx.id}')" class="break-inside-avoid relative flex flex-col rounded-[20px] overflow-hidden custom-bg-card border border-black/5 dark:border-white/5 shadow-sm cursor-pointer group transition-transform hover:scale-[1.02] active:scale-95 mb-3">
-                    <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500/90 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-red-600"><i class="fa-solid fa-trash"></i></button>
-                    <div class="relative w-full ${hasImage ? "" : "h-28 custom-bg-input"}">
-                        ${hasImage ? `<img src="${window.getFastImage(tx.image)}" loading="lazy" class="w-full h-auto object-cover max-h-48">` : `<div class="w-full h-full flex items-center justify-center text-3xl opacity-50">${cat.icon}</div>`}
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute top-2 left-2 right-10 flex items-center gap-2 z-10">
-                            <div class="w-6 h-6 rounded-full ${cat.color} flex items-center justify-center text-[10px] shadow-sm border border-white/20 backdrop-blur-md shrink-0">${cat.icon}</div>
-                            <span class="text-white text-[11px] font-bold drop-shadow-sm truncate">${cat.name}</span>
-                        </div>
-                    </div>
-                    <div class="p-3 flex flex-col gap-2">
-                        <p class="font-extrabold text-[13px] custom-text leading-tight line-clamp-2">${tx.note || "Không ghi chú"}</p>
-                        <div class="flex items-end justify-between mt-1">
-                            <div class="flex items-center gap-1 text-[9px] font-bold custom-text-secondary">
-                                <i class="fa-regular fa-clock"></i><span>${txTime}</span>
-                            </div>
-                            <p class="font-black text-[13px] shrink-0 ml-1 ${isInc ? "text-emerald-500" : "text-rose-500"}">${isInc ? "+" : "-"}${typeof window.formatMoney === "function" ? window.formatMoney(tx.amount) : tx.amount}</p>
+            // Dùng columns-2 thay vì grid để tạo hiệu ứng Masonry (sole gạch) y hệt ảnh
+            container.innerHTML =
+              `<div class="columns-2 sm:columns-3 gap-3 space-y-3">` +
+              filteredTx
+                .map((tx) => {
+                  const isInc = tx.type === "income";
+                  const cat = state.categories.find(
+                    (c) => c.id === tx.category,
+                  ) || {
+                    name: "Khác",
+                    icon: "📦",
+                    color: "bg-gray-100 text-gray-600",
+                  };
+                  const hasImage = tx.image && tx.image.length > 50;
+
+                  let txTime = "";
+                  if (tx.date.includes("T"))
+                    txTime = tx.date.split("T")[1].substring(0, 5);
+                  else if (tx.date.includes(" "))
+                    txTime = tx.date.split(" ")[1].substring(0, 5);
+
+                  // ==========================================
+                  // TÍNH TOÁN HEADER NGÀY (STICKY DATE)
+                  // ==========================================
+                  let headerHtml = "";
+
+                  // Chỉ nhóm theo ngày nếu đang chọn sắp xếp theo Ngày
+                  if (
+                    window.txSortOrder === "date_desc" ||
+                    window.txSortOrder === "date_asc"
+                  ) {
+                    const d = new Date(tx.date);
+                    const dateStr = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+                    // Nếu phát hiện sang một ngày mới -> Cắt dòng, chèn Header
+                    if (dateStr !== window.lastDateGroup) {
+                      window.lastDateGroup = dateStr;
+
+                      // Gom tiền của ngày đó
+                      const dayTxs = filteredTx.filter((t) => {
+                        const td = new Date(t.date);
+                        return (
+                          `${td.getFullYear()}-${td.getMonth()}-${td.getDate()}` ===
+                          dateStr
+                        );
+                      });
+                      const dInc = dayTxs
+                        .filter((t) => t.type === "income")
+                        .reduce((a, b) => a + b.amount, 0);
+                      const dExp = dayTxs
+                        .filter((t) => t.type === "expense")
+                        .reduce((a, b) => a + b.amount, 0);
+
+                      // Dịch thứ/ngày/tháng
+                      const today = new Date();
+                      const yesterday = new Date();
+                      yesterday.setDate(yesterday.getDate() - 1);
+                      let dayName = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+
+                      if (d.toDateString() === today.toDateString())
+                        dayName = "Hôm nay - " + dayName;
+                      else if (d.toDateString() === yesterday.toDateString())
+                        dayName = "Hôm qua - " + dayName;
+                      else {
+                        const days = [
+                          "CN",
+                          "Thứ 2",
+                          "Thứ 3",
+                          "Thứ 4",
+                          "Thứ 5",
+                          "Thứ 6",
+                          "Thứ 7",
+                        ];
+                        dayName = days[d.getDay()] + " - " + dayName;
+                      }
+
+                      // Render cái thanh Sticky dính lên đỉnh
+                      headerHtml = `
+                <div class="sticky top-0 z-30 pt-1 pb-2 custom-bg-body w-full">
+                    <div class="custom-bg-card border custom-border px-3 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex justify-between items-center bg-opacity-95 backdrop-blur-sm">
+                        <span class="text-xs font-black custom-text">${dayName}</span>
+                        <div class="text-[10px] font-bold flex gap-2 tracking-wide">
+                            ${dInc > 0 ? `<span class="text-success-500">+${formatMoney(dInc)}</span>` : ""}
+                            ${dInc > 0 && dExp > 0 ? `<span class="custom-text-secondary">|</span>` : ""}
+                            ${dExp > 0 ? `<span class="text-danger-500">-${formatMoney(dExp)}</span>` : ""}
                         </div>
                     </div>
                 </div>`;
-          } else {
-            // ĐÃ TÌM THẤY LỖI NGẦM TRONG HÀM generateTxHtml CŨ: Gọi đúng createSwipeableTxCard
-            html +=
-              headerHtml +
-              (typeof window.createSwipeableTxCard === "function"
-                ? window.createSwipeableTxCard(tx)
-                : "");
+                    }
+                  }
+
+                  return (
+                    headerHtml +
+                    `
+                <div onclick="openModal('transaction', '${tx.id}')"
+                     class="break-inside-avoid relative flex flex-col rounded-[16px] overflow-hidden custom-bg-card border custom-border shadow-sm cursor-pointer group transition-transform hover:scale-[1.02] active:scale-95">
+                     
+                    <!-- Nút xóa (Hiện khi hover) -->
+                    <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-danger-500/90 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-danger-600">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+
+                    <!-- KHU VỰC ẢNH (Phía trên) -->
+                    <div class="relative w-full ${hasImage ? "" : "h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"}">
+                        ${
+                          hasImage
+                            ? `<img src="${tx.image}" class="w-full h-auto object-cover max-h-60">`
+                            : `<div class="w-full h-full flex items-center justify-center text-4xl opacity-50">${cat.icon}</div>`
+                        }
+                        
+                        <!-- Lớp phủ Gradient đen phía trên để làm nổi bật chữ -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none"></div>
+
+                        <!-- Header trên cùng ảnh (Icon + Tên danh mục giả làm Avatar) -->
+                        <div class="absolute top-2.5 left-2.5 right-10 flex items-center gap-2 z-10">
+                            <div class="w-6 h-6 rounded-full ${cat.color} flex items-center justify-center text-[10px] shadow-md border border-white/20 backdrop-blur-md shrink-0">
+                                ${cat.icon}
+                            </div>
+                            <span class="text-white text-xs font-bold drop-shadow-md truncate tracking-wide">${cat.name}</span>
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC TEXT (Phía dưới) -->
+                    <div class="p-3 flex flex-col gap-2.5">
+                        <p class="font-bold text-sm custom-text leading-tight line-clamp-2">${tx.note || "Không có ghi chú"}</p>
+                        
+                        <!-- HIỂN THỊ ĐỊA CHỈ (NẾU CÓ) -->
+                        ${
+                          tx.locationName
+                            ? `
+                        <div class="flex items-start gap-1.5 text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-2 py-1.5 rounded-lg border border-rose-100 dark:border-rose-800/50 w-fit max-w-full">
+                            <i class="fa-solid fa-location-dot mt-0.5 shrink-0"></i> 
+                            <span class="line-clamp-2 leading-snug">${formatShortAddress(tx.locationName)}</span>
+                        </div>`
+                            : ""
+                        }
+                        
+                        <div class="flex items-end justify-between mt-1 pt-2 border-t border-dashed custom-border">
+                            <!-- HIỂN THỊ FULL THỜI GIAN THEO FORMAT MỚI -->
+                            <div class="flex items-center gap-1.5 text-[9px] font-bold custom-text-secondary w-2/3">
+                                <i class="fa-regular fa-clock shrink-0 text-gray-400"></i> 
+                                <span class="leading-snug line-clamp-2">${formatDateTime(tx.date)}</span>
+                            </div>
+                            
+                            <!-- Số tiền -->
+                            <p class="font-black text-sm shrink-0 ml-1 ${isInc ? "text-success-500" : "custom-text dark:text-gray-100"}">
+                                ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                `
+                  );
+                })
+                .join("") +
+              `</div>`;
           }
-        });
+          // ==========================================
+          // RENDER GIAO DIỆN MẶC ĐỊNH (LIST MODE)
+          // ==========================================
+          else {
+            container.className = "border custom-border rounded-3xl"; // Trả lại viền bao ngoài
 
-        return html;
-      };
+            // GỌI HÀM VUỐT CSS MỚI TINH TỪ tx-detail.js THAY CHO MỚ HỖN ĐỘN CŨ
+            container.innerHTML = filteredTx
+              .map((tx) => createSwipeableTxCard(tx))
+              .join("");
 
-      // ====================================================================
-      // BỘ NÃO CẢM BIẾN (INTERSECTION OBSERVER) CHẠY NGẦM DƯỚI ĐÁY DANH SÁCH
-      // ====================================================================
-      window.initTxObserver = () => {
-        // Tắt cảm biến cũ nếu có để tránh đẻ ra quá nhiều
-        if (window.txObserver) window.txObserver.disconnect();
-
-        const sensor = document.getElementById("tx-load-sensor");
-        if (!sensor) return;
-
-        // Khởi tạo thuật toán AI nhận diện điểm mù
-        window.txObserver = new IntersectionObserver(
-          (entries) => {
-            // Nếu người dùng cuộn tới đáy và nhìn thấy thẻ Sensor
-            if (entries[0].isIntersecting) {
-              window.loadMoreTransactions();
-            }
-          },
-          {
-            root: document.getElementById("main-scroll-area"), // Vùng cuộn chính của App
-            rootMargin: "200px", // Bắn lệnh kích hoạt trước khi chạm đáy 200px (Load siêu mượt)
-          },
-        );
-
-        window.txObserver.observe(sensor);
-      };
-
-      // ====================================================================
-      // HÀM TẢI THÊM GIAO DỊCH (CHẠY KHI ĐỤNG CẢM BIẾN)
-      // ====================================================================
-      window.loadMoreTransactions = () => {
-        const start = window.currentTxPage * window.txPageSize;
-        const end = start + window.txPageSize;
-        const nextTxs = window.currentFilteredTxs.slice(start, end);
-
-        const sensor = document.getElementById("tx-load-sensor");
-        const icon = document.getElementById("tx-loading-icon");
-
-        // Nếu đã load sạch kho đạn -> Tháo cảm biến, nghỉ!
-        if (nextTxs.length === 0) {
-          if (sensor) {
-            sensor.innerHTML =
-              '<span class="text-xs font-bold text-gray-400 py-4 block">Đã tải hết giao dịch.</span>';
-            setTimeout(() => sensor.remove(), 2000);
+            if (typeof initSwipeActions === "function") initSwipeActions();
           }
-          if (window.txObserver) window.txObserver.disconnect();
-          return;
         }
+      }
 
-        // Hiện icon xoay xoay cho user có cảm giác App đang cày bừa
-        if (icon) icon.classList.remove("hidden");
-
-        // Dùng setTimeout tạo độ trễ nhẹ (150ms) để không bị giật lag khung hình khi vẽ
-        setTimeout(() => {
-          const html = window.generateTxHtml(nextTxs);
-          const innerList = document.getElementById("tx-inner-list");
-
-          // Bơm tiếp data vào cuối danh sách
-          if (innerList) {
-            innerList.insertAdjacentHTML("beforeend", html);
-          }
-
-          window.currentTxPage++; // Nhảy trang
-
-          // Đóng mộc động cơ vuốt cho mẻ thẻ vừa mới xuất xưởng
-          if (typeof window.initSwipeActions === "function")
-            window.initSwipeActions();
-
-          if (icon) icon.classList.add("hidden");
-
-          // Nếu mẻ này là mẻ cuối cùng thì tháo cảm biến luôn
-          if (end >= window.currentFilteredTxs.length) {
-            if (sensor) sensor.remove();
-            if (window.txObserver) window.txObserver.disconnect();
-          }
-        }, 150);
-      };
-      //  aloooooooooooooooooooooooooooooooooo
       function renderBudgets() {
         const cont = document.getElementById("budgets-container");
         if (state.budgets.length === 0)
@@ -6944,7 +6788,7 @@
                   : "bg-primary-500";
             return `
             <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-                <div class=" actions-container  absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                     <button onclick="openModal('budget', '${b.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                         <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-pen"></i>
@@ -7013,7 +6857,7 @@
 
             return `
                   <div class="relative overflow-hidden rounded-3xl custom-shadow-sm border custom-border swipe-item custom-bg-primary-soft">
-                    <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                       <button onclick="deleteGoal('${g.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                         <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                           <i class="fa-solid fa-trash"></i>
@@ -7084,7 +6928,7 @@
             // 1. CỤC NÚT XÓA ẨN BÊN DƯỚI (Chỉ hiện khi vuốt)
             const swipeActionsHtml = isDeletable
               ? `
-                      <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                      <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                         <button onclick="deleteWallet('${w.id}')" class="flex flex-col items-center justify-center group outline-none w-14 h-full">
                           <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                             <i class="fa-solid fa-trash"></i>
@@ -7323,24 +7167,6 @@
                     <input type="text" id="m-note" value="${tx.note}" placeholder="Nhập mô tả cho giao dịch này..." class="w-full bg-transparent border-none text-sm font-medium custom-text outline-none p-0 custom-placeholder">
                 </div>
 
-
-                <!-- CÔNG TẮC ĐÁNH DẤU CÔNG VIỆC -->
-                <div class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 text-blue-500 dark:text-blue-300 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-briefcase"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-wide">Phục vụ công việc</p>
-                            <p class="text-[9px] font-bold text-blue-500/70 mt-0.5">Sẽ hiển thị trong Lịch Trình (Work)</p>
-                        </div>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="t-is-work" ${tx.isWork ? "checked" : ""} class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500 shadow-inner"></div>
-                    </label>
-                </div>
-
                 <!-- KHỐI 3: HÌNH ẢNH & VỊ TRÍ -->
                 <div class="flex gap-3.5">
                     <!-- Camera -->
@@ -7414,8 +7240,7 @@
             if (amt <= 0) return alert("Sai số tiền");
             const fileInput = document.getElementById("m-img-input");
             let compressedImg = document.getElementById("m-img-preview").src;
-            const isWorkToggle = document.getElementById("t-is-work");
-            const isWork = isWorkToggle ? isWorkToggle.checked : false;
+
             if (fileInput.files && fileInput.files[0]) {
               compressedImg = await compressImage(fileInput.files[0]);
             }
@@ -7435,7 +7260,6 @@
               isRecurring: document.getElementById("m-recurring").checked,
               favId:
                 document.getElementById("btn-fav-heart")?.dataset?.favid || "",
-              isWork: isWork,
             };
 
             if (!currentEditId) {
@@ -10243,7 +10067,7 @@
 
             return `
               <div class="relative overflow-hidden rounded-2xl custom-shadow-sm border custom-border swipe-item custom-bg-card dark:bg-gray-800">
-                  <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                  <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                       ${
                         !t.isCompleted
                           ? `
@@ -10646,7 +10470,7 @@
 
             return `
              <div class="relative overflow-hidden rounded-3xl swipe-item shadow-sm mb-4 group cursor-pointer hover:-translate-y-1 transition-transform">
-                <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                   <button onclick="deleteTrip('${trip.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                     <div class="w-12 h-12 rounded-full bg-danger-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                       <i class="fa-solid fa-trash"></i>
@@ -11987,7 +11811,7 @@
             return `
                 <div class="relative overflow-hidden rounded-3xl mb-3 border custom-border shadow-sm swipe-item custom-bg-card dark:bg-gray-800">
                   
-                  <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                  <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                     <button onclick="openModal('editFavorite', '${f.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
                       <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                         <i class="fa-solid fa-pen"></i>
@@ -14825,7 +14649,7 @@
 
                 return `
                 <div class="relative overflow-hidden rounded-2xl custom-shadow-sm border custom-border swipe-item custom-bg-card dark:bg-gray-800 mb-3">
-                    <div class="absolute actions-container  inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
+                    <div class="absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
                         ${
                           !t.isCompleted
                             ? `
@@ -16501,10 +16325,6 @@
     <script src="tx-detail.js"></script>
     <script src="work.js"></script>
     <script src="image.js"></script>
-    <script src="diary.js"></script>
-    <script src="analytics.js"></script>
-    <script src="location-analytics.js"></script>
-    <script src="trend-analytics.js"></script>
-    <!-- CHÍNH LÀ NÓ ĐÂY -->
+    <script src="./diary.js"></script>
   </body>
 </html>
