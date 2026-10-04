@@ -1333,8 +1333,8 @@
             </div>
           </div>
         </div>
-
-        <div
+        <!-- Giao dịch -->
+        <!-- <div
           id="view-transactions"
           class="view-section space-y-6 max-w-5xl mx-auto"
         >
@@ -1370,7 +1370,7 @@
                 <i class="fa-solid fa-table-cells-large"></i>
               </button>
 
-              <!-- Nút Phễu Lọc Cập Nhật -->
+              
               <button
                 id="filter-btn"
                 onclick="toggleTxFilter()"
@@ -1379,7 +1379,7 @@
                 <i class="fa-solid fa-filter"></i>
               </button>
 
-              <!-- BẢNG KẾT QUẢ GỢI Ý (GIỐNG YOUTUBE) -->
+              
               <div
                 id="search-autocomplete"
                 class="hidden absolute top-16 left-0 right-0 custom-bg-card dark:bg-gray-800 rounded-2xl shadow-2xl border custom-border dark:border-gray-700 z-[60] max-h-[60vh] overflow-y-auto p-2"
@@ -1389,7 +1389,7 @@
                 id="filter-dropdown"
                 class="hidden absolute right-0 top-14 w-52 custom-bg-card dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border custom-border dark:border-gray-700/80 z-50 p-2 font-sans transition-all duration-300"
               >
-                <!-- Date Picker -->
+                
                 <div class="p-2">
                   <label
                     class="text-[10px] font-bold text-gray-400 tracking-wide uppercase flex items-center gap-1.5 mb-2.5"
@@ -1411,7 +1411,7 @@
                   class="border-t custom-border dark:border-gray-700/80 mx-2 my-1"
                 ></div>
 
-                <!-- Chọn Ví -->
+                
                 <div class="p-2">
                   <label
                     class="text-[10px] font-bold text-gray-400 tracking-wide uppercase flex items-center gap-1.5 mb-2.5"
@@ -1426,7 +1426,7 @@
                     >
                       <option value="all">Tất cả ví</option>
                     </select>
-                    <!-- Custom Select Arrow -->
+                    
                     <div
                       class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"
                     >
@@ -1439,7 +1439,7 @@
                   class="border-t custom-border dark:border-gray-700/80 mx-2 my-1"
                 ></div>
 
-                <!-- Sắp Xếp Giao Dịch -->
+                
                 <div class="p-2">
                   <label
                     class="text-[10px] font-bold text-gray-400 tracking-wide uppercase flex items-center gap-1.5 mb-2.5"
@@ -1447,7 +1447,7 @@
                     <i class="fa-solid fa-arrow-down-a-z"></i> Sắp xếp
                   </label>
                   <div class="grid grid-cols-2 gap-2">
-                    <!-- Date Desc -->
+                    
                     <button
                       type="button"
                       onclick="setTxSortOrder('date_desc')"
@@ -1461,7 +1461,7 @@
                       ></i>
                     </button>
 
-                    <!-- Date Asc -->
+                    
                     <button
                       type="button"
                       onclick="setTxSortOrder('date_asc')"
@@ -1475,7 +1475,7 @@
                       ></i>
                     </button>
 
-                    <!-- Amount Desc -->
+                    
                     <button
                       type="button"
                       onclick="setTxSortOrder('amount_desc')"
@@ -1486,7 +1486,7 @@
                       <i class="fa-solid fa-arrow-down-9-1"></i>
                     </button>
 
-                    <!-- Amount Asc -->
+                    
                     <button
                       type="button"
                       onclick="setTxSortOrder('amount_asc')"
@@ -1503,7 +1503,7 @@
                   class="border-t custom-border dark:border-gray-700/80 mx-2 my-2"
                 ></div>
 
-                <!-- Quick Filter -->
+                
                 <div class="space-y-1 pb-1 px-1">
                   <button
                     onclick="setTxFilter('all')"
@@ -1595,7 +1595,7 @@
               <p class="font-medium">Không tìm thấy giao dịch nào.</p>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div
           id="view-map"
@@ -2934,7 +2934,7 @@
                 mục
               </h4>
               <button
-                onclick="openModal('category')"
+                onclick="openCategoryManager()"
                 class="w-8 h-8 custom-primary custom-text dark:bg-primary-900/40 dark:text-primary-400 rounded-full flex items-center justify-center transition-transform active:scale-90 text-sm border custom-border"
               >
                 <i class="fa-solid fa-plus"></i>
@@ -4353,7 +4353,7 @@
               (c) => `
                             <div class="relative overflow-hidden rounded-2xl border custom-border dark:border-gray-700 swipe-item custom-bg-card dark:bg-gray-800">
                               <div class="actions-container  absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 z-0">
-                                <button onclick="openModal('category', '${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
+                                <button onclick="openCategoryManager('${c.id}')" class="flex flex-col items-center justify-center group outline-none w-12">
                                   <div class="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center text-xl mb-1 active:scale-90 transition-transform shadow-md">
                                     <i class="fa-solid fa-pen"></i>
                                   </div>
@@ -16505,6 +16505,7 @@
     <script src="analytics.js"></script>
     <script src="location-analytics.js"></script>
     <script src="trend-analytics.js"></script>
+    <script src="category-manager.js"></script>
     <!-- CHÍNH LÀ NÓ ĐÂY -->
   </body>
 </html>

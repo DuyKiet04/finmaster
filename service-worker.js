@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v121'; // Ép trình duyệt dọn sạch rác cũ đi
+const CACHE_NAME = 'finmaster-v122'; // Ép trình duyệt dọn sạch rác cũ đi
 
 // 1. FILE Ở MÁY ĐẠI KA
 const STATIC_ASSETS = [
@@ -14,7 +14,8 @@ const STATIC_ASSETS = [
     './diary.js',
     './analytics.js',
     './location-analytics.js',
-    './trend-analytics.js'
+    './trend-analytics.js',
+    './category-manager.js'
 ];
 
 // 2. THƯ VIỆN GIAO DIỆN

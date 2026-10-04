@@ -1,101 +1,140 @@
 // ==============================================================
-// FILE: location-analytics.js - CHUYÊN VIÊN PHÂN TÍCH KHÔNG GIAN
+// FILE: location-analytics.js - V3: GIAO DIỆN HIỆN ĐẠI & ĐỒNG BỘ THEME
 // ==============================================================
 
-// 1. TỰ ĐỘNG BƠM GIAO DIỆN (ĐỘC LẬP HOÀN TOÀN)
+// 1. TỰ ĐỘNG BƠM GIAO DIỆN
 (function injectLocationAnalyticsUI() {
     if (document.getElementById('loc-analytics-overlay')) return;
 
     const locHTML = `
-    <div id="loc-analytics-overlay" class="fixed inset-0 z-[200] custom-bg-body transition-transform duration-300 translate-x-full flex flex-col hidden">
-        <div class="custom-bg-header dark:bg-gray-800/90 backdrop-blur-xl px-4 py-3 flex items-center justify-between shadow-sm shrink-0 z-30 border-b custom-border">
-            <button onclick="closeLocAnalytics()" class="w-10 h-10 flex items-center justify-center rounded-full custom-bg-card dark:bg-gray-700 custom-text-secondary hover:brightness-95 active:scale-90 transition-transform custom-shadow-sm border custom-border">
+    <div id="loc-analytics-overlay" class="fixed inset-0 z-[200] custom-bg-body transition-all duration-500 translate-y-full opacity-0 flex flex-col hidden font-sans">
+        
+        <!-- HEADER (NỔI TRÊN BẢN ĐỒ) -->
+        <div class="absolute top-0 left-0 right-0 z-[9999] px-4 py-4 flex items-center justify-between pointer-events-none">
+            <button onclick="closeLocAnalytics()" class="w-11 h-11 pointer-events-auto flex items-center justify-center rounded-full custom-bg-header custom-text custom-shadow-sm custom-border hover:scale-105 active:scale-95 transition-all backdrop-blur-xl">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <h3 class="font-black text-lg custom-text truncate flex-1 text-center mr-10">Phân tích Địa điểm</h3>
+            <div class="pointer-events-auto custom-bg-header px-5 py-2.5 rounded-full custom-shadow-sm custom-border flex items-center gap-2 backdrop-blur-xl">
+                <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--icon-active)"></div>
+                <h3 class="font-extrabold text-sm custom-text tracking-wide">Bản Đồ Chi Tiêu</h3>
+            </div>
+            <div class="w-11"></div> <!-- Spacer -->
         </div>
 
-        <div class="flex-1 overflow-y-auto custom-scrollbar relative pb-20" id="loc-scroll-area">
-            <!-- Bộ lọc -->
-            <div class="sticky top-0 z-20 custom-bg-body/95 backdrop-blur-md px-4 py-3 border-b custom-border shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg border custom-border p-1">
-                        <button onclick="changeLocMonth(-1)" class="w-8 h-8 rounded-md hover:bg-white dark:hover:bg-gray-700 custom-text flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                        <span id="loc-month-label" class="px-3 text-xs font-black custom-text uppercase tracking-widest min-w-[90px] text-center">T9/2026</span>
-                        <button onclick="changeLocMonth(1)" class="w-8 h-8 rounded-md hover:bg-white dark:hover:bg-gray-700 custom-text flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+        <!-- BẢN ĐỒ HERO (NỬA TRÊN) -->
+        <div class="w-full h-[45vh] relative custom-bg-input shrink-0" id="loc-heatmap-container">
+            <div id="loc-map-loading" class="absolute inset-0 flex flex-col items-center justify-center custom-bg-body opacity-80 backdrop-blur-md z-0">
+                <div class="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin mb-3" style="border-color: var(--icon-active); border-top-color: transparent;"></div>
+                <span class="text-xs font-bold custom-text-secondary tracking-widest uppercase">Đang quét vị trí...</span>
+            </div>
+        </div>
+
+        <!-- PANEL DỮ LIỆU (NỬA DƯỚI) -->
+        <div class="flex-1 custom-bg-body -mt-6 rounded-t-[2rem] z-20 custom-shadow-lg flex flex-col relative overflow-hidden custom-border border-b-0 border-x-0">
+            <!-- Handle bar nhỏ xíu -->
+            <div class="w-full flex justify-center pt-3 pb-1 absolute top-0 left-0 right-0 custom-bg-body z-30 opacity-95 backdrop-blur-sm rounded-t-[2rem]">
+                <div class="w-12 h-1.5 custom-bg-input rounded-full"></div>
+            </div>
+
+            <!-- Tổng quan & Bộ lọc -->
+            <div class="px-5 pt-8 pb-4 shrink-0 border-b custom-border custom-bg-body relative z-20">
+                
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <p class="text-[11px] font-bold custom-text-secondary uppercase tracking-widest mb-1">Tổng đốt tiền tại</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="loc-total-places" class="text-2xl font-black" style="color: var(--icon-active)">0</span>
+                            <span class="text-sm font-bold custom-text-secondary">địa điểm</span>
+                        </div>
                     </div>
-                    <select id="loc-sort-select" onchange="renderLocAnalyticsData()" class="flex-1 bg-gray-100 dark:bg-gray-800 border custom-border rounded-lg outline-none text-xs font-bold custom-text px-2 py-2.5 appearance-none text-right">
-                        <option value="amount">Sắp xếp: Tiêu nhiều nhất</option>
-                        <option value="freq">Sắp xếp: Ghé nhiều nhất</option>
-                    </select>
+                    
+                    <!-- Nút chọn tháng -->
+                    <div class="flex items-center custom-bg-input rounded-full p-1 custom-shadow-sm custom-border">
+                        <button onclick="changeLocMonth(-1)" class="w-8 h-8 rounded-full hover:custom-bg-card custom-text-secondary hover:custom-text flex items-center justify-center transition-all"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+                        <span id="loc-month-label" class="px-3 text-xs font-black custom-text uppercase tracking-wider min-w-[70px] text-center">T9</span>
+                        <button onclick="changeLocMonth(1)" class="w-8 h-8 rounded-full hover:custom-bg-card custom-text-secondary hover:custom-text flex items-center justify-center transition-all"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                    </div>
+                </div>
+
+                <!-- Tabs Sắp xếp -->
+                <div class="flex custom-bg-input p-1 rounded-xl custom-border">
+                    <button id="tab-sort-amount" onclick="setLocSort('amount')" class="flex-1 py-2 text-xs font-bold rounded-lg custom-bg-card custom-text custom-shadow-sm transition-all">Chi nhiều nhất</button>
+                    <button id="tab-sort-freq" onclick="setLocSort('freq')" class="flex-1 py-2 text-xs font-bold rounded-lg custom-text-secondary transition-all bg-transparent">Ghé thường xuyên</button>
                 </div>
             </div>
 
-            <!-- Vùng Bản đồ Nhiệt (Heatmap) -->
-            <div class="w-full h-[30vh] min-h-[250px] relative bg-gray-200 dark:bg-gray-800 z-10" id="loc-heatmap-container">
-                <!-- Map sẽ render ở đây -->
-                <div id="loc-map-loading" class="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-20">
-                    <i class="fa-solid fa-spinner fa-spin text-3xl text-primary-500"></i>
-                </div>
-            </div>
-
-            <!-- Bảng xếp hạng -->
-            <div class="p-4 relative z-20 -mt-6">
-                <div class="custom-bg-card p-6 rounded-[2rem] border custom-border custom-shadow-sm">
-                    <div class="flex items-center justify-between mb-5">
-                        <h4 class="font-black text-sm uppercase tracking-widest custom-text-secondary flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-rose-500"></i> "Hố đen" hút máu</h4>
-                        <span id="loc-total-places" class="text-xs font-bold bg-rose-50 text-rose-600 dark:bg-rose-900/30 px-2 py-1 rounded-lg">0 địa điểm</span>
-                    </div>
-                    <div id="loc-leaderboard" class="space-y-4"></div>
-                </div>
+            <!-- Danh sách -->
+            <div class="flex-1 overflow-y-auto px-5 py-2 pb-24 custom-scrollbar custom-bg-body" id="loc-leaderboard">
+                <!-- Data render here -->
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM SHEET CHI TIẾT ĐỊA ĐIỂM -->
+    <!-- BOTTOM SHEET CHI TIẾT -->
     <div id="loc-bottom-sheet-backdrop" onclick="closeLocBottomSheet()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[250] hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="loc-bottom-sheet" class="fixed bottom-0 left-0 right-0 custom-bg-body z-[300] rounded-t-[2rem] border-t custom-border shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform translate-y-full transition-transform duration-300 flex flex-col max-h-[85vh]">
-        <div class="w-full flex justify-center py-3 cursor-pointer" onclick="closeLocBottomSheet()">
-            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+    <div id="loc-bottom-sheet" class="fixed bottom-0 left-0 right-0 custom-bg-body z-[300] rounded-t-[2.5rem] custom-shadow-lg transform translate-y-full transition-transform duration-400 ease-out flex flex-col max-h-[85vh] custom-border border-b-0 border-x-0">
+        <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeLocBottomSheet()">
+            <div class="w-12 h-1.5 custom-bg-input rounded-full"></div>
         </div>
-        <div class="px-6 pb-4 border-b custom-border flex items-center justify-between shrink-0">
-            <div>
-                <h3 id="loc-bs-title" class="font-black text-xl custom-text line-clamp-1">Tên Địa Điểm</h3>
-                <p id="loc-bs-stats" class="text-xs font-bold text-gray-500 mt-1">Đã ghé X lần • Tổng Y đ</p>
+        
+        <div class="px-6 pb-5 pt-2 flex gap-4 items-start relative">
+            <div class="w-14 h-14 rounded-2xl custom-bg-primary-soft flex items-center justify-center custom-border shrink-0 mt-1" style="color: var(--icon-active)">
+                <i class="fa-solid fa-shop text-2xl"></i>
             </div>
-            <button onclick="viewLocOnMap()" class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 dark:bg-blue-900/30 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <div class="flex-1 min-w-0 pr-12">
+                <h3 id="loc-bs-title" class="font-black text-xl custom-text leading-tight mb-1">Tên Địa Điểm</h3>
+                <div class="flex items-center gap-2 text-xs font-bold custom-text-secondary">
+                    <span id="loc-bs-count" class="custom-bg-input px-2 py-0.5 rounded-md custom-border">0 lần ghé</span>
+                    <span id="loc-bs-avg">Trung bình 0đ</span>
+                </div>
+            </div>
+            <!-- Nút Map bay bay -->
+            <button onclick="viewLocOnMap()" class="absolute right-6 top-2 w-10 h-10 rounded-full custom-primary custom-shadow flex items-center justify-center hover:scale-110 active:scale-90 transition-transform">
+                <i class="fa-solid fa-location-arrow"></i>
+            </button>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 custom-scrollbar bg-gray-50/50 dark:bg-gray-900/50">
-            <h4 class="font-black text-xs uppercase tracking-widest custom-text-secondary mb-3 pl-1">Lịch sử quẹt thẻ tại đây</h4>
-            <div id="loc-bs-tx-list" class="space-y-0"></div>
+
+        <div class="w-full h-px custom-bg-input"></div>
+
+        <div class="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar">
+            <h4 class="font-bold text-[11px] uppercase tracking-widest custom-text-secondary mb-4">Lịch sử giao dịch tại đây</h4>
+            <div id="loc-bs-tx-list" class="space-y-3"></div>
         </div>
-    </div>`;
+    </div>
+    
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+    </style>`;
     
     document.body.insertAdjacentHTML('beforeend', locHTML);
 })();
 
-// 2. LOGIC XỬ LÝ (BỘ NÃO)
+// 2. LOGIC XỬ LÝ
 let locCurrentDate = new Date();
 let locMapInstance = null;
 let locHeatLayer = null;
 let locRawData = [];
 let locCurrentLat = null;
 let locCurrentLng = null;
+let locCurrentSort = 'amount'; // 'amount' hoặc 'freq'
 
 window.openLocAnalytics = async () => {
-    // Tải Leaflet Map & Heatmap plugin nếu chưa có
     document.getElementById("loc-map-loading").classList.remove("hidden");
     
     if (typeof L === 'undefined' && typeof window.loadScript === 'function') {
         await window.loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", true);
         await window.loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
-        // Dùng CDNJS cho Leaflet Heat (Không bị chặn CORS)
         await window.loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js");
     }
 
     const overlay = document.getElementById("loc-analytics-overlay");
     overlay.classList.remove("hidden");
-    setTimeout(() => overlay.classList.remove("translate-x-full"), 10);
+    
+    requestAnimationFrame(() => {
+        overlay.classList.remove("translate-y-full", "opacity-0");
+    });
     
     renderLocAnalyticsData();
     initLocMap();
@@ -104,8 +143,8 @@ window.openLocAnalytics = async () => {
 
 window.closeLocAnalytics = () => {
     const overlay = document.getElementById("loc-analytics-overlay");
-    overlay.classList.add("translate-x-full");
-    setTimeout(() => overlay.classList.add("hidden"), 300);
+    overlay.classList.add("translate-y-full", "opacity-0");
+    setTimeout(() => overlay.classList.add("hidden"), 500);
 };
 
 window.changeLocMonth = (dir) => {
@@ -113,22 +152,41 @@ window.changeLocMonth = (dir) => {
     renderLocAnalyticsData();
 };
 
+window.setLocSort = (type) => {
+    locCurrentSort = type;
+    
+    const tabAmount = document.getElementById("tab-sort-amount");
+    const tabFreq = document.getElementById("tab-sort-freq");
+    
+    const activeClasses = ["custom-bg-card", "custom-text", "custom-shadow-sm"];
+    const inactiveClasses = ["custom-text-secondary", "bg-transparent"];
 
+    if (type === 'amount') {
+        tabAmount.classList.add(...activeClasses);
+        tabAmount.classList.remove(...inactiveClasses);
+        tabFreq.classList.add(...inactiveClasses);
+        tabFreq.classList.remove(...activeClasses);
+    } else {
+        tabFreq.classList.add(...activeClasses);
+        tabFreq.classList.remove(...inactiveClasses);
+        tabAmount.classList.add(...inactiveClasses);
+        tabAmount.classList.remove(...activeClasses);
+    }
+    
+    renderLocAnalyticsData();
+};
 
 window.renderLocAnalyticsData = () => {
     const y = locCurrentDate.getFullYear();
     const m = locCurrentDate.getMonth();
-    const sortBy = document.getElementById("loc-sort-select").value;
     
-    document.getElementById("loc-month-label").innerText = `T${m + 1}/${y}`;
+    document.getElementById("loc-month-label").innerText = `Tháng ${m + 1}`;
 
-    // Lọc giao dịch CHI TIÊU CÓ ĐỊA ĐIỂM
     const txs = state.transactions.filter(t => {
         const d = new Date(t.date);
         return d.getMonth() === m && d.getFullYear() === y && t.type === 'expense' && t.locationName;
     });
 
-    // Gom cụm theo Tên Địa Điểm
     const grouped = {};
     txs.forEach(t => {
         if (!grouped[t.locationName]) {
@@ -146,47 +204,73 @@ window.renderLocAnalyticsData = () => {
         grouped[t.locationName].txs.push(t);
     });
 
-    // Chuyển thành Mảng và Sắp xếp
     locRawData = Object.values(grouped);
     
-    if (sortBy === 'amount') {
+    const maxAmount = Math.max(...locRawData.map(l => l.totalAmount), 1);
+    const maxFreq = Math.max(...locRawData.map(l => l.count), 1);
+
+    if (locCurrentSort === 'amount') {
         locRawData.sort((a, b) => b.totalAmount - a.totalAmount);
     } else {
-        locRawData.sort((a, b) => b.count - a.count); // Tần suất ghé
+        locRawData.sort((a, b) => b.count - a.count);
     }
 
-    document.getElementById("loc-total-places").innerText = `${locRawData.length} địa điểm`;
+    document.getElementById("loc-total-places").innerText = locRawData.length;
 
-    // Render Bảng xếp hạng (Y như hình ông thiết kế: Tròn icon, Tên, Category nhỏ ở dưới, Số tiền, Icon map bên phải)
     const boardEl = document.getElementById("loc-leaderboard");
     if (locRawData.length === 0) {
-        boardEl.innerHTML = `<div class="text-center py-8 opacity-60"><i class="fa-solid fa-map-location-dot text-4xl text-gray-400 mb-2"></i><p class="text-sm font-bold custom-text-secondary">Tháng này chưa gắn định vị ở đâu cả!</p></div>`;
+        boardEl.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-40 opacity-50 mt-10">
+                <i class="fa-solid fa-satellite-dish text-4xl custom-text-secondary mb-3"></i>
+                <p class="text-sm font-bold custom-text-secondary">Chưa có tín hiệu quét thẻ tháng này!</p>
+            </div>`;
         updateHeatmap();
         return;
     }
 
     boardEl.innerHTML = locRawData.map((loc, idx) => {
-        // Lấy danh mục chiếm tỷ trọng nhiều nhất ở địa điểm này
         const mainCatId = loc.txs.sort((a, b) => b.amount - a.amount)[0].category;
         const cat = state.categories.find(c => c.id === mainCatId) || { name: "Khác", icon: "📍" };
-        
-        // Trích xuất tên đường ngắn gọn (Ví dụ: "Đường số 18")
         const shortName = typeof window.formatShortAddress === 'function' ? window.formatShortAddress(loc.name) : loc.name.split(',')[0];
+        
+        const percent = locCurrentSort === 'amount' 
+            ? (loc.totalAmount / maxAmount) * 100 
+            : (loc.count / maxFreq) * 100;
+
+        const isTop3 = idx < 3;
+        const textClass = isTop3 ? "custom-text" : "custom-text-secondary";
+        
+        // Cấu hình thanh progress theo theme
+        const barContent = isTop3 
+            ? `<div class="h-full custom-gradient rounded-full" style="width: ${percent}%"></div>`
+            : `<div class="h-full rounded-full" style="width: ${percent}%; background-color: var(--text-placeholder)"></div>`;
 
         return `
-        <div onclick="openLocBottomSheet('${loc.name.replace(/'/g, "\\'")}')" class="flex items-center justify-between p-3 custom-bg-input rounded-2xl border custom-border hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer group">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-black text-sm shrink-0 border border-white/20 shadow-inner">
+        <div onclick="openLocBottomSheet('${loc.name.replace(/'/g, "\\'")}')" class="group relative mb-4 p-4 custom-bg-card rounded-2xl custom-border hover:custom-shadow transition-all cursor-pointer overflow-hidden">
+            <!-- Nền mờ -->
+            <div class="absolute top-0 left-0 bottom-0 custom-bg-primary-soft opacity-50 transition-all duration-700" style="width: ${percent}%"></div>
+            
+            <div class="relative z-10 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full custom-bg-input flex items-center justify-center text-xl shrink-0 custom-shadow-sm custom-border">
                     ${cat.icon}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="font-black text-sm text-blue-600 dark:text-blue-400 truncate leading-tight">${shortName}</p>
-                    <p class="text-[10px] font-bold text-gray-500 mt-0.5 truncate">${cat.name} • ${loc.count} lần</p>
+                    <div class="flex justify-between items-baseline mb-1">
+                        <p class="font-extrabold text-[15px] ${textClass} truncate pr-2">${shortName}</p>
+                        <p class="font-black text-[15px] shrink-0" style="color: var(--icon-active)">-${formatMoney(loc.totalAmount)}</p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-bold custom-text-secondary truncate">${cat.name}</p>
+                        <div class="flex items-center gap-1.5 custom-bg-input px-2 py-0.5 rounded text-[10px] font-bold custom-text-secondary custom-border">
+                            <i class="fa-solid fa-shoe-prints opacity-60"></i> ${loc.count} lần
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center gap-3 shrink-0 ml-2">
-                <span class="font-black text-[15px] text-danger-500">-${formatMoney(loc.totalAmount)}</span>
-                <i class="fa-solid fa-location-dot text-amber-500 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+            
+            <!-- Thanh chỉ báo -->
+            <div class="w-full h-1 custom-bg-input rounded-full mt-3 overflow-hidden">
+                ${barContent}
             </div>
         </div>`;
     }).join("");
@@ -199,26 +283,24 @@ function updateHeatmap() {
     
     if (locHeatLayer) locMapInstance.removeLayer(locHeatLayer);
     
-    // Gom mảng data: [lat, lng, intensity]
     const heatData = locRawData
-        .filter(loc => loc.lat && loc.lng) // Bắt buộc phải có tọa độ
-        .map(loc => [loc.lat, loc.lng, loc.totalAmount]); // Càng nhiều tiền càng đỏ rực
+        .filter(loc => loc.lat && loc.lng)
+        .map(loc => [loc.lat, loc.lng, loc.totalAmount]);
 
     if (heatData.length > 0) {
         locHeatLayer = L.heatLayer(heatData, {
-            radius: 25,
-            blur: 15,
-            maxZoom: 14,
-            gradient: { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' }
+            radius: 28,
+            blur: 18,
+            maxZoom: 15,
+            gradient: { 0.3: '#3b82f6', 0.5: '#10b981', 0.7: '#eab308', 1.0: '#f43f5e' } // Màu heatmap chuẩn để dễ nhìn dữ liệu bản đồ
         }).addTo(locMapInstance);
         
-        // Tự động zoom vừa vặn các điểm
         const bounds = L.latLngBounds(heatData.map(h => [h[0], h[1]]));
-        locMapInstance.fitBounds(bounds, { padding: [20, 20] });
+        locMapInstance.fitBounds(bounds, { paddingBottomRight: [0, window.innerHeight * 0.4], paddingTopLeft: [20, 20] });
     }
 }
 
-// 3. DRILL-DOWN (BOTTOM SHEET CHO TỪNG ĐỊA ĐIỂM)
+// 3. DRILL-DOWN (BOTTOM SHEET TỐI ƯU HƠN)
 window.openLocBottomSheet = (locationName) => {
     const loc = locRawData.find(l => l.name === locationName);
     if (!loc) return;
@@ -228,23 +310,24 @@ window.openLocBottomSheet = (locationName) => {
 
     const shortName = typeof window.formatShortAddress === 'function' ? window.formatShortAddress(loc.name) : loc.name.split(',')[0];
     document.getElementById("loc-bs-title").innerText = shortName;
-    document.getElementById("loc-bs-stats").innerText = `Đã ghé ${loc.count} lần • Trung bình ${formatMoney(Math.round(loc.totalAmount / loc.count))}/lần`;
+    document.getElementById("loc-bs-count").innerText = `${loc.count} lần ghé`;
+    document.getElementById("loc-bs-avg").innerText = `TB: ${formatMoney(Math.round(loc.totalAmount / loc.count))}/lần`;
 
     const listTxs = [...loc.txs].sort((a, b) => new Date(b.date) - new Date(a.date));
     document.getElementById("loc-bs-tx-list").innerHTML = listTxs.map(tx => {
         const cat = state.categories.find(c => c.id === tx.category) || { name: "Khác", icon: "📦" };
-        const dateStr = new Date(tx.date).toLocaleDateString("vi-VN");
+        const dateStr = new Date(tx.date).toLocaleDateString("vi-VN", { day: '2-digit', month: '2-digit' });
         
         return `
-        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 mb-2 border custom-border rounded-xl shadow-sm cursor-pointer" onclick="openModal('transaction', '${tx.id}')">
+        <div class="flex items-center justify-between py-3 border-b custom-border last:border-0 cursor-pointer hover:custom-bg-input rounded-xl px-2 -mx-2 transition-colors" onclick="openModal('transaction', '${tx.id}')">
             <div class="flex items-center gap-3 min-w-0">
-                <span class="text-xl">${cat.icon}</span>
+                <div class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center text-lg custom-border">${cat.icon}</div>
                 <div class="min-w-0">
-                    <p class="font-bold text-sm custom-text truncate">${tx.note || cat.name}</p>
-                    <p class="text-[10px] font-bold text-gray-400 mt-0.5">${dateStr}</p>
+                    <p class="font-extrabold text-sm custom-text truncate">${tx.note || cat.name}</p>
+                    <p class="text-[11px] font-bold custom-text-secondary mt-0.5"><i class="fa-regular fa-calendar mr-1"></i>${dateStr}</p>
                 </div>
             </div>
-            <p class="font-black text-sm text-danger-500 shrink-0 ml-2">-${formatMoney(tx.amount)}</p>
+            <p class="font-black text-sm shrink-0 ml-2" style="color: var(--icon-active)">-${formatMoney(tx.amount)}</p>
         </div>`;
     }).join("");
 
@@ -265,26 +348,25 @@ window.closeLocBottomSheet = () => {
     setTimeout(() => backdrop.classList.add("hidden"), 300);
 };
 
-// =========================================================
-// KHỞI TẠO BẢN ĐỒ ĐỒNG BỘ 100% VỚI GOOGLE MAPS
-// =========================================================
+// CẬP NHẬT MAP
 window.initLocMap = () => {
     setTimeout(() => {
         if (!locMapInstance && typeof L !== 'undefined') {
-            locMapInstance = L.map('loc-heatmap-container', { zoomControl: false }).setView([10.8231, 106.6297], 12);
+            locMapInstance = L.map('loc-heatmap-container', { 
+                zoomControl: false,
+                attributionControl: false // Bỏ logo leafet cho sạch
+            }).setView([10.8231, 106.6297], 12);
             
-            // 🔥 THAY BẰNG LÕI TILE CỦA GOOGLE MAPS (Chuẩn màu, chuẩn đường phố)
             L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
                 subdomains: ['0', '1', '2', '3'],
-                maxZoom: 20,
-                attribution: '&copy; Google Maps'
+                maxZoom: 20
             }).addTo(locMapInstance);
 
-            // Thủ thuật đồng bộ Dark Mode: Chuyển màu Google Maps thành xám đen nếu app đang bật Dark Mode
-            if (state.darkMode) {
+            // Kiểm tra Dark Mode từ App State để phủ màu bản đồ tối lại (nếu có)
+            if (window.state && state.darkMode) {
                 setTimeout(() => {
                     const mapLayer = document.querySelector('#loc-heatmap-container .leaflet-layer');
-                    if(mapLayer) mapLayer.style.filter = "invert(90%) hue-rotate(180deg) brightness(85%) contrast(85%)";
+                    if(mapLayer) mapLayer.style.filter = "invert(90%) hue-rotate(180deg) brightness(85%) contrast(85%) grayscale(20%)";
                 }, 100);
             }
 
@@ -294,12 +376,10 @@ window.initLocMap = () => {
         
         document.getElementById("loc-map-loading").classList.add("hidden");
         updateHeatmap();
-    }, 400);
+    }, 400); // Đợi Animation trượt xong mới init map để tránh lỗi Size
 };
 
-// =========================================================
-// BAY ĐẾN ĐỊA ĐIỂM (TƯƠNG THÍCH MỌI LOẠI MAP CỦA ĐẠI KA)
-// =========================================================
+// BAY ĐẾN ĐỊA ĐIỂM
 window.viewLocOnMap = () => {
     if (!locCurrentLat || !locCurrentLng) return alert("Điểm này không có tọa độ GPS cụ thể!");
     closeLocBottomSheet();
@@ -309,17 +389,13 @@ window.viewLocOnMap = () => {
     setTimeout(() => {
         if (window.myMap || typeof myMap !== 'undefined') {
             const mapObj = window.myMap || myMap;
-            
-            // Tự động nhận diện ông đang xài Leaflet hay Google Maps Native để gọi hàm cho đúng
             if (typeof mapObj.flyTo === 'function') {
-                // Nếu là Leaflet bọc GG Map
                 mapObj.invalidateSize();
                 mapObj.flyTo([locCurrentLat, locCurrentLng], 18, { duration: 1.5 });
             } else if (typeof mapObj.panTo === 'function') {
-                // Nếu ông xài Google Maps API gốc
                 mapObj.panTo({lat: locCurrentLat, lng: locCurrentLng});
                 mapObj.setZoom(18);
             }
         }
-    }, 500);
+    }, 600);
 };
