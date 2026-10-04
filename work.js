@@ -285,22 +285,35 @@
                 `;
             } else {
                 // 1. Giao dịch đi làm (Chi phí)
+                // 1. Giao dịch đi làm (Chi phí)
                 dayTrans.forEach(t => {
-                    const cat = state.categories.find(c => c.id === t.category) || { name: 'Khác', icon: 'fa-box', color: 'text-primary-500', bg: 'custom-bg-input' };
+                    const cat = state.categories.find(c => c.id === t.category) || { name: 'Khác', icon: '🌟', color: 'bg-gray-100 text-gray-500' };
                     const timeStr = t.date.split(" ")[1] ? t.date.split(" ")[1].substring(0,5) : "--:--";
                     
-                    // Bộ não phân biệt: Emoji mới hay FontAwesome cũ
-                    let iconStr = cat.icon || '<i class="fa-solid fa-briefcase"></i>';
-                    if (!iconStr.includes('<') && iconStr.length > 2 && /^[a-zA-Z0-9-]+$/.test(iconStr)) {
-                        iconStr = `<i class="fa-solid fa-${iconStr}"></i>`; 
+                    // --- TUYỆT CHIÊU XỬ LÝ ICON & ẢNH LỖI ---
+                    let iconContent = cat.icon || '🌟';
+                    // Xử lý nếu dùng FontAwesome cũ
+                    if (iconContent.startsWith('fa-')) {
+                        iconContent = `<i class="fa-solid ${iconContent}"></i>`;
+                    } else if (/^[a-zA-Z0-9-]+$/.test(iconContent) && iconContent.length > 2) {
+                        iconContent = `<i class="fa-solid fa-${iconContent}"></i>`;
                     }
 
-                    let visualHtml = `<div class="w-12 h-12 rounded-2xl ${cat.color || 'bg-gray-100 text-gray-500'} flex items-center justify-center text-2xl shadow-sm border custom-border shrink-0">${iconStr}</div>`;
+                    // 1. Luôn luôn vẽ cái Icon mộc (Fallback) ở lớp dưới
+                    const fallbackHtml = `<div class="w-12 h-12 rounded-2xl ${cat.color} flex items-center justify-center text-2xl shadow-sm border custom-border shrink-0">${iconContent}</div>`;
                     
-                    // Lớp khiên thép: Ảnh phải có thật (độ dài chuỗi base64 > 50 ký tự) mới được hiển thị
-                    if (t.image && t.image !== "null" && t.image !== "undefined" && String(t.image).length > 50) {
-                        visualHtml = `<img src="${window.getFastImage ? window.getFastImage(t.image) : t.image}" class="w-12 h-12 rounded-2xl object-cover shadow-sm border custom-border shrink-0 cursor-pointer hover:opacity-80" onclick="window.workViewImageFullScreen(this.src)">`;
+                    let visualHtml = fallbackHtml;
+
+                    // 2. Nếu có ảnh, úp cái ảnh lên trên. Nếu ảnh lỗi (onerror), tự động tàng hình để lộ Icon bên dưới!
+                    if (t.image && typeof t.image === 'string' && t.image.length > 20 && t.image !== "null" && t.image !== "undefined") {
+                        const imgSrc = window.getFastImage ? window.getFastImage(t.image) : t.image;
+                        visualHtml = `
+                        <div class="relative w-12 h-12 shrink-0">
+                            ${fallbackHtml}
+                            <img src="${imgSrc}" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full rounded-2xl object-cover shadow-sm border custom-border cursor-pointer hover:opacity-80 z-10 bg-white dark:bg-gray-800" onclick="window.workViewImageFullScreen(this.src)">
+                        </div>`;
                     }
+                    // --- KẾT THÚC XỬ LÝ ---
 
                     feedHtml += `
                         <div class="relative pl-14 sm:pl-20 pr-4 mb-6 group">

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v124'; // Ép trình duyệt dọn sạch rác cũ đi
+const CACHE_NAME = 'finmaster-v125'; // Ép trình duyệt dọn sạch rác cũ đi
 
 // 1. FILE Ở MÁY ĐẠI KA
 const STATIC_ASSETS = [
