@@ -20,7 +20,7 @@ function injectTransactionsUI() {
     <div id="view-transactions" class="view-section hidden space-y-4 max-w-5xl mx-auto pt-4 pb-28 px-2 sm:px-4">
         
         <!-- THANH TÌM KIẾM NỔI (FLOATING SEARCH BAR) CHUẨN YOUTUBE -->
-        <div id="tx-search-bar" class="sticky top-2 z-[60] transition-all duration-300">
+        <div id="tx-search-bar" class="relative sticky top-2 z-[60] transition-all duration-300">
             <div class="relative flex items-center bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border custom-border rounded-full shadow-lg p-1.5 z-10">
                 <i class="fa-solid fa-magnifying-glass absolute left-6 text-primary-500 z-20 pointer-events-none"></i>
                 <input type="text" id="filter-search" oninput="window.handleSearchInput(this.value)" onfocus="if(this.value) document.getElementById('search-autocomplete').classList.remove('hidden');" placeholder="Tìm kiếm giao dịch, ghi chú..." autocomplete="off" class="w-full pl-12 pr-24 py-3 bg-transparent font-bold custom-text outline-none placeholder-gray-400 text-sm">
