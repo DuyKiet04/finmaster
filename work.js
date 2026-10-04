@@ -289,9 +289,17 @@
                     const cat = state.categories.find(c => c.id === t.category) || { name: 'Khác', icon: 'fa-box', color: 'text-primary-500', bg: 'custom-bg-input' };
                     const timeStr = t.date.split(" ")[1] ? t.date.split(" ")[1].substring(0,5) : "--:--";
                     
-                    let visualHtml = `<div class="w-12 h-12 rounded-2xl ${cat.color || 'custom-bg-input custom-text-secondary'} flex items-center justify-center text-xl shadow-sm border custom-border shrink-0">${cat.icon || '<i class="fa-solid fa-briefcase"></i>'}</div>`;
-                    if (t.image && String(t.image).trim() !== "" && t.image !== "null") {
-                        visualHtml = `<img src="${window.getFastImage(t.image)}" class="w-12 h-12 rounded-2xl object-cover shadow-sm border custom-border shrink-0 cursor-pointer hover:opacity-80" onclick="window.workViewImageFullScreen(this.src)">`;
+                    // Bộ não phân biệt: Emoji mới hay FontAwesome cũ
+                    let iconStr = cat.icon || '<i class="fa-solid fa-briefcase"></i>';
+                    if (!iconStr.includes('<') && iconStr.length > 2 && /^[a-zA-Z0-9-]+$/.test(iconStr)) {
+                        iconStr = `<i class="fa-solid fa-${iconStr}"></i>`; 
+                    }
+
+                    let visualHtml = `<div class="w-12 h-12 rounded-2xl ${cat.color || 'bg-gray-100 text-gray-500'} flex items-center justify-center text-2xl shadow-sm border custom-border shrink-0">${iconStr}</div>`;
+                    
+                    // Lớp khiên thép: Ảnh phải có thật (độ dài chuỗi base64 > 50 ký tự) mới được hiển thị
+                    if (t.image && t.image !== "null" && t.image !== "undefined" && String(t.image).length > 50) {
+                        visualHtml = `<img src="${window.getFastImage ? window.getFastImage(t.image) : t.image}" class="w-12 h-12 rounded-2xl object-cover shadow-sm border custom-border shrink-0 cursor-pointer hover:opacity-80" onclick="window.workViewImageFullScreen(this.src)">`;
                     }
 
                     feedHtml += `
