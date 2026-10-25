@@ -1,17 +1,43 @@
 {
-  "id": "/index.html",
-  "name": "FinMaster Pro",
+  "name": "FinMaster Pro - Quản Lý Tài Chính & Sổ Thu Chi",
   "short_name": "FinMaster",
-  "start_url": "index.html",
+  "description": "Ứng dụng tài chính thông minh, theo dõi thu chi, ngân sách, đầu tư và mục tiêu tiết kiệm, hoạt động mượt mà 100% ngoại tuyến (Offline).",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#6366f1",
+  "background_color": "#0b0f19",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "lang": "vi",
   "icons": [
     {
-      "src": "https://duykiet04.github.io/anh/logo2.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "src": "./icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Thêm Giao Dịch Mới",
+      "short_name": "Giao dịch",
+      "description": "Mở nhanh biểu mẫu ghi chép thu chi",
+      "url": "./index.html?action=new_tx",
+      "icons": [{ "src": "./icon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Trợ Lý AI Advisor",
+      "short_name": "AI Advisor",
+      "description": "Chẩn đoán sức khỏe tài chính thông minh",
+      "url": "./index.html?view=ai-advisor",
+      "icons": [{ "src": "./icon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Đầu Tư & Tích Sản",
+      "short_name": "Đầu tư",
+      "description": "Theo dõi danh mục và máy tính lãi kép",
+      "url": "./index.html?view=invest",
+      "icons": [{ "src": "./icon.svg", "sizes": "96x96" }]
     }
   ]
 }

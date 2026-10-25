@@ -1,6 +1,6 @@
 // ==============================================================
 // FILE: tx-detail.js - TRUNG TÂM XỬ LÝ TOÀN BỘ NGHIỆP VỤ GIAO DỊCH
-// BẢN SỬA LỖI UI MỚI NHẤT (MARGIN, SPACING, CLICK, SWIPE)
+// BẢN V8: LIQUID GLASS BANKING & MOTION UI
 // ==============================================================
 
 window.txViewMode = "list";
@@ -10,189 +10,334 @@ window.walletFilter = "all";
 window.lastDateGroup = ""; 
 
 // ==========================================
-// 1. TỰ ĐỘNG BƠM GIAO DIỆN TRANG GIAO DỊCH VÀO INDEX.HTML
+// 1. GIAO DIỆN CHÍNH (HERO GLASS & FLOATING SEARCH)
 // ==========================================
 function injectTransactionsUI() {
     if (document.getElementById("view-transactions")) return;
 
-    // Đã sửa px-4 thành px-2 cho lề nhỏ lại theo yêu cầu đại ka
     const html = `
-    <div id="view-transactions" class="view-section hidden space-y-4 max-w-5xl mx-auto pt-4 pb-28 px-2 sm:px-4">
+    <div id="view-transactions" class="view-section hidden flex-col h-full bg-transparent font-sans">
         
-        <!-- THANH TÌM KIẾM NỔI (FLOATING SEARCH BAR) CHUẨN YOUTUBE -->
-        <div id="tx-search-bar" class="relative sticky top-2 z-[60] transition-all duration-300">
-            <div class="relative flex items-center bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border custom-border rounded-full shadow-lg p-1.5 z-10">
-                <i class="fa-solid fa-magnifying-glass absolute left-6 text-primary-500 z-20 pointer-events-none"></i>
-                <input type="text" id="filter-search" oninput="window.handleSearchInput(this.value)" onfocus="if(this.value) document.getElementById('search-autocomplete').classList.remove('hidden');" placeholder="Tìm kiếm giao dịch, ghi chú..." autocomplete="off" class="w-full pl-12 pr-24 py-3 bg-transparent font-bold custom-text outline-none placeholder-gray-400 text-sm">
-                
-                <div class="absolute right-2.5 flex items-center gap-1">
-                    <button id="view-mode-btn" onclick="toggleTxViewMode()" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Chế độ hiển thị">
-                        <i class="fa-solid fa-table-cells-large"></i>
-                    </button>
-                    <button id="filter-btn" onclick="toggleTxFilter(event)" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Lọc">
-                        <i class="fa-solid fa-filter"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- BẢNG GỢI Ý TÌM KIẾM -->
-            <div id="search-autocomplete" class="hidden absolute top-[110%] left-0 right-0 custom-bg-card rounded-[1.5rem] shadow-2xl border custom-border z-[70] max-h-[60vh] overflow-y-auto p-2"></div>
-
-            <!-- BẢNG ĐIỀU KHIỂN LỌC (DROPDOWN) -->
-            <div id="filter-dropdown" class="hidden absolute right-0 top-[110%] w-[280px] custom-bg-card/95 backdrop-blur-2xl rounded-3xl shadow-2xl border custom-border z-[70] p-5 transform origin-top-right transition-all">
-                <div class="mb-4">
-                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-2 flex items-center gap-2"><i class="fa-regular fa-calendar text-primary-500"></i> Thời gian</label>
-                    <input type="date" id="tx-date-picker" onchange="setTxFilter('date')" class="w-full bg-gray-50 dark:bg-gray-800/50 text-sm font-bold custom-text outline-none border custom-border rounded-xl px-4 py-3 focus:border-primary-500 transition-colors cursor-pointer">
-                    
-                    <div class="grid grid-cols-3 gap-2 mt-2">
-                        <button onclick="setTxFilter('all')" id="btn-filter-all" class="py-2 text-[10px] font-bold rounded-lg bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 custom-text">Tất cả</button>
-                        <button onclick="setTxFilter('today')" id="btn-filter-today" class="py-2 text-[10px] font-bold rounded-lg bg-gray-50 dark:bg-gray-800/50 border custom-border hover:bg-gray-100 custom-text-secondary">Hôm nay</button>
-                        <button onclick="setTxFilter('yesterday')" id="btn-filter-yesterday" class="py-2 text-[10px] font-bold rounded-lg bg-gray-50 dark:bg-gray-800/50 border custom-border hover:bg-gray-100 custom-text-secondary">Hôm qua</button>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-2 flex items-center gap-2"><i class="fa-solid fa-wallet text-blue-500"></i> Nguồn tiền</label>
-                    <select id="filter-wallet-select" onchange="setTxWalletFilter(this.value)" class="w-full bg-gray-50 dark:bg-gray-800/50 text-sm font-bold custom-text outline-none border custom-border rounded-xl px-4 py-3 cursor-pointer appearance-none">
-                        <option value="all">Tất cả ví</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-2 flex items-center gap-2"><i class="fa-solid fa-arrow-down-a-z text-rose-500"></i> Sắp xếp</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setTxSortOrder('date_desc')" id="sort-date_desc" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold custom-primary text-white border border-transparent shadow-sm gap-1"><i class="fa-solid fa-clock"></i> Mới nhất</button>
-                        <button onclick="setTxSortOrder('date_asc')" id="sort-date_asc" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold bg-gray-50 dark:bg-gray-800/50 border custom-border custom-text-secondary gap-1"><i class="fa-solid fa-clock-rotate-left"></i> Cũ nhất</button>
-                        <button onclick="setTxSortOrder('amount_desc')" id="sort-amount_desc" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold bg-gray-50 dark:bg-gray-800/50 border custom-border custom-text-secondary gap-1"><i class="fa-solid fa-arrow-down-9-1"></i> Giá giảm</button>
-                        <button onclick="setTxSortOrder('amount_asc')" id="sort-amount_asc" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold bg-gray-50 dark:bg-gray-800/50 border custom-border custom-text-secondary gap-1"><i class="fa-solid fa-arrow-up-1-9"></i> Giá tăng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- KHỐI THỐNG KÊ TỔNG QUAN -->
-        <div id="tx-summary" class="flex gap-4 mb-2">
-            <div class="flex-1 custom-bg-card p-5 rounded-3xl border custom-border shadow-sm flex flex-col items-center justify-center relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-20 h-20 bg-success-500/10 rounded-bl-full pointer-events-none transition-transform group-hover:scale-125"></div>
-                <p class="text-[11px] font-black text-success-500 uppercase tracking-widest mb-1 opacity-90 flex items-center gap-1.5"><i class="fa-solid fa-arrow-trend-down"></i> Thu Tiền</p>
-                <p id="sum-inc" class="font-black text-2xl text-success-600 dark:text-success-400">0 ₫</p>
-            </div>
-            <div class="flex-1 custom-bg-card p-5 rounded-3xl border custom-border shadow-sm flex flex-col items-center justify-center relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-20 h-20 bg-danger-500/10 rounded-bl-full pointer-events-none transition-transform group-hover:scale-125"></div>
-                <p class="text-[11px] font-black text-danger-500 uppercase tracking-widest mb-1 opacity-90 flex items-center gap-1.5"><i class="fa-solid fa-arrow-trend-up"></i> Chi Tiền</p>
-                <p id="sum-exp" class="font-black text-2xl text-danger-600 dark:text-danger-400">0 ₫</p>
-            </div>
-        </div>
-
-        <!-- KHU VỰC DANH SÁCH -->
-        <div class="min-h-[300px] relative z-10 w-full">
-            <div id="tx-list-container" class="w-full"></div>
+        <!-- LIQUID GLASS HERO BANNER -->
+        <div class="sticky top-0 z-[60] pt-4 pb-8 px-3 transition-all rounded-b-[2rem] mb-2 custom-bg-header backdrop-blur-3xl shadow-sm border-b custom-border">
             
-            <div id="tx-empty" class="hidden flex-col items-center justify-center py-20 px-6 text-center opacity-70 custom-bg-card rounded-[2rem] border custom-border">
-                <div class="w-24 h-24 mb-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-4xl text-gray-400 shadow-inner border custom-border">
-                    <i class="fa-solid fa-receipt"></i>
+            <div class="flex justify-between items-center mb-5 px-2">
+                <h2 class="text-2xl font-black custom-text tracking-tight">Sổ Giao Dịch</h2>
+                
+                <div class="flex items-center gap-2">
+                    <button id="view-mode-btn" onclick="toggleTxViewMode()" class="w-10 h-10 rounded-[14px] custom-bg-card flex items-center justify-center custom-text-secondary hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm hover:-translate-y-0.5" title="Chế độ hiển thị">
+                        <i class="fa-solid fa-table-cells-large text-sm"></i>
+                    </button>
+                    <button id="filter-btn" onclick="openTxFilterModal()" class="w-10 h-10 rounded-[14px] custom-bg-card flex items-center justify-center custom-text-secondary hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm relative hover:-translate-y-0.5" title="Bộ lọc nâng cao">
+                        <i class="fa-solid fa-filter-list text-sm"></i>
+                        <span id="filter-badge" class="hidden absolute -top-1 -right-1 w-3.5 h-3.5 bg-danger-500 border-2 border-white dark:border-gray-900 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
+                    </button>
                 </div>
-                <h3 class="text-lg font-black custom-text mb-2">Không có giao dịch nào!</h3>
-                <p class="text-sm font-medium custom-text-secondary max-w-[280px]">Thử điều chỉnh lại bộ lọc hoặc bấm dấu + bên dưới để thêm mới nhé.</p>
+            </div>
+
+            <!-- GỘP KHỐI TỔNG (NET BALANCE TÂM ĐIỂM) -->
+            <div class="relative custom-bg-card p-5 rounded-[1.75rem] border custom-border shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col items-center text-center group">
+                <!-- Ánh sáng hắt (Glow) -->
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-success-500/20 blur-[40px] rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-danger-500/20 blur-[40px] rounded-full pointer-events-none"></div>
+                
+                <p class="relative z-10 text-[10px] font-black uppercase tracking-widest mb-1 custom-text-secondary">Chênh Lệch Thực Tế</p>
+                <h2 id="tx-head-net" class="relative z-10 text-[38px] font-black tracking-tighter mb-4 custom-text drop-shadow-sm transition-all duration-500">0 ₫</h2>
+                
+                <div class="relative z-10 w-full grid grid-cols-2 gap-3 pt-3 border-t border-dashed custom-border">
+                    <div class="flex flex-col items-center">
+                        <span class="text-[9px] font-bold text-success-500 uppercase tracking-widest flex items-center gap-1"><i class="fa-solid fa-arrow-trend-down"></i> Tổng Thu</span>
+                        <span class="font-black text-base text-success-600 dark:text-success-400 mt-0.5" id="tx-head-inc">0 ₫</span>
+                    </div>
+                    <div class="flex flex-col items-center border-l border-dashed custom-border">
+                        <span class="text-[9px] font-bold text-danger-500 uppercase tracking-widest flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> Tổng Chi</span>
+                        <span class="font-black text-base text-danger-600 dark:text-danger-400 mt-0.5" id="tx-head-exp">0 ₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FLOATING SEARCH BAR (Chồm xuống danh sách) -->
+            <div class="absolute -bottom-6 left-5 right-5 z-20">
+                <div class="relative w-full shadow-[0_8px_25px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.3)] rounded-[1.25rem]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 custom-text-secondary text-sm pointer-events-none"></i>
+                    <input type="text" id="filter-search" oninput="window.handleSearchInput(this.value)" onfocus="if(this.value) document.getElementById('search-autocomplete').classList.remove('hidden');" placeholder="Tìm Note, Giá tiền (VD: 100k, -50k)..." autocomplete="off" class="w-full pl-11 pr-10 py-3.5 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-[1.25rem] text-sm font-bold custom-text outline-none focus:ring-2 focus:ring-primary-500/50 transition-all border custom-border">
+                    <!-- Nút xóa nhanh khi có text -->
+                    <i id="clear-search-btn" class="fa-solid fa-circle-xmark absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-rose-400 cursor-pointer hidden transition-colors" onclick="document.getElementById('filter-search').value=''; window.handleSearchInput('');"></i>
+                </div>
+                <!-- BẢNG GỢI Ý TÌM KIẾM -->
+                <div id="search-autocomplete" class="hidden absolute top-[110%] left-0 right-0 custom-bg-card rounded-[1.5rem] shadow-2xl border custom-border z-[70] max-h-[60vh] overflow-y-auto p-2 backdrop-blur-3xl bg-opacity-95"></div>
+            </div>
+        </div>
+
+        <!-- KHU VỰC DANH SÁCH GIAO DỊCH -->
+        <div class="flex-1 overflow-y-auto px-2 sm:px-4 pt-10 pb-32">
+            <div id="tx-list-container" class="w-full max-w-4xl mx-auto"></div>
+            
+            <div id="tx-empty" class="hidden flex-col items-center justify-center py-24 text-center opacity-70 custom-bg-card rounded-[2rem] border custom-border shadow-sm mt-4">
+                <div class="w-24 h-24 mb-5 rounded-full custom-bg-input flex items-center justify-center text-4xl custom-text-secondary shadow-inner border custom-border">
+                    <i class="fa-solid fa-ghost animate-bounce"></i>
+                </div>
+                <h3 class="text-lg font-black custom-text mb-1">Khu vực tĩnh lặng!</h3>
+                <p class="text-xs font-medium custom-text-secondary max-w-[250px] leading-relaxed">Chưa có giao dịch nào xuất hiện hoặc bị giấu bởi bộ lọc.</p>
             </div>
         </div>
     </div>
     `;
     const scrollArea = document.getElementById("main-scroll-area");
     if (scrollArea) scrollArea.insertAdjacentHTML("beforeend", html);
+    initTxFilterModal(); // Tạo Modal Lọc Nâng Cao
 }
 
-// Bắt cóc luồng chuyển trang để bơm UI
 const origSwitchViewTx = window.switchView;
 window.switchView = function(viewId) {
     if (viewId === "transactions") injectTransactionsUI();
     if (origSwitchViewTx) origSwitchViewTx(viewId);
 };
 
-// ==========================================
-// 2. KHỞI TẠO UI MODAL CHI TIẾT
-// ==========================================
-function initTxDetailModal() {
-    if (document.getElementById('tx-detail-modal')) return; 
 
+// ==========================================
+// 2. MODAL LỌC NÂNG CAO (BOTTOM SHEET)
+// ==========================================
+function initTxFilterModal() {
+    if (document.getElementById('tx-filter-modal')) return; 
     const modalHtml = `
-    <div id="tx-detail-modal" class="fixed inset-0 z-[100000] custom-bg-body transition-transform duration-300 translate-x-full flex flex-col hidden">
-        <div class="flex justify-between items-center px-6 py-4 custom-bg-card/80 backdrop-blur-2xl z-20 sticky top-0 border-b custom-border shadow-sm">
-            <button onclick="closeTxDetail()" class="w-10 h-10 rounded-full custom-bg-input flex items-center justify-center active:scale-90 transition-transform shadow-sm border custom-border custom-text hover:brightness-95">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <h2 class="font-black text-[17px] custom-text tracking-wide uppercase opacity-90">Chi tiết Giao dịch</h2>
-            <div class="w-10"></div>
-        </div>
+    <div id="tx-filter-modal" class="fixed inset-0 z-[100000] bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none flex items-end justify-center">
+        <div class="absolute inset-0" onclick="closeTxFilterModal()"></div>
         
-        <div class="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 pb-32 space-y-6 custom-scrollbar relative w-full" id="tx-detail-content"></div>
-    </div>
-    `;
+        <div id="tx-filter-content" class="w-full max-w-md custom-bg-body border-t custom-border rounded-t-[2.5rem] transform translate-y-full transition-transform duration-400 cubic-bezier(0.34, 1.56, 0.64, 1) flex flex-col max-h-[85vh] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] relative">
+            <div class="w-full flex justify-center py-4 cursor-pointer" onclick="closeTxFilterModal()">
+                <div class="w-14 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+            </div>
+            
+            <div class="px-6 pb-4 border-b border-dashed custom-border flex items-center justify-between shrink-0">
+                <h3 class="font-black text-xl custom-text flex items-center gap-2"><i class="fa-solid fa-filter-list text-primary-500"></i> Lọc Nâng Cao</h3>
+                <button onclick="setTxFilter('all'); setTxWalletFilter('all'); setTxSortOrder('date_desc'); closeTxFilterModal();" class="text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-100 dark:border-rose-900/50 active:scale-95 transition-transform">Xóa lọc</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 py-5 custom-scrollbar space-y-6">
+                <!-- KHỐI 1: CHỌN NGÀY -->
+                <div>
+                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-regular fa-calendar text-primary-500"></i> Thời gian cụ thể</label>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="custom-bg-input p-3 rounded-2xl border custom-border">
+                            <p class="text-[9px] font-bold custom-text-secondary mb-1">Từ ngày</p>
+                            <input type="date" id="tx-date-start" onchange="applyFiltersFromModal()" class="w-full bg-transparent text-sm font-bold custom-text outline-none cursor-pointer custom-focus">
+                        </div>
+                        <div class="custom-bg-input p-3 rounded-2xl border custom-border">
+                            <p class="text-[9px] font-bold custom-text-secondary mb-1">Đến ngày</p>
+                            <input type="date" id="tx-date-end" onchange="applyFiltersFromModal()" class="w-full bg-transparent text-sm font-bold custom-text outline-none cursor-pointer custom-focus">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="quickSelectDate('all')" id="btn-filter-all" class="py-2.5 text-[11px] font-bold rounded-xl custom-primary text-white custom-shadow-sm transition-all active:scale-95">Tất cả</button>
+                        <button onclick="quickSelectDate('today')" id="btn-filter-today" class="py-2.5 text-[11px] font-bold rounded-xl custom-bg-card border custom-border custom-text-secondary hover:brightness-95 transition-all active:scale-95">Hôm nay</button>
+                        <button onclick="quickSelectDate('yesterday')" id="btn-filter-yesterday" class="py-2.5 text-[11px] font-bold rounded-xl custom-bg-card border custom-border custom-text-secondary hover:brightness-95 transition-all active:scale-95">Hôm qua</button>
+                    </div>
+                </div>
+
+                <!-- KHỐI 2: CHỌN VÍ -->
+                <div>
+                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-wallet text-sky-500"></i> Nguồn tiền (Ví)</label>
+                    <div class="relative">
+                        <select id="filter-wallet-select" onchange="applyFiltersFromModal()" class="w-full custom-bg-input text-sm font-bold custom-text outline-none border custom-border rounded-2xl px-4 py-4 cursor-pointer appearance-none custom-focus">
+                            <option value="all">Tất cả ví</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- KHỐI 3: SẮP XẾP -->
+                <div>
+                    <label class="text-[10px] font-black custom-text-secondary uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-arrow-down-a-z text-amber-500"></i> Thứ tự sắp xếp</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="quickSelectSort('date_desc')" id="sort-date_desc" class="py-3 rounded-2xl text-xs font-bold custom-primary text-white border border-transparent shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"><i class="fa-solid fa-clock"></i> Mới nhất</button>
+                        <button onclick="quickSelectSort('date_asc')" id="sort-date_asc" class="py-3 rounded-2xl text-xs font-bold custom-bg-card border custom-border custom-text-secondary flex items-center justify-center gap-2 transition-all active:scale-95 hover:brightness-95"><i class="fa-solid fa-clock-rotate-left"></i> Cũ nhất</button>
+                        <button onclick="quickSelectSort('amount_desc')" id="sort-amount_desc" class="py-3 rounded-2xl text-xs font-bold custom-bg-card border custom-border custom-text-secondary flex items-center justify-center gap-2 transition-all active:scale-95 hover:brightness-95"><i class="fa-solid fa-arrow-down-9-1"></i> Giá giảm</button>
+                        <button onclick="quickSelectSort('amount_asc')" id="sort-amount_asc" class="py-3 rounded-2xl text-xs font-bold custom-bg-card border custom-border custom-text-secondary flex items-center justify-center gap-2 transition-all active:scale-95 hover:brightness-95"><i class="fa-solid fa-arrow-up-1-9"></i> Giá tăng</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 custom-bg-card border-t custom-border shrink-0 z-10">
+                <button onclick="closeTxFilterModal()" class="w-full py-4 custom-primary text-white rounded-2xl font-black text-[15px] shadow-[0_8px_20px_rgba(var(--primary-hue),_100%,_50%,_0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-double"></i> Xem Kết Quả
+                </button>
+            </div>
+        </div>
+    </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initTxDetailModal);
-} else {
-    initTxDetailModal();
-}
+window.openTxFilterModal = () => {
+    // Nạp lại danh sách ví mới nhất
+    const sel = document.getElementById("filter-wallet-select");
+    if (sel) {
+        sel.innerHTML = '<option value="all">Tất cả ví</option>' + state.wallets.map(w => `<option value="${w.id}" ${window.walletFilter === w.id ? "selected" : ""}>${w.name}</option>`).join("");
+    }
+
+    const modal = document.getElementById("tx-filter-modal");
+    const content = document.getElementById("tx-filter-content");
+    modal.classList.remove("hidden", "pointer-events-none");
+    modal.classList.remove("opacity-0");
+    setTimeout(() => { content.classList.remove("translate-y-full"); }, 10);
+    if (typeof playSound === 'function') playSound("click");
+};
+
+window.closeTxFilterModal = () => {
+    const modal = document.getElementById("tx-filter-modal");
+    const content = document.getElementById("tx-filter-content");
+    content.classList.add("translate-y-full");
+    setTimeout(() => { 
+        modal.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => modal.classList.add("hidden"), 300);
+    }, 300);
+};
+
+// Hàm gán màu nhanh trong Modal Lọc
+window.quickSelectDate = (val) => {
+    window.dateFilter = val;
+    if (val !== "range") {
+        document.getElementById("tx-date-start").value = "";
+        document.getElementById("tx-date-end").value = "";
+    }
+    ['all', 'today', 'yesterday'].forEach(id => {
+        const btn = document.getElementById(`btn-filter-${id}`);
+        if (btn) btn.className = id === val ? "py-2.5 text-[11px] font-bold rounded-xl custom-primary text-white custom-shadow-sm transition-all active:scale-95" : "py-2.5 text-[11px] font-bold rounded-xl custom-bg-card border custom-border custom-text-secondary hover:brightness-95 transition-all active:scale-95";
+    });
+    applyFiltersFromModal();
+};
+
+window.quickSelectSort = (val) => {
+    window.txSortOrder = val;
+    ["date_desc", "date_asc", "amount_desc", "amount_asc"].forEach((id) => {
+        const btn = document.getElementById("sort-" + id);
+        if (btn) {
+            btn.className = (id === val)
+                ? "py-3 rounded-2xl text-xs font-bold custom-primary text-white border border-transparent shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
+                : "py-3 rounded-2xl text-xs font-bold custom-bg-card border custom-border custom-text-secondary flex items-center justify-center gap-2 transition-all active:scale-95 hover:brightness-95";
+        }
+    });
+    applyFiltersFromModal();
+};
+
+window.applyFiltersFromModal = () => {
+    if(document.getElementById("tx-date-start").value || document.getElementById("tx-date-end").value) {
+        window.dateFilter = "range";
+        ['all', 'today', 'yesterday'].forEach(id => {
+            const btn = document.getElementById(`btn-filter-${id}`);
+            if (btn) btn.className = "py-2.5 text-[11px] font-bold rounded-xl custom-bg-card border custom-border custom-text-secondary hover:brightness-95 transition-all active:scale-95";
+        });
+    }
+    window.walletFilter = document.getElementById("filter-wallet-select").value;
+    window.renderTransactions();
+};
 
 // ==========================================
-// 3. AUTOCOMPLETE TÌM KIẾM (YOUTUBE STYLE)
+// 3. TÌM KIẾM THÔNG MINH (THEO GIÁ TIỀN & AUTO FORMAT)
 // ==========================================
 window.handleSearchInput = (val) => {
-    const query = val.trim().toLowerCase();
+    const rawVal = val.trim().toLowerCase();
+    const inputEl = document.getElementById("filter-search");
+    const clearBtn = document.getElementById("clear-search-btn");
     const box = document.getElementById("search-autocomplete");
+    
+    // Hiện nút X
+    if(clearBtn) clearBtn.style.display = rawVal ? "block" : "none";
 
+    // 1. THUẬT TOÁN BẮT SỐ TIỀN & ĐỊNH DẠNG TRỰC TIẾP
+    // Hỗ trợ: "100k", "-50k", "100000", "+50.000"
+    let isSearchByAmount = false;
+    let targetAmount = 0;
+    let amountSign = "any"; // 'income', 'expense', 'any'
+    
+    // Check xem user có đang gõ số hoặc k/m không
+    const amountMatch = rawVal.match(/^([+-]?)\s*(\d+(?:[.,]\d+)*)\s*([km]?)$/i);
+    
+    if (amountMatch) {
+        isSearchByAmount = true;
+        const sign = amountMatch[1];
+        let numStr = amountMatch[2].replace(/[.,]/g, ''); // Bỏ dấu chấm phẩy
+        const multiplier = amountMatch[3].toLowerCase();
+        
+        targetAmount = parseInt(numStr, 10);
+        if (multiplier === 'k') targetAmount *= 1000;
+        if (multiplier === 'm') targetAmount *= 1000000;
+
+        if (sign === '+') amountSign = 'income';
+        else if (sign === '-') amountSign = 'expense';
+        
+        // Tự động format lại text trong ô input cho đẹp (Thêm dấu chấm)
+        // inputEl.value = (sign || '') + targetAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // 2. LUÔN RENDER LẠI DANH SÁCH CHÍNH TRƯỚC
     window.renderTransactions();
 
-    if (!query) {
+    if (!rawVal) {
         box.classList.add("hidden");
         return;
     }
 
+    // 3. LỌC GỢI Ý DROPDOWN
     const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const queryNoAccent = removeAccents(query);
+    const queryNoAccent = removeAccents(rawVal);
 
     const results = state.transactions.filter((t) => {
         if (t.category === "transfer") return false;
-        if (query === "thu" || query === "thu nhập") return t.type === "income";
-        if (query === "chi" || query === "chi tiêu") return t.type === "expense";
+
+        // Nếu là tìm theo số tiền
+        if (isSearchByAmount) {
+            if (amountSign !== 'any' && t.type !== amountSign) return false;
+            // Tìm các khoản NHỎ HƠN HOẶC BẰNG số tiền nhập (Rất tiện cho việc tìm hóa đơn dưới 100k)
+            return t.amount > 0 && t.amount <= targetAmount;
+        }
+
+        // Nếu là tìm theo Chữ
+        if (rawVal === "thu" || rawVal === "thu nhập") return t.type === "income";
+        if (rawVal === "chi" || rawVal === "chi tiêu") return t.type === "expense";
 
         const catName = state.categories.find((c) => c.id === t.category)?.name.toLowerCase() || "";
         const note = (t.note || "").toLowerCase();
         return (
-            note.includes(query) || catName.includes(query) ||
+            note.includes(rawVal) || catName.includes(rawVal) ||
             removeAccents(note).includes(queryNoAccent) || removeAccents(catName).includes(queryNoAccent)
         );
-    }).slice(0, 10); 
+    }).slice(0, 15); // Lấy 15 kết quả gợi ý
 
     if (results.length === 0) {
-        box.innerHTML = `<div class="text-center py-6 opacity-60"><div class="text-4xl mb-2">👻</div><p class="text-sm custom-text-secondary font-bold">Không tìm thấy "${val}"</p></div>`;
+        box.innerHTML = `<div class="text-center py-6 opacity-50"><div class="text-4xl mb-2">👻</div><p class="text-sm font-bold custom-text-secondary">Không thấy "${rawVal}" đâu đại ka!</p></div>`;
     } else {
         box.innerHTML = results.map((tx) => {
             const isInc = tx.type === "income";
             const cat = state.categories.find((c) => c.id === tx.category) || { name: "Khác", icon: "📦" };
-            const wallet = state.wallets.find((w) => w.id === tx.walletId) || { name: "Ví ẩn", icon: "💳" };
             
             const fastImgUrl = tx.image && typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image;
             const imgHtml = (tx.image && tx.image.length > 50)
-                ? `<img src="${fastImgUrl}" class="w-12 h-12 object-cover rounded-xl shrink-0 border custom-border shadow-sm">`
-                : `<div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-2xl shrink-0 border custom-border shadow-inner">${cat.icon}</div>`;
+                ? `<img src="${fastImgUrl}" class="w-10 h-10 object-cover rounded-xl shrink-0 border custom-border">`
+                : `<div class="w-10 h-10 rounded-[14px] ${cat.color} bg-opacity-20 flex items-center justify-center text-lg shrink-0 border custom-border shadow-inner">${cat.icon}</div>`;
+
+            // Tự động Highlight số tiền hoặc chữ khớp
+            let noteDisplay = tx.note || "...";
+            if(!isSearchByAmount && rawVal.length > 1) {
+               const regex = new RegExp(`(${rawVal})`, "gi");
+               noteDisplay = noteDisplay.replace(regex, `<span class="bg-primary-500/20 text-primary-500 rounded px-0.5">$1</span>`);
+            }
+
+            let amtDisplay = formatMoney(tx.amount);
+            if(isSearchByAmount) {
+                amtDisplay = `<span class="bg-primary-500/20 px-1 rounded">${amtDisplay}</span>`;
+            }
 
             return `
-            <div onclick="openTxDetail('${tx.id}'); document.getElementById('search-autocomplete').classList.add('hidden');"
-                 class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-800 last:border-0 w-full">
+            <div onclick="openTxDetail('${tx.id}'); document.getElementById('search-autocomplete').classList.add('hidden'); document.getElementById('filter-search').value = '';"
+                 class="flex items-center gap-3 p-2.5 custom-bg-card hover:brightness-95 rounded-xl cursor-pointer transition-colors border-b border-dashed custom-border last:border-0 w-full mb-1 hover:-translate-y-0.5 active:scale-95">
                 ${imgHtml}
                 <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-0.5">
-                        <p class="font-black text-sm custom-text truncate">${cat.name}</p>
-                        <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-white dark:bg-gray-700 custom-text-secondary border custom-border shadow-sm">${wallet.icon} ${wallet.name}</span>
-                    </div>
-                    <p class="text-[11px] custom-text-secondary truncate font-medium">${tx.note || "Không có ghi chú"}</p>
+                    <p class="font-bold text-[13px] custom-text truncate leading-tight">${cat.name}</p>
+                    <p class="text-[10px] custom-text-secondary truncate mt-0.5 font-medium">${noteDisplay}</p>
                 </div>
                 <div class="text-right shrink-0 ml-2">
-                    <p class="font-black text-sm ${isInc ? "text-success-500" : "text-danger-500"}">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                    <p class="font-black text-[13px] ${isInc ? "text-success-500" : "custom-text"}">${isInc ? "+" : "-"}${amtDisplay}</p>
                 </div>
             </div>`;
         }).join("");
@@ -200,48 +345,26 @@ window.handleSearchInput = (val) => {
     box.classList.remove("hidden");
 };
 
-// Đóng dropdown khi click ra ngoài
-document.addEventListener("click", function (e) {
-    const searchBox = document.getElementById("search-autocomplete");
-    const searchInput = document.getElementById("filter-search");
-    const filterDropdown = document.getElementById("filter-dropdown");
-    const filterBtn = document.getElementById("filter-btn");
-
-    if (searchBox && !searchBox.contains(e.target) && e.target !== searchInput) {
-        searchBox.classList.add("hidden");
-    }
-    
-    if (filterDropdown && !filterDropdown.contains(e.target) && e.target !== filterBtn && !filterBtn.contains(e.target)) {
-        filterDropdown.classList.add("hidden");
-    }
-});
 
 // ==========================================
-// 4. BỘ CẢM BIẾN VUỐT THẺ (SWIPE ACTIONS) ĐÃ FIX HOÀN CHỈNH
+// 4. BỘ CẢM BIẾN VUỐT THẺ (SPRING BOUNCE MOTION)
 // ==========================================
 window.currentlyOpenContent = null; 
 
 window.initSwipeActions = () => {
-    // Chỉ chọn những thằng chưa được gán động cơ
     const swipeItems = document.querySelectorAll(".swipe-item:not(.swipe-inited)");
     
     swipeItems.forEach((item) => {
         item.classList.add("swipe-inited");
-        
         const content = item.querySelector(".swipe-content");
         const actionsBox = item.querySelector(".actions-container");
-        
-        // Cực kỳ quan trọng: Nếu đéo có 2 thẻ này thì bỏ qua ngay để không văng lỗi
         if (!content || !actionsBox) return;
 
-        let startX = 0, startY = 0;
-        let currentTranslate = 0, startTranslate = 0;
-        let isDragging = false, isScrolling = false; 
-        let maxOpen = 0; 
+        let startX = 0, startY = 0, currentTranslate = 0, startTranslate = 0;
+        let isDragging = false, isScrolling = false, maxOpen = 0; 
 
         item.addEventListener("touchstart", (e) => {
-            // Lấy độ rộng của mâm chứa nút
-            maxOpen = actionsBox.offsetWidth || 180; 
+            maxOpen = actionsBox.offsetWidth || 140; 
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             isDragging = true;
@@ -249,9 +372,9 @@ window.initSwipeActions = () => {
             startTranslate = currentTranslate;
             content.style.transition = "none";
 
-            // Tự động đóng thẻ cũ nếu đang mở thẻ khác
+            // Đóng cái cũ đang mở
             if (window.currentlyOpenContent && window.currentlyOpenContent !== content) {
-                window.currentlyOpenContent.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
+                window.currentlyOpenContent.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)"; // Lò xo mượt
                 window.currentlyOpenContent.style.transform = "translateX(0px)";
                 window.currentlyOpenContent.dataset.translate = 0;
                 window.currentlyOpenContent = null;
@@ -263,17 +386,16 @@ window.initSwipeActions = () => {
             const diffX = e.touches[0].clientX - startX;
             const diffY = e.touches[0].clientY - startY;
 
-            // Phân biệt vuốt dọc (cuộn trang) vs vuốt ngang
             if (Math.abs(diffY) > Math.abs(diffX) + 5) isScrolling = true;
             if (isScrolling) { isDragging = false; return; }
 
             let targetTranslate = startTranslate + diffX;
             
-            // Giới hạn kéo
-            if (targetTranslate > 0) targetTranslate = targetTranslate * 0.15; // Kéo qua phải hơi cứng
+            // Kéo kháng lực (Rubber band)
+            if (targetTranslate > 0) targetTranslate = targetTranslate * 0.15; // Cứng hơn
             else if (targetTranslate < -maxOpen) {
                 const overpull = targetTranslate + maxOpen;
-                targetTranslate = -maxOpen + (overpull * 0.15); // Kéo qua trái lố thì rít lại
+                targetTranslate = -maxOpen + (overpull * 0.15); // Rít chặt lại
             }
             content.style.transform = `translateX(${targetTranslate}px)`;
         }, { passive: true });
@@ -281,17 +403,17 @@ window.initSwipeActions = () => {
         item.addEventListener("touchend", () => {
             if (!isDragging || isScrolling) return;
             isDragging = false;
-
             const transformMatrix = window.getComputedStyle(content).transform;
             if (transformMatrix !== 'none') currentTranslate = parseFloat(transformMatrix.split(',')[4]);
 
-            // Hiệu ứng lò xo giật về mượt mà
-            content.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)";
-
-            // Nếu vuốt quá nửa thì mở toác ra luôn
+            // Thả tay: Nhảy bằng gia tốc Spring
+            content.style.transition = "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            
             if (currentTranslate < -(maxOpen / 2.5)) {
                 currentTranslate = -maxOpen;
                 window.currentlyOpenContent = content;
+                // Rung nhẹ haptic
+                if (navigator.vibrate) navigator.vibrate(8);
             } else {
                 currentTranslate = 0;
                 if (window.currentlyOpenContent === content) window.currentlyOpenContent = null;
@@ -302,21 +424,8 @@ window.initSwipeActions = () => {
     });
 };
 
-// Theo dõi DOM thay đổi để nạp động cơ
-if (!window.swipeObserverInited) {
-    window.swipeObserverInited = true;
-    const observer = new MutationObserver((mutations) => {
-        let shouldInit = false;
-        mutations.forEach(m => {
-            if (m.addedNodes.length > 0) shouldInit = true;
-        });
-        if (shouldInit) setTimeout(() => window.initSwipeActions(), 20);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-
 // ==========================================
-// 5. BỘ NÃO RENDER DANH SÁCH & LAZY LOAD
+// 5. RENDER DANH SÁCH (TÍCH HỢP STAGGER REVEAL)
 // ==========================================
 window.txPageSize = 20;
 window.currentTxPage = 1;
@@ -329,11 +438,29 @@ window.renderTransactions = () => {
     const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const searchNoAccent = removeAccents(searchInput);
 
-    const specificDate = document.getElementById("tx-date-picker")?.value;
     const today = new Date().toISOString().split("T")[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+    
+    const startDateVal = document.getElementById("tx-date-start")?.value;
+    const endDateVal = document.getElementById("tx-date-end")?.value;
 
-    // Lọc
+    // Check xem có phải đang gõ số tiền không
+    let isSearchByAmount = false;
+    let targetAmount = 0;
+    let amountSign = "any"; 
+    const amountMatch = searchInput.match(/^([+-]?)\s*(\d+(?:[.,]\d+)*)\s*([km]?)$/i);
+    if (amountMatch) {
+        isSearchByAmount = true;
+        const sign = amountMatch[1];
+        let numStr = amountMatch[2].replace(/[.,]/g, '');
+        const multiplier = amountMatch[3].toLowerCase();
+        targetAmount = parseInt(numStr, 10);
+        if (multiplier === 'k') targetAmount *= 1000;
+        if (multiplier === 'm') targetAmount *= 1000000;
+        if (sign === '+') amountSign = 'income';
+        else if (sign === '-') amountSign = 'expense';
+    }
+
     let filteredTx = state.transactions.filter((t) => {
         if (t.category === "transfer") return false;
 
@@ -342,25 +469,34 @@ window.renderTransactions = () => {
         const note = (t.note || "").toLowerCase();
         const walletName = state.wallets.find((w) => w.id === t.walletId)?.name.toLowerCase() || "";
 
-        if (["thu", "thu nhập", "thu chi", "thu tiền"].includes(searchInput)) matchS = t.type === "income";
-        else if (["chi", "chi tiêu", "chi tiền"].includes(searchInput)) matchS = t.type === "expense";
-        else if (searchInput === "") matchS = true;
-        else {
-            matchS = note.includes(searchInput) || catName.includes(searchInput) || walletName.includes(searchInput) ||
-                     removeAccents(note).includes(searchNoAccent) || removeAccents(catName).includes(searchNoAccent) || removeAccents(walletName).includes(searchNoAccent);
+        if (isSearchByAmount) {
+            if (amountSign !== 'any' && t.type !== amountSign) matchS = false;
+            else matchS = t.amount > 0 && t.amount <= targetAmount;
+        } else {
+            if (["thu", "thu nhập", "thu chi", "thu tiền"].includes(searchInput)) matchS = t.type === "income";
+            else if (["chi", "chi tiêu", "chi tiền"].includes(searchInput)) matchS = t.type === "expense";
+            else if (searchInput === "") matchS = true;
+            else {
+                matchS = note.includes(searchInput) || catName.includes(searchInput) || walletName.includes(searchInput) ||
+                         removeAccents(note).includes(searchNoAccent) || removeAccents(catName).includes(searchNoAccent) || removeAccents(walletName).includes(searchNoAccent);
+            }
         }
 
         let matchDate = true;
-        if (window.dateFilter === "today") matchDate = t.date.startsWith(today);
-        else if (window.dateFilter === "yesterday") matchDate = t.date.startsWith(yesterday);
-        else if (window.dateFilter === "date" && specificDate) matchDate = t.date.startsWith(specificDate);
+        const txDateOnly = t.date.split("T")[0].split(" ")[0]; 
+
+        if (window.dateFilter === "today") matchDate = txDateOnly === today;
+        else if (window.dateFilter === "yesterday") matchDate = txDateOnly === yesterday;
+        else if (window.dateFilter === "range") {
+            if (startDateVal && endDateVal) matchDate = txDateOnly >= startDateVal && txDateOnly <= endDateVal;
+            else if (startDateVal) matchDate = txDateOnly >= startDateVal;
+            else if (endDateVal) matchDate = txDateOnly <= endDateVal;
+        }
 
         let matchWallet = window.walletFilter === "all" || t.walletId === window.walletFilter;
-
         return matchS && matchDate && matchWallet;
     });
 
-    // Xếp
     filteredTx.sort((a, b) => {
         if (window.txSortOrder === "amount_desc") return b.amount - a.amount;
         if (window.txSortOrder === "amount_asc") return a.amount - b.amount;
@@ -371,16 +507,30 @@ window.renderTransactions = () => {
     window.currentFilteredTxs = filteredTx;
     window.currentTxPage = 1;
 
-    // Tổng kết
+    // Tính tổng Thu/Chi/Net mượt mà
     const inc = filteredTx.filter((t) => t.type === "income").reduce((a, b) => a + b.amount, 0);
     const exp = filteredTx.filter((t) => t.type === "expense").reduce((a, b) => a + b.amount, 0);
+    const net = inc - exp;
 
-    const sumIncEl = document.getElementById("sum-inc");
-    const sumExpEl = document.getElementById("sum-exp");
-    if (sumIncEl && typeof window.animateMoney === 'function') window.animateMoney("sum-inc", inc, 800);
-    else if (sumIncEl) sumIncEl.innerText = formatMoney(inc);
-    if (sumExpEl && typeof window.animateMoney === 'function') window.animateMoney("sum-exp", exp, 800);
-    else if (sumExpEl) sumExpEl.innerText = formatMoney(exp);
+    if (typeof window.animateMoney === 'function') {
+        window.animateMoney("tx-head-inc", inc, 800);
+        window.animateMoney("tx-head-exp", exp, 800);
+        window.animateMoney("tx-head-net", net, 1000);
+    } else {
+        document.getElementById("tx-head-inc").innerText = formatMoney(inc);
+        document.getElementById("tx-head-exp").innerText = formatMoney(exp);
+        document.getElementById("tx-head-net").innerText = formatMoney(net);
+    }
+    
+    // Đổi màu chữ Net
+    const netEl = document.getElementById("tx-head-net");
+    if(netEl) netEl.className = `relative z-10 text-[38px] font-black tracking-tighter mb-4 drop-shadow-sm transition-colors duration-500 ${net > 0 ? "text-success-500" : net < 0 ? "text-danger-500" : "custom-text"}`;
+
+    const badge = document.getElementById("filter-badge");
+    if (badge) {
+        if (window.dateFilter !== "all" || window.walletFilter !== "all" || window.txSortOrder !== "date_desc") badge.classList.remove("hidden");
+        else badge.classList.add("hidden");
+    }
 
     const container = document.getElementById("tx-list-container");
     const emptyState = document.getElementById("tx-empty");
@@ -388,7 +538,6 @@ window.renderTransactions = () => {
 
     if (filteredTx.length === 0) {
         container.innerHTML = "";
-        container.parentElement.classList.remove("custom-bg-card", "border", "custom-border", "shadow-sm");
         if(emptyState) emptyState.classList.remove("hidden");
         if(emptyState) emptyState.classList.add("flex");
         return;
@@ -400,17 +549,24 @@ window.renderTransactions = () => {
     const pageTxs = filteredTx.slice(0, window.txPageSize);
     const html = window.generateTxHtml(pageTxs);
 
-    let innerWrapperClass = window.txViewMode === "grid" ? "grid grid-cols-2 sm:grid-cols-3 gap-3" : "flex flex-col gap-3 w-full"; // Đã sửa padding hở
-    container.parentElement.classList.remove("custom-bg-card", "border", "custom-border", "shadow-sm"); // Bỏ khung bọc ngoài
+    let innerWrapperClass = window.txViewMode === "grid" ? "grid grid-cols-2 sm:grid-cols-3 gap-3" : "flex flex-col space-y-3 w-full"; 
 
     container.innerHTML = `
-        <div id="tx-inner-list" class="${innerWrapperClass} w-full">
+        <div id="tx-inner-list" class="${innerWrapperClass}">
             ${html}
         </div>
         <div id="tx-load-sensor" class="w-full h-14 flex items-center justify-center mt-2 opacity-50">
             <i id="tx-loading-icon" class="fa-solid fa-circle-notch fa-spin text-2xl text-primary-500 hidden"></i>
         </div>
     `;
+
+    // Hiệu ứng Stagger Reveal (Hiện lần lượt từng thẻ)
+    const cards = container.querySelectorAll('.stagger-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.remove('opacity-0', 'translate-y-4');
+        }, index * 35); // Trễ 35ms mỗi thẻ
+    });
 
     if (typeof window.initSwipeActions === "function") window.initSwipeActions();
     window.initTxObserver();
@@ -424,7 +580,6 @@ window.initTxObserver = () => {
     window.txObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) window.loadMoreTransactions();
     }, { root: document.getElementById("main-scroll-area"), rootMargin: "200px" });
-
     window.txObserver.observe(sensor);
 };
 
@@ -432,28 +587,49 @@ window.loadMoreTransactions = () => {
     const start = window.currentTxPage * window.txPageSize;
     const end = start + window.txPageSize;
     const nextTxs = window.currentFilteredTxs.slice(start, end);
-    const icon = document.getElementById("tx-loading-icon");
+    const sensor = document.getElementById("tx-load-sensor");
 
     if (nextTxs.length === 0) {
         if (window.txObserver) window.txObserver.disconnect();
         return;
     }
 
-    if (icon) icon.classList.remove("hidden");
+    // Skeleton Shimmer Load
+    if (sensor) {
+        sensor.innerHTML = `
+        <div class="w-full space-y-3">
+            <div class="h-[76px] w-full bg-gray-200 dark:bg-gray-800 rounded-[1.25rem] animate-pulse"></div>
+            <div class="h-[76px] w-full bg-gray-200 dark:bg-gray-800 rounded-[1.25rem] animate-pulse"></div>
+        </div>`;
+    }
 
     setTimeout(() => {
         const html = window.generateTxHtml(nextTxs);
         const innerList = document.getElementById("tx-inner-list");
-        if (innerList) innerList.insertAdjacentHTML("beforeend", html);
+        
+        if (innerList) {
+            // Chèn HTML
+            innerList.insertAdjacentHTML("beforeend", html);
+            
+            // Tìm những thẻ vừa mới nhét vào (có class opacity-0) để diễn Animation Stagger
+            const newCards = innerList.querySelectorAll('.opacity-0.stagger-card');
+            newCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.remove('opacity-0', 'translate-y-4');
+                }, index * 35);
+            });
+        }
         
         window.currentTxPage++;
         if (typeof window.initSwipeActions === "function") window.initSwipeActions();
-        if (icon) icon.classList.add("hidden");
-    }, 150);
+        
+        // Trả Sensor về cục xoay
+        if (sensor) sensor.innerHTML = `<i id="tx-loading-icon" class="fa-solid fa-circle-notch fa-spin text-2xl text-primary-500 hidden"></i>`;
+    }, 400); // Tạo độ trễ xíu cho nó ảo
 };
 
 // ==========================================
-// 6. COMPONENT VẼ CARD (FIXED KHOẢNG CÁCH, NÚT, CLICK)
+// 6. COMPONENT VẼ CARD LIQUID
 // ==========================================
 window.generateTxHtml = (txList) => {
     let html = "";
@@ -467,7 +643,7 @@ window.generateTxHtml = (txList) => {
         if (tx.date.includes("T")) txTime = tx.date.split("T")[1].substring(0, 5);
         else if (tx.date.includes(" ")) txTime = tx.date.split(" ")[1].substring(0, 5);
 
-        // STICKY HEADER NGÀY
+        // STICKY HEADER (LIQUID BLUR STYLE)
         let headerHtml = "";
         if (window.txSortOrder === "date_desc" || window.txSortOrder === "date_asc") {
             const d = new Date(tx.date);
@@ -489,14 +665,18 @@ window.generateTxHtml = (txList) => {
                 if (d.toDateString() === todayObj.toDateString()) dayName = "Hôm nay, " + dayName;
                 else if (d.toDateString() === yesterdayObj.toDateString()) dayName = "Hôm qua, " + dayName;
 
+                let sumStr = "";
+                if(dInc > 0 && dExp === 0) sumStr = `<span class="text-success-500 font-bold drop-shadow-sm">+${formatMoney(dInc)}</span>`;
+                else if(dExp > 0 && dInc === 0) sumStr = `<span class="text-danger-500 font-bold drop-shadow-sm">-${formatMoney(dExp)}</span>`;
+                else sumStr = `<span class="text-success-500 font-bold">+${formatMoney(dInc)}</span> <span class="custom-text-secondary px-1 font-normal opacity-50">|</span> <span class="text-danger-500 font-bold">-${formatMoney(dExp)}</span>`;
+
                 headerHtml = `
-                <div class="col-span-full sticky top-[72px] z-30 pt-2 pb-3 w-full bg-custom-body break-inside-avoid">
-                    <div class="px-5 py-3 custom-bg-card border custom-border rounded-[1.25rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] flex justify-between items-center bg-opacity-95 backdrop-blur-xl">
-                        <span class="text-[13px] font-black custom-text">${dayName}</span>
-                        <div class="text-[10px] font-bold flex gap-2 tracking-wide">
-                            ${dInc > 0 ? `<span class="text-success-500 bg-success-50 dark:bg-success-900/30 px-2 py-0.5 rounded-lg border border-success-100 dark:border-success-800">+${formatMoney(dInc)}</span>` : ""}
-                            ${dExp > 0 ? `<span class="text-danger-500 bg-danger-50 dark:bg-danger-900/30 px-2 py-0.5 rounded-lg border border-danger-100 dark:border-danger-800">-${formatMoney(dExp)}</span>` : ""}
-                        </div>
+                <div class="col-span-full pt-6 pb-2 w-full break-inside-avoid flex items-center justify-between px-1">
+                    <div class="custom-bg-primary-soft text-primary-600 dark:text-primary-400 border border-primary-500/20 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md">
+                        ${dayName}
+                    </div>
+                    <div class="text-[10px] bg-white/60 dark:bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/40 dark:border-white/10 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+                        ${sumStr}
                     </div>
                 </div>`;
             }
@@ -505,36 +685,31 @@ window.generateTxHtml = (txList) => {
         if (window.txViewMode === "grid") {
             const fastImgUrl = hasImage && typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image;
             html += headerHtml + `
-            <div onclick="openTxDetail('${tx.id}')" class="relative flex flex-col rounded-3xl overflow-hidden custom-bg-card border custom-border shadow-sm cursor-pointer group hover:-translate-y-1 active:scale-95 transition-all w-full">
-                <button onclick="event.stopPropagation(); deleteTransaction('${tx.id}')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500/90 text-white flex items-center justify-center text-xs backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-red-600 shadow-lg"><i class="fa-solid fa-trash"></i></button>
-                <div class="relative w-full ${hasImage ? "aspect-square" : "h-28"} bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center">
-                    ${hasImage ? `<img src="${fastImgUrl}" loading="lazy" class="w-full h-full object-cover">` : `<span class="text-5xl drop-shadow-sm">${cat.icon}</span>`}
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none"></div>
-                    <div class="absolute top-2.5 left-2.5 right-10 flex items-center gap-2 z-10">
-                        <div class="w-7 h-7 rounded-full ${cat.color} flex items-center justify-center text-[11px] shadow-md border border-white/20 backdrop-blur-md shrink-0">${cat.icon}</div>
-                        <span class="text-white text-xs font-bold drop-shadow-md truncate tracking-wide">${cat.name}</span>
+            <div onclick="openTxDetail('${tx.id}')" class="stagger-card opacity-0 translate-y-4 transition-all duration-500 ease-out relative flex flex-col rounded-[1.5rem] overflow-hidden custom-bg-card border custom-border shadow-[0_5px_15px_-5px_rgba(0,0,0,0.05)] cursor-pointer group hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.1)] active:scale-[0.97] w-full">
+                <div class="relative w-full ${hasImage ? "aspect-square" : "h-32"} custom-bg-input flex items-center justify-center overflow-hidden">
+                    ${hasImage ? `<img src="${fastImgUrl}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : `<span class="text-5xl drop-shadow-md opacity-70 group-hover:scale-110 transition-transform duration-500">${cat.icon}</span>`}
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/20 pointer-events-none opacity-60"></div>
+                    <div class="absolute top-3 left-3 flex items-center gap-1.5 z-10 bg-white/90 dark:bg-black/80 px-2.5 py-1 rounded-lg border border-black/5 dark:border-white/10 shadow-sm backdrop-blur-md">
+                        <span class="text-[10px] drop-shadow-sm">${cat.icon}</span>
                     </div>
                 </div>
-                <div class="p-4 bg-white dark:bg-gray-800 flex flex-col justify-between flex-1">
-                    <p class="font-bold text-xs custom-text leading-snug line-clamp-2 mb-2">${tx.note || "..."}</p>
-                    <div>
-                        <p class="font-black text-base ${isInc ? "text-success-500" : "text-danger-500"} mb-1">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
-                        <div class="flex items-center justify-between text-[9px] font-bold custom-text-secondary">
-                            <span><i class="fa-regular fa-clock"></i> ${txTime}</span>
-                            <span class="truncate max-w-[60%]"><i class="fa-solid fa-wallet"></i> ${wallet.name}</span>
-                        </div>
+                <div class="p-3.5 flex flex-col justify-between flex-1">
+                    <p class="font-black text-[13px] custom-text leading-snug line-clamp-1 mb-1.5">${cat.name}</p>
+                    <p class="font-black text-sm ${isInc ? "text-success-500" : "custom-text"} mb-1.5">${isInc ? "+" : "-"}${formatMoney(tx.amount)}</p>
+                    <div class="flex items-center justify-between text-[10px] font-bold custom-text-secondary">
+                        <span class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded border custom-border truncate max-w-[70%]">${wallet.name}</span>
+                        <span>${txTime}</span>
                     </div>
                 </div>
             </div>`;
         } else {
-            // DÙNG HÀM VẼ THẺ VUỐT BÊN DƯỚI
             html += headerHtml + window.createSwipeableTxCard(tx);
         }
     });
     return html;
 };
 
-// VẼ THẺ LIST (ĐÃ SỬA CLICK SỰ KIỆN & OVERFLOW ẨN MẤT NÚT)
+// THẺ VIEW LIST VỚI HIỆU ỨNG NỔI 3D LỚP
 window.createSwipeableTxCard = (tx) => {
     const cat = state.categories.find(c => c.id === tx.category) || { name: 'Khác', icon: '📦', color: 'bg-gray-100 text-gray-600' };
     const wallet = state.wallets.find(w => w.id === tx.walletId) || { name: 'Ví ẩn', icon: '💳' };
@@ -549,207 +724,70 @@ window.createSwipeableTxCard = (tx) => {
     const fastImgUrl = hasImage && typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image;
     
     const imgHtml = hasImage 
-        ? `<img src="${fastImgUrl}" loading="lazy" class="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity" onclick="event.stopPropagation(); openImageModal('${fastImgUrl}')">` 
-        : `<span class="text-3xl drop-shadow-md">${cat.icon}</span>`;
+        ? `<img src="${fastImgUrl}" loading="lazy" class="w-full h-full object-cover rounded-[14px] cursor-pointer hover:opacity-80 transition-opacity hover:scale-105 duration-300" onclick="event.stopPropagation(); openImageModal('${fastImgUrl}')">` 
+        : `<span class="text-[26px] drop-shadow-sm">${cat.icon}</span>`;
 
     const latStr = tx.lat ? tx.lat : "null";
     const lngStr = tx.lng ? tx.lng : "null";
 
-    // CSS Xương Sống: .relative.w-full và absolute inset-y-0
     return `
-    <div class="relative w-full swipe-item group bg-transparent">
+    <div class="relative w-full swipe-item group bg-transparent overflow-visible stagger-card opacity-0 translate-y-4 transition-all duration-500 ease-out">
         
-        <!-- MÂM NÚT ĐÁY (Đã sửa z-0 và w-[180px]) -->
-        <div class="actions-container absolute inset-y-0 right-0 flex items-center justify-end gap-2.5 pr-2 z-0 w-[180px]">
-            <button onclick="viewTransactionOnMap('${tx.id}', ${latStr}, ${lngStr})" class="w-12 h-12 rounded-[1rem] bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 flex items-center justify-center text-xl shadow-sm active:scale-90 border custom-border transition-transform" title="Bản đồ"><i class="fa-solid fa-map-location-dot"></i></button>
-            <button onclick="openEditTransaction('${tx.id}')" class="w-12 h-12 rounded-[1rem] bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 flex items-center justify-center text-xl shadow-sm active:scale-90 border custom-border transition-transform"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="deleteTransaction('${tx.id}')" class="w-12 h-12 rounded-[1rem] bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 flex items-center justify-center text-xl shadow-sm active:scale-90 border custom-border transition-transform"><i class="fa-solid fa-trash"></i></button>
+        <!-- MÂM NÚT ĐÁY NẨY LÒ XO -->
+        <div class="actions-container absolute inset-y-0 right-0 flex items-center justify-end gap-1.5 pr-2 w-[150px] z-0">
+            <button onclick="viewTransactionOnMap('${tx.id}', ${latStr}, ${lngStr})" class="w-10 h-10 rounded-[14px] custom-bg-primary-soft text-primary-500 flex items-center justify-center text-sm active:scale-75 transition-transform" title="Bản đồ"><i class="fa-solid fa-map-location-dot"></i></button>
+            <button onclick="openEditTransaction('${tx.id}')" class="w-10 h-10 rounded-[14px] custom-bg-card custom-text-secondary flex items-center justify-center text-sm active:scale-75 transition-transform border custom-border"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteTransaction('${tx.id}')" class="w-10 h-10 rounded-[14px] bg-danger-50 text-danger-500 dark:bg-danger-900/30 flex items-center justify-center text-sm active:scale-75 transition-transform"><i class="fa-solid fa-trash"></i></button>
         </div>
 
-        <!-- THẺ CHÍNH (Đã sửa Flexbox để chống đè chữ) -->
-        <div class="swipe-content relative z-10 w-full p-4 custom-bg-card border custom-border rounded-[1.75rem] shadow-[0_2px_10px_rgba(0,0,0,0.03)] cursor-pointer hover:shadow-md transition-all active:scale-[0.98]" onclick="openTxDetail('${tx.id}')">
-            <div class="flex items-start gap-4 w-full">
-                <!-- Vùng Trái: Icon -->
-                <div class="w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center border border-black/5 dark:border-white/5 shadow-inner overflow-hidden ${cat.color}">
+        <!-- THẺ KÍNH NỔI Z-INDEX 10 -->
+        <div class="swipe-content relative z-10 w-full px-3 py-3.5 custom-bg-card rounded-[1.25rem] border custom-border shadow-[0_5px_15px_-5px_rgba(0,0,0,0.05)] cursor-pointer hover:brightness-95 hover:shadow-[0_15px_30px_-10px_rgba(0,0,0,0.1)] transition-all active:scale-[0.98]" onclick="openTxDetail('${tx.id}')">
+            <div class="flex items-center gap-3.5 w-full">
+                <!-- Icon Ring Glow (Viền sáng theo màu) -->
+                <div class="w-[50px] h-[50px] shrink-0 rounded-[16px] flex items-center justify-center border-2 border-white/50 dark:border-white/10 overflow-hidden ${cat.color} bg-opacity-20 dark:bg-opacity-20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent pointer-events-none"></div>
                     ${imgHtml}
                 </div>
 
-                <!-- Vùng Phải: Nội dung (Dùng min-w-0 để kích hoạt truncate) -->
-                <div class="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-                    
-                    <!-- Hàng 1: Tên Danh mục & Tiền -->
-                    <div class="flex justify-between items-start mb-1 w-full gap-2">
-                        <p class="font-black text-base custom-text truncate leading-tight">${cat.name}</p>
-                        <p class="font-black text-[17px] tracking-tight shrink-0 ${isInc ? 'text-success-500' : 'text-danger-500'}">${isInc ? '+' : '-'}${formatMoney(tx.amount)}</p>
+                <!-- Nội dung chính -->
+                <div class="flex-1 min-w-0 flex flex-col justify-center">
+                    <div class="flex justify-between items-center mb-0.5 w-full gap-2">
+                        <p class="font-black text-[14px] custom-text truncate leading-tight">${cat.name}</p>
+                        <p class="font-black text-[16px] tracking-tight shrink-0 ${isInc ? 'text-success-500' : 'custom-text dark:text-white'}">${isInc ? '+' : '-'}${formatMoney(tx.amount)}</p>
                     </div>
                     
-                    <!-- Hàng 2: Ghi chú -->
-                    <p class="text-xs font-medium custom-text-secondary truncate w-full mb-2.5">${tx.note || "..."}</p>
+                    <p class="text-[11px] font-medium custom-text-secondary truncate w-full mb-1.5">${tx.note || "..."}</p>
 
-                    <!-- Hàng 3: Thẻ Tags và Giờ (Dùng flex-wrap cho Tags và Giữ cứng Giờ) -->
-                    <div class="flex items-center justify-between w-full gap-3 mt-auto pt-2 border-t border-dashed custom-border">
-                        <!-- Khối bọc thẻ: Ép không cho thẻ đè chữ -->
-                        <div class="flex gap-2 items-center flex-1 min-w-0 overflow-hidden">
-                            <span class="text-[9px] font-bold px-2 py-1 rounded-md custom-bg-input custom-text-secondary border custom-border truncate uppercase tracking-widest flex-shrink-0 max-w-[50%]"><i class="fa-solid fa-wallet"></i> ${wallet.name}</span>
-                            ${tx.locationName ? `<span class="text-[9px] text-rose-500 font-bold bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-md border border-rose-100 dark:border-rose-900/50 uppercase tracking-widest truncate flex-1 min-w-0"><i class="fa-solid fa-location-dot"></i> ${locStr}</span>` : ''}
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="text-[9px] font-bold custom-bg-input custom-text-secondary px-2 py-0.5 rounded-[6px] border custom-border truncate uppercase tracking-widest"><i class="fa-solid fa-wallet"></i> ${wallet.name}</span>
+                            ${tx.locationName ? `<span class="text-[9px] text-danger-500 font-bold bg-danger-50 dark:bg-danger-900/20 uppercase truncate max-w-[80px] sm:max-w-[150px] tracking-widest px-2 py-0.5 rounded-[6px] border border-danger-100 dark:border-danger-900/50"><i class="fa-solid fa-location-dot"></i> ${locStr}</span>` : ''}
                         </div>
-                        
-                        <!-- Cột báo Giờ: Giữ nguyên size ko bị ép nhỏ -->
-                        <span class="text-[10px] font-bold text-gray-400 shrink-0"><i class="fa-regular fa-clock"></i> ${txTime}</span>
+                        <span class="text-[9px] font-bold custom-text-secondary shrink-0 ml-2 bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded border custom-border"><i class="fa-regular fa-clock"></i> ${txTime}</span>
                     </div>
                 </div>
             </div>
-            
-            <!-- Vạch màu bên trái -->
-            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r-full ${isInc ? 'bg-success-400' : 'bg-transparent'}"></div>
         </div>
     </div>`;
 };
 
 // ==========================================
-// 7. CÁC HÀM XỬ LÝ LỌC & TÌM KIẾM
-// ==========================================
-window.setTxFilter = (val) => {
-    window.dateFilter = val;
-    if (val !== "date") document.getElementById("tx-date-picker").value = "";
-    
-    ['all', 'today', 'yesterday'].forEach(id => {
-        const btn = document.getElementById(`btn-filter-${id}`);
-        if (btn) btn.className = id === val ? "py-2 text-[10px] font-bold rounded-lg bg-gray-200 dark:bg-gray-700 border border-gray-400 dark:border-gray-500 custom-text shadow-inner" : "py-2 text-[10px] font-bold rounded-lg bg-gray-50 dark:bg-gray-800/50 border custom-border hover:bg-gray-100 custom-text-secondary";
-    });
-
-    window.renderTransactions();
-};
-
-window.toggleTxFilter = (event) => {
-    event.stopPropagation();
-    const dropdown = document.getElementById("filter-dropdown");
-    if (dropdown.classList.contains("hidden")) {
-        const sel = document.getElementById("filter-wallet-select");
-        if (sel) {
-            sel.innerHTML = '<option value="all">Tất cả ví</option>' + state.wallets.map(w => `<option value="${w.id}" ${window.walletFilter === w.id ? "selected" : ""}>${w.icon} ${w.name}</option>`).join("");
-        }
-        dropdown.classList.remove("hidden");
-    } else dropdown.classList.add("hidden");
-};
-
-window.setTxWalletFilter = (val) => {
-    window.walletFilter = val;
-    window.renderTransactions();
-};
-
-window.toggleTxViewMode = () => {
-    window.txViewMode = window.txViewMode === "list" ? "grid" : "list";
-    const btnIcon = document.querySelector("#view-mode-btn i");
-    if (btnIcon) btnIcon.className = window.txViewMode === "grid" ? "fa-solid fa-list" : "fa-solid fa-table-cells-large";
-    window.renderTransactions();
-    if (typeof playSound === 'function') playSound("pop");
-};
-
-window.setTxSortOrder = (val) => {
-    window.txSortOrder = val;
-    ["date_desc", "date_asc", "amount_desc", "amount_asc"].forEach((id) => {
-        const btn = document.getElementById("sort-" + id);
-        if (btn) {
-            btn.className = (id === val)
-                ? "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold custom-primary text-white border border-transparent shadow-sm gap-1"
-                : "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-bold bg-gray-50 dark:bg-gray-800/50 border custom-border custom-text-secondary gap-1";
-        }
-    });
-    window.renderTransactions();
-};
-
-// ==========================================
-// 8. CÁC HÀM HIỂN THỊ CHI TIẾT
+// 8. HÓA ĐƠN RECEIPT (CÓ ANIMATION DROP & GLOW)
 // ==========================================
 window.openTxDetail = (txId) => {
-    if (!state || !state.transactions) return;
-    const tx = state.transactions.find(t => t.id === txId);
-    if (!tx) return;
-
-    const modal = document.getElementById("tx-detail-modal");
-    const content = document.getElementById("tx-detail-content");
-    
-    const cat = state.categories.find(c => c.id === tx.category) || { name: "Khác", icon: "📦", color: "bg-gray-200 text-gray-600", type: "expense" };
-    const wallet = state.wallets.find(w => w.id === tx.walletId) || { name: "Ví ẩn" };
-    const isInc = tx.type === 'income' || cat.type === 'income';
-    
-    const d = new Date(tx.date);
-    const dateStr = !isNaN(d) ? d.toLocaleDateString("vi-VN", { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : tx.date;
-    const timeStr = !isNaN(d) ? d.toLocaleTimeString("vi-VN", { hour: '2-digit', minute: '2-digit' }) : "Không ghi nhận";
-
-    const heroGradient = isInc 
-        ? "bg-gradient-to-br from-emerald-400/20 to-teal-500/5 dark:from-emerald-900/40 dark:to-teal-900/10 border-emerald-500/20" 
-        : "bg-gradient-to-br from-rose-400/20 to-orange-500/5 dark:from-rose-900/40 dark:to-orange-900/10 border-rose-500/20";
-
-    content.innerHTML = `
-        <div class="flex flex-col items-center justify-center p-8 rounded-[2rem] border ${heroGradient} custom-bg-card shadow-sm relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full ${isInc ? 'bg-emerald-500/10' : 'bg-rose-500/10'} blur-2xl pointer-events-none"></div>
-            <div class="relative z-10 w-24 h-24 rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-lg border-2 border-white/50 dark:border-white/10 ${cat.color}"><span class="drop-shadow-sm">${cat.icon}</span></div>
-            <h3 class="relative z-10 text-[46px] font-black ${isInc ? 'text-success-500' : 'custom-text dark:text-white'} tracking-tighter leading-none mb-3">${isInc ? '+' : '-'}${formatMoney(tx.amount)}</h3>
-            <span class="relative z-10 text-xs font-black custom-text-secondary uppercase tracking-widest bg-white/60 dark:bg-black/20 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/5 shadow-sm">${cat.name}</span>
-        </div>
-
-        <div class="custom-bg-card rounded-[2rem] border custom-border shadow-sm overflow-hidden">
-            <div class="flex justify-between items-center p-6 border-b border-dashed custom-border dark:border-gray-800/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 shadow-inner"><i class="fa-solid fa-wallet text-sm"></i></div>
-                    <span class="text-xs font-black custom-text-secondary uppercase tracking-widest">Ví giao dịch</span>
-                </div>
-                <span class="text-sm font-black custom-text custom-primary px-4 py-2 rounded-xl border custom-border shadow-sm">${wallet.name}</span>
-            </div>
-            <div class="flex justify-between items-center p-6 border-b border-dashed custom-border dark:border-gray-800/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-orange-500 shadow-inner"><i class="fa-regular fa-calendar-days text-sm"></i></div>
-                    <span class="text-xs font-black custom-text-secondary uppercase tracking-widest">Thời gian</span>
-                </div>
-                <div class="text-right"><span class="block text-sm font-black custom-text">${dateStr}</span><span class="block text-[11px] font-bold text-gray-400 mt-0.5">${timeStr}</span></div>
-            </div>
-            <div class="p-6 border-b border-dashed custom-border dark:border-gray-800/50">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-500 shadow-inner"><i class="fa-solid fa-align-left text-sm"></i></div>
-                    <span class="text-xs font-black custom-text-secondary uppercase tracking-widest">Ghi chú</span>
-                </div>
-                <p class="text-sm font-bold custom-text custom-bg-input p-5 rounded-[1.25rem] border custom-border leading-relaxed min-h-[70px] shadow-inner">${tx.note || '<span class="italic text-gray-400 font-medium">Không có ghi chú...</span>'}</p>
-            </div>
-            ${tx.locationName ? `<div class="p-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 shadow-inner"><i class="fa-solid fa-location-dot text-sm"></i></div>
-                    <span class="text-xs font-black custom-text-secondary uppercase tracking-widest">Vị trí</span>
-                </div>
-                <div class="flex items-start gap-2.5 text-sm font-black text-rose-600 bg-rose-50 dark:bg-rose-900/20 p-5 rounded-[1.25rem] border border-rose-100 dark:border-rose-900/50 shadow-inner"><i class="fa-solid fa-map-pin mt-1 shrink-0"></i> <span class="leading-snug">${tx.locationName}</span></div>
-            </div>` : ''}
-        </div>
-
-        ${tx.image && tx.image.length > 50 ? `
-        <div class="custom-bg-card rounded-[2rem] border custom-border p-6 shadow-sm">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-full bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center text-pink-500 shadow-inner"><i class="fa-solid fa-camera text-sm"></i></div>
-                <span class="text-xs font-black custom-text-secondary uppercase tracking-widest">Chứng từ đính kèm</span>
-            </div>
-            <div class="relative rounded-2xl overflow-hidden border custom-border shadow-sm group cursor-pointer" onclick="openImageModal('${typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image}')">
-                <img src="${typeof window.getFastImage === 'function' ? window.getFastImage(tx.image) : tx.image}" loading="lazy" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100"><div class="bg-white/90 text-black px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest backdrop-blur-sm shadow-lg"><i class="fa-solid fa-expand mr-1"></i> Phóng to</div></div>
-            </div>
-        </div>` : ''}
-
-        <div class="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-white via-white dark:from-gray-900 dark:via-gray-900 to-transparent pt-12 z-30 flex gap-4">
-            <button onclick="openEditTransaction('${tx.id}'); closeTxDetail();" class="flex-1 py-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 custom-text rounded-2xl font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-2 border custom-border shadow-sm"><i class="fa-solid fa-pen"></i> Chỉnh sửa</button>
-            <button onclick="deleteTransaction('${tx.id}'); closeTxDetail();" class="flex-1 py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-black text-sm shadow-[0_8px_20px_rgba(244,63,94,0.3)] active:scale-95 transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-trash"></i> Xóa bỏ</button>
-        </div>
-    `;
-
-    modal.classList.remove("hidden");
-    if (typeof playSound === 'function') playSound("click");
-    setTimeout(() => { modal.classList.remove("translate-x-full"); modal.classList.add("translate-x-0"); }, 10);
+    // Trỏ quyền xử lý sang file tx-full-page.js (Trang chi tiết chuẩn Super App)
+    if (typeof window.openFullTxPage === 'function') {
+        window.openFullTxPage(txId);
+    } else {
+        alert("Lỗi: Không tìm thấy Module Chi tiết toàn màn hình!");
+    }
 };
 
 window.closeTxDetail = () => {
-    const modal = document.getElementById("tx-detail-modal");
-    if (!modal) return;
-    modal.classList.remove("translate-x-0");
-    modal.classList.add("translate-x-full");
-    setTimeout(() => { modal.classList.add("hidden"); }, 300);
+    // Fallback nếu lỡ gọi hàm cũ
+    if (typeof window.closeFullTxPage === 'function') {
+        window.closeFullTxPage();
+    }
 };
 
 // ==========================================
@@ -779,7 +817,7 @@ window.openEditTransaction = (id) => {
 };
 
 window.viewTransactionOnMap = (txId, lat, lng) => {
-    if (!lat || !lng) return alert("Giao dịch này không có gắn vị trí (GPS) đại ka ơi!");
+    if (!lat || !lng) return alert("Giao dịch này không có gắn vị trí!");
     if (typeof switchView === 'function') switchView("map");
     if (typeof setMapMode === "function") setMapMode("marker");
 
@@ -791,7 +829,6 @@ window.viewTransactionOnMap = (txId, lat, lng) => {
             mapObj.flyTo(target, 18, { duration: 1.5 });
 
             const highlightCircle = L.circleMarker(target, { radius: 25, color: "#a855f7", fillColor: "#a855f7", fillOpacity: 0.5, className: "animate-ping" }).addTo(mapObj);
-
             if (typeof playSound === "function") playSound("pop");
             setTimeout(() => mapObj.removeLayer(highlightCircle), 3000);
         }
@@ -800,28 +837,26 @@ window.viewTransactionOnMap = (txId, lat, lng) => {
 
 window.viewAndHighlightTransaction = (txId) => {
     document.getElementById("filter-search").value = "";
-    if (document.getElementById("tx-date-picker")) document.getElementById("tx-date-picker").value = "";
+    if (document.getElementById("tx-date-start")) document.getElementById("tx-date-start").value = "";
+    if (document.getElementById("tx-date-end")) document.getElementById("tx-date-end").value = "";
     window.dateFilter = "all";
     window.walletFilter = "all";
 
     if (typeof switchView === 'function') switchView("transactions");
 
     setTimeout(() => {
-        const txEl = document.querySelector(`div.swipe-content[onclick*="${txId}"], div.aspect-\\[3\\/4\\][onclick*="${txId}"]`);
+        const txEl = document.querySelector(`div.swipe-content[onclick*="${txId}"]`);
         if (txEl) {
             txEl.scrollIntoView({ behavior: "smooth", block: "center" });
-            const oldBorder = txEl.style.border;
             const oldBg = txEl.style.backgroundColor;
             const oldTransform = txEl.style.transform;
 
-            txEl.style.transition = "all 0.3s ease";
-            txEl.style.border = "3px solid var(--primary-hue)"; 
+            txEl.style.transition = "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)";
             txEl.style.backgroundColor = "var(--bg-primary-soft)"; 
-            txEl.style.transform = "scale(1.02)"; 
+            txEl.style.transform = "scale(1.05)"; 
 
             if (typeof playSound === "function") playSound("success");
             setTimeout(() => {
-                txEl.style.border = oldBorder;
                 txEl.style.backgroundColor = oldBg;
                 txEl.style.transform = oldTransform;
             }, 2500);

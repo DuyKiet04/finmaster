@@ -1,0 +1,853 @@
+/* ============================================================
+   TX-UI-UPGRADE.CSS — Liquid Glass + Motion First
+   Import SAU tailwind + theme css, import TRƯỚC </head>
+   ============================================================ */
+
+:root {
+  --tx-glass: color-mix(in srgb, var(--bg-card, #fff) 70%, transparent);
+  --tx-glass-border: color-mix(in srgb, var(--border, #e5e7eb) 55%, transparent);
+  --tx-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --tx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- 1. HERO HEADER: glass + gradient net ---------- */
+#view-transactions .custom-bg-header {
+  background: var(--tx-glass) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid var(--tx-glass-border) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06) !important;
+}
+
+/* Card tổng thu/chi → glass pill có glow */
+#view-transactions .grid.grid-cols-2 > div {
+  position: relative;
+  border-radius: 20px !important;
+  background: var(--tx-glass) !important;
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform .35s var(--tx-spring), box-shadow .35s ease;
+}
+#view-transactions .grid.grid-cols-2 > div::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--success-500, #22c55e) 12%, transparent),
+    transparent 60%);
+  opacity: .6; pointer-events: none;
+}
+#view-transactions .grid.grid-cols-2 > div:nth-child(2)::before {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--danger-500, #ef4444) 12%, transparent),
+    transparent 60%);
+}
+#view-transactions .grid.grid-cols-2 > div:active {
+  transform: scale(.97);
+}
+
+/* Số tiền: tabular-nums để không nhảy lung tung khi count-up */
+#tx-head-inc, #tx-head-exp { font-variant-numeric: tabular-nums; }
+
+/* ---------- 2. CARD GIAO DỊCH: lift + tilt + glow ---------- */
+.swipe-content {
+  transition: transform .3s var(--tx-spring),
+              box-shadow .3s ease,
+              filter .3s ease !important;
+  will-change: transform;
+}
+.swipe-content:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 28px -8px rgba(0,0,0,0.18);
+}
+.swipe-content:active {
+  transform: translateY(-1px) scale(.985) !important;
+}
+
+/* Icon category: thêm glow ring */
+.swipe-content .w-12.h-12 {
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 8%, transparent),
+              0 4px 12px -2px color-mix(in srgb, currentColor 25%, transparent) !important;
+}
+
+/* Swipe spring bounce thay easing cứng */
+.swipe-content { transition-timing-function: var(--tx-spring) !important; }
+
+/* Nút action bên dưới: bounce khi lộ ra */
+.actions-container button { transition: transform .3s var(--tx-spring); }
+.actions-container button:active { transform: scale(.85); }
+
+/* ---------- 3. STAGGER REVEAL (JS thêm class) ---------- */
+.tx-reveal {
+  opacity: 0;
+  transform: translateY(16px) scale(.98);
+  animation: txFadeUp .5s var(--tx-ease-out) forwards;
+}
+@keyframes txFadeUp {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- 4. STICKY DATE PILL đẹp hơn ---------- */
+.col-span-full .custom-bg-primary-soft {
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px -2px color-mix(in srgb, var(--icon-active, #6366f1) 30%, transparent);
+}
+
+/* ---------- 5. SKELETON SHIMMER khi load more ---------- */
+.tx-skeleton {
+  border-radius: 20px;
+  height: 74px;
+  background: linear-gradient(100deg,
+    var(--bg-input, #f3f4f6) 40%,
+    color-mix(in srgb, var(--bg-card, #fff) 90%, white) 50%,
+    var(--bg-input, #f3f4f6) 60%);
+  background-size: 200% 100%;
+  animation: txShimmer 1.2s linear infinite;
+}
+@keyframes txShimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- 6. MODAL CHI TIẾT: spring + glow icon ---------- */
+#tx-detail-content { border-radius: 2rem 2rem 0 0; }
+#tx-detail-content .fa-pen, #tx-detail-content .fa-trash { transition: transform .2s var(--tx-spring); }
+#tx-detail-content button:active i { transform: scale(.8); }
+
+#tx-detail-content .-top-10 {
+  animation: txIconDrop .6s var(--tx-spring) both;
+}
+@keyframes txIconDrop {
+  from { transform: translate(-50%, -24px) scale(.6); opacity: 0; }
+  to   { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+/* Số tiền trong modal: glow nhẹ */
+#tx-detail-content h2 {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 20px color-mix(in srgb, currentColor 25%, transparent);
+}
+
+/* ---------- 7. RIPPLE (JS inject span) ---------- */
+.tx-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: color-mix(in srgb, var(--icon-active, #6366f1) 25%, transparent);
+  animation: txRipple .55s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes txRipple { to { transform: scale(3); opacity: 0; } }
+
+/* ---------- 8. FILTER DROPDOWN: slide spring ---------- */
+#filter-dropdown {
+  transition: transform .25s var(--tx-spring), opacity .2s ease;
+}
+#filter-dropdown.hidden { transform: scale(.92) translateY(-8px); opacity: 0; }
+
+/* ---------- 9. Nút header bo tròn hơn + hover lift ---------- */
+#view-mode-btn, #filter-btn { transition: transform .25s var(--tx-spring), box-shadow .25s; }
+#view-mode-btn:hover, #filter-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -4px rgba(0,0,0,.2); }
+
+/* ---------- 10. Autocomplete item hover ---------- */
+#search-autocomplete > div:not([class*="text-center"]) { transition: transform .2s var(--tx-spring), background .2s; }
+#search-autocomplete > div:not([class*="text-center"]):hover { transform: translateX(4px); }
+
+/* Giảm motion cho người dùng thích tĩnh */
+@media (prefers-reduced-motion: reduce) {
+  *, .tx-reveal { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ============================================================
+   MAP-UI-UPGRADE.CSS — Liquid Glass Spatial Experience
+   ============================================================ */
+
+/* Map Hero Bar */
+.map-hero-bar {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 84%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent) !important;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+
+/* Category Pills in Map */
+.map-cat-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 65%, transparent);
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 80%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-primary);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  transition: all 0.25s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+.map-cat-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+.map-cat-pill:active {
+  transform: scale(0.95);
+}
+.map-cat-pill.active {
+  background: var(--bg-primary, #6366f1) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 20px -2px var(--theme-glow, rgba(99,102,241,0.45)) !important;
+  transform: scale(1.04);
+}
+.map-cat-pill .badge-count {
+  font-size: 10px;
+  opacity: 0.85;
+  background: rgba(0,0,0,0.12);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.map-cat-pill.active .badge-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+/* Map HUD Dock & Buttons */
+.map-hud-dock {
+  transition: transform 0.3s var(--tx-ease-out, ease-out);
+}
+.map-hud-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 16px;
+  transition: all 0.25s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  cursor: pointer;
+}
+.map-hud-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 10px 28px -4px var(--theme-glow, rgba(99, 102, 241, 0.4));
+  color: var(--icon-active, #6366f1);
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 40%, transparent);
+}
+.map-hud-btn:active {
+  transform: scale(0.92);
+}
+.map-hud-btn.active {
+  background: var(--bg-primary, #6366f1) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 24px var(--theme-glow, rgba(99, 102, 241, 0.5)) !important;
+}
+
+.map-zoom-group {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.14);
+}
+.map-hud-btn-sub {
+  width: 44px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.map-hud-btn-sub:hover {
+  background: var(--bg-input);
+  color: var(--icon-active);
+}
+.map-hud-btn-sub:active {
+  transform: scale(0.9);
+}
+
+/* Glass Panels (Dropdown, Search, Result, Stats, Bottom Sheet) */
+.map-glass-dropdown,
+.map-glass-search,
+.map-glass-result,
+.map-glass-stats,
+.map-glass-peek,
+.map-glass-sheet-body {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 88%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 75%, transparent) !important;
+  box-shadow: 0 16px 40px -8px rgba(0,0,0,0.18), 0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
+}
+
+/* Bottom Sheet Filter Pills */
+.map-flt-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.map-flt-pill.active {
+  background: var(--bg-primary-soft);
+  color: var(--icon-active);
+  border-color: color-mix(in srgb, var(--icon-active) 40%, transparent);
+}
+
+/* Leaflet Popup Styling Overhaul */
+.leaflet-popup-content-wrapper {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 92%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border-radius: 24px !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 80%, transparent) !important;
+  box-shadow: 0 18px 45px -8px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.15) inset !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.dark .leaflet-popup-content-wrapper {
+  background: color-mix(in srgb, var(--bg-card, #121826) 90%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--icon-active, #818cf8) 25%, rgba(255,255,255,0.1)) !important;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6), 0 0 20px -5px var(--theme-glow, rgba(99,102,241,0.3)) !important;
+}
+.leaflet-popup-tip {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 92%, transparent) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15) !important;
+}
+.dark .leaflet-popup-tip {
+  background: #121826 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  top: 12px !important;
+  right: 12px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 999px !important;
+  background: var(--bg-input, rgba(0,0,0,0.06)) !important;
+  color: var(--text-secondary, #64748b) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  transition: all 0.2s !important;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  background: #f43f5e !important;
+  color: #fff !important;
+  transform: rotate(90deg) scale(1.1) !important;
+}
+.leaflet-popup-content {
+  margin: 16px 18px !important;
+  line-height: 1.4 !important;
+}
+
+/* Custom Marker Pulsing & Glowing Animation */
+@keyframes spatialPinGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 8px 18px var(--theme-glow, rgba(99,102,241,0.5)));
+  }
+}
+.spatial-marker-pulse {
+  animation: spatialPinGlow 2.5s infinite ease-in-out;
+}
+
+/* ============================================================
+   WORK-UI-UPGRADE.CSS — Liquid Glass Work & Journal Center
+   ============================================================ */
+
+/* Work Hero Bar */
+.work-hero-glass {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent) !important;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.15) inset !important;
+}
+
+/* Tab buttons inside work */
+.work-tab-btn {
+  transition: all 0.25s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+.work-tab-btn.active {
+  background: var(--bg-primary, #6366f1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px -2px var(--theme-glow, rgba(99,102,241,0.45)) !important;
+  transform: scale(1.02);
+}
+
+/* KPI Bento Cards */
+.work-kpi-card {
+  position: relative;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 82%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 65%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s var(--tx-spring), box-shadow 0.3s ease;
+}
+.work-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.14);
+}
+
+/* Calendar Card */
+.work-cal-card {
+  position: relative;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+/* Day cell in calendar */
+.work-day-cell {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+.work-day-cell:hover:not(.selected) {
+  background: var(--bg-input, rgba(0,0,0,0.06));
+  transform: translateY(-1px);
+}
+.work-day-cell:active {
+  transform: scale(0.92);
+}
+.work-day-cell.selected {
+  background: var(--gradient-primary, linear-gradient(135deg, #6366f1, #4f46e5)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px -2px var(--theme-glow, rgba(99, 102, 241, 0.5)) !important;
+  transform: scale(1.08);
+}
+.work-day-cell.today:not(.selected) {
+  border: 2px solid var(--icon-active, #6366f1);
+  color: var(--icon-active, #6366f1);
+  background: var(--bg-primary-soft, rgba(99,102,241,0.12));
+}
+
+/* Empty state glass card */
+.work-empty-glass {
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 80%, transparent) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px dashed color-mix(in srgb, var(--border-color, #e2e8f0) 80%, transparent);
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
+}
+
+/* Timeline Feed item card with modern spatial glass */
+.work-feed-card {
+  position: relative;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 86%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.work-feed-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -6px rgba(0, 0, 0, 0.12);
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 40%, var(--border-color, #e2e8f0));
+}
+
+/* Work FAB Floating Button */
+.work-fab-glow {
+  background: var(--gradient-primary, linear-gradient(135deg, #f43f5e, #ec4899)) !important;
+  box-shadow: 0 10px 28px -4px var(--theme-glow, rgba(244, 63, 94, 0.5)), 0 0 0 1px rgba(255, 255, 255, 0.25) inset !important;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.work-fab-glow:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 16px 36px -4px var(--theme-glow, rgba(244, 63, 94, 0.7)), 0 0 0 1px rgba(255, 255, 255, 0.35) inset !important;
+}
+.work-fab-glow:active {
+  transform: scale(0.92);
+}
+
+/* Coffee floating animation */
+@keyframes workCoffeeFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
+}
+.work-coffee-float {
+  animation: workCoffeeFloat 3.2s ease-in-out infinite;
+}
+
+/* Glowing Indicator Dots */
+.work-dot-expense {
+  background: #f43f5e;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.85);
+}
+.work-dot-journal {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.85);
+}
+
+/* ============================================================
+   CUSTOM MAPS & FIELD EXPLORATION — Spatial Liquid Glass
+   ============================================================ */
+
+/* Hero Glass Bar for Custom Maps */
+.cm-hero-glass {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent) !important;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.15) inset !important;
+}
+
+/* Custom Map Bento Card */
+.cm-card-glass {
+  position: relative;
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+.cm-card-glass:hover {
+  transform: translateY(-3px) scale(1.008);
+  box-shadow: 0 18px 42px -6px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.22) inset;
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 45%, var(--border-color, #e2e8f0));
+}
+
+/* KPI Bento Mini Card */
+.cm-kpi-card {
+  position: relative;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 82%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 65%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.cm-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.12);
+}
+
+/* Filter Tag Pills */
+.cm-filter-pill {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.cm-filter-pill.active {
+  background: var(--bg-primary, #6366f1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px -2px var(--theme-glow, rgba(99, 102, 241, 0.45));
+  transform: scale(1.03);
+}
+
+/* Floating Compass animation */
+@keyframes cmFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(4deg); }
+}
+.cm-float-anim {
+  animation: cmFloat 3.2s ease-in-out infinite;
+}
+
+/* Map Drawer Pill */
+.cm-drawer-item {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cm-drawer-item:hover {
+  transform: translateY(-2px);
+}
+.cm-drawer-item:active {
+  transform: scale(0.96);
+}
+
+/* ============================================================
+   EXECUTIVE FINANCIAL ANALYTICS — Spatial Liquid Glass
+   ============================================================ */
+
+/* Hero Glass Banner */
+.an-hero-card {
+  position: relative;
+  border-radius: 28px;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.an-hero-card.expense-theme {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.92) 0%, rgba(225, 29, 72, 0.95) 50%, rgba(190, 18, 60, 0.98) 100%) !important;
+  box-shadow: 0 16px 40px -8px rgba(244, 63, 94, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+.an-hero-card.income-theme {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.92) 0%, rgba(5, 150, 105, 0.95) 50%, rgba(4, 120, 87, 0.98) 100%) !important;
+  box-shadow: 0 16px 40px -8px rgba(16, 185, 129, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+.an-hero-card.net-theme {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.92) 0%, rgba(79, 70, 229, 0.95) 50%, rgba(67, 56, 202, 0.98) 100%) !important;
+  box-shadow: 0 16px 40px -8px rgba(99, 102, 241, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+
+/* Glass Card */
+.an-glass-card {
+  position: relative;
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+.an-glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+}
+
+/* Analytics Tab Buttons */
+.an-tab-btn {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.an-tab-btn.active {
+  background: var(--bg-primary, #6366f1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px -2px var(--theme-glow, rgba(99, 102, 241, 0.45)) !important;
+  transform: scale(1.02);
+}
+
+/* AI Robot Pulse */
+@keyframes anRobotPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,255,255,0.4)); }
+  50% { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); }
+}
+.an-robot-anim {
+  animation: anRobotPulse 2.8s ease-in-out infinite;
+}
+
+/* ============================================================
+   LOCATION & SPENDING HEATMAP ANALYTICS — Spatial Liquid Glass
+   ============================================================ */
+
+/* Floating Map Glass Capsule */
+.loc-hero-glass {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 85%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent) !important;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.15) inset !important;
+}
+
+/* Location Glass Card */
+.loc-card-glass {
+  position: relative;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 86%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+.loc-card-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 40%, var(--border-color, #e2e8f0));
+}
+
+/* KPI Bento Mini Card */
+.loc-kpi-card {
+  position: relative;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 82%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 65%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.loc-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.12);
+}
+
+/* Custom Pin Pulse Animation */
+@keyframes locPinPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 8px 18px rgba(244,63,94,0.5)); }
+}
+.loc-pin-anim {
+  animation: locPinPulse 2.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   CALENDAR PRO — SPATIAL LIQUID GLASS & BENTO GRID
+   ============================================================ */
+
+.cal-hero-glass {
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 88%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 75%, transparent) !important;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
+}
+
+.cal-card-glass {
+  position: relative;
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 86%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 70%, transparent);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.cal-kpi-bento {
+  position: relative;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 82%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 65%, transparent);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.cal-kpi-bento:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.1);
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 40%, var(--border-color, #e2e8f0));
+}
+
+.cal-cell-glass {
+  position: relative;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 55%, var(--bg-input, #f1f5f9));
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 60%, transparent);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.cal-cell-glass:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 50%, var(--border-color, #e2e8f0));
+  box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+.cal-cell-glass:active {
+  transform: scale(0.95);
+}
+
+.cal-cell-today {
+  border: 1.5px solid var(--icon-active, #6366f1) !important;
+  box-shadow: 0 0 16px var(--theme-glow, rgba(99, 102, 241, 0.35)), inset 0 0 12px rgba(99, 102, 241, 0.12) !important;
+}
+
+.cal-cell-selected {
+  background: var(--gradient-primary, linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 24px -2px var(--theme-glow, rgba(99, 102, 241, 0.45)) !important;
+  transform: scale(1.05) !important;
+  z-index: 10 !important;
+}
+.cal-cell-selected span {
+  color: #ffffff !important;
+}
+
+.cal-pill-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid transparent;
+}
+.cal-pill-btn.active {
+  background: var(--gradient-primary, linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px var(--theme-glow, rgba(99, 102, 241, 0.35));
+}
+
+.cal-spark-bar {
+  transition: height 0.3s ease, background-color 0.2s ease;
+  border-radius: 4px;
+}
+.cal-spark-bar:hover {
+  filter: brightness(1.2);
+}
+
+/* ============================================================
+   TRANSACTION FULL PAGE — DIGITAL RECEIPT & SMART COPILOT
+   ============================================================ */
+
+.tx-fp-card-glass {
+  position: relative;
+  border-radius: 26px;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 88%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid color-mix(in srgb, var(--border-color, #e2e8f0) 75%, transparent);
+  box-shadow: 0 10px 32px -4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+.tx-fp-card-glass:hover {
+  border-color: color-mix(in srgb, var(--icon-active, #6366f1) 40%, var(--border-color, #e2e8f0));
+}
+
+.tx-fp-emotion-btn {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1.5px solid transparent;
+}
+.tx-fp-emotion-btn.active {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px var(--theme-glow, rgba(99, 102, 241, 0.35));
+}
+
+/* Digital Receipt Paper Cut */
+.receipt-paper-edge {
+  background-image: radial-gradient(circle at 10px 0, transparent 0, transparent 8px, currentColor 8.5px);
+  background-size: 20px 10px;
+  background-repeat: repeat-x;
+}
+
