@@ -640,29 +640,18 @@
 
     root.innerHTML = `
       <!-- Header Trang Báo Cáo Wrapped -->
-      <header class="flex items-center justify-between gap-2.5 p-2.5 rounded-2xl sm:rounded-3xl custom-bg-card border custom-border custom-shadow-sm sticky top-0 z-10 backdrop-blur-md">
-        <div class="flex items-center gap-2.5">
-          <button onclick="switchView('dashboard')" 
-            class="w-10 h-10 rounded-xl sm:rounded-2xl custom-bg-input flex items-center justify-center custom-text hover:scale-105 active:scale-95 transition-all shrink-0 shadow-sm"
-            title="Quay lại Tổng quan">
-            <i class="fa-solid fa-arrow-left text-sm sm:text-base"></i>
-          </button>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-base sm:text-lg font-black custom-text tracking-tight">FinMaster Wrapped</h1>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/15 text-rose-400 border border-rose-500/30">
-                🎉 Tháng ${cm + 1}/${cy}
-              </span>
-            </div>
-            <p class="text-[11px] custom-text-secondary leading-none hidden sm:block mt-0.5">Báo cáo tài chính infographic & tổng kết phong cách sống</p>
-          </div>
+      <header class="flex items-center justify-between gap-2 p-2 rounded-2xl sm:rounded-3xl custom-bg-card border custom-border custom-shadow-sm sticky top-0 z-10 backdrop-blur-md">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-rose-500/15 text-rose-400 border border-rose-500/30">
+            <i class="fa-solid fa-gift"></i> Wrapped Tháng ${cm + 1}/${cy}
+          </span>
         </div>
 
         <div class="flex items-center gap-2">
           <button onclick="shareWrappedCard()" 
-            class="py-2.5 px-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-pink-500/25 active:scale-95 transition-all"
+            class="py-2 px-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-pink-500/25 active:scale-95 transition-all"
             title="Chia sẻ báo cáo">
-            <i class="fa-solid fa-share-nodes text-xs"></i> <span class="hidden sm:inline">Chia Sẻ</span>
+            <i class="fa-solid fa-share-nodes text-xs"></i> <span>Chia Sẻ</span>
           </button>
           <button onclick="window.print()" 
             class="py-2.5 px-3.5 rounded-xl sm:rounded-2xl custom-bg-input custom-text font-black text-xs sm:text-sm flex items-center gap-1.5 border custom-border active:scale-95 transition-all"
@@ -861,10 +850,11 @@
   // ==============================================================
   const origSwitchView = window.switchView;
   window.switchView = function(viewId) {
+    if (viewId === 'ai-advisor' || viewId === 'invest') {
+      viewId = 'dashboard';
+    }
     if (origSwitchView) origSwitchView(viewId);
 
-    if (viewId === 'ai-advisor') window.renderAIAdvisor();
-    if (viewId === 'invest') window.renderInvest();
     if (viewId === 'report') window.renderReport();
     if (viewId === 'wallets') window.renderWallets();
     if (viewId === 'debts') window.renderDebts();

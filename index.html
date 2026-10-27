@@ -903,15 +903,15 @@
 
       <div class="p-4 pt-3 border-t custom-border flex flex-col gap-2 shrink-0">
         <button
-          onclick="toggleThemeModal()"
+          onclick="openSettingsDetail('themes')"
           class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border custom-border bg-white/5 hover:bg-white/10 transition-all text-xs font-bold custom-text group"
-          title="Chọn giữa 15 màu sắc chủ đề"
+          title="Studio Giao Diện & Chủ Đề"
         >
           <div class="flex items-center gap-2.5">
             <i class="fa-solid fa-palette text-sm custom-icon-active"></i>
-            <span>Đổi màu chủ đề</span>
+            <span>Studio Giao Diện</span>
           </div>
-          <span class="text-[10px] px-2 py-0.5 rounded-md custom-bg-primary-soft custom-icon-active font-extrabold uppercase">15 Màu</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-md custom-bg-primary-soft custom-icon-active font-extrabold uppercase">Theme Pro</span>
         </button>
 
         <button
@@ -956,15 +956,15 @@
         </div>
 
         <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Nút Đổi Màu Nhanh Trên Header (Desktop + Mobile) -->
+          <!-- Nút Đổi Màu Trên Header (Chỉ hiện trên Desktop, mobile vào Cài đặt đổi) -->
           <button
-            onclick="toggleThemeModal()"
+            onclick="openSettingsDetail('themes')"
             id="btn-header-theme"
-            class="h-10 px-3 rounded-xl border custom-border bg-white/5 hover:bg-white/10 flex items-center gap-2 custom-text transition-all active:scale-95 shadow-sm"
-            title="Đổi màu chủ đề (15 màu)"
+            class="hidden md:flex h-10 px-3 rounded-xl border custom-border bg-white/5 hover:bg-white/10 items-center gap-2 custom-text transition-all active:scale-95 shadow-sm"
+            title="Studio Giao Diện & Chủ Đề"
           >
             <i class="fa-solid fa-palette custom-icon-active text-base"></i>
-            <span class="hidden md:inline text-xs font-bold">Chủ đề</span>
+            <span class="text-xs font-bold">Chủ đề</span>
           </button>
 
           <!-- Toggle Dark Mode -->
@@ -1010,23 +1010,27 @@
 
         <div
           id="view-dashboard"
-          class="view-section active space-y-6 max-w-7xl mx-auto pt-2"
+          class="view-section active space-y-6 max-w-7xl mx-auto pt-1 pb-6"
         >
           <!-- ========================================================
-               1. HERO SPATIAL FINANCIAL HUB (TÂM ĐIỂM TÀI CHÍNH THẾ HỆ MỚI)
+               1. FLAGSHIP HERO SPATIAL WEALTH HUB (TÂM ĐIỂM TÀI CHÍNH THƯỢNG LƯU)
                ======================================================== -->
-          <div class="hero-spatial-hub p-6 sm:p-8">
+          <div class="dash-hero-hub p-6 sm:p-8">
             <div class="relative z-10 flex flex-col gap-6">
-              <!-- Top Row: Badge & Privacy Control -->
+              <!-- Top Row: Luxury Brand Badge & Executive Controls -->
               <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2">
-                  <span class="px-3 py-1 rounded-full text-xs font-bold custom-bg-primary-soft custom-icon-active flex items-center gap-1.5 border custom-border">
+                <div class="flex items-center gap-2.5">
+                  <div class="px-3.5 py-1.5 rounded-full text-xs font-black custom-bg-primary-soft custom-icon-active flex items-center gap-2 border custom-border shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
                     <i class="fa-solid fa-sparkles text-[11px]"></i>
-                    Spatial Financial Hub
-                  </span>
-                  <span class="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Trực quan hóa thời gian thực
+                    <span class="tracking-wide">Spatial Financial Hub</span>
+                  </div>
+                  <span class="hidden sm:inline-flex px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 items-center gap-1.5 backdrop-blur-md">
+                    <i class="fa-solid fa-shield-check text-[11px]"></i>
+                    <span>Bảo mật Cấp Ngân hàng</span>
                   </span>
                 </div>
 
@@ -1034,128 +1038,151 @@
                   <!-- Eye Privacy Toggle -->
                   <button
                     onclick="toggleBalancePrivacy()"
-                    class="px-3 py-1.5 rounded-xl border custom-border bg-white/5 hover:bg-white/10 transition-all text-xs font-bold custom-text flex items-center gap-1.5"
-                    title="Ẩn / Hiện số dư"
+                    class="h-9 px-3.5 rounded-xl border custom-border bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-xs font-bold custom-text flex items-center gap-2 shadow-sm backdrop-blur-md"
+                    title="Ẩn / Hiện số dư bảo mật"
                   >
                     <i class="fa-solid fa-eye balance-eye-icon text-xs"></i>
                     <span class="hidden sm:inline">Bảo mật</span>
                   </button>
-                  <div class="px-3 py-1 rounded-xl bg-white/5 border custom-border text-xs font-black custom-text-secondary tracking-widest">
+                  <div class="h-9 px-3.5 rounded-xl bg-white/5 border custom-border text-xs font-black custom-text-secondary tracking-widest flex items-center justify-center shadow-sm backdrop-blur-md">
                     VND ₫
                   </div>
                 </div>
               </div>
 
-              <!-- Center: Giant Balance & Cashflow Ratio -->
+              <!-- Center: Master Net Worth & Real-time Cashflow Cockpit -->
               <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <!-- Left: Big Balance Typography -->
+                <!-- Left: Grand Typography & Portfolio Label -->
                 <div class="lg:col-span-7 flex flex-col justify-center">
-                  <p class="text-xs sm:text-sm font-bold uppercase tracking-wider custom-text-secondary flex items-center gap-2 mb-1">
-                    <span>Tổng Tài Sản Ròng Khả Dụng</span>
-                  </p>
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <p class="text-xs sm:text-sm font-black uppercase tracking-widest custom-text-secondary">
+                      Tổng Tài Sản Ròng Khả Dụng
+                    </p>
+                  </div>
                   <h2
                     id="dash-hero-balance"
-                    class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight custom-text my-1 select-all"
+                    class="dash-hero-number text-4xl sm:text-5xl md:text-6xl font-black tracking-tight custom-text my-1.5 select-all"
                   >
                     0 ₫
                   </h2>
-                  <p class="text-xs font-semibold custom-text-secondary mt-1 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                    <span>Dữ liệu ví và giao dịch được đồng bộ mã hoá an toàn</span>
-                  </p>
+                  <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+                    <span class="text-xs font-semibold custom-text-secondary flex items-center gap-1.5">
+                      <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                      Đồng bộ mã hoá tự động
+                    </span>
+                    <span class="text-xs font-semibold custom-text-secondary hidden sm:flex items-center gap-1.5">
+                      <i class="fa-solid fa-bolt-lightning text-amber-400"></i>
+                      Dòng tiền trực tiếp
+                    </span>
+                  </div>
                 </div>
 
-                <!-- Right: Cashflow Flow-Bar & Dynamic Status -->
-                <div class="lg:col-span-5 p-4 sm:p-5 rounded-2xl bg-white/5 border custom-border flex flex-col justify-between gap-3">
+                <!-- Right: Cockpit Liquid Balance Ratio Hub -->
+                <div class="lg:col-span-5 dash-flow-cockpit p-4 sm:p-5 flex flex-col justify-between gap-3.5">
                   <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="custom-text flex items-center gap-1.5">
-                      <i class="fa-solid fa-arrows-split-up-and-left custom-icon-active"></i>
+                    <span class="custom-text flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[10px]">
+                        <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                      </div>
                       Cân bằng Dòng Tiền Kỳ Này
                     </span>
-                    <span id="hero-flow-status" class="text-emerald-400 font-extrabold text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10">
+                    <span id="hero-flow-status" class="text-emerald-400 font-extrabold text-[11px] px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shadow-sm">
                       Cân bằng
                     </span>
                   </div>
 
-                  <!-- Flow Progress Bar -->
-                  <div class="w-full h-3 rounded-full bg-white/10 overflow-hidden flex p-0.5 gap-0.5 border border-white/5">
-                    <div id="hero-income-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700" style="width: 50%"></div>
-                    <div id="hero-expense-bar" class="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full transition-all duration-700" style="width: 50%"></div>
+                  <!-- Liquid Flow Progress Track -->
+                  <div class="relative w-full h-3.5 rounded-full bg-black/20 dark:bg-white/5 overflow-hidden flex p-0.5 gap-1 border border-white/10 shadow-inner">
+                    <div id="hero-income-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-700 shadow-sm" style="width: 50%"></div>
+                    <div id="hero-expense-bar" class="h-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 rounded-full transition-all duration-700 shadow-sm" style="width: 50%"></div>
                   </div>
 
-                  <!-- Legend Numbers -->
+                  <!-- Legend Numbers Pill Box -->
                   <div class="flex items-center justify-between text-xs font-semibold pt-1">
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                      <span class="custom-text-secondary">Thu:</span>
+                    <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]"></span>
+                      <span class="custom-text-secondary text-[11px] font-bold">Thu:</span>
                       <span id="hero-inc-text" class="text-emerald-400 font-black">0 ₫</span>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-                      <span class="custom-text-secondary">Chi:</span>
+                    <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                      <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span>
+                      <span class="custom-text-secondary text-[11px] font-bold">Chi:</span>
                       <span id="hero-exp-text" class="text-rose-400 font-black">0 ₫</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Bottom Row: Quick Action Hub -->
-              <div class="pt-2 border-t custom-border grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+              <!-- Bottom Row: Fast Action Executive Dock -->
+              <div class="pt-3 border-t custom-border grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
                 <button
                   onclick="handleFabClick()"
-                  class="hero-action-pill py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 text-xs font-bold custom-text group"
+                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
                 >
-                  <div class="w-7 h-7 rounded-lg custom-primary flex items-center justify-center text-white text-xs shadow-sm group-hover:scale-110 transition-transform">
+                  <div class="w-9 h-9 rounded-xl custom-primary flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
                     <i class="fa-solid fa-plus"></i>
                   </div>
-                  <span>Ghi chép nhanh</span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-black custom-text truncate">Ghi chép nhanh</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate">Thu / Chi tức thì</p>
+                  </div>
                 </button>
 
                 <button
                   onclick="triggerQuickScan()"
-                  class="hero-action-pill py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 text-xs font-bold custom-text group"
+                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
                 >
-                  <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xs shadow-sm group-hover:scale-110 transition-transform">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
                     <i class="fa-solid fa-camera"></i>
                   </div>
-                  <span>Quét hoá đơn AI</span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-black custom-text truncate">Quét hoá đơn AI</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate">OCR tự động</p>
+                  </div>
                 </button>
 
                 <button
                   onclick="switchView('budgets')"
-                  class="hero-action-pill py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 text-xs font-bold custom-text group"
+                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
                 >
-                  <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-xs shadow-sm group-hover:scale-110 transition-transform">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
                     <i class="fa-solid fa-bullseye"></i>
                   </div>
-                  <span>Hạn mức ngân sách</span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-black custom-text truncate">Hạn mức ngân sách</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate">Kiểm soát chi tiêu</p>
+                  </div>
                 </button>
 
                 <button
                   onclick="switchView('map')"
-                  class="hero-action-pill py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 text-xs font-bold custom-text group"
+                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
                 >
-                  <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs shadow-sm group-hover:scale-110 transition-transform">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
                     <i class="fa-solid fa-map-location-dot"></i>
                   </div>
-                  <span>Bản đồ chi tiêu</span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-black custom-text truncate">Bản đồ chi tiêu</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate">Định vị GPS ví</p>
+                  </div>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- ========================================================
-               2. DÒNG 4 KPI CARDS THEO SPATIAL GLASS (ĐA MÀU SẮC ĐỘNG)
+               2. DÒNG 4 THẺ CHỈ SỐ KIM CƯƠNG (DIAMOND METRIC TILES)
                ======================================================== -->
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <!-- Thẻ 1: Tổng thu -->
-            <div class="metric-glass-card p-4 sm:p-5 flex flex-col justify-between h-36">
+            <div class="dash-kpi-card dash-kpi-income p-4 sm:p-5 flex flex-col justify-between h-36">
               <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-sm shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs shadow-sm">
                     <i class="fa-solid fa-arrow-down-left"></i>
                   </div>
-                  <p class="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                  <p class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
                     Tổng thu
                   </p>
                 </div>
@@ -1166,7 +1193,7 @@
               <div class="z-10 my-1">
                 <h3
                   id="dash-inc-num"
-                  class="text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
                 >
                   0 ₫
                 </h3>
@@ -1177,19 +1204,19 @@
                   <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
                 </p>
               </div>
-              <div class="absolute bottom-0 left-0 right-0 h-14 opacity-50 pointer-events-none">
+              <div class="dash-sparkline-wrap">
                 <canvas id="spark-inc"></canvas>
               </div>
             </div>
 
             <!-- Thẻ 2: Tổng chi -->
-            <div class="metric-glass-card p-4 sm:p-5 flex flex-col justify-between h-36">
+            <div class="dash-kpi-card dash-kpi-expense p-4 sm:p-5 flex flex-col justify-between h-36">
               <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-sm shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xs shadow-sm">
                     <i class="fa-solid fa-arrow-up-right"></i>
                   </div>
-                  <p class="text-xs font-bold text-rose-400 uppercase tracking-wider">
+                  <p class="text-xs font-extrabold text-rose-400 uppercase tracking-wider">
                     Tổng chi
                   </p>
                 </div>
@@ -1200,7 +1227,7 @@
               <div class="z-10 my-1">
                 <h3
                   id="dash-exp-num"
-                  class="text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
                 >
                   0 ₫
                 </h3>
@@ -1211,19 +1238,19 @@
                   <i class="fa-solid fa-caret-down"></i> 0% so với kỳ trước
                 </p>
               </div>
-              <div class="absolute bottom-0 left-0 right-0 h-14 opacity-50 pointer-events-none">
+              <div class="dash-sparkline-wrap">
                 <canvas id="spark-exp"></canvas>
               </div>
             </div>
 
             <!-- Thẻ 3: Số dư ròng -->
-            <div class="metric-glass-card p-4 sm:p-5 flex flex-col justify-between h-36">
+            <div class="dash-kpi-card dash-kpi-balance p-4 sm:p-5 flex flex-col justify-between h-36">
               <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-sm shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-xs shadow-sm">
                     <i class="fa-solid fa-scale-balanced"></i>
                   </div>
-                  <p class="text-xs font-bold text-sky-400 uppercase tracking-wider">
+                  <p class="text-xs font-extrabold text-sky-400 uppercase tracking-wider">
                     Số dư ròng
                   </p>
                 </div>
@@ -1234,7 +1261,7 @@
               <div class="z-10 my-1">
                 <h3
                   id="dash-bal-num"
-                  class="text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
                 >
                   0 ₫
                 </h3>
@@ -1245,28 +1272,28 @@
                   <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
                 </p>
               </div>
-              <div class="absolute bottom-0 left-0 right-0 h-14 opacity-50 pointer-events-none">
+              <div class="dash-sparkline-wrap">
                 <canvas id="spark-bal"></canvas>
               </div>
             </div>
 
-            <!-- Thẻ 4: Giao dịch & Tần suất -->
-            <div class="metric-glass-card p-4 sm:p-5 flex flex-col justify-between h-36">
+            <!-- Thẻ 4: Giao dịch & Nhịp độ -->
+            <div class="dash-kpi-card dash-kpi-tx p-4 sm:p-5 flex flex-col justify-between h-36">
               <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-sm shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xs shadow-sm">
                     <i class="fa-solid fa-bolt-lightning"></i>
                   </div>
-                  <p class="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                  <p class="text-xs font-extrabold text-purple-400 uppercase tracking-wider">
                     Giao dịch
                   </p>
                 </div>
-                <i class="fa-solid fa-chart-column text-gray-400 text-xs"></i>
+                <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
               </div>
               <div class="z-10 my-1">
                 <h3
                   id="dash-tx-num"
-                  class="text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
                 >
                   0
                 </h3>
@@ -1279,7 +1306,7 @@
               </div>
               <div
                 id="dash-bar-mini"
-                class="absolute bottom-2 left-4 right-4 flex items-end justify-between h-9 opacity-50 z-0 gap-1 pointer-events-none"
+                class="absolute bottom-2 left-4 right-4 flex items-end justify-between h-9 opacity-60 z-0 gap-1 pointer-events-none"
               >
                 <!-- Render bằng JS -->
               </div>
@@ -1289,23 +1316,25 @@
           <!-- ========================================================
                3. BENTO GRID: PHÂN TÍCH CHUYÊN SÂU & THÔNG MINH
                ======================================================== -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             <!-- MAIN CHART SUITE (Span 8 trên Desktop) -->
-            <div class="lg:col-span-8 custom-bg-card p-6 sm:p-7 rounded-3xl custom-border border flex flex-col justify-between">
+            <div class="lg:col-span-8 dash-bento-card p-6 sm:p-7 flex flex-col justify-between">
               <!-- Chart Header -->
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                 <div>
-                  <h3 class="text-lg font-black custom-text flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie custom-icon-active"></i>
+                  <h3 class="text-lg font-black custom-text flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+                      <i class="fa-solid fa-chart-pie"></i>
+                    </div>
                     Cơ cấu Chi Tiêu theo Danh Mục
                   </h3>
-                  <p class="text-xs custom-text-secondary mt-0.5">Trực quan hoá tỷ trọng tiêu dùng theo từng phân loại</p>
+                  <p class="text-xs custom-text-secondary mt-1">Trực quan hoá tỷ trọng tiêu dùng theo từng phân loại</p>
                 </div>
 
                 <!-- Controls: Date Picker & Chart Types -->
                 <div class="flex flex-wrap items-center gap-2">
                   <!-- Date Picker Pill -->
-                  <div class="relative custom-bg-input px-3 py-1.5 rounded-xl border custom-border flex items-center gap-2">
+                  <div class="relative custom-bg-input px-3 py-1.5 rounded-xl border custom-border flex items-center gap-2 shadow-sm">
                     <i class="fa-solid fa-calendar-day text-xs custom-icon-active pointer-events-none"></i>
                     <input
                       type="date"
@@ -1315,8 +1344,8 @@
                     />
                   </div>
 
-                  <!-- Chart Type Switcher -->
-                  <div class="flex custom-bg-input p-1 rounded-xl gap-1 border custom-border">
+                  <!-- Chart Type Switcher Capsule -->
+                  <div class="flex custom-bg-input p-1 rounded-xl gap-1 border custom-border shadow-sm">
                     <button
                       onclick="setChartType('doughnut')"
                       id="btn-chart-doughnut"
@@ -1370,32 +1399,32 @@
               </div>
 
               <!-- Time Granularity Filter Bar -->
-              <div class="flex items-center w-full custom-bg-input p-1 rounded-xl mb-4 border custom-border">
+              <div class="flex items-center w-full custom-bg-input p-1 rounded-xl mb-4 border custom-border shadow-sm">
                 <button
                   onclick="setDashTime('day')"
                   id="btn-time-day"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-colors"
+                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
                 >
                   Ngày
                 </button>
                 <button
                   onclick="setDashTime('week')"
                   id="btn-time-week"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-colors"
+                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
                 >
                   Tuần
                 </button>
                 <button
                   onclick="setDashTime('month')"
                   id="btn-time-month"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-colors"
+                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
                 >
                   Tháng
                 </button>
                 <button
                   onclick="setDashTime('year')"
                   id="btn-time-year"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-colors"
+                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
                 >
                   Năm
                 </button>
@@ -1408,18 +1437,19 @@
             </div>
 
             <!-- RIGHT COMPANION BENTO (Span 4 trên Desktop) -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
-              <!-- Spatial Mini Map Card -->
+            <div class="lg:col-span-4 flex flex-col gap-5 sm:gap-6">
+              <!-- Spatial Mini Radar Map Card -->
               <div
-                class="relative w-full h-52 rounded-3xl overflow-hidden border custom-border custom-bg-card shadow-sm group cursor-pointer"
+                class="dash-radar-card relative w-full h-52 overflow-hidden shadow-sm group cursor-pointer"
                 onclick="switchView('map')"
                 title="Nhấn để mở bản đồ định vị chi tiêu toàn màn hình"
               >
                 <div id="dash-mini-map" class="absolute inset-0 z-0 pointer-events-none"></div>
                 <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-10 pointer-events-none"></div>
-                <div class="absolute top-3 right-3 z-20">
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-sky-400 border border-sky-400/30 flex items-center gap-1 shadow-sm">
-                    <i class="fa-solid fa-location-crosshairs text-[10px] animate-pulse"></i>
+                <div class="absolute top-3.5 right-3.5 z-20">
+                  <span class="px-3 py-1 rounded-full text-[10px] font-black bg-black/70 backdrop-blur-md text-sky-400 border border-sky-400/40 flex items-center gap-1.5 shadow-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping"></span>
+                    <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
                     GPS Tracking
                   </span>
                 </div>
@@ -1439,16 +1469,18 @@
                 </div>
               </div>
 
-              <!-- AI Smart Alerts & Widgets -->
-              <div class="custom-bg-card p-5 rounded-3xl border custom-border flex flex-col justify-between flex-1">
-                <div class="flex items-center justify-between mb-3">
+              <!-- FinAI Smart Companion Card -->
+              <div class="dash-bento-card p-5 flex flex-col justify-between flex-1">
+                <div class="flex items-center justify-between mb-3.5">
                   <h4 class="font-black text-sm custom-text flex items-center gap-2">
-                    <i class="fa-solid fa-microchip-ai text-amber-400"></i>
-                    Trợ lý Tài chính AI
+                    <div class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-microchip-ai"></i>
+                    </div>
+                    Trợ lý FinAI
                   </h4>
-                  <span class="text-[10px] font-bold custom-bg-primary-soft custom-icon-active px-2 py-0.5 rounded-md">Smart Insights</span>
+                  <span class="text-[10px] font-extrabold custom-bg-primary-soft custom-icon-active px-2.5 py-0.5 rounded-full border custom-border">Smart Insights</span>
                 </div>
-                <div id="dash-smart-alerts" class="flex flex-nowrap overflow-x-auto gap-3 pb-2 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
+                <div id="dash-smart-alerts" class="flex flex-nowrap overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
                   <!-- JS sẽ bơm các widget vuông thông minh vào đây -->
                 </div>
               </div>
@@ -1458,36 +1490,42 @@
           <!-- ========================================================
                4. TOP DANH MỤC & TOP ĐỊA ĐIỂM CHI TIÊU
                ======================================================== -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
             <!-- Top Danh Mục -->
-            <div class="custom-bg-card rounded-3xl p-6 border custom-border flex flex-col">
+            <div class="dash-bento-card rounded-3xl p-6 flex flex-col">
               <div class="flex justify-between items-center mb-5">
-                <h4 class="font-black text-sm custom-text flex items-center gap-2">
-                  <i class="fa-solid fa-ranking-star custom-icon-active"></i>
+                <h4 class="font-black text-sm custom-text flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+                    <i class="fa-solid fa-ranking-star"></i>
+                  </div>
                   Top Danh Mục Tiêu Dùng
                 </h4>
                 <button
                   onclick="openAnalytics()"
-                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3 py-1.5 rounded-xl border custom-border hover:brightness-110 transition-all"
+                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3.5 py-1.5 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
                 >
-                  Xem phân tích &rarr;
+                  <span>Xem phân tích</span>
+                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
               </div>
-              <div id="dash-top-categories" class="flex-1 space-y-4"></div>
+              <div id="dash-top-categories" class="flex-1 space-y-3.5"></div>
             </div>
 
             <!-- Top Địa Điểm -->
-            <div class="custom-bg-card rounded-3xl p-6 border custom-border flex flex-col">
+            <div class="dash-bento-card rounded-3xl p-6 flex flex-col">
               <div class="flex justify-between items-center mb-5">
-                <h4 class="font-black text-sm custom-text flex items-center gap-2">
-                  <i class="fa-solid fa-shop custom-icon-active"></i>
+                <h4 class="font-black text-sm custom-text flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+                    <i class="fa-solid fa-shop"></i>
+                  </div>
                   Top Địa Điểm / Quán Xá
                 </h4>
                 <button
                   onclick="openLocAnalytics()"
-                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3 py-1.5 rounded-xl border custom-border hover:brightness-110 transition-all"
+                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3.5 py-1.5 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
                 >
-                  Xem địa điểm &rarr;
+                  <span>Xem địa điểm</span>
+                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
               </div>
               <div id="dash-top-locations" class="flex-1 space-y-3"></div>
@@ -1497,35 +1535,37 @@
           <!-- ========================================================
                5. BIỂU ĐỒ XU HƯỚNG THU CHI & GIAO DỊCH GẦN ĐÂY
                ======================================================== -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             <!-- Trend Line Chart (Span 7) -->
-            <div class="lg:col-span-7 custom-bg-card rounded-3xl p-6 border custom-border flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-4">
+            <div class="lg:col-span-7 dash-bento-card rounded-3xl p-6 flex flex-col justify-between">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
-                  <h4 class="font-black text-base custom-text flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-trend-up text-emerald-400"></i>
+                  <h4 class="font-black text-base custom-text flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs shadow-sm">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
                     Quỹ Đạo Thu & Chi Theo Thời Gian
                   </h4>
-                  <p class="text-xs custom-text-secondary mt-0.5">Biểu đồ đường trực quan hoá nhịp độ dòng tiền</p>
+                  <p class="text-xs custom-text-secondary mt-1">Biểu đồ trực quan hoá nhịp độ và xu hướng dòng tiền</p>
                 </div>
                 <select
                   id="dash-trend-time"
                   onchange="renderDashboard()"
-                  class="text-xs font-bold custom-text-secondary custom-bg-input px-3 py-1.5 rounded-xl border custom-border outline-none cursor-pointer hover:brightness-105 transition-all"
+                  class="text-xs font-bold custom-text-secondary custom-bg-input px-3.5 py-2 rounded-xl border custom-border outline-none cursor-pointer hover:brightness-105 transition-all shadow-sm"
                 >
                   <option value="month">Theo ngày (Tháng này)</option>
                   <option value="year">Theo tháng (Năm này)</option>
                 </select>
               </div>
 
-              <!-- Chú thích Legend -->
-              <div class="flex gap-5 mb-3 pl-1">
-                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2">
-                  <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm border border-emerald-500/50"></div>
+              <!-- Chú thích Legend Capsule -->
+              <div class="flex gap-4 mb-3.5 pl-1">
+                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
                   Thu nhập
                 </span>
-                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2">
-                  <div class="w-3 h-3 rounded-full bg-rose-500 shadow-sm border border-rose-500/50"></div>
+                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></span>
                   Chi tiêu
                 </span>
               </div>
@@ -1537,27 +1577,30 @@
 
               <button
                 onclick="openTrendAnalytics()"
-                class="mt-4 w-full py-3 custom-bg-input rounded-xl text-xs font-bold custom-text transition-all border custom-border hover:brightness-110 active:scale-[0.98]"
+                class="mt-4 w-full py-3 custom-bg-input rounded-xl text-xs font-bold custom-text transition-all border custom-border hover:brightness-110 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2"
               >
-                Mở báo cáo xu hướng toàn diện &rarr;
+                <span>Mở báo cáo xu hướng toàn diện</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
               </button>
             </div>
 
             <!-- Recent Transactions Stream (Span 5) -->
-            <div class="lg:col-span-5 custom-bg-card p-6 rounded-3xl border custom-border flex flex-col">
+            <div class="lg:col-span-5 dash-bento-card p-6 rounded-3xl flex flex-col">
               <div class="flex justify-between items-center mb-5">
                 <div>
-                  <h3 class="font-black text-base custom-text flex items-center gap-2">
-                    <i class="fa-solid fa-receipt custom-icon-active"></i>
+                  <h3 class="font-black text-base custom-text flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+                      <i class="fa-solid fa-receipt"></i>
+                    </div>
                     Giao Dịch Gần Đây
                   </h3>
-                  <p class="text-xs custom-text-secondary mt-0.5">Các khoản phát sinh mới nhất</p>
+                  <p class="text-xs custom-text-secondary mt-1">Các khoản thu chi phát sinh mới nhất</p>
                 </div>
                 <button
                   onclick="switchView('transactions')"
-                  class="text-xs font-bold custom-icon-active hover:underline flex items-center gap-1"
+                  class="text-xs font-bold custom-icon-active hover:underline flex items-center gap-1.5"
                 >
-                  Xem tất cả
+                  <span>Xem tất cả</span>
                   <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </button>
               </div>
@@ -1843,18 +1886,10 @@
           <header
             class="absolute top-3 inset-x-3 sm:top-4 sm:inset-x-4 z-30 flex flex-col gap-2.5 pointer-events-none"
           >
-            <!-- Top Bar: Nav Back + Title & Live Badge + Quick Search Toggle + Layer Menu Toggle -->
+            <!-- Top Bar: Title & Live Badge + Quick Search Toggle + Layer Menu Toggle -->
             <div
               class="map-hero-bar pointer-events-auto flex items-center justify-between gap-2.5 p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl custom-shadow-lg"
             >
-              <!-- Back to Dashboard / Previous View Button -->
-              <button
-                onclick="switchView('dashboard')"
-                class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl custom-bg-card flex items-center justify-center custom-text custom-border hover:scale-105 active:scale-95 transition-all shrink-0"
-                title="Quay lại Tổng quan"
-              >
-                <i class="fa-solid fa-arrow-left text-sm sm:text-base"></i>
-              </button>
 
               <!-- Center Title + Live Summary Pill -->
               <div
@@ -3535,6 +3570,14 @@
                 </div>
                 <span class="text-[11px] font-bold custom-text-secondary group-hover:custom-text">Âm thanh</span>
               </button>
+
+              <!-- Bàn Phím FinMaster Pro (Mới) -->
+              <button onclick="openSettingsDetail('keyboard')" class="settings-app-tile flex flex-col items-center gap-2 group outline-none" title="Bàn phím ảo FinMaster Pro">
+                <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 text-white flex items-center justify-center text-xl shadow-lg shadow-purple-500/25 border border-white/20">
+                  <i class="fa-solid fa-keyboard"></i>
+                </div>
+                <span class="text-[11px] font-bold custom-text-secondary group-hover:custom-text">Bàn phím</span>
+              </button>
             </div>
 
             <!-- Nơi chứa input chọn ảnh nền (Ẩn) -->
@@ -3828,56 +3871,48 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VIEW: TRỢ LÝ CỐ VẤN AI (MỚI) -->
-        <!-- ========================================== -->
-        <div id="view-ai-advisor" class="view-section space-y-4 sm:space-y-5 max-w-5xl mx-auto pt-1 px-2.5 sm:px-4 pb-32 font-sans"></div>
-
-        <!-- ========================================== -->
-        <!-- VIEW: ĐẦU TƯ & TÍCH SẢN (MỚI) -->
-        <!-- ========================================== -->
-        <div id="view-invest" class="view-section space-y-4 sm:space-y-5 max-w-5xl mx-auto pt-1 px-2.5 sm:px-4 pb-32 font-sans"></div>
-
-        <!-- ========================================== -->
         <!-- VIEW: BÁO CÁO WRAPPED E-STATEMENT (MỚI) -->
         <!-- ========================================== -->
         <div id="view-report" class="view-section space-y-4 sm:space-y-5 max-w-5xl mx-auto pt-1 px-2.5 sm:px-4 pb-32 font-sans"></div>
       </div>
     </main>
 
+    <!-- ============================================================== -->
+    <!-- FINMASTER LIQUID-GLASS MOBILE FLOATING DOCK BAR -->
+    <!-- ============================================================== -->
     <div
       id="mobile-bottom-bar"
-      class="md:hidden fixed bottom-5 left-3 right-3 z-40 flex items-center gap-2 transition-transform duration-300"
+      class="md:hidden fixed bottom-4 left-3 right-3 z-40 flex items-center gap-2 transition-transform duration-300"
     >
+      <!-- Scrollable Pill Bar chứa toàn bộ phân hệ bật trong cài đặt -->
       <nav
-        class="flex-1 custom-bg-navbar rounded-2xl custom-shadow border custom-border flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+        class="flex-1 rounded-full backdrop-blur-2xl border flex items-center h-14 px-2 overflow-x-auto whitespace-nowrap scrollbar-none shadow-2xl transition-all duration-200"
         id="mobile-nav-pill"
+        style="background: color-mix(in srgb, var(--bg-navbar, #0f172a) 88%, transparent); border-color: color-mix(in srgb, var(--border-color, #334155) 45%, transparent); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);"
       ></nav>
 
-      <!-- Mobile Quick Theme Switcher Button -->
-      <button
-        onclick="toggleThemeModal()"
-        class="w-12 h-12 custom-bg-navbar rounded-2xl custom-shadow border custom-border flex items-center justify-center shrink-0 active:scale-95 transition-all text-base"
-        title="Đổi màu chủ đề (15 màu)"
-      >
-        <i class="fa-solid fa-palette custom-icon-active"></i>
-      </button>
-
+      <!-- Center Floating Action Button (FAB) -->
       <button
         id="fab-mobile"
         onclick="handleFabClick()"
-        class="w-12 h-12 custom-primary rounded-2xl custom-shadow-lg flex items-center justify-center text-xl shrink-0 active:scale-95 transition-transform"
+        class="rounded-full flex items-center justify-center text-xl shrink-0 active:scale-90 transition-all duration-200 shadow-xl"
+        title="Thêm giao dịch mới"
+        style="width: 52px; height: 52px; background: linear-gradient(135deg, var(--icon-active, #3b82f6), color-mix(in srgb, var(--icon-active, #3b82f6) 70%, #000)); color: #fff; box-shadow: 0 8px 24px var(--theme-glow, rgba(59,130,246,0.5)); border: 1.5px solid color-mix(in srgb, var(--icon-active, #3b82f6) 60%, #fff);"
       >
-        <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-plus text-lg"></i>
       </button>
 
+      <!-- Quick Settings / Avatar -->
       <button
         onclick="switchView('settings')"
-        class="w-12 h-12 custom-bg-navbar rounded-2xl custom-shadow border custom-border flex items-center justify-center shrink-0 p-1 active:scale-95 transition-all"
+        class="rounded-full flex items-center justify-center shrink-0 p-1 active:scale-90 transition-all duration-200 backdrop-blur-2xl border shadow-xl"
+        title="Cài đặt hệ thống"
+        style="width: 52px; height: 52px; background: color-mix(in srgb, var(--bg-navbar, #0f172a) 88%, transparent); border-color: color-mix(in srgb, var(--border-color, #334155) 45%, transparent); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);"
       >
         <img
           id="nav-avatar"
           src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff"
-          class="w-full h-full rounded-xl object-cover border-2 border-transparent active:border-primary-500 transition-all"
+          class="w-full h-full rounded-full object-cover border-2 border-transparent transition-all"
           alt="Cài đặt"
         />
       </button>
@@ -4259,62 +4294,9 @@
       }
 
       function initSwipeActions() {
-        const swipeItems = document.querySelectorAll(".swipe-item");
-        swipeItems.forEach((item) => {
-          const content = item.querySelector(".swipe-content");
-          // Bắt theo flex shrink-0 để không bị phụ thuộc vào class cố định
-          const actionsBox =
-            item.querySelector(".shrink-0.snap-end") ||
-            item.querySelector(".absolute.inset-y-0.right-0");
-          if (!content || !actionsBox) return;
-
-          let startX = 0,
-            currentX = 0,
-            isDragging = false;
-
-          item.addEventListener(
-            "touchstart",
-            (e) => {
-              startX = e.touches[0].clientX;
-              isDragging = true;
-              content.classList.remove("transition-transform", "duration-200");
-            },
-            { passive: true },
-          );
-
-          item.addEventListener(
-            "touchmove",
-            (e) => {
-              if (!isDragging) return;
-              currentX = e.touches[0].clientX;
-              let diffX = currentX - startX;
-              const maxOpen = -(actionsBox.offsetWidth + 10);
-
-              if (diffX < 0) {
-                content.style.transform = `translateX(${Math.max(diffX, maxOpen - 20)}px)`;
-              } else {
-                content.style.transform = `translateX(0px)`;
-              }
-            },
-            { passive: true },
-          );
-
-          item.addEventListener("touchend", () => {
-            if (!isDragging) return;
-            isDragging = false;
-            content.classList.add("transition-transform", "duration-200");
-
-            let diffX = currentX - startX;
-            const maxOpen = -(actionsBox.offsetWidth + 10);
-            const threshold = maxOpen / 2;
-
-            if (diffX < threshold) {
-              content.style.transform = `translateX(${maxOpen}px)`;
-            } else {
-              content.style.transform = `translateX(0px)`;
-            }
-          });
-        });
+        if (typeof window.initSwipeActions === "function" && window.initSwipeActions !== initSwipeActions) {
+          window.initSwipeActions();
+        }
       }
 
       function getSelectedMonth() {
@@ -4796,8 +4778,6 @@
       const NAV_ITEMS = [
         { id: "dashboard", icon: "fa-chart-pie", label: "Tổng quan" },
         { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
-        { id: "ai-advisor", icon: "fa-wand-magic-sparkles", label: "Trợ lý AI" },
-        { id: "invest", icon: "fa-gem", label: "Đầu tư & Tích sản" },
         { id: "report", icon: "fa-file-invoice", label: "Báo cáo Wrapped" },
         { id: "calendar", icon: "fa-calendar-days", label: "Lịch trình" },
         { id: "work", icon: "fa-building", label: "Công sở & Lương" },
@@ -4806,16 +4786,11 @@
         { id: "grab", icon: "fa-motorcycle", label: "Tài xế Grab" },
         { id: "favorites", icon: "fa-heart", label: "Quán ruột" },
         { id: "diary", icon: "fa-book-open", label: "Nhật ký" },
-        {
-          id: "budgets",
-          icon: "fa-bullseye",
-          label: "Ngân sách",
-          desktopOnly: true,
-        },
+        { id: "budgets", icon: "fa-bullseye", label: "Ngân sách" },
         { id: "running", icon: "fa-person-running", label: "Chạy bộ" },
         { id: "goals", icon: "fa-flag-checkered", label: "Mục tiêu" },
         { id: "tasks", icon: "fa-clipboard-list", label: "Công việc" },
-        { id: "wallets", icon: "fa-wallet", label: "Ví", desktopOnly: true },
+        { id: "wallets", icon: "fa-wallet", label: "Ví & Thẻ" },
         { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
         { id: "trips", icon: "fa-plane-departure", label: "Chuyến đi" },
         { id: "gallery", icon: "fa-images", label: "Thư viện ảnh" },
@@ -4823,7 +4798,6 @@
       ];
 
       function renderNav() {
-        // 1. Phân loại: 3 Thằng này là MẶC ĐỊNH SỐNG CÒN (Luôn luôn hiện)
         const coreModules = [
           "dashboard",
           "transactions",
@@ -4837,56 +4811,57 @@
           return state.moduleSettings[item.id] !== false; // Nếu công tắc đang Bật thì cho hiện
         });
 
-        document.getElementById("desktop-nav").innerHTML = filteredNavItems
-          .map((item) => {
-            const isActive = state.currentView === item.id;
-            return `
-            <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" 
-              class="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 text-left group ${
-                isActive
-                  ? "font-bold translate-x-1"
-                  : "custom-text-secondary hover:text-white hover:bg-white/5 hover:translate-x-1 font-medium"
-              }"
-              style="${
-                isActive
-                  ? "background: var(--bg-primary-soft); color: var(--icon-active); border: 1px solid color-mix(in srgb, var(--icon-active) 35%, transparent); box-shadow: 0 0 16px var(--theme-glow);"
-                  : ""
-              }">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+        const desktopNav = document.getElementById("desktop-nav");
+        if (desktopNav) {
+          desktopNav.innerHTML = filteredNavItems
+            .map((item) => {
+              const isActive = state.currentView === item.id;
+              return `
+              <button onclick="switchView('${item.id}')" id="nav-desk-${item.id}" 
+                class="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 text-left group ${
+                  isActive
+                    ? "font-bold translate-x-1"
+                    : "custom-text-secondary hover:text-white hover:bg-white/5 hover:translate-x-1 font-medium"
+                }"
                 style="${
                   isActive
-                    ? "background: color-mix(in srgb, var(--icon-active) 20%, transparent); color: var(--icon-active);"
-                    : "color: var(--icon-color);"
+                    ? "background: var(--bg-primary-soft); color: var(--icon-active); border: 1px solid color-mix(in srgb, var(--icon-active) 35%, transparent); box-shadow: 0 0 16px var(--theme-glow);"
+                    : ""
                 }">
-                <i class="fa-solid ${item.icon} text-sm"></i>
-              </div>
-              <span class="text-[14px] tracking-wide">${item.label}</span>
-            </button>
-          `;
-          })
-          .join("");
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+                  style="${
+                    isActive
+                      ? "background: color-mix(in srgb, var(--icon-active) 20%, transparent); color: var(--icon-active);"
+                      : "color: var(--icon-color);"
+                  }">
+                  <i class="fa-solid ${item.icon} text-sm"></i>
+                </div>
+                <span class="text-[14px] tracking-wide">${item.label}</span>
+              </button>
+            `;
+            })
+            .join("");
+        }
 
         const pillItems = [
-          { id: "dashboard", icon: "fa-gauge-high" },
-          { id: "transactions", icon: "fa-receipt" },
-          { id: "ai-advisor", icon: "fa-wand-magic-sparkles" },
-          { id: "invest", icon: "fa-gem" },
-          { id: "report", icon: "fa-file-invoice" },
-          { id: "calendar", icon: "fa-calendar-days" },
-          { id: "work", icon: "fa-briefcase" },
-          { id: "map", icon: "fa-map-location-dot" },
-          { id: "custommaps", icon: "fa-map-pin" },
-          { id: "grab", icon: "fa-motorcycle" },
-          { id: "diary", icon: "fa-book-open" },
-          { id: "favorites", icon: "fa-heart" },
-          { id: "budgets", icon: "fa-money-bill-wave" },
-          { id: "running", icon: "fa-person-running" },
-          { id: "debts", icon: "fa-hand-holding-dollar" },
-          { id: "tasks", icon: "fa-clipboard-check" },
-          { id: "goals", icon: "fa-bullseye" },
-          { id: "trips", icon: "fa-plane-departure" },
-          { id: "gallery", icon: "fa-images" },
-          { id: "wallets", icon: "fa-wallet" },
+          { id: "dashboard", icon: "fa-chart-pie", label: "Tổng quan" },
+          { id: "transactions", icon: "fa-receipt", label: "Giao dịch" },
+          { id: "report", icon: "fa-file-invoice", label: "Báo cáo" },
+          { id: "calendar", icon: "fa-calendar-days", label: "Lịch trình" },
+          { id: "work", icon: "fa-briefcase", label: "Công sở" },
+          { id: "map", icon: "fa-map-location-dot", label: "Bản đồ" },
+          { id: "custommaps", icon: "fa-map-pin", label: "Bản đồ riêng" },
+          { id: "grab", icon: "fa-motorcycle", label: "Tài xế Grab" },
+          { id: "diary", icon: "fa-book-open", label: "Nhật ký" },
+          { id: "favorites", icon: "fa-heart", label: "Quán ruột" },
+          { id: "budgets", icon: "fa-wallet", label: "Ngân sách" },
+          { id: "running", icon: "fa-person-running", label: "Chạy bộ" },
+          { id: "debts", icon: "fa-hand-holding-dollar", label: "Nợ & Vay" },
+          { id: "tasks", icon: "fa-clipboard-check", label: "Công việc" },
+          { id: "goals", icon: "fa-flag-checkered", label: "Mục tiêu" },
+          { id: "trips", icon: "fa-plane-departure", label: "Chuyến đi" },
+          { id: "gallery", icon: "fa-images", label: "Ảnh" },
+          { id: "wallets", icon: "fa-wallet", label: "Ví & Thẻ" },
         ];
 
         // Lọc Menu Mobile dưới đáy
@@ -4901,18 +4876,30 @@
           const onClickAction =
             item.id === "diary" ? "openDiary()" : `switchView('${item.id}')`;
           pillHtml += `
-            <button onclick="${onClickAction}" class="mobile-nav-item flex-none w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 active:scale-90"
+            <button onclick="${onClickAction}" id="mobile-nav-${item.id}" class="mobile-nav-item flex-none w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 active:scale-90 relative ${
+              isActive ? "font-bold scale-105" : "opacity-80 hover:opacity-100"
+            }"
+              title="${item.label}"
               style="${
                 isActive
-                  ? "background: var(--bg-primary-soft); color: var(--icon-active); border: 1px solid color-mix(in srgb, var(--icon-active) 40%, transparent); box-shadow: 0 0 14px var(--theme-glow); transform: scale(1.08);"
-                  : "color: var(--icon-color);"
+                  ? "background: var(--bg-primary-soft); color: var(--icon-active); border: 1px solid color-mix(in srgb, var(--icon-active) 40%, transparent); box-shadow: 0 0 14px var(--theme-glow);"
+                  : "color: var(--icon-color); background: transparent;"
               }">
-              <i class="fa-solid ${item.icon} text-[17px]"></i>
+              <i class="fa-solid ${item.icon} text-[16px]"></i>
+              ${isActive ? '<span class="absolute bottom-1 w-1.5 h-1.5 rounded-full" style="background: var(--icon-active);"></span>' : ''}
             </button>`;
         });
 
         const navPill = document.getElementById("mobile-nav-pill");
-        if (navPill) navPill.innerHTML = pillHtml;
+        if (navPill) {
+          navPill.innerHTML = pillHtml;
+          const activeBtn = navPill.querySelector(".mobile-nav-item.scale-105");
+          if (activeBtn) {
+            setTimeout(() => {
+              activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }, 60);
+          }
+        }
       }
 
       function switchView(viewId) {
@@ -4920,6 +4907,19 @@
           if (typeof openDiary === "function") window.openDiary();
           return;
         }
+
+        // Bơm giao diện động trước khi switch nếu chưa có trong DOM
+        if (viewId === "work" && typeof injectWorkUI === "function") {
+          injectWorkUI();
+          if (typeof initWorkData === "function") initWorkData();
+        }
+        if (viewId === "gallery" && typeof injectGalleryUI === "function") {
+          injectGalleryUI();
+        }
+        if (viewId === "transactions" && typeof injectTransactionsUI === "function") {
+          injectTransactionsUI();
+        }
+
         state.currentView = viewId;
 
         // Ẩn/Hiện nút cộng FAB
@@ -4933,7 +4933,8 @@
           viewId === "grab" ||
           viewId === "custommaps" ||
           viewId === "work" ||
-          viewId === "diary"
+          viewId === "diary" ||
+          viewId === "gallery"
         ) {
           fabMobile?.classList.add("hidden");
           fabDesktop?.classList.add("hidden");
@@ -4943,14 +4944,15 @@
         }
 
         const targetNav = NAV_ITEMS.find((i) => i.id === viewId);
-        document.getElementById("header-title").innerText =
-          targetNav?.label || "FinMaster";
+        const headerTitle = document.getElementById("header-title");
+        if (headerTitle) {
+          headerTitle.innerText = targetNav?.label || "FinMaster";
+        }
 
-        // --- LOGIC ẨN/HIỆN HEADER TẠI ĐÂY ---
+        // --- LOGIC ẨN/HIỆN HEADER ---
         const header = document.getElementById("main-header");
         const spacer = document.getElementById("header-spacer");
 
-        // Khai báo các view muốn ẩn header
         const noHeaderViews = [
           "map",
           "budgets",
@@ -4963,49 +4965,67 @@
           "ai-advisor",
           "invest",
           "report",
+          "work",
+          "gallery",
+          "custommaps",
         ];
 
-        if (noHeaderViews.includes(viewId)) {
-          // Ẩn hoàn toàn trên cả Desktop và Mobile
-          header.classList.add("hidden");
-          header.classList.remove("md:flex", "flex");
-          if (spacer) {
-            spacer.classList.add("hidden");
-            spacer.classList.remove("md:block", "block");
-          }
-        } else {
-          // Ở tab Tổng quan, Giao dịch: Hiện trên Desktop (md:flex), nhưng VẪN ẨN trên Mobile (hidden)
-          header.classList.add("hidden", "md:flex");
-          header.classList.remove("flex"); // Phải xóa chữ flex trơn đi thì mobile mới ẩn được
-
-          if (spacer) {
-            spacer.classList.add("hidden", "md:block");
-            spacer.classList.remove("block");
+        if (header) {
+          if (noHeaderViews.includes(viewId)) {
+            header.classList.add("hidden");
+            header.classList.remove("md:flex", "flex");
+            if (spacer) {
+              spacer.classList.add("hidden");
+              spacer.classList.remove("md:block", "block");
+            }
+          } else {
+            header.classList.add("hidden", "md:flex");
+            header.classList.remove("flex");
+            if (spacer) {
+              spacer.classList.add("hidden", "md:block");
+              spacer.classList.remove("block");
+            }
           }
         }
-        // -----------------------------------
 
-        document
-          .querySelectorAll(".view-section")
-          .forEach((el) => el.classList.remove("active"));
-        document.getElementById(`view-${viewId}`).classList.add("active");
-        document.getElementById("main-scroll-area").scrollTo(0, 0);
+        // Ẩn toàn bộ view-section một cách an toàn
+        document.querySelectorAll(".view-section").forEach((el) => {
+          el.classList.remove("active");
+          el.style.display = "none";
+        });
+
+        const targetView = document.getElementById(`view-${viewId}`);
+        if (targetView) {
+          targetView.classList.remove("hidden");
+          targetView.classList.add("active");
+          targetView.style.display = "block";
+        }
+
+        const scrollArea = document.getElementById("main-scroll-area");
+        if (scrollArea) scrollArea.scrollTo(0, 0);
+
         renderNav();
 
-        if (viewId === "dashboard") renderDashboard();
-        if (viewId === "debts") renderDebts();
-        if (viewId === "calendar") renderCalendar();
-        if (viewId === "transactions") renderTransactions();
-        if (viewId === "map") initMap();
-        if (viewId === "grab") renderGrab();
-        if (viewId === "budgets") renderBudgets();
-        if (viewId === "running") renderRunningDashboard();
-        if (viewId === "goals") renderGoals();
-        if (viewId === "tasks") renderTasks();
-        if (viewId === "trips") renderTrips();
-        if (viewId === "wallets") renderWallets();
-        if (viewId === "settings") renderSettings();
-        if (viewId === "favorites") renderFavorites();
+        // Kích hoạt renderer của từng view an toàn
+        if (viewId === "dashboard" && typeof renderDashboard === "function") renderDashboard();
+        if (viewId === "debts" && typeof renderDebts === "function") renderDebts();
+        if (viewId === "calendar" && typeof renderCalendar === "function") renderCalendar();
+        if (viewId === "transactions" && typeof renderTransactions === "function") renderTransactions();
+        if (viewId === "map" && typeof initMap === "function") initMap();
+        if (viewId === "grab" && typeof renderGrab === "function") renderGrab();
+        if (viewId === "budgets" && typeof renderBudgets === "function") renderBudgets();
+        if (viewId === "running" && typeof renderRunningDashboard === "function") renderRunningDashboard();
+        if (viewId === "goals" && typeof renderGoals === "function") renderGoals();
+        if (viewId === "tasks" && typeof renderTasks === "function") renderTasks();
+        if (viewId === "trips" && typeof renderTrips === "function") renderTrips();
+        if (viewId === "wallets" && typeof renderWallets === "function") renderWallets();
+        if (viewId === "settings" && typeof renderSettings === "function") renderSettings();
+        if (viewId === "favorites" && typeof renderFavorites === "function") renderFavorites();
+        if (viewId === "report" && typeof window.renderReport === "function") window.renderReport();
+        if (viewId === "work" && typeof window.renderWorkDashboard === "function") window.renderWorkDashboard();
+        if (viewId === "gallery" && typeof window.renderGalleryDashboard === "function") window.renderGalleryDashboard();
+        if (viewId === "custommaps" && typeof renderCustomMapsList === "function") renderCustomMapsList();
+
         updateGlobalHeader();
       }
 
@@ -6008,7 +6028,7 @@
 
         // Class CSS xài chung cho 3 cái thẻ vuông (Đã ép thành hình vuông với aspect-square)
         const squareClass =
-          "w-[140px] aspect-square shrink-0 snap-start rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden transition-transform active:scale-95 cursor-pointer hover:scale-[1.02]";
+          "w-[145px] aspect-square shrink-0 snap-start rounded-[1.75rem] p-4 flex flex-col items-center justify-center text-center shadow-md relative overflow-hidden transition-all duration-300 active:scale-95 cursor-pointer hover:scale-[1.03] backdrop-blur-xl border";
 
         // 1. CẢNH BÁO ĐỎ - NGHIỆN QUÁN RUỘT (Thẻ màu Hồng)
         if (state.favorites && state.favorites.length > 0) {
@@ -6027,14 +6047,14 @@
 
           if (favStatsDash.length > 0 && favStatsDash[0].totalSpent >= 500000) {
             alertsHtml += `
-                    <div class="${squareClass} bg-[#fff0f2] dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800" onclick="switchView('favorites')">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-rose-500/10 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
-                        <div class="w-12 h-12 rounded-full bg-[#ffccd5] dark:bg-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-300 text-xl shrink-0 border border-[#ffb3c1] dark:border-rose-700 shadow-inner mb-2">
+                    <div class="${squareClass} bg-gradient-to-br from-rose-500/15 via-rose-500/5 to-transparent border-rose-500/30 hover:border-rose-500/60 shadow-[0_8px_20px_rgba(244,63,94,0.15)]" onclick="switchView('favorites')">
+                        <div class="absolute -top-6 -right-6 w-20 h-20 bg-rose-500/15 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-xl shrink-0 border border-rose-500/30 shadow-inner mb-2.5">
                             <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
                         </div>
                         <div class="w-full">
-                            <p class="text-[10px] font-black text-[#d90429] dark:text-rose-400 truncate uppercase mb-0.5">${favStatsDash[0].name}</p>
-                            <p class="font-black text-rose-600 text-sm leading-tight">${formatMoney(favStatsDash[0].totalSpent)}</p>
+                            <p class="text-[10px] font-black text-rose-400 truncate uppercase tracking-wider mb-0.5">${favStatsDash[0].name}</p>
+                            <p class="font-black text-rose-500 text-sm leading-tight">${formatMoney(favStatsDash[0].totalSpent)}</p>
                         </div>
                     </div>`;
           }
@@ -6047,13 +6067,14 @@
         );
         if (urgentTasks.length > 0) {
           alertsHtml += `
-                <div class="${squareClass} bg-gradient-to-br from-[#f97316] to-[#f59e0b] shadow-md border border-orange-400" onclick="switchView('tasks')">
-                    <div class="absolute top-0 left-0 w-16 h-16 bg-white/10 rounded-br-full -ml-4 -mt-4 pointer-events-none"></div>
-                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white text-xl border border-white/30 shrink-0 shadow-inner mb-2">
+                <div class="${squareClass} bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-transparent border-amber-500/35 hover:border-amber-500/60 shadow-[0_8px_20px_rgba(245,158,11,0.15)]" onclick="switchView('tasks')">
+                    <div class="absolute -top-6 -left-6 w-20 h-20 bg-amber-500/15 rounded-full blur-xl pointer-events-none"></div>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xl shadow-md shrink-0 mb-2.5">
                         <i class="fa-solid fa-fire"></i>
                     </div>
-                    <div class="text-white w-full mt-1">
-                        <h4 class="font-black text-sm leading-tight drop-shadow-sm">${urgentTasks.length} việc<br>cần làm</h4>
+                    <div class="w-full">
+                        <p class="text-[10px] font-black text-amber-400 uppercase tracking-wider mb-0.5">Cần xử lý</p>
+                        <h4 class="font-black text-sm custom-text leading-tight">${urgentTasks.length} việc gấp</h4>
                     </div>
                 </div>`;
         }
@@ -6064,30 +6085,30 @@
           const pct = ((Math.abs(diff) / prevExp) * 100).toFixed(0);
           if (diff > 0) {
             alertsHtml += `
-                    <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border">
-                        <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center text-xl shrink-0 mb-2 border border-rose-100 dark:border-rose-800">
+                    <div class="${squareClass} bg-white/5 border custom-border hover:border-rose-500/40">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-xl shrink-0 mb-2.5 border border-rose-500/25">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </div>
-                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-0.5">Chi nhiều hơn</p>
-                        <p class="text-sm font-black text-rose-500">${pct}%</p>
+                        <p class="text-[10px] font-bold custom-text-secondary uppercase tracking-wider mb-0.5">Chi nhiều hơn</p>
+                        <p class="text-sm font-black text-rose-400">${pct}%</p>
                     </div>`;
           } else if (diff < 0) {
             alertsHtml += `
-                    <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border">
-                        <div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center text-xl shrink-0 mb-2 border border-emerald-100 dark:border-emerald-800">
+                    <div class="${squareClass} bg-white/5 border custom-border hover:border-emerald-500/40">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xl shrink-0 mb-2.5 border border-emerald-500/25">
                             <i class="fa-solid fa-arrow-trend-down"></i>
                         </div>
-                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-0.5">Tiết kiệm hơn</p>
-                        <p class="text-sm font-black text-emerald-500">${pct}%</p>
+                        <p class="text-[10px] font-bold custom-text-secondary uppercase tracking-wider mb-0.5">Tiết kiệm hơn</p>
+                        <p class="text-sm font-black text-emerald-400">${pct}%</p>
                     </div>`;
           }
         } else {
           alertsHtml += `
-                <div class="${squareClass} bg-white dark:bg-gray-800 border custom-border cursor-default hover:scale-100 active:scale-100">
-                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-400 flex items-center justify-center text-xl shrink-0 mb-2">
+                <div class="${squareClass} bg-white/5 border custom-border cursor-default">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 custom-text-secondary flex items-center justify-center text-xl shrink-0 mb-2.5 border border-white/10">
                         <i class="fa-solid fa-circle-info"></i>
                     </div>
-                    <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">Chưa có dữ liệu tháng trước</span>
+                    <span class="text-[10px] font-bold custom-text-secondary leading-snug line-clamp-2">Chưa có dữ liệu tháng trước</span>
                 </div>`;
         }
 
@@ -6491,23 +6512,23 @@
                   ) || { name: "Ví đã xóa", icon: "💳" };
 
                   return `
-                <div class="flex items-center justify-between group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
-                    <div class="flex items-center gap-4 min-w-0">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border">
-                            ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover  cursor-pointer" onclick="openImageModal(this.src)">` : `<span class="text-2xl">${cat.icon}</span>`}
+                <div class="dash-list-row flex items-center justify-between p-2.5 rounded-2xl group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
+                    <div class="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border group-hover:scale-105 transition-transform">
+                            ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span>${cat.icon}</span>`}
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 mb-0.5">
-                                <p class="font-bold custom-text dark:text-gray-100 truncate">${cat.name}</p>
-                                <span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 custom-text-secondary border custom-border">${wallet.icon} ${wallet.name}</span>
+                                <p class="font-black text-xs sm:text-sm custom-text truncate group-hover:text-primary-400 transition-colors">${cat.name}</p>
+                                <span class="shrink-0 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-white/5 border custom-border custom-text-secondary">${wallet.icon} ${wallet.name}</span>
                             </div>
-                            <p class="text-xs custom-text-secondary font-medium truncate mt-0.5">
+                            <p class="text-[11px] custom-text-secondary font-medium truncate">
                                 <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
                                 ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
                             </p>
                         </div>
                     </div>
-                    <span class="shrink-0 ml-2 font-black text-lg ${isInc ? "text-success-500" : "custom-text dark:text-gray-200"}">
+                    <span class="shrink-0 ml-2 font-black text-sm sm:text-base ${isInc ? "text-emerald-400" : "custom-text"}">
                         ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
                     </span>
                 </div>`;
@@ -6537,20 +6558,28 @@
           const pct = exp > 0 ? ((amt / exp) * 100).toFixed(0) : 0;
           const bColor = barColors[index % barColors.length];
 
+          const rankBadge = index === 0
+            ? '<span class="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40 font-black text-xs flex items-center justify-center shadow-sm">1</span>'
+            : index === 1
+            ? '<span class="w-6 h-6 rounded-lg bg-slate-300/20 text-slate-200 border border-slate-300/40 font-black text-xs flex items-center justify-center shadow-sm">2</span>'
+            : index === 2
+            ? '<span class="w-6 h-6 rounded-lg bg-orange-700/20 text-amber-500 border border-orange-600/40 font-black text-xs flex items-center justify-center shadow-sm">3</span>'
+            : `<span class="w-6 h-6 rounded-lg bg-white/5 text-gray-400 border border-white/10 font-bold text-xs flex items-center justify-center">${index + 1}</span>`;
+
           topCatHtml += `
-                <div class="flex items-center gap-4 mb-4">
-                    <span class="text-sm font-black text-amber-500 w-3 text-center">${index + 1}</span>
-                    <div class="w-10 h-10 rounded-xl custom-bg-input dark:bg-gray-700 flex items-center justify-center text-lg shadow-inner" style="color: ${bColor}">${cat.icon}</div>
+                <div class="dash-list-row flex items-center gap-3.5 mb-2.5 group">
+                    <div class="shrink-0">${rankBadge}</div>
+                    <div class="w-10 h-10 rounded-xl bg-white/5 border custom-border flex items-center justify-center text-lg shadow-sm shrink-0" style="color: ${bColor}">${cat.icon}</div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-sm font-bold custom-text truncate">${cat.name}</span>
-                            <span class="text-sm font-bold text-emerald-500 tracking-tight">${formatMoney(amt)}</span>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <span class="text-xs sm:text-sm font-black custom-text truncate group-hover:text-primary-400 transition-colors">${cat.name}</span>
+                            <span class="text-xs sm:text-sm font-black text-rose-400 tracking-tight">-${formatMoney(amt)}</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="h-1.5 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                <div class="h-full rounded-full" style="width: ${pct}%; background-color: ${bColor}"></div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="h-2 flex-1 bg-white/10 dark:bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                <div class="h-full rounded-full transition-all duration-700" style="width: ${pct}%; background: linear-gradient(90deg, ${bColor}, color-mix(in srgb, ${bColor} 70%, white)); box-shadow: 0 0 8px ${bColor}80"></div>
                             </div>
-                            <span class="text-[10px] custom-text-secondary font-bold w-6 text-right">${pct}%</span>
+                            <span class="text-[11px] font-black custom-text-secondary w-7 text-right">${pct}%</span>
                         </div>
                     </div>
                 </div>`;
@@ -6558,7 +6587,7 @@
 
         if (!topCatHtml)
           topCatHtml = `<p class="text-xs custom-text-secondary text-center py-4">Chưa có giao dịch chi tiêu</p>`;
-        topCatHtml += `<button onclick="openAnalytics()" class="mt-2 w-full py-3 custom-bg-input dark:bg-gray-700/50  dark:hover:bg-gray-700 rounded-xl text-xs font-bold custom-text transition-colors border custom-border">Xem tất cả danh mục &rarr;</button>`;
+        topCatHtml += `<button onclick="openAnalytics()" class="mt-2 w-full py-3 custom-bg-input rounded-xl text-xs font-bold custom-text transition-all border custom-border hover:brightness-110 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2"><span>Xem tất cả danh mục</span><i class="fa-solid fa-arrow-right text-[10px]"></i></button>`;
 
         const topCatContainer = document.getElementById("dash-top-categories");
         if (topCatContainer) topCatContainer.innerHTML = topCatHtml;
@@ -6631,19 +6660,24 @@
         let topLocHtml = "";
         sortedLocs.forEach(([shopName, data]) => {
           topLocHtml += `
-                <div class="flex items-center justify-between p-2 rounded-xl dark:hover:bg-gray-700 transition-colors cursor-pointer" onclick="viewTransactionOnMap('dummy', ${data.lat}, ${data.lng})">
-                    <div class="flex items-center gap-3 min-w-0 flex-1">
-                        <div class="w-10 h-10 rounded-full overflow-hidden bg-white shrink-0 border border-gray-200 dark:border-gray-600 shadow-sm flex items-center justify-center">
+                <div class="dash-list-row flex items-center justify-between p-2.5 rounded-2xl group cursor-pointer" onclick="viewTransactionOnMap('dummy', ${data.lat}, ${data.lng})">
+                    <div class="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div class="w-11 h-11 rounded-2xl overflow-hidden bg-white shrink-0 border border-white/20 shadow-sm flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
                             ${getBrandLogo(shopName)}
                         </div>
                         <div class="min-w-0 pr-2">
-                            <p class="text-sm font-bold custom-text truncate">${shopName}</p>
-                            <p class="text-[10px] font-medium custom-text-secondary truncate mt-0.5">${data.catName} • ${data.district}</p>
+                            <p class="text-xs sm:text-sm font-black custom-text truncate group-hover:text-primary-400 transition-colors">${shopName}</p>
+                            <p class="text-[10px] font-semibold custom-text-secondary truncate mt-0.5 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <span>${data.catName}</span>
+                                <span>•</span>
+                                <span>${data.district}</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4 shrink-0">
-                        <p class="text-sm font-bold text-rose-500 tracking-tight">-${formatMoney(data.amt)}</p>
-                        <div class="w-8 h-8 rounded-lg custom-bg-input border custom-border flex items-center justify-center">
+                    <div class="flex items-center gap-3 shrink-0">
+                        <p class="text-xs sm:text-sm font-black text-rose-400 tracking-tight">-${formatMoney(data.amt)}</p>
+                        <div class="w-7 h-7 rounded-lg custom-bg-input border custom-border flex items-center justify-center group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-location-dot text-amber-500 text-xs"></i>
                         </div>
                     </div>
@@ -10257,60 +10291,9 @@
       }
 
       function initSwipeActions() {
-        const swipeItems = document.querySelectorAll(".swipe-item");
-        swipeItems.forEach((item) => {
-          const content = item.querySelector(".swipe-content");
-          const actionsBox = item.querySelector(".absolute.inset-y-0.right-0");
-          if (!content || !actionsBox) return;
-
-          let startX = 0,
-            currentX = 0,
-            isDragging = false;
-
-          item.addEventListener(
-            "touchstart",
-            (e) => {
-              startX = e.touches[0].clientX;
-              isDragging = true;
-              content.classList.remove("transition-transform", "duration-200");
-            },
-            { passive: true },
-          );
-
-          item.addEventListener(
-            "touchmove",
-            (e) => {
-              if (!isDragging) return;
-              currentX = e.touches[0].clientX;
-              let diffX = currentX - startX;
-              // Tự động đo độ rộng của cụm nút bấm bên dưới để mở cho vừa khít
-              const maxOpen = -(actionsBox.offsetWidth + 10);
-
-              if (diffX < 0) {
-                content.style.transform = `translateX(${Math.max(diffX, maxOpen - 20)}px)`;
-              } else {
-                content.style.transform = `translateX(0px)`;
-              }
-            },
-            { passive: true },
-          );
-
-          item.addEventListener("touchend", () => {
-            if (!isDragging) return;
-            isDragging = false;
-            content.classList.add("transition-transform", "duration-200");
-
-            let diffX = currentX - startX;
-            const maxOpen = -(actionsBox.offsetWidth + 10);
-            const threshold = maxOpen / 2; // Kéo qua một nửa thì tự động mở hết
-
-            if (diffX < threshold) {
-              content.style.transform = `translateX(${maxOpen}px)`;
-            } else {
-              content.style.transform = `translateX(0px)`;
-            }
-          });
-        });
+        if (typeof window.initSwipeActions === "function" && window.initSwipeActions !== initSwipeActions) {
+          window.initSwipeActions();
+        }
       }
 
       function openService(url, title) {
@@ -16455,7 +16438,7 @@
             const pts = state.mapPoints.filter((p) => p.mapId === m.id);
             return `
               <div class="relative overflow-hidden rounded-3xl mb-3 border custom-border shadow-sm swipe-item custom-bg-card">
-                  <div class="absolute inset-y-0 right-0 flex items-center justify-end pr-4 z-0 gap-3">
+                  <div class="actions-container absolute inset-y-0 right-0 flex items-center justify-end pr-4 z-0 gap-3">
                       <button onclick="openModal('editCustomMap', '${m.id}')" class="flex flex-col items-center justify-center group outline-none w-12 h-full">
                           <div class="w-10 h-10 rounded-full bg-gray-500 text-white flex items-center justify-center text-lg mb-1 active:scale-90 transition-transform shadow-md"><i class="fa-solid fa-pen"></i></div>
                       </button>
@@ -17587,7 +17570,7 @@
     <!-- BỘ NÃO QUẢN LÝ MODULE BẬT/TẮT -->
     <script>
       // Danh sách các Module cho phép Bật/Tắt
-      const OPTIONAL_MODULES = [
+      window.OPTIONAL_MODULES = [
         {
           id: "calendar",
           name: "Lịch trình",
@@ -17673,18 +17656,6 @@
           color: "text-fuchsia-500",
         },
         {
-          id: "ai-advisor",
-          name: "Trợ lý Cố vấn AI",
-          icon: "fa-wand-magic-sparkles",
-          color: "text-amber-400",
-        },
-        {
-          id: "invest",
-          name: "Đầu tư & Tích sản",
-          icon: "fa-gem",
-          color: "text-indigo-400",
-        },
-        {
           id: "report",
           name: "Báo cáo Wrapped E-Statement",
           icon: "fa-file-invoice",
@@ -17692,12 +17663,14 @@
         },
       ];
 
+      const OPTIONAL_MODULES = window.OPTIONAL_MODULES;
+
       // Hàm vẽ danh sách công tắc ra màn hình cài đặt
       function renderModuleToggles() {
         const container = document.getElementById("module-toggles-container");
         if (!container) return;
 
-        container.innerHTML = OPTIONAL_MODULES.map((mod) => {
+        container.innerHTML = window.OPTIONAL_MODULES.map((mod) => {
           // Nếu chưa có trong state thì mặc định là Bật (true)
           const isChecked = state.moduleSettings[mod.id] !== false;
 
@@ -17720,18 +17693,16 @@
 
       // Hàm bắt sự kiện khi gạt công tắc
       window.toggleAppModule = function (moduleId, isEnabled) {
-        // Cập nhật vào Não
+        if (!state.moduleSettings) state.moduleSettings = {};
         state.moduleSettings[moduleId] = isEnabled;
 
-        // Lưu Data
         saveData();
 
-        // Re-render thanh điều hướng dưới đáy MÀ KHÔNG CẦN F5 TRANG!
         renderNav();
+        renderModuleToggles();
 
         if (typeof playSound === "function") playSound("pop");
 
-        // Nếu người dùng đang đứng ở trang bị tắt, đá văng về màn hình Tổng quan
         if (!isEnabled && state.currentView === moduleId) {
           switchView("dashboard");
         }
@@ -17761,12 +17732,14 @@
     <script src="goals-pro.js"></script>
     <script src="driver-pro.js"></script>
     <script src="tasks-pro.js"></script>
-    <script src="three-spatial.js"></script>
     <script src="system-pro.js"></script>
     <script src="form-pro.js"></script>
     <script src="offline-sync.js"></script>
     <script src="geo-pro.js"></script>
     <script src="settings-pro.js"></script>
+    <script src="keyboard-pro.js"></script>
+    <script src="sound-pro.js"></script>
+    <script src="theme-pro.js"></script>
 
     <!-- CHÍNH LÀ NÓ ĐÂY -->
   </body>

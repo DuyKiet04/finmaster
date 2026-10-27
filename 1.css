@@ -48,32 +48,43 @@
 /* Số tiền: tabular-nums để không nhảy lung tung khi count-up */
 #tx-head-inc, #tx-head-exp { font-variant-numeric: tabular-nums; }
 
-/* ---------- 2. CARD GIAO DỊCH: lift + tilt + glow ---------- */
+/* ---------- 2. CARD GIAO DỊCH: vuốt mượt mà + không bị khoá bởi !important ---------- */
+.swipe-item {
+  touch-action: pan-y;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
 .swipe-content {
-  transition: transform .3s var(--tx-spring),
+  touch-action: pan-y;
+  transition: transform .35s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
               box-shadow .3s ease,
-              filter .3s ease !important;
+              filter .3s ease;
   will-change: transform;
 }
-.swipe-content:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 12px 28px -8px rgba(0,0,0,0.18);
+@media (hover: hover) and (pointer: fine) {
+  .swipe-item:not(.is-swiping):not(.is-open) .swipe-content:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(0,0,0,0.18);
+  }
 }
-.swipe-content:active {
-  transform: translateY(-1px) scale(.985) !important;
+.swipe-item:not(.is-swiping):not(.is-open) .swipe-content:active {
+  transform: translateY(-1px) scale(.99);
+}
+.swipe-item.is-swiping .swipe-content {
+  transition: none !important;
+  pointer-events: none;
 }
 
 /* Icon category: thêm glow ring */
 .swipe-content .w-12.h-12 {
   box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 8%, transparent),
-              0 4px 12px -2px color-mix(in srgb, currentColor 25%, transparent) !important;
+              0 4px 12px -2px color-mix(in srgb, currentColor 25%, transparent);
 }
 
-/* Swipe spring bounce thay easing cứng */
-.swipe-content { transition-timing-function: var(--tx-spring) !important; }
-
 /* Nút action bên dưới: bounce khi lộ ra */
-.actions-container button { transition: transform .3s var(--tx-spring); }
+.actions-container button { transition: transform .3s var(--tx-spring, cubic-bezier(0.34, 1.56, 0.64, 1)); }
 .actions-container button:active { transform: scale(.85); }
 
 /* ---------- 3. STAGGER REVEAL (JS thêm class) ---------- */
@@ -850,4 +861,1229 @@
   background-size: 20px 10px;
   background-repeat: repeat-x;
 }
+
+/* ============================================================
+   FINMASTER DASHBOARD REDESIGN — ULTRA-PREMIUM SPATIAL GLASS
+   ============================================================ */
+
+/* 1. Global Keyframes & Aura Motion */
+@keyframes dashAuraPulse {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.55; }
+  50% { transform: scale(1.12) translate(-10px, 15px); opacity: 0.85; }
+  100% { transform: scale(1) translate(0, 0); opacity: 0.55; }
+}
+
+@keyframes dashGleam {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes dashDotPulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.4; }
+  100% { transform: scale(0.9); opacity: 1; }
+}
+
+/* 2. Flagship Hero Spatial Wealth Hub */
+.dash-hero-hub {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  background: var(--bg-card) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent) !important;
+  box-shadow: 0 24px 50px -12px var(--theme-glow), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.dash-hero-hub::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -20%;
+  width: 140%;
+  height: 160%;
+  background: radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--icon-active) 25%, transparent) 0%, transparent 55%),
+              radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.18) 0%, transparent 50%),
+              radial-gradient(circle at 50% 85%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: dashAuraPulse 10s ease-in-out infinite;
+}
+
+.dash-hero-hub::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dash-hero-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 24px color-mix(in srgb, var(--icon-active) 35%, transparent);
+}
+
+/* Cockpit Cashflow Box */
+.dash-flow-cockpit {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--bg-input) 65%, rgba(255, 255, 255, 0.04));
+  border: 1px solid color-mix(in srgb, var(--border-color) 75%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Fast Action Shortcut Pills */
+.dash-dock-pill {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg-input) 60%, rgba(255, 255, 255, 0.04));
+  border: 1px solid color-mix(in srgb, var(--border-color) 75%, transparent);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(16px);
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dash-dock-pill:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: color-mix(in srgb, var(--icon-active) 50%, transparent);
+  box-shadow: 0 12px 28px -6px var(--theme-glow), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  background: var(--bg-primary-soft);
+}
+
+.dash-dock-pill:active {
+  transform: scale(0.96);
+}
+
+/* 3. The 4 Diamond Metric Cards */
+.dash-kpi-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: var(--bg-card) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color) 75%, transparent) !important;
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.dash-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px -10px var(--theme-glow), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+.dash-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.dash-kpi-income::before { background: radial-gradient(circle, #10b981 0%, transparent 70%); }
+.dash-kpi-expense::before { background: radial-gradient(circle, #f43f5e 0%, transparent 70%); }
+.dash-kpi-balance::before { background: radial-gradient(circle, #3b82f6 0%, transparent 70%); }
+.dash-kpi-tx::before { background: radial-gradient(circle, #a855f7 0%, transparent 70%); }
+
+.dash-kpi-card:hover::before {
+  opacity: 0.65;
+}
+
+.dash-kpi-val {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.dash-sparkline-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  pointer-events: none;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 40%, transparent 100%);
+}
+
+/* 4. Bento Grid Containers */
+.dash-bento-card {
+  position: relative;
+  border-radius: 1.75rem;
+  background: var(--bg-card) !important;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent) !important;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.dash-bento-card:hover {
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* 5. Cyber Mini Radar Map */
+.dash-radar-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dash-radar-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px -10px rgba(14, 165, 233, 0.3);
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+/* 6. List Items for Top Cats & Locations */
+.dash-list-row {
+  border-radius: 1rem;
+  padding: 0.6rem 0.75rem;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dash-list-row:hover {
+  background: color-mix(in srgb, var(--bg-input) 60%, rgba(255, 255, 255, 0.04));
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   FINMASTER VIRTUAL KEYBOARD PRO - ULTRA-LUXURY DESIGN SYSTEM (7 THEMES)
+   ========================================================================== */
+
+/* Focused glowing ring for active inputs */
+.fin-kb-focused-input {
+  box-shadow: 0 0 0 2.5px rgba(56, 189, 248, 0.8), 0 0 20px -2px rgba(56, 189, 248, 0.45) !important;
+  border-color: rgba(56, 189, 248, 0.9) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Base Keyboard Container (Floating Bottom Sheet) */
+.fin-keyboard-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  max-width: 620px;
+  margin: 0 auto;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+  padding: 0.6rem 0.85rem calc(0.85rem + env(safe-area-inset-bottom, 0px)) 0.85rem;
+  box-shadow: 0 -12px 48px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overflow: hidden;
+}
+
+.fin-keyboard-container.closed {
+  transform: translateY(105%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fin-keyboard-container.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Texture Pattern & Ambient Lighting Overlay */
+.fin-kb-mesh-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 14px 14px;
+  z-index: 1;
+}
+
+.fin-kb-glow-orb {
+  position: absolute;
+  top: -40px;
+  right: 20%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Keyboard Header & Toolbar */
+.fin-kb-header {
+  position: relative;
+  z-index: 5;
+  margin-bottom: 0.55rem;
+}
+
+.fin-kb-handle-bar {
+  display: flex;
+  justify-content: center;
+  padding: 0.1rem 0 0.35rem 0;
+  cursor: pointer;
+}
+
+.fin-kb-pill-handle {
+  width: 38px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+  transition: background 0.2s ease, width 0.2s ease;
+}
+
+.fin-kb-handle-bar:hover .fin-kb-pill-handle {
+  background: rgba(255, 255, 255, 0.6);
+  width: 48px;
+}
+
+.fin-kb-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Mode Switch Buttons (123 / ABC) */
+.fin-kb-mode-switch {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2px;
+}
+
+.fin-kb-btn-mode {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-kb-btn-mode.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Input Preview Box */
+.fin-kb-input-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 0.75rem;
+  border-radius: 1rem;
+  min-width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.fin-kb-input-preview.calc-success {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+.fin-kb-preview-icon {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.fin-kb-preview-label {
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fin-kb-preview-cursor {
+  font-weight: 300;
+  color: #38bdf8;
+  animation: finKbBlink 0.9s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes finKbBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Toolbar Tools (Sound, Theme, Close) */
+.fin-kb-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fin-kb-tool-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fin-kb-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.fin-kb-tool-btn:active {
+  transform: scale(0.92);
+}
+
+.fin-kb-tool-btn.active {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.fin-kb-tool-btn.highlight {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.fin-kb-tool-btn.close-btn {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.fin-kb-tool-btn.close-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  color: #ffffff;
+}
+
+/* Subbar (Presets & Vietnamese Diacritics) */
+.fin-kb-subbar {
+  margin-top: 0.45rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.fin-kb-subbar::-webkit-scrollbar {
+  display: none;
+}
+
+.fin-kb-chip-list {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 2px 1px;
+}
+
+.fin-kb-chip {
+  flex-shrink: 0;
+  padding: 0.28rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.fin-kb-chip:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.fin-kb-chip:active {
+  transform: scale(0.92);
+}
+
+.fin-kb-chip.clear-chip {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.fin-kb-chip.special-calc {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.fin-kb-chip.vn-accent-chip {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.8rem;
+  min-width: 28px;
+  text-align: center;
+}
+
+.fin-kb-chip.phrase-chip {
+  background: rgba(99, 102, 241, 0.15);
+  color: #c7d2fe;
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ==========================================================================
+   KEYPAD BODY & KEYS LAYOUT
+   ========================================================================== */
+.fin-kb-body {
+  position: relative;
+  z-index: 5;
+}
+
+/* Base Keycaps */
+.fin-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 1px 0 0 rgba(255, 255, 255, 0.14) inset;
+  transition: transform 0.06s ease, filter 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fin-key:hover {
+  filter: brightness(1.12);
+}
+
+.fin-key:active {
+  transform: translateY(2px) scale(0.95);
+  filter: brightness(1.28);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Numpad Layout (5 cols x 4 rows) */
+.fin-kb-numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.45rem;
+}
+
+.fin-kb-numpad-grid .fin-key {
+  height: 48px;
+}
+
+.fin-kb-numpad-grid .fin-key.num-key {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.fin-kb-numpad-grid .fin-key.num-key.special {
+  font-size: 1.05rem;
+}
+
+.fin-kb-numpad-grid .fin-key.op-key {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.fin-kb-numpad-grid .fin-key.eq-key {
+  font-weight: 900;
+}
+
+.fin-kb-numpad-grid .fin-key.enter-key {
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+/* QWERTY Layout */
+.fin-kb-qwerty-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.fin-kb-row {
+  display: flex;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.fin-kb-row.row-indent {
+  padding: 0 4%;
+}
+
+.fin-kb-qwerty-grid .fin-key {
+  height: 44px;
+}
+
+.fin-kb-qwerty-grid .fin-key.char-key {
+  flex: 1;
+  font-size: 1.05rem;
+}
+
+.fin-kb-qwerty-grid .fin-key.func-key {
+  width: 48px;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.fin-kb-qwerty-grid .fin-key.func-key.shift-key.active {
+  background: #38bdf8 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.6) !important;
+}
+
+.fin-kb-row.bottom-row .fin-key.switch-key {
+  width: 52px;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.fin-kb-row.bottom-row .fin-key.special-char-key {
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.fin-kb-row.bottom-row .fin-key.space-key {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.fin-kb-row.bottom-row .fin-key.enter-key {
+  min-width: 68px;
+  flex-shrink: 0;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* Key Pop Bubble Preview */
+.fin-kb-pop-bubble {
+  position: fixed;
+  transform: translate(-50%, -100%) scale(0.6);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 900;
+  width: 44px;
+  height: 48px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100000;
+}
+
+.fin-kb-pop-bubble.visible {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+/* Theme Picker Modal / Popover */
+.fin-kb-theme-drawer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(10, 15, 29, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+  animation: finKbSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes finKbSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.fin-kb-theme-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.6rem;
+}
+
+.fin-kb-theme-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-kb-theme-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.fin-kb-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.65rem;
+  overflow-y: auto;
+  max-height: 260px;
+  padding-right: 0.25rem;
+}
+
+.fin-kb-theme-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fin-kb-theme-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.fin-kb-theme-card.selected {
+  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(56, 189, 248, 0.12);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+.fin-kb-theme-preview {
+  width: 34px;
+  height: 34px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1.5px solid transparent;
+  flex-shrink: 0;
+}
+
+.fin-kb-theme-check {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  color: #38bdf8;
+  font-size: 0.75rem;
+  background: #000000;
+  border-radius: 50%;
+}
+
+.fin-kb-theme-info {
+  min-width: 0;
+}
+
+.fin-kb-theme-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fin-kb-theme-desc {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   7 CHỦ ĐỀ ĐẲNG CẤP (THEME PALETTES)
+   ========================================================================== */
+
+/* 1. THEME: OBSIDIAN CYBER (MẶC ĐỊNH) */
+.fin-keyboard-container.kb-theme-obsidian {
+  background: linear-gradient(180deg, rgba(12, 17, 29, 0.96) 0%, rgba(6, 9, 16, 0.98) 100%);
+  border-top: 1px solid rgba(56, 189, 248, 0.3);
+}
+.fin-keyboard-container.kb-theme-obsidian .fin-kb-glow-orb {
+  background: #0284c7;
+}
+.fin-keyboard-container.kb-theme-obsidian .fin-key {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  color: #f8fafc;
+  border-color: rgba(56, 189, 248, 0.16);
+}
+.fin-keyboard-container.kb-theme-obsidian .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(14, 116, 144, 0.4) 0%, rgba(8, 51, 68, 0.6) 100%);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+.fin-keyboard-container.kb-theme-obsidian .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-obsidian .fin-key.eq-key {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
+}
+.fin-keyboard-container.kb-theme-obsidian .fin-key.func-key {
+  background: rgba(30, 41, 59, 0.6);
+  color: #94a3b8;
+}
+
+/* 2. THEME: NEON CYBERPUNK */
+.fin-keyboard-container.kb-theme-neon-cyber {
+  background: linear-gradient(180deg, rgba(26, 9, 41, 0.97) 0%, rgba(13, 4, 21, 0.99) 100%);
+  border-top: 1px solid rgba(236, 72, 153, 0.5);
+  box-shadow: 0 -10px 48px -8px rgba(236, 72, 153, 0.35), 0 0 0 1px rgba(236, 72, 153, 0.2) inset;
+}
+.fin-keyboard-container.kb-theme-neon-cyber .fin-kb-glow-orb {
+  background: #ec4899;
+}
+.fin-keyboard-container.kb-theme-neon-cyber .fin-key {
+  background: linear-gradient(180deg, rgba(62, 16, 92, 0.85) 0%, rgba(35, 7, 56, 0.95) 100%);
+  color: #fdf2f8;
+  border-color: rgba(236, 72, 153, 0.28);
+}
+.fin-keyboard-container.kb-theme-neon-cyber .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(162, 28, 175, 0.4) 0%, rgba(88, 28, 135, 0.6) 100%);
+  color: #06b6d4;
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.fin-keyboard-container.kb-theme-neon-cyber .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-neon-cyber .fin-key.eq-key {
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  color: #ffffff;
+  border-color: rgba(236, 72, 153, 0.7);
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.5);
+}
+.fin-keyboard-container.kb-theme-neon-cyber .fin-key.func-key {
+  background: rgba(45, 10, 68, 0.7);
+  color: #f472b6;
+}
+
+/* 3. THEME: FROSTED GLASS (APPLE LUXURY) */
+.fin-keyboard-container.kb-theme-ios-glass {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.92) 0%, rgba(226, 232, 240, 0.96) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 -12px 48px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-glow-orb {
+  background: #cbd5e1;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-pill-handle {
+  background: rgba(0, 0, 0, 0.25);
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-mode-switch,
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-input-preview {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-btn-mode {
+  color: #475569;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-btn-mode.active {
+  background: #ffffff;
+  color: #0f172a;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-preview-label,
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-preview-icon {
+  color: #1e293b;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-tool-btn,
+.fin-keyboard-container.kb-theme-ios-glass .fin-kb-chip {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #1e293b;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-key {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.1), 0 1px 0 0 rgba(255, 255, 255, 0.9) inset;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-key.op-key {
+  background: #e2e8f0;
+  color: #0284c7;
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-ios-glass .fin-key.eq-key {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+}
+.fin-keyboard-container.kb-theme-ios-glass .fin-key.func-key {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* 4. THEME: IMPERIAL GOLD (HOÀNG GIA KIM TIỀN) */
+.fin-keyboard-container.kb-theme-sunset-gold {
+  background: linear-gradient(180deg, rgba(30, 23, 5, 0.97) 0%, rgba(15, 11, 2, 0.99) 100%);
+  border-top: 1px solid rgba(251, 191, 36, 0.45);
+  box-shadow: 0 -12px 48px -8px rgba(245, 158, 11, 0.35);
+}
+.fin-keyboard-container.kb-theme-sunset-gold .fin-kb-glow-orb {
+  background: #f59e0b;
+}
+.fin-keyboard-container.kb-theme-sunset-gold .fin-key {
+  background: linear-gradient(180deg, rgba(69, 52, 13, 0.85) 0%, rgba(42, 31, 6, 0.95) 100%);
+  color: #fef3c7;
+  border-color: rgba(251, 191, 36, 0.28);
+}
+.fin-keyboard-container.kb-theme-sunset-gold .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(146, 64, 14, 0.4) 0%, rgba(90, 40, 10, 0.6) 100%);
+  color: #fde047;
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.fin-keyboard-container.kb-theme-sunset-gold .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-sunset-gold .fin-key.eq-key {
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  color: #000000;
+  font-weight: 900;
+  border-color: rgba(251, 191, 36, 0.8);
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.5);
+}
+.fin-keyboard-container.kb-theme-sunset-gold .fin-key.func-key {
+  background: rgba(50, 37, 10, 0.7);
+  color: #fcd34d;
+}
+
+/* 5. THEME: EMERALD FORTUNE (NGỌC LỤC BẢO) */
+.fin-keyboard-container.kb-theme-emerald-royal {
+  background: linear-gradient(180deg, rgba(4, 31, 21, 0.97) 0%, rgba(2, 16, 11, 0.99) 100%);
+  border-top: 1px solid rgba(52, 211, 153, 0.45);
+  box-shadow: 0 -12px 48px -8px rgba(16, 185, 129, 0.35);
+}
+.fin-keyboard-container.kb-theme-emerald-royal .fin-kb-glow-orb {
+  background: #10b981;
+}
+.fin-keyboard-container.kb-theme-emerald-royal .fin-key {
+  background: linear-gradient(180deg, rgba(8, 64, 45, 0.85) 0%, rgba(5, 41, 28, 0.95) 100%);
+  color: #ecfdf5;
+  border-color: rgba(52, 211, 153, 0.28);
+}
+.fin-keyboard-container.kb-theme-emerald-royal .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(6, 95, 70, 0.5) 0%, rgba(4, 58, 43, 0.7) 100%);
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.fin-keyboard-container.kb-theme-emerald-royal .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-emerald-royal .fin-key.eq-key {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  color: #ffffff;
+  border-color: rgba(52, 211, 153, 0.8);
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+}
+.fin-keyboard-container.kb-theme-emerald-royal .fin-key.func-key {
+  background: rgba(6, 46, 32, 0.7);
+  color: #a7f3d0;
+}
+
+/* 6. THEME: SAKURA QUARTZ (HỒNG PHA LÊ) */
+.fin-keyboard-container.kb-theme-sakura-rose {
+  background: linear-gradient(180deg, rgba(38, 12, 24, 0.97) 0%, rgba(19, 5, 12, 0.99) 100%);
+  border-top: 1px solid rgba(244, 114, 182, 0.45);
+  box-shadow: 0 -12px 48px -8px rgba(236, 72, 153, 0.35);
+}
+.fin-keyboard-container.kb-theme-sakura-rose .fin-kb-glow-orb {
+  background: #f472b6;
+}
+.fin-keyboard-container.kb-theme-sakura-rose .fin-key {
+  background: linear-gradient(180deg, rgba(82, 26, 54, 0.85) 0%, rgba(52, 16, 34, 0.95) 100%);
+  color: #fdf2f8;
+  border-color: rgba(244, 114, 182, 0.28);
+}
+.fin-keyboard-container.kb-theme-sakura-rose .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(157, 23, 77, 0.45) 0%, rgba(100, 15, 50, 0.65) 100%);
+  color: #fbcfe8;
+  border-color: rgba(244, 114, 182, 0.4);
+}
+.fin-keyboard-container.kb-theme-sakura-rose .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-sakura-rose .fin-key.eq-key {
+  background: linear-gradient(135deg, #f472b6 0%, #be185d 100%);
+  color: #ffffff;
+  border-color: rgba(244, 114, 182, 0.8);
+  box-shadow: 0 4px 18px rgba(244, 114, 182, 0.45);
+}
+.fin-keyboard-container.kb-theme-sakura-rose .fin-key.func-key {
+  background: rgba(60, 18, 38, 0.7);
+  color: #f9a8d4;
+}
+
+/* 7. THEME: COSMIC AURORA */
+.fin-keyboard-container.kb-theme-cosmic-aurora {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(11, 15, 30, 0.99) 100%);
+  border-top: 1px solid rgba(167, 139, 250, 0.45);
+  box-shadow: 0 -12px 48px -8px rgba(139, 92, 246, 0.35);
+}
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-kb-glow-orb {
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+}
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-key {
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  color: #f8fafc;
+  border-color: rgba(167, 139, 250, 0.28);
+}
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-key.op-key {
+  background: linear-gradient(180deg, rgba(67, 56, 202, 0.45) 0%, rgba(30, 27, 75, 0.65) 100%);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-key.enter-key,
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-key.eq-key {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  color: #ffffff;
+  border-color: rgba(167, 139, 250, 0.8);
+  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.5);
+}
+.fin-keyboard-container.kb-theme-cosmic-aurora .fin-key.func-key {
+  background: rgba(30, 27, 75, 0.7);
+  color: #c4b5fd;
+}
+
+/* Mobile Screen Tuning */
+@media (max-width: 640px) {
+  .fin-keyboard-container {
+    max-width: 100%;
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding: 0.5rem 0.5rem calc(0.6rem + env(safe-area-inset-bottom, 0px)) 0.5rem;
+  }
+  .fin-kb-numpad-grid {
+    gap: 0.35rem;
+  }
+  .fin-kb-numpad-grid .fin-key {
+    height: 45px;
+  }
+  .fin-kb-qwerty-grid .fin-key {
+    height: 41px;
+    border-radius: 0.7rem;
+  }
+}
+
+/* ==========================================================================
+   FINMASTER NATIVE MOBILE APP TABBAR (DOCK 100% PHONG CÁCH NATIVE APP)
+   ========================================================================== */
+.fin-native-tabbar-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  display: flex;
+  justify-content: center;
+  padding: 0 0.75rem calc(0.4rem + env(safe-area-inset-bottom, 0px)) 0.75rem;
+  pointer-events: none;
+}
+
+.fin-native-tabbar {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 480px;
+  height: 62px;
+  border-radius: 2rem;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 -4px 25px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 0.5rem;
+  position: relative;
+}
+
+.fin-tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.fin-tab-btn:active {
+  transform: scale(0.9);
+}
+
+.fin-tab-btn.active {
+  color: #38bdf8;
+}
+
+.fin-tab-btn i {
+  font-size: 1.15rem;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.fin-tab-btn.active i {
+  transform: translateY(-2px) scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+}
+
+.fin-tab-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Nút Tròn Trung Tâm (Raised Center Action Button - Plus FAB) */
+.fin-center-fab-slot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.fin-center-fab-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #38bdf8 100%);
+  border: 3px solid #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.55), 0 0 15px rgba(56, 189, 248, 0.35);
+  cursor: pointer;
+  transform: translateY(-10px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fin-center-fab-btn:hover {
+  transform: translateY(-13px) scale(1.06);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.7);
+}
+
+.fin-center-fab-btn:active {
+  transform: translateY(-6px) scale(0.92);
+}
+
+/* Hiệu ứng bay của đồng tiền (Coin Burst Animation) */
+.fin-flying-coin {
+  position: fixed;
+  z-index: 100000;
+  font-size: 1.3rem;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px #f59e0b);
+}
+
+/* ==========================================================================
+   CHỦ ĐỀ MÀU APPLE iOS PALETTES
+   ========================================================================== */
+body.theme-ios-deepspace {
+  --primary: #0284c7;
+  --bg-primary-soft: rgba(2, 132, 199, 0.12);
+  --icon-active: #38bdf8;
+}
+
+body.theme-ios-midnight {
+  --primary: #6366f1;
+  --bg-primary-soft: rgba(99, 102, 241, 0.14);
+  --icon-active: #818cf8;
+}
+
+body.theme-ios-titanium {
+  --primary: #f59e0b;
+  --bg-primary-soft: rgba(245, 158, 11, 0.14);
+  --icon-active: #fbbf24;
+}
+
+body.theme-ios-alpine {
+  --primary: #10b981;
+  --bg-primary-soft: rgba(16, 185, 129, 0.14);
+  --icon-active: #34d399;
+}
+
+body.theme-ios-purple {
+  --primary: #a855f7;
+  --bg-primary-soft: rgba(168, 85, 247, 0.14);
+  --icon-active: #c084fc;
+}
+
+body.theme-ios-sierra {
+  --primary: #0284c7;
+  --bg-primary-soft: rgba(2, 132, 199, 0.14);
+  --icon-active: #38bdf8;
+}
+
+body.theme-ios-rosegold {
+  --primary: #ec4899;
+  --bg-primary-soft: rgba(236, 72, 153, 0.14);
+  --icon-active: #f472b6;
+}
+
+body.theme-ios-silver {
+  --primary: #94a3b8;
+  --bg-primary-soft: rgba(148, 163, 184, 0.14);
+  --icon-active: #f8fafc;
+}
+
+/* FinMaster Standard iOS Themes Active */
+
+
+
+
 

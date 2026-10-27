@@ -347,82 +347,259 @@ window.handleSearchInput = (val) => {
 
 
 // ==========================================
-// 4. BỘ CẢM BIẾN VUỐT THẺ (SPRING BOUNCE MOTION)
+// 4. BỘ CẢM BIẾN VUỐT THẺ TOÀN DIỆN (SPRING BOUNCE MOTION - TOUCH & MOUSE)
 // ==========================================
-window.currentlyOpenContent = null; 
+window.currentlyOpenItem = null;
+
+// Hàm đóng thẻ đang mở
+window.closeCurrentSwipeItem = (excludeItem) => {
+    if (window.currentlyOpenItem && window.currentlyOpenItem !== excludeItem) {
+        const item = window.currentlyOpenItem;
+        const c = item.querySelector(".swipe-content");
+        if (c) {
+            c.style.transition = "transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            c.style.setProperty("transform", "translateX(0px)", "important");
+            c.dataset.translate = "0";
+            setTimeout(() => {
+                if (c.dataset.translate === "0") {
+                    c.style.removeProperty("transform");
+                    c.style.removeProperty("transition");
+                }
+            }, 360);
+        }
+        item.classList.remove("is-open");
+        window.currentlyOpenItem = null;
+    }
+};
+
+// Lắng nghe sự kiện click / tap ra ngoài để tự động đóng thẻ đang mở
+if (!window._swipeGlobalListenerBound) {
+    window._swipeGlobalListenerBound = true;
+    const handleOutsideInteraction = (e) => {
+        if (!window.currentlyOpenItem) return;
+        if (!window.currentlyOpenItem.contains(e.target)) {
+            window.closeCurrentSwipeItem();
+        }
+    };
+    document.addEventListener("click", handleOutsideInteraction, true);
+    document.addEventListener("touchstart", handleOutsideInteraction, { passive: true });
+}
 
 window.initSwipeActions = () => {
-    const swipeItems = document.querySelectorAll(".swipe-item:not(.swipe-inited)");
-    
+    const swipeItems = document.querySelectorAll(".swipe-item");
+
     swipeItems.forEach((item) => {
-        item.classList.add("swipe-inited");
+        if (item.dataset.swipeReady === "true") return;
+
         const content = item.querySelector(".swipe-content");
-        const actionsBox = item.querySelector(".actions-container");
+        // Hỗ trợ mọi biến thể class của khung chứa nút xóa/sửa trên tất cả các trang
+        const actionsBox =
+            item.querySelector(".actions-container") ||
+            item.querySelector(".absolute.inset-y-0.right-0") ||
+            item.querySelector(".shrink-0.snap-end") ||
+            item.querySelector("[class*='actions']");
+
         if (!content || !actionsBox) return;
 
-        let startX = 0, startY = 0, currentTranslate = 0, startTranslate = 0;
-        let isDragging = false, isScrolling = false, maxOpen = 0; 
+        // Đánh dấu đã gắn cảm biến
+        item.dataset.swipeReady = "true";
+        item.classList.add("swipe-inited");
+        if (!actionsBox.classList.contains("actions-container")) {
+            actionsBox.classList.add("actions-container");
+        }
 
-        item.addEventListener("touchstart", (e) => {
-            maxOpen = actionsBox.offsetWidth || 140; 
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
+        let startX = 0, startY = 0;
+        let startTranslate = 0;
+        let isDragging = false, hasMoved = false, isVerticalScroll = false;
+        let didSwipe = false;
+        let maxOpen = 0;
+
+        const getMaxOpen = () => {
+            const w = actionsBox.offsetWidth || actionsBox.scrollWidth || 0;
+            if (w > 0) return w;
+            let sum = 0;
+            actionsBox.querySelectorAll("button, a, div").forEach((b) => {
+                sum += (b.offsetWidth || 44) + 8;
+            });
+            return sum > 0 ? sum : 140;
+        };
+
+        const onStart = (clientX, clientY) => {
+            maxOpen = getMaxOpen();
+            startX = clientX;
+            startY = clientY;
             isDragging = true;
-            isScrolling = false;
-            startTranslate = currentTranslate;
+            hasMoved = false;
+            isVerticalScroll = false;
+            didSwipe = false;
+            startTranslate = parseFloat(content.dataset.translate) || 0;
+
+            // Đóng thẻ khác đang mở
+            window.closeCurrentSwipeItem(item);
+        };
+
+        const onMove = (clientX, clientY, e) => {
+            if (!isDragging || isVerticalScroll) return;
+
+            const diffX = clientX - startX;
+            const diffY = clientY - startY;
+
+            if (!hasMoved) {
+                // Ngưỡng phát hiện cử chỉ
+                if (Math.abs(diffX) < 4 && Math.abs(diffY) < 4) return;
+
+                // Nếu chuyển động dọc chiếm ưu thế => là cuộn trang
+                if (Math.abs(diffY) > Math.abs(diffX)) {
+                    isVerticalScroll = true;
+                    isDragging = false;
+                    return;
+                }
+                hasMoved = true;
+            }
+
+            // Đã xác nhận là vuốt ngang: đánh dấu để chặn click và chặn cuộn trang
+            didSwipe = true;
+            item.classList.add("is-swiping");
             content.style.transition = "none";
 
-            // Đóng cái cũ đang mở
-            if (window.currentlyOpenContent && window.currentlyOpenContent !== content) {
-                window.currentlyOpenContent.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)"; // Lò xo mượt
-                window.currentlyOpenContent.style.transform = "translateX(0px)";
-                window.currentlyOpenContent.dataset.translate = 0;
-                window.currentlyOpenContent = null;
+            if (e && e.cancelable) e.preventDefault();
+
+            let targetTranslate = startTranslate + diffX;
+
+            // Hiệu ứng lò xo kháng lực (Rubber band)
+            if (targetTranslate > 0) {
+                targetTranslate = targetTranslate * 0.2;
+            } else if (targetTranslate < -maxOpen) {
+                const overpull = targetTranslate + maxOpen;
+                targetTranslate = -maxOpen + overpull * 0.2;
             }
+
+            content.style.setProperty("transform", `translateX(${targetTranslate}px)`, "important");
+        };
+
+        const onEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            item.classList.remove("is-swiping");
+
+            if (isVerticalScroll) return;
+
+            // Đọc vị trí hiện tại
+            let currentX = 0;
+            const styleTransform = content.style.transform;
+            if (styleTransform && styleTransform.includes("translateX")) {
+                const match = styleTransform.match(/translateX\(([-\d.]+)px\)/);
+                if (match) currentX = parseFloat(match[1]);
+            } else {
+                const comp = window.getComputedStyle(content).transform;
+                if (comp && comp !== "none") {
+                    const match = comp.match(/matrix.*\((.+)\)/);
+                    if (match) {
+                        const vals = match[1].split(",");
+                        if (vals.length === 6) currentX = parseFloat(vals[4]);
+                        else if (vals.length === 16) currentX = parseFloat(vals[12]);
+                    }
+                }
+            }
+
+            content.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+            // Nếu kéo qua hơn 30% độ rộng cụm nút hoặc đang mở mà chưa đẩy về quá nửa
+            const shouldOpen = currentX < -(maxOpen * 0.3);
+
+            if (shouldOpen) {
+                content.style.setProperty("transform", `translateX(-${maxOpen}px)`, "important");
+                content.dataset.translate = String(-maxOpen);
+                item.classList.add("is-open");
+                window.currentlyOpenItem = item;
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(10); } catch (err) {}
+                }
+            } else {
+                content.style.setProperty("transform", "translateX(0px)", "important");
+                content.dataset.translate = "0";
+                item.classList.remove("is-open");
+                if (window.currentlyOpenItem === item) window.currentlyOpenItem = null;
+                setTimeout(() => {
+                    if (content.dataset.translate === "0") {
+                        content.style.removeProperty("transform");
+                        content.style.removeProperty("transition");
+                    }
+                }, 400);
+            }
+        };
+
+        // 1. CẢM BIẾN TOUCH (Mobile / Tablet)
+        item.addEventListener("touchstart", (e) => {
+            if (e.touches.length !== 1) return;
+            onStart(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: true });
 
         item.addEventListener("touchmove", (e) => {
-            if (!isDragging) return;
-            const diffX = e.touches[0].clientX - startX;
-            const diffY = e.touches[0].clientY - startY;
-
-            if (Math.abs(diffY) > Math.abs(diffX) + 5) isScrolling = true;
-            if (isScrolling) { isDragging = false; return; }
-
-            let targetTranslate = startTranslate + diffX;
-            
-            // Kéo kháng lực (Rubber band)
-            if (targetTranslate > 0) targetTranslate = targetTranslate * 0.15; // Cứng hơn
-            else if (targetTranslate < -maxOpen) {
-                const overpull = targetTranslate + maxOpen;
-                targetTranslate = -maxOpen + (overpull * 0.15); // Rít chặt lại
-            }
-            content.style.transform = `translateX(${targetTranslate}px)`;
-        }, { passive: true });
+            if (e.touches.length !== 1) return;
+            onMove(e.touches[0].clientX, e.touches[0].clientY, e);
+        }, { passive: false });
 
         item.addEventListener("touchend", () => {
-            if (!isDragging || isScrolling) return;
-            isDragging = false;
-            const transformMatrix = window.getComputedStyle(content).transform;
-            if (transformMatrix !== 'none') currentTranslate = parseFloat(transformMatrix.split(',')[4]);
+            onEnd();
+        }, { passive: true });
 
-            // Thả tay: Nhảy bằng gia tốc Spring
-            content.style.transition = "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
-            
-            if (currentTranslate < -(maxOpen / 2.5)) {
-                currentTranslate = -maxOpen;
-                window.currentlyOpenContent = content;
-                // Rung nhẹ haptic
-                if (navigator.vibrate) navigator.vibrate(8);
-            } else {
-                currentTranslate = 0;
-                if (window.currentlyOpenContent === content) window.currentlyOpenContent = null;
-            }
-            content.dataset.translate = currentTranslate;
-            content.style.transform = `translateX(${currentTranslate}px)`;
+        item.addEventListener("touchcancel", () => {
+            onEnd();
+        }, { passive: true });
+
+        // 2. CẢM BIẾN MOUSE (Desktop / Laptop)
+        let isMouseDown = false;
+        item.addEventListener("mousedown", (e) => {
+            if (e.button !== 0 || e.target.closest(".actions-container")) return;
+            isMouseDown = true;
+            onStart(e.clientX, e.clientY);
         });
+
+        window.addEventListener("mousemove", (e) => {
+            if (!isMouseDown) return;
+            onMove(e.clientX, e.clientY, e);
+        });
+
+        window.addEventListener("mouseup", () => {
+            if (!isMouseDown) return;
+            isMouseDown = false;
+            onEnd();
+        });
+
+        // 3. CHẶN CLICK VÔ Ý KHI VUỐT HOẶC ĐÓNG THẺ KHI BẤM VÀO THẺ ĐANG MỞ
+        content.addEventListener("click", (e) => {
+            if (didSwipe) {
+                e.preventDefault();
+                e.stopPropagation();
+                didSwipe = false;
+                return;
+            }
+            if (item.classList.contains("is-open")) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.closeCurrentSwipeItem();
+                return;
+            }
+        }, true);
     });
 };
+
+// Tự động quan sát DOM để khởi tạo thẻ mới ngay khi các module render lại
+if (!window._swipeMutationObserver && typeof MutationObserver !== "undefined") {
+    window._swipeMutationObserver = new MutationObserver(() => {
+        if (document.querySelector(".swipe-item:not([data-swipe-ready='true'])")) {
+            window.initSwipeActions();
+        }
+    });
+    if (document.body) {
+        window._swipeMutationObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+        document.addEventListener("DOMContentLoaded", () => {
+            window._swipeMutationObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    }
+}
 
 // ==========================================
 // 5. RENDER DANH SÁCH (TÍCH HỢP STAGGER REVEAL)
@@ -863,3 +1040,8 @@ window.viewAndHighlightTransaction = (txId) => {
         } else alert("Lỗi: Không tìm thấy giao dịch trên màn hình!");
     }, 400);
 };
+
+// Tự động kích hoạt vuốt ngay khi module tải xong
+if (typeof window.initSwipeActions === "function") {
+    setTimeout(window.initSwipeActions, 50);
+}

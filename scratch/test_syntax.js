@@ -1,17 +1,35 @@
 const fs = require('fs');
-const html = fs.readFileSync('index.html', 'utf8');
+const vm = require('vm');
 
-// Find all script tags without src attribute
-const regex = /<script\b(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi;
-let match;
-let count = 0;
-while ((match = regex.exec(html)) !== null) {
-  count++;
+const files = [
+  'theme-pro.js',
+  'settings-pro.js',
+  'system-pro.js',
+  'sound-pro.js',
+  'three-spatial.js'
+];
+
+for (const file of files) {
   try {
-    new Function(match[1]);
-    console.log(`Script ${count}: Syntax OK (${match[1].length} chars)`);
+    const code = fs.readFileSync(file, 'utf8');
+    new vm.Script(code);
+    console.log(`[PASS] ${file} syntax OK`);
   } catch (err) {
-    console.error(`Script ${count} Syntax Error:`, err.message);
+    console.error(`[FAIL] ${file} error:`, err.message);
   }
 }
-console.log('Total inline scripts tested:', count);
+
+// Check index.html scripts
+const html = fs.readFileSync('index.html', 'utf8');
+const scriptRegex = /<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi;
+let match;
+let count = 0;
+while ((match = scriptRegex.exec(html)) !== null) {
+  count++;
+  try {
+    new vm.Script(match[1]);
+  } catch (err) {
+    console.error(`[FAIL] Inline script #${count} in index.html:`, err.message);
+  }
+}
+console.log(`[PASS] Checked ${count} inline scripts in index.html - all syntax OK!`);

@@ -750,12 +750,14 @@
                         const medal = medalIcons[idx] || `<span class="text-[10px] font-black text-gray-400">#${idx + 1}</span>`;
 
                         catHtml += `
-                        <div class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all group cursor-pointer active:scale-[0.98]">
+                        <div onclick="window.openWorkCategoryAnalytics('${catId}', 'work')" 
+                             class="flex items-center gap-3 p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-amber-500/30 transition-all group cursor-pointer active:scale-[0.98] shadow-sm hover:shadow-md"
+                             title="Chạm để xem phân tích toàn bộ chi tiêu danh mục ${cat.name}">
                             <div class="w-6 text-center shrink-0 font-bold text-sm">${medal}</div>
                             <div class="w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-lg border border-white/20 shadow-sm shrink-0 transition-transform group-hover:scale-110">${cat.icon}</div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs font-bold custom-text truncate pr-2">${cat.name}</span>
+                                    <span class="text-xs font-bold custom-text truncate pr-2 group-hover:text-amber-500 transition-colors">${cat.name}</span>
                                     <span class="text-xs font-black custom-text">${formatMoney(amt)}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -764,6 +766,10 @@
                                     </div>
                                     <span class="text-[10px] font-black custom-text-secondary w-9 text-right">${pct}%</span>
                                 </div>
+                            </div>
+                            <div class="text-[10px] font-black text-amber-500/80 group-hover:text-amber-400 flex items-center gap-1 shrink-0 pl-1">
+                                <span class="hidden sm:inline">Phân tích</span>
+                                <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                             </div>
                         </div>`;
                     });
@@ -935,6 +941,461 @@
             }
             setTimeout(() => overlay.remove(), 300);
         };
+    };
+
+    // ==========================================
+    // 6. PHÂN TÍCH TOÀN BỘ CHI TIÊU DANH MỤC (CATEGORY ANALYTICS DEEP DIVE)
+    // ==========================================
+    window.currentWorkCatId = null;
+    window.currentWorkCatScope = 'work'; // 'work', 'month', 'all'
+    window.workCatSearchQuery = '';
+    window.workCatSortOrder = 'date_desc';
+
+    function injectWorkCategoryAnalyticsModal() {
+        if (document.getElementById("work-cat-analytics-modal")) return;
+
+        const modalHtml = `
+        <div id="work-cat-analytics-modal" class="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center transition-all duration-300 opacity-0 pointer-events-none p-0 sm:p-4">
+            <div class="absolute inset-0" onclick="window.closeWorkCategoryAnalytics()"></div>
+            <div id="work-cat-analytics-content" class="relative z-10 w-full max-w-2xl max-h-[92vh] sm:max-h-[88vh] custom-bg-card border custom-border rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 overflow-hidden font-sans">
+                <!-- Nội dung được bơm động bằng renderWorkCategoryAnalyticsContent() -->
+            </div>
+        </div>
+        `;
+        document.body.insertAdjacentHTML("beforeend", modalHtml);
+    }
+
+    window.openWorkCategoryAnalytics = (catId, scope = 'work') => {
+        window.currentWorkCatId = catId;
+        window.currentWorkCatScope = scope;
+        window.workCatSearchQuery = '';
+        window.workCatSortOrder = 'date_desc';
+
+        injectWorkCategoryAnalyticsModal();
+        window.renderWorkCategoryAnalyticsContent();
+
+        const modal = document.getElementById("work-cat-analytics-modal");
+        const content = document.getElementById("work-cat-analytics-content");
+        if (modal && content) {
+            modal.classList.remove("pointer-events-none");
+            void modal.offsetWidth;
+            modal.classList.remove("opacity-0");
+            modal.classList.add("opacity-100");
+            content.classList.remove("translate-y-full", "sm:translate-y-8", "sm:scale-95");
+            content.classList.add("translate-y-0", "sm:translate-y-0", "sm:scale-100");
+        }
+
+        if (typeof playSound === 'function') playSound("pop");
+    };
+
+    window.closeWorkCategoryAnalytics = () => {
+        const modal = document.getElementById("work-cat-analytics-modal");
+        const content = document.getElementById("work-cat-analytics-content");
+        if (modal && content) {
+            modal.classList.remove("opacity-100");
+            modal.classList.add("opacity-0");
+            content.classList.remove("translate-y-0", "sm:translate-y-0", "sm:scale-100");
+            content.classList.add("translate-y-full", "sm:translate-y-8", "sm:scale-95");
+            setTimeout(() => {
+                modal.classList.add("pointer-events-none");
+            }, 300);
+        }
+    };
+
+    window.setWorkCategoryScope = (scope) => {
+        window.currentWorkCatScope = scope;
+        window.renderWorkCategoryAnalyticsContent();
+        if (typeof playSound === 'function') playSound("click");
+    };
+
+    window.filterWorkCategoryTxs = (query) => {
+        window.workCatSearchQuery = (query || '').trim().toLowerCase();
+        window.renderWorkCategoryTxListOnly();
+    };
+
+    window.setWorkCategorySort = (sort) => {
+        window.workCatSortOrder = sort;
+        window.renderWorkCategoryTxListOnly();
+        if (typeof playSound === 'function') playSound("click");
+    };
+
+    window.openWorkCatTxDetail = (txId) => {
+        if (typeof openModal === 'function') {
+            openModal('transaction', txId);
+        }
+    };
+
+    window.workAddTxForCat = (catId) => {
+        window.closeWorkCategoryAnalytics();
+        if (typeof openModal === 'function') {
+            openModal('transaction');
+            setTimeout(() => {
+                const catSelect = document.getElementById('m-cat');
+                if (catSelect) {
+                    catSelect.value = catId;
+                }
+                const isWorkCheckbox = document.getElementById('t-is-work');
+                if (isWorkCheckbox) isWorkCheckbox.checked = true;
+            }, 80);
+        }
+    };
+
+    window.renderWorkCategoryAnalyticsContent = () => {
+        const contentEl = document.getElementById("work-cat-analytics-content");
+        if (!contentEl || !window.currentWorkCatId) return;
+
+        const catId = window.currentWorkCatId;
+        const cat = (state.categories || []).find(c => c.id === catId) || { id: catId, name: 'Khác', icon: '📦', color: 'bg-gray-100 text-gray-500' };
+
+        // Lọc toàn bộ giao dịch của danh mục này
+        const allCatTxs = (state.transactions || []).filter(t => t.category === catId && t.type === 'expense');
+
+        const curM = window.workViewMonth !== undefined ? window.workViewMonth : new Date().getMonth();
+        const curY = window.workViewYear !== undefined ? window.workViewYear : new Date().getFullYear();
+        const monthStr = `${curY}-${String(curM + 1).padStart(2, '0')}`;
+
+        const isDateInRange = (dateStr, start, end) => {
+            const d = new Date(dateStr.split(' ')[0] + "T00:00:00");
+            const s = new Date(start + "T00:00:00");
+            const e = new Date(end + "T23:59:59");
+            return d >= s && d <= e;
+        };
+
+        const isWorkCat = (c) => c && normalizeStr(c.name).includes("lam");
+
+        // Giao dịch kỳ công sở
+        let workTxs = [];
+        if (window.workFilterStart && window.workFilterEnd) {
+            workTxs = allCatTxs.filter(t => (t.isWork || isWorkCat(cat)) && isDateInRange(t.date, window.workFilterStart, window.workFilterEnd));
+        } else {
+            workTxs = allCatTxs.filter(t => (t.isWork || isWorkCat(cat)) && t.date.startsWith(monthStr));
+        }
+
+        // Giao dịch tháng này
+        const monthTxs = allCatTxs.filter(t => t.date.startsWith(monthStr));
+
+        // Phân loại scope
+        let activeTxs = [];
+        let scopeLabel = "";
+        if (window.currentWorkCatScope === 'work') {
+            activeTxs = workTxs.length > 0 ? workTxs : (monthTxs.length > 0 ? monthTxs : allCatTxs);
+            scopeLabel = (window.workFilterStart && window.workFilterEnd) 
+                ? `Kỳ tùy chỉnh (${window.workFilterStart.split('-').reverse().join('/')} - ${window.workFilterEnd.split('-').reverse().join('/')})`
+                : `Công sở tháng ${curM + 1}/${curY}`;
+        } else if (window.currentWorkCatScope === 'month') {
+            activeTxs = monthTxs;
+            scopeLabel = `Tháng ${curM + 1}/${curY}`;
+        } else {
+            activeTxs = allCatTxs;
+            scopeLabel = `Toàn bộ thời gian`;
+        }
+
+        const totalAmt = activeTxs.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        const txCount = activeTxs.length;
+        const maxTx = activeTxs.reduce((max, t) => (Number(t.amount) > (max ? Number(max.amount) : 0)) ? t : max, null);
+        const avgAmt = txCount > 0 ? Math.round(totalAmt / txCount) : 0;
+        const uniqueDays = new Set(activeTxs.map(t => t.date.split(' ')[0])).size;
+
+        // Nhóm theo ngày để vẽ biểu đồ tần suất mini
+        const dailySummary = {};
+        activeTxs.forEach(t => {
+            const d = t.date.split(' ')[0];
+            dailySummary[d] = (dailySummary[d] || 0) + Number(t.amount);
+        });
+        const dailyKeys = Object.keys(dailySummary).sort((a,b) => b.localeCompare(a)).slice(0, 7);
+        const maxDaily = Math.max(...Object.values(dailySummary), 1);
+
+        contentEl.innerHTML = `
+            <!-- Thanh kéo vuốt trên Mobile -->
+            <div class="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                <div class="w-12 h-1.5 bg-gray-400/30 rounded-full"></div>
+            </div>
+
+            <!-- HEADER BÁM ĐỈNH -->
+            <div class="px-5 py-4 border-b custom-border flex items-center justify-between shrink-0 bg-black/5 dark:bg-white/5">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-11 h-11 rounded-2xl ${cat.color} flex items-center justify-center text-2xl border border-white/20 shadow-md shrink-0">
+                        ${cat.icon}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-black text-base sm:text-lg custom-text truncate">${cat.name}</h3>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-500/15 text-rose-500 border border-rose-500/25">Chi tiêu</span>
+                        </div>
+                        <p class="text-[11px] font-semibold custom-text-secondary truncate mt-0.5">${scopeLabel}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="window.workAddTxForCat('${cat.id}')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20 active:scale-95 transition-all" title="Thêm khoản chi mới">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span class="hidden sm:inline">Thêm chi</span>
+                    </button>
+                    <button onclick="window.closeWorkCategoryAnalytics()" class="w-8 h-8 rounded-full custom-bg-input flex items-center justify-center text-xs custom-text hover:bg-rose-500 hover:text-white transition-all border custom-border active:scale-90" title="Đóng">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- NỘI DUNG CUỘN CHI TIẾT -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-4">
+                
+                <!-- HERO CARD: TỔNG CHI & PHẠM VI -->
+                <div class="relative overflow-hidden p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-amber-500/15 via-rose-500/10 to-purple-500/10 border border-amber-500/30 shadow-lg">
+                    <div class="absolute -right-4 -bottom-4 text-7xl sm:text-8xl opacity-10 pointer-events-none select-none">${cat.icon}</div>
+                    
+                    <div class="relative z-10 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-chart-pie"></i> Tổng Chi Tiêu Danh Mục
+                            </span>
+                            <span class="text-[10px] font-bold custom-text-secondary">${txCount} giao dịch</span>
+                        </div>
+
+                        <div class="text-2xl sm:text-3xl font-black text-rose-500 drop-shadow-sm tracking-tight">
+                            ${formatMoney(totalAmt)}
+                        </div>
+
+                        <!-- SEGMENTED TABS (Kỳ này / Tháng này / Tất cả) -->
+                        <div class="flex items-center gap-1.5 bg-black/10 dark:bg-white/10 p-1.5 rounded-2xl border custom-border text-xs font-bold pt-1">
+                            <button onclick="window.setWorkCategoryScope('work')" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all ${window.currentWorkCatScope === 'work' ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'custom-text-secondary hover:text-white'}">
+                                Kỳ Này (${workTxs.length})
+                            </button>
+                            <button onclick="window.setWorkCategoryScope('month')" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all ${window.currentWorkCatScope === 'month' ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'custom-text-secondary hover:text-white'}">
+                                Tháng Này (${monthTxs.length})
+                            </button>
+                            <button onclick="window.setWorkCategoryScope('all')" class="flex-1 py-1.5 px-2 rounded-xl text-center transition-all ${window.currentWorkCatScope === 'all' ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'custom-text-secondary hover:text-white'}">
+                                Toàn Bộ (${allCatTxs.length})
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 BENTO KPI CARDS -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col justify-between shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] font-black uppercase text-blue-400">Số Lượt Chi</span>
+                            <i class="fa-solid fa-receipt text-blue-400 text-xs"></i>
+                        </div>
+                        <div class="text-base font-black custom-text">${txCount} <span class="text-xs font-bold text-blue-400">lần</span></div>
+                        <div class="text-[9px] custom-text-secondary mt-0.5">Giao dịch đã lưu</div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col justify-between shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] font-black uppercase text-rose-400">Lớn Nhất</span>
+                            <i class="fa-solid fa-crown text-rose-400 text-xs"></i>
+                        </div>
+                        <div class="text-base font-black text-rose-400 truncate">${maxTx ? formatMoney(maxTx.amount) : '0 ₫'}</div>
+                        <div class="text-[9px] custom-text-secondary truncate mt-0.5">${maxTx ? maxTx.date.split(' ')[0].split('-').reverse().join('/') : 'Chưa có'}</div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col justify-between shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] font-black uppercase text-emerald-400">Bình Quân</span>
+                            <i class="fa-solid fa-calculator text-emerald-400 text-xs"></i>
+                        </div>
+                        <div class="text-base font-black text-emerald-400 truncate">${formatMoney(avgAmt)}</div>
+                        <div class="text-[9px] custom-text-secondary mt-0.5">Mỗi lần giao dịch</div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col justify-between shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] font-black uppercase text-purple-400">Số Ngày</span>
+                            <i class="fa-solid fa-calendar-check text-purple-400 text-xs"></i>
+                        </div>
+                        <div class="text-base font-black custom-text">${uniqueDays} <span class="text-xs font-bold text-purple-400">ngày</span></div>
+                        <div class="text-[9px] custom-text-secondary mt-0.5">Có phát sinh chi</div>
+                    </div>
+                </div>
+
+                <!-- MINI NGÀY CHI NHIỀU NHẤT (NẾU CÓ DỮ LIỆU) -->
+                ${dailyKeys.length > 1 ? `
+                <div class="p-4 rounded-2xl custom-bg-card border custom-border shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="custom-text flex items-center gap-1.5"><i class="fa-solid fa-chart-simple text-amber-500"></i> Phân Bổ Theo Ngày Gần Nhất</span>
+                        <span class="text-[10px] custom-text-secondary">${dailyKeys.length} ngày gần nhất</span>
+                    </div>
+                    <div class="space-y-2">
+                        ${dailyKeys.map(dayStr => {
+                            const dayAmt = dailySummary[dayStr];
+                            const barPct = Math.round((dayAmt / maxDaily) * 100);
+                            const fmtDay = dayStr.split('-').reverse().join('/');
+                            return `
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[11px] font-bold">
+                                    <span class="custom-text-secondary">${fmtDay}</span>
+                                    <span class="custom-text font-black">${formatMoney(dayAmt)}</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full transition-all duration-500" style="width: ${barPct}%;"></div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- THANH TÌM KIẾM & BỘ LỌC DANH SÁCH -->
+                <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                    <div class="flex-1 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs custom-text-secondary"></i>
+                        <input type="text" id="work-cat-search-input" value="${window.workCatSearchQuery || ''}" oninput="window.filterWorkCategoryTxs(this.value)" placeholder="Tìm kiếm ghi chú, số tiền..." class="w-full pl-9 pr-3 py-2.5 rounded-xl custom-bg-input border custom-border text-xs font-bold custom-text outline-none focus:border-amber-500 transition-colors">
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <select id="work-cat-sort-select" onchange="window.setWorkCategorySort(this.value)" class="py-2.5 px-3 rounded-xl custom-bg-input border custom-border text-xs font-bold custom-text outline-none focus:border-amber-500 cursor-pointer">
+                            <option value="date_desc" ${window.workCatSortOrder === 'date_desc' ? 'selected' : ''}>Mới nhất</option>
+                            <option value="date_asc" ${window.workCatSortOrder === 'date_asc' ? 'selected' : ''}>Cũ nhất</option>
+                            <option value="amount_desc" ${window.workCatSortOrder === 'amount_desc' ? 'selected' : ''}>Số tiền cao nhất</option>
+                            <option value="amount_asc" ${window.workCatSortOrder === 'amount_asc' ? 'selected' : ''}>Số tiền thấp nhất</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DANH SÁCH TOÀN BỘ GIAO DỊCH -->
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400 px-1">
+                        <span>Toàn Bộ Chi Tiêu (${activeTxs.length})</span>
+                        <span class="text-[10px] font-normal lowercase">chạm để xem / sửa</span>
+                    </div>
+
+                    <div id="work-cat-tx-list-container" class="space-y-2.5">
+                        <!-- Được render bởi renderWorkCategoryTxListOnly() -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER HÀNH ĐỘNG -->
+            <div class="p-4 border-t custom-border bg-black/5 dark:bg-white/5 flex items-center justify-between gap-3 shrink-0">
+                <button onclick="window.workAddTxForCat('${cat.id}')" class="flex-1 py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
+                    <i class="fa-solid fa-plus-circle text-sm"></i>
+                    <span>Thêm Chi Tiêu "${cat.name}"</span>
+                </button>
+                <button onclick="window.closeWorkCategoryAnalytics()" class="py-3 px-5 rounded-2xl custom-bg-input border custom-border text-xs font-bold custom-text hover:bg-white/10 active:scale-95 transition-all">
+                    Đóng
+                </button>
+            </div>
+        `;
+
+        window.renderWorkCategoryTxListOnly();
+    };
+
+    window.renderWorkCategoryTxListOnly = () => {
+        const listContainer = document.getElementById("work-cat-tx-list-container");
+        if (!listContainer || !window.currentWorkCatId) return;
+
+        const catId = window.currentWorkCatId;
+        const cat = (state.categories || []).find(c => c.id === catId) || { id: catId, name: 'Khác', icon: '📦' };
+
+        const allCatTxs = (state.transactions || []).filter(t => t.category === catId && t.type === 'expense');
+
+        const curM = window.workViewMonth !== undefined ? window.workViewMonth : new Date().getMonth();
+        const curY = window.workViewYear !== undefined ? window.workViewYear : new Date().getFullYear();
+        const monthStr = `${curY}-${String(curM + 1).padStart(2, '0')}`;
+
+        const isDateInRange = (dateStr, start, end) => {
+            const d = new Date(dateStr.split(' ')[0] + "T00:00:00");
+            const s = new Date(start + "T00:00:00");
+            const e = new Date(end + "T23:59:59");
+            return d >= s && d <= e;
+        };
+
+        const isWorkCat = (c) => c && normalizeStr(c.name).includes("lam");
+
+        let txs = [];
+        if (window.currentWorkCatScope === 'work') {
+            if (window.workFilterStart && window.workFilterEnd) {
+                txs = allCatTxs.filter(t => (t.isWork || isWorkCat(cat)) && isDateInRange(t.date, window.workFilterStart, window.workFilterEnd));
+            } else {
+                txs = allCatTxs.filter(t => (t.isWork || isWorkCat(cat)) && t.date.startsWith(monthStr));
+            }
+            if (txs.length === 0 && allCatTxs.length > 0) {
+                txs = allCatTxs.filter(t => t.date.startsWith(monthStr));
+                if (txs.length === 0) txs = allCatTxs;
+            }
+        } else if (window.currentWorkCatScope === 'month') {
+            txs = allCatTxs.filter(t => t.date.startsWith(monthStr));
+        } else {
+            txs = allCatTxs;
+        }
+
+        // Lọc theo search query
+        if (window.workCatSearchQuery) {
+            const q = window.workCatSearchQuery;
+            txs = txs.filter(t => {
+                const note = (t.note || '').toLowerCase();
+                const amt = String(t.amount || '');
+                const loc = (t.locationName || '').toLowerCase();
+                return note.includes(q) || amt.includes(q) || loc.includes(q);
+            });
+        }
+
+        // Sắp xếp
+        const sort = window.workCatSortOrder || 'date_desc';
+        txs.sort((a, b) => {
+            if (sort === 'date_desc') return new Date(b.date) - new Date(a.date);
+            if (sort === 'date_asc') return new Date(a.date) - new Date(b.date);
+            if (sort === 'amount_desc') return Number(b.amount) - Number(a.amount);
+            if (sort === 'amount_asc') return Number(a.amount) - Number(b.amount);
+            return 0;
+        });
+
+        if (txs.length === 0) {
+            listContainer.innerHTML = `
+                <div class="text-center py-10 opacity-70 p-6 rounded-2xl border border-dashed custom-border">
+                    <i class="fa-solid fa-folder-open text-4xl mb-2 text-gray-400"></i>
+                    <p class="text-xs font-bold custom-text">Không tìm thấy khoản chi nào phù hợp</p>
+                    <p class="text-[10px] custom-text-secondary mt-1">Hãy thử đổi phạm vi hoặc thêm khoản chi mới</p>
+                </div>
+            `;
+            return;
+        }
+
+        listContainer.innerHTML = txs.map(t => {
+            const wallet = (state.wallets || []).find(w => w.id === t.walletId) || { name: 'Ví mặc định' };
+            const dateObj = new Date(t.date.includes('T') ? t.date : t.date.replace(' ', 'T'));
+            const dateDisplay = isNaN(dateObj.getTime()) ? t.date : `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+            const timeDisplay = isNaN(dateObj.getTime()) ? '' : `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`;
+            const hasImg = t.image && t.image.length > 50;
+
+            return `
+            <div onclick="window.openWorkCatTxDetail('${t.id}')" 
+                 class="p-3.5 rounded-2xl custom-bg-card border custom-border hover:border-amber-500/40 transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-md cursor-pointer active:scale-[0.99] group">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    ${hasImg ? `
+                        <div class="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 border custom-border group/img" onclick="event.stopPropagation(); window.workViewImageFullScreen('${t.image}')" title="Phóng to ảnh">
+                            <img src="${t.image}" class="w-full h-full object-cover transition-transform group-hover/img:scale-110">
+                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity text-white text-[10px]"><i class="fa-solid fa-expand"></i></div>
+                        </div>
+                    ` : `
+                        <div class="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-base border border-rose-500/20 shrink-0">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    `}
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-bold custom-text truncate group-hover:text-amber-500 transition-colors">
+                            ${t.note || cat.name}
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[10px] custom-text-secondary">
+                            <span><i class="fa-regular fa-calendar text-[9px]"></i> ${dateDisplay} ${timeDisplay ? '• ' + timeDisplay : ''}</span>
+                            <span class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[9px] font-semibold border custom-border truncate max-w-[120px]"><i class="fa-solid fa-wallet text-[8px] mr-1"></i>${wallet.name}</span>
+                            ${t.isWork ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500 text-[9px] font-black border border-amber-500/25">💼 Công sở</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-right shrink-0">
+                    <div class="text-sm font-black text-rose-500">
+                        ${formatMoney(t.amount)}
+                    </div>
+                    <div class="text-[9px] font-bold text-gray-400 group-hover:text-amber-400 transition-colors flex items-center justify-end gap-1 mt-0.5">
+                        <span>Chi tiết</span>
+                        <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     };
 
 })();

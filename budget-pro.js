@@ -704,22 +704,11 @@
       <div class="space-y-4 sm:space-y-5 pb-24">
         
         <!-- 1. SPATIAL TOP HERO HEADER (Bar nổi trên cùng) -->
-        <header class="flex items-center justify-between gap-2.5 p-2 rounded-2xl sm:rounded-3xl custom-bg-card border custom-border custom-shadow-sm">
-          <div class="flex items-center gap-2">
-            <button onclick="switchView('dashboard')" 
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl custom-bg-input flex items-center justify-center custom-text hover:scale-105 active:scale-95 transition-all shrink-0" 
-              title="Quay lại Tổng quan">
-              <i class="fa-solid fa-arrow-left text-sm sm:text-base"></i>
-            </button>
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 class="text-base sm:text-lg font-black custom-text tracking-tight">Hạn Mức Ngân Sách</h1>
-                <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-primary-500/10 text-primary-500 border border-primary-500/20">
-                  <span class="w-1.5 h-1.5 rounded-full bg-primary-500 animate-ping"></span> Live
-                </span>
-              </div>
-              <p class="text-[11px] custom-text-secondary leading-none hidden sm:block mt-0.5">Kiểm soát chi tiêu & làm chủ tài chính</p>
-            </div>
+        <header class="flex items-center justify-between gap-2 p-2 rounded-2xl sm:rounded-3xl custom-bg-card border custom-border custom-shadow-sm">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-black bg-primary-500/15 text-primary-500 border border-primary-500/25">
+              <i class="fa-solid fa-bullseye"></i> <span class="hidden sm:inline">Ngân Sách</span>
+            </span>
           </div>
 
           <!-- Bộ Chuyển Tháng Thông Minh -->

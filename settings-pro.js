@@ -111,9 +111,15 @@
         break;
 
       case 'sound':
-        titleEl.innerText = "m Thanh & Rung Phản Hồi";
+        titleEl.innerText = "Âm Thanh & Rung Phản Hồi";
         iconEl.innerHTML = '<i class="fa-solid fa-volume-high text-cyan-400"></i>';
         content.innerHTML = renderSoundDetailHTML();
+        break;
+
+      case 'keyboard':
+        titleEl.innerText = "Bàn Phím Ảo FinMaster Pro";
+        iconEl.innerHTML = '<i class="fa-solid fa-keyboard text-purple-400"></i>';
+        content.innerHTML = renderKeyboardDetailHTML();
         break;
 
       case 'categories':
@@ -553,63 +559,284 @@
   // CHI TIẾT 8: GIAO DIỆN & NỀN (THEMES DETAIL)
   // ==============================================================
   function renderThemesDetailHTML() {
-    return `
-      <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-4 shadow-sm">
-        <h4 class="font-black text-sm custom-text flex items-center gap-2">
-          <i class="fa-solid fa-palette text-fuchsia-400"></i> Tùy Biến Giao Diện Siêu Cấp
-        </h4>
-        
-        <div class="grid grid-cols-2 gap-3 pt-2">
-          <button onclick="document.getElementById('bg-image-input').click()" class="p-4 rounded-2xl custom-bg-input border custom-border flex flex-col items-center justify-center gap-2 hover:border-indigo-500 active:scale-95 transition-all">
-            <i class="fa-solid fa-image text-2xl text-indigo-400"></i>
-            <span class="text-xs font-bold custom-text">Đổi Ảnh Nền Riêng</span>
-          </button>
+    const themeEngine = window.FinTheme;
+    const colorThemes = (themeEngine && typeof themeEngine.getColorThemes === 'function')
+      ? themeEngine.getColorThemes()
+      : [];
+    const curState = (themeEngine && typeof themeEngine.getState === 'function')
+      ? themeEngine.getState()
+      : { colorTheme: 'theme-ios-deepspace' };
 
-          <button onclick="toggleAnimatedBg(); closeSettingsDetail();" class="p-4 rounded-2xl custom-bg-input border custom-border flex flex-col items-center justify-center gap-2 hover:border-fuchsia-500 active:scale-95 transition-all">
-            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-fuchsia-400"></i>
-            <span class="text-xs font-bold custom-text">Bật/Tắt Nền AI 3D</span>
+    return `
+      <div class="space-y-6">
+        <!-- BẢNG CHỦ ĐỀ MÀU CHUẨN APPLE iOS -->
+        <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-black text-sm custom-text flex items-center gap-2">
+                <i class="fa-solid fa-palette text-sky-400"></i> Bảng Màu Chuẩn Apple iOS (8 Màu Sắc Đẳng Cấp)
+              </h4>
+              <p class="text-[11px] custom-text-secondary">Tone màu kính mờ & Titanium lấy cảm hứng trực tiếp từ iOS</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-sky-500/15 text-sky-400 border border-sky-500/25">
+              iOS Palettes
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 animate-fadeIn">
+            ${colorThemes.map(t => {
+              const isSelected = curState.colorTheme === t.id;
+              return `
+                <div onclick="window.FinTheme?.setColorTheme('${t.id}'); openSettingsDetail('themes');" 
+                  class="p-3.5 rounded-2xl border ${isSelected ? 'border-sky-400 bg-sky-500/15 shadow-md shadow-sky-500/20' : 'custom-border custom-bg-input'} flex items-center gap-3 cursor-pointer hover:border-sky-400 active:scale-98 transition-all">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20 shadow-inner shrink-0" style="background: ${t.bgPreview};">
+                    <span class="w-3.5 h-3.5 rounded-full" style="background: ${t.hex};"></span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-black custom-text flex items-center gap-1.5 truncate">
+                      <span>${t.name}</span>
+                      ${isSelected ? '<i class=\"fa-solid fa-circle-check text-sky-400 text-xs\"></i>' : ''}
+                    </div>
+                    <div class="text-[10px] custom-text-secondary truncate">${t.sub}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- HIỆU ỨNG ĐỒNG TIỀN VÀNG FINMASTER -->
+        <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-black text-xs uppercase tracking-wider custom-text flex items-center gap-2">
+                <i class="fa-solid fa-coins text-amber-400"></i> Hiệu Ứng Đồng Tiền Bay Vào Thẻ
+              </h4>
+              <p class="text-[11px] custom-text-secondary mt-0.5">Tự động kích hoạt khi nhập hoặc lưu giao dịch thành công</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/25">Đang bật</span>
+          </div>
+          <button type="button" onclick="if(window.triggerCoinBurstAnimation) window.triggerCoinBurstAnimation();" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 border border-amber-500/30 text-amber-300 font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md">
+            <i class="fa-solid fa-coins text-amber-400"></i>
+            <span>Bấm Thử Hiệu Ứng Đồng Tiền Bay Vào Thẻ</span>
           </button>
         </div>
 
-        <div class="pt-3">
-          <label class="block text-xs font-bold custom-text-secondary uppercase mb-2">Chế độ hiển thị</label>
-          <button onclick="toggleDarkMode(); closeSettingsDetail();" class="w-full py-3.5 rounded-2xl bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 active:scale-95 transition-all">
-            <i class="fa-solid fa-circle-half-stroke"></i> Chuyển Đổi Chế Độ Sáng / Tối (Dark Mode)
-          </button>
+        <!-- TÙY CHỌN BỔ TRỢ -->
+        <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-3 shadow-sm">
+          <label class="block text-xs font-bold custom-text-secondary uppercase">Chế Độ Hiển Thị Khác</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="document.getElementById('bg-image-input').click()" class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col items-center justify-center gap-2 hover:border-indigo-500 active:scale-95 transition-all">
+              <i class="fa-solid fa-image text-xl text-indigo-400"></i>
+              <span class="text-xs font-bold custom-text">Đổi Ảnh Nền Riêng</span>
+            </button>
+            <button onclick="toggleDarkMode(); closeSettingsDetail();" class="p-3.5 rounded-2xl custom-bg-input border custom-border flex flex-col items-center justify-center gap-2 hover:border-indigo-500 active:scale-95 transition-all">
+              <i class="fa-solid fa-circle-half-stroke text-xl text-amber-400"></i>
+              <span class="text-xs font-bold custom-text">Sáng / Tối (Dark)</span>
+            </button>
+          </div>
         </div>
       </div>
     `;
   }
 
   // ==============================================================
-  // CHI TIẾT 9: ÂM THANH & RUNG (SOUND & HAPTICS DETAIL)
+  // CHI TIẾT 9: ÂM THANH TOÀN DIỆN (SOUND ENGINE PRO)
   // ==============================================================
   function renderSoundDetailHTML() {
+    const soundEngine = window.FinSound;
+    const cfg = soundEngine ? soundEngine.getConfig() : { enabled: true, volume: 0.7, pack: 'ios', haptic: true };
+    const packs = soundEngine ? soundEngine.getPacks() : [];
+
     return `
-      <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-4 shadow-sm">
-        <h4 class="font-black text-sm custom-text flex items-center gap-2">
-          <i class="fa-solid fa-volume-high text-cyan-400"></i> m Thanh & Phản Hồi Xúc Giác
-        </h4>
-        
-        <div class="space-y-3 pt-1">
-          <div class="p-4 rounded-2xl custom-bg-input border custom-border flex items-center justify-between">
+      <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-black text-sm custom-text flex items-center gap-2">
+              <i class="fa-solid fa-volume-high text-cyan-400"></i> Trung Tâm m Thanh Toàn Hệ Thống
+            </h4>
+            <p class="text-[11px] custom-text-secondary">Web Audio API mô phỏng xúc giác, thao tác nút bấm, xóa và tiền về</p>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/15 text-cyan-400 border border-cyan-500/25">
+            Engine V3.0
+          </span>
+        </div>
+
+        <!-- 1. CÔNG TẮC BẬT / TẮT ÂM THANH -->
+        <div class="p-4 rounded-2xl custom-bg-input border custom-border flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold custom-text">Bật âm thanh hiệu ứng</div>
+            <div class="text-[11px] custom-text-secondary">Phát âm thanh khi chạm nút, lưu tiền, xóa mục, chuyển trang</div>
+          </div>
+          <button type="button" onclick="window.FinSound?.setEnabled(${!cfg.enabled}); openSettingsDetail('sound');" 
+            class="px-3.5 py-2 rounded-xl ${cfg.enabled ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'} text-xs font-bold active:scale-95 transition-all">
+            ${cfg.enabled ? '<i class=\"fa-solid fa-volume-high\"></i> Đang Bật' : '<i class=\"fa-solid fa-volume-xmark\"></i> Đang Tắt'}
+          </button>
+        </div>
+
+        <!-- 2. THANH TRƯỢT ÂM LƯỢNG -->
+        <div class="p-4 rounded-2xl custom-bg-input border custom-border space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold custom-text">
+            <span>m Lượng Hệ Thống</span>
+            <span class="text-cyan-400">${Math.round(cfg.volume * 100)}%</span>
+          </div>
+          <input type="range" min="0" max="1" step="0.05" value="${cfg.volume}" 
+            onchange="window.FinSound?.setVolume(this.value); openSettingsDetail('sound');"
+            class="w-full accent-cyan-400 cursor-pointer">
+        </div>
+
+        <!-- 3. CHỌN SOUND PACKS -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold custom-text-secondary uppercase">Chọn Gói m Thanh (4 Sound Packs)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${packs.map(p => {
+              const isSelected = cfg.pack === p.id;
+              return `
+                <div onclick="window.FinSound?.setPack('${p.id}'); openSettingsDetail('sound');" 
+                  class="p-3.5 rounded-2xl border ${isSelected ? 'border-cyan-400 bg-cyan-500/15 shadow-sm shadow-cyan-500/20' : 'custom-border custom-bg-input'} flex items-center gap-3 cursor-pointer hover:border-cyan-400 active:scale-98 transition-all">
+                  <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-cyan-400 text-lg shrink-0">
+                    <i class="fa-solid ${p.icon}"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-black custom-text flex items-center gap-1.5 truncate">
+                      <span>${p.name}</span>
+                      ${isSelected ? '<i class=\"fa-solid fa-circle-check text-cyan-400 text-xs\"></i>' : ''}
+                    </div>
+                    <div class="text-[10px] custom-text-secondary truncate">${p.desc}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 4. BẢNG NGHE THỬ TỪNG LOẠI ÂM THANH -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold custom-text-secondary uppercase">Nghe Thử Từng Loại m Thanh</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button type="button" onclick="window.FinSound?.play('click')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-cyan-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-arrow-pointer text-indigo-400 mr-1.5"></i> Nút Bấm</span>
+              <span class="text-[10px] text-cyan-400 font-bold">Nghe</span>
+            </button>
+
+            <button type="button" onclick="window.FinSound?.play('trash')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-rose-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-trash-can text-rose-400 mr-1.5"></i> Xóa Mục</span>
+              <span class="text-[10px] text-rose-400 font-bold">Nghe</span>
+            </button>
+
+            <button type="button" onclick="window.FinSound?.play('coin')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-amber-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-coins text-amber-400 mr-1.5"></i> Tiền Rơi</span>
+              <span class="text-[10px] text-amber-400 font-bold">Nghe</span>
+            </button>
+
+            <button type="button" onclick="window.FinSound?.play('success')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-emerald-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Lưu Thành Công</span>
+              <span class="text-[10px] text-emerald-400 font-bold">Nghe</span>
+            </button>
+
+            <button type="button" onclick="window.FinSound?.play('pop')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-purple-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-1.5"></i> Nút Nổi Pop</span>
+              <span class="text-[10px] text-purple-400 font-bold">Nghe</span>
+            </button>
+
+            <button type="button" onclick="window.FinSound?.play('switchView')" class="p-3 rounded-xl custom-bg-input border custom-border flex items-center justify-between hover:border-sky-400 active:scale-95 transition-all">
+              <span class="font-bold custom-text"><i class="fa-solid fa-arrows-turn-to-dots text-sky-400 mr-1.5"></i> Đổi Trang</span>
+              <span class="text-[10px] text-sky-400 font-bold">Nghe</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==============================================================
+  // CHI TIẾT: BÀN PHÍM ẢO FINMASTER PRO (KEYBOARD DETAIL)
+  // ==============================================================
+  function renderKeyboardDetailHTML() {
+    const kb = window.FinKeyboard;
+    const stateKb = kb ? kb.getState() : { enabled: true, theme: 'obsidian', soundEnabled: true, soundProfile: 'mech' };
+    const themes = kb ? kb.getThemes() : [];
+
+    return `
+      <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-black text-sm custom-text flex items-center gap-2">
+              <i class="fa-solid fa-keyboard text-purple-400"></i> Bàn Phím Độc Quyền FinMaster Pro
+            </h4>
+            <p class="text-[11px] custom-text-secondary">Thay thế hoàn toàn bàn phím mặc định của điện thoại / thiết bị</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            V3.0 Smart
+          </span>
+        </div>
+
+        <!-- CÔNG TẮC BẬT / TẮT BÀN PHÍM TÙY BIẾN -->
+        <div class="p-4 rounded-2xl custom-bg-input border custom-border flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold custom-text">Kích hoạt bàn phím FinMaster</div>
+            <div class="text-[11px] custom-text-secondary">Tự động chặn bàn phím ảo của thiết bị khi nhấp vào ô nhập</div>
+          </div>
+          <button type="button" onclick="const res = window.FinKeyboard?.toggleCustomKeyboard(); openSettingsDetail('keyboard');" class="px-3.5 py-2 rounded-xl ${stateKb.customKeyboardEnabled ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'} text-xs font-bold transition-all active:scale-95">
+            ${stateKb.customKeyboardEnabled ? '<i class=\"fa-solid fa-check\"></i> Đang Bật' : '<i class=\"fa-solid fa-ban\"></i> Đang Tắt'}
+          </button>
+        </div>
+
+        <!-- CÀI ĐẶT ÂM THANH GÕ PHÍM CƠ HỌC -->
+        <div class="p-4 rounded-2xl custom-bg-input border custom-border space-y-3">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="text-xs font-bold custom-text">Âm thanh ting ting khi lưu tiền</div>
-              <div class="text-[11px] custom-text-secondary">Tạo cảm giác sướng tai khi thu nhập về</div>
+              <div class="text-xs font-bold custom-text">m thanh phản hồi khi gõ phím</div>
+              <div class="text-[11px] custom-text-secondary">Web Audio API mô phỏng bàn phím cơ tactile click</div>
             </div>
-            <button onclick="if(typeof playSound==='function') playSound('success');" class="px-3 py-1.5 rounded-xl bg-indigo-500 text-white text-xs font-bold">
-              Nghe thử
+            <button type="button" onclick="localStorage.setItem('fin_kb_sound', '${stateKb.soundEnabled ? 'false' : 'true'}'); if(window.FinKeyboard) window.FinKeyboard.getState().soundEnabled = ${!stateKb.soundEnabled}; openSettingsDetail('keyboard');" class="px-3 py-1.5 rounded-xl ${stateKb.soundEnabled ? 'bg-indigo-500 text-white' : 'bg-slate-700 text-slate-400'} text-xs font-bold transition-all active:scale-95">
+              ${stateKb.soundEnabled ? '<i class=\"fa-solid fa-volume-high\"></i> Bật' : '<i class=\"fa-solid fa-volume-xmark\"></i> Tắt'}
             </button>
           </div>
 
-          <div class="p-4 rounded-2xl custom-bg-input border custom-border flex items-center justify-between">
-            <div>
-              <div class="text-xs font-bold custom-text">Âm thanh Pop khi chạm nút</div>
-              <div class="text-[11px] custom-text-secondary">Phản hồi xúc giác hiện đại</div>
-            </div>
-            <button onclick="if(typeof playSound==='function') playSound('pop');" class="px-3 py-1.5 rounded-xl bg-indigo-500 text-white text-xs font-bold">
-              Nghe thử
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="button" onclick="localStorage.setItem('fin_kb_sound_type', 'mech'); if(window.FinKeyboard) window.FinKeyboard.getState().soundProfile = 'mech'; openSettingsDetail('keyboard');" class="p-2.5 rounded-xl border ${stateKb.soundProfile === 'mech' ? 'border-purple-400 bg-purple-500/10 text-purple-300' : 'custom-border custom-bg-card custom-text-secondary'} text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <i class="fa-solid fa-gear"></i> Phím cơ Tactile
             </button>
+            <button type="button" onclick="localStorage.setItem('fin_kb_sound_type', 'bubble'); if(window.FinKeyboard) window.FinKeyboard.getState().soundProfile = 'bubble'; openSettingsDetail('keyboard');" class="p-2.5 rounded-xl border ${stateKb.soundProfile === 'bubble' ? 'border-purple-400 bg-purple-500/10 text-purple-300' : 'custom-border custom-bg-card custom-text-secondary'} text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <i class="fa-solid fa-circle-dot"></i> Bong bóng Pop
+            </button>
+          </div>
+        </div>
+
+        <!-- DANH SÁCH 7 CHỦ ĐỀ SIÊU ĐẸP -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold custom-text-secondary uppercase">7 Bộ Chủ Đề Bàn Phím Đẳng Cấp</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${themes.map(t => {
+              const isSelected = stateKb.theme === t.id;
+              return `
+                <div onclick="if(window.FinKeyboard) window.FinKeyboard.setTheme('${t.id}'); openSettingsDetail('keyboard');" class="p-3 rounded-2xl border ${isSelected ? 'border-sky-400 bg-sky-500/15 shadow-sm shadow-sky-500/20' : 'custom-border custom-bg-input'} flex items-center gap-3 cursor-pointer hover:border-sky-300 active:scale-98 transition-all">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20 shadow-inner flex-shrink-0" style="background: ${t.bgPreview};">
+                    <i class="fa-solid ${t.icon}" style="color: ${t.accentColor}; font-size: 1.1rem;"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-black custom-text flex items-center gap-1.5 truncate">
+                      <span>${t.name}</span>
+                      ${isSelected ? '<i class=\"fa-solid fa-circle-check text-sky-400 text-[10px]\"></i>' : ''}
+                    </div>
+                    <div class="text-[10px] custom-text-secondary truncate">${t.desc}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Ô THỬ NGHIỆM GÕ PHÍM TRỰC TIẾP -->
+        <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 to-purple-950/40 border border-indigo-500/30 space-y-2.5">
+          <div class="flex items-center gap-2 text-indigo-300 font-bold text-xs">
+            <i class="fa-solid fa-vial"></i> Khu Vực Thử Nghiệm Bàn Phím
+          </div>
+          <p class="text-[11px] text-slate-400">Chạm vào ô dưới để mở bàn phím ảo FinMaster, trải nghiệm tính toán và gõ văn bản:</p>
+          <div class="space-y-2">
+            <input type="text" inputmode="numeric" placeholder="Chạm thử ô Số tiền (Mở Numpad & Máy tính)..." class="w-full p-3 rounded-xl custom-bg-input custom-text text-sm font-bold border custom-border outline-none focus:border-indigo-400">
+            <input type="text" placeholder="Chạm thử ô Ghi chú (Mở QWERTY & Tiếng Việt)..." class="w-full p-3 rounded-xl custom-bg-input custom-text text-sm font-medium border custom-border outline-none focus:border-indigo-400">
           </div>
         </div>
       </div>
@@ -651,16 +878,63 @@
   // ==============================================================
   // CHI TIẾT 11: MÔ-ĐUN SIÊU ỨNG DỤNG (MODULES DETAIL)
   // ==============================================================
+  // CHI TIẾT 11: MENU ỨNG DỤNG & PHÂN HỆ (MODULES DETAIL)
+  // ==============================================================
   function renderModulesDetailHTML() {
+    const DEFAULT_MODULES = [
+      { id: "calendar", name: "Lịch trình", icon: "fa-calendar-days", color: "text-blue-500" },
+      { id: "tasks", name: "Quản lý Công việc", icon: "fa-clipboard-check", color: "text-indigo-500" },
+      { id: "debts", name: "Sổ Nợ & Cho vay", icon: "fa-hand-holding-dollar", color: "text-rose-500" },
+      { id: "goals", name: "Mục tiêu Tiết kiệm", icon: "fa-bullseye", color: "text-amber-500" },
+      { id: "budgets", name: "Ngân sách chi tiêu", icon: "fa-wallet", color: "text-emerald-500" },
+      { id: "favorites", name: "Sổ tay Quán ruột", icon: "fa-heart", color: "text-pink-500" },
+      { id: "map", name: "Bản đồ nhiệt & Vị trí", icon: "fa-map-location-dot", color: "text-cyan-500" },
+      { id: "custommaps", name: "Tự tạo Bản đồ", icon: "fa-map-pin", color: "text-purple-500" },
+      { id: "trips", name: "Lên kế hoạch Chuyến đi", icon: "fa-plane-departure", color: "text-orange-500" },
+      { id: "grab", name: "Chốt ca Tài xế Grab", icon: "fa-motorcycle", color: "text-green-600" },
+      { id: "diary", name: "Xem nhật ký của bạn", icon: "fa-book-open", color: "text-orange-600" },
+      { id: "running", name: "Theo dõi Chạy bộ", icon: "fa-person-running", color: "text-red-500" },
+      { id: "work", name: "Chấm công & Ký sự", icon: "fa-briefcase", color: "text-teal-500" },
+      { id: "gallery", name: "Thư viện Ảnh", icon: "fa-images", color: "text-fuchsia-500" },
+      { id: "report", name: "Báo cáo Wrapped E-Statement", icon: "fa-file-invoice", color: "text-emerald-400" },
+    ];
+    const modules = (window.OPTIONAL_MODULES && window.OPTIONAL_MODULES.length > 0) ? window.OPTIONAL_MODULES : DEFAULT_MODULES;
+    const modSettings = window.state?.moduleSettings || {};
+
     return `
       <div class="p-6 rounded-3xl custom-bg-card border custom-border space-y-4 shadow-sm">
-        <div>
-          <h4 class="font-black text-sm custom-text">Menu Ứng Dụng & Tính Năng</h4>
-          <p class="text-[11px] custom-text-secondary">Bật/tắt các phân hệ để tối ưu thanh điều hướng theo nhu cầu</p>
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-black text-sm custom-text">Menu Ứng Dụng & Phân Hệ</h4>
+            <p class="text-[11px] custom-text-secondary">Bật hoặc tắt từng trang. Trang bật sẽ ngay lập tức xuất hiện trên thanh điều hướng!</p>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/15 text-purple-400 border border-purple-500/25">
+            ${modules.length} Phân Hệ
+          </span>
         </div>
 
-        <div id="slider-modules-container" class="space-y-2 pt-2">
-          <!-- Bơm từ module-toggles-container -->
+        <div class="space-y-2.5 pt-2">
+          ${modules.map(mod => {
+            const isChecked = modSettings[mod.id] !== false;
+            return `
+              <div class="flex items-center justify-between p-3.5 custom-bg-input border custom-border rounded-2xl shadow-sm hover:border-purple-500/40 transition-colors">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${mod.color} border custom-border text-base shrink-0">
+                    <i class="fa-solid ${mod.icon}"></i>
+                  </div>
+                  <div>
+                    <div class="text-xs font-black custom-text">${mod.name}</div>
+                    <div class="text-[10px] custom-text-secondary">Mã: view-${mod.id}</div>
+                  </div>
+                </div>
+
+                <label class="relative inline-flex items-center cursor-pointer active:scale-90 transition-transform">
+                  <input type="checkbox" onchange="toggleAppModule('${mod.id}', this.checked); openSettingsDetail('modules');" ${isChecked ? 'checked' : ''} class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all border custom-border shadow-sm"></div>
+                </label>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
