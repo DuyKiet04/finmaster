@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finmaster-v139'; // Cập nhật trung tâm cài đặt siêu sang & trang chi tiết trượt
+const CACHE_NAME = 'finmaster-v909'; // Cập nhật trung tâm cài đặt siêu sang & trang chi tiết trượt
 
 // 1. FILE TĨNH & GIAO DIỆN HỆ THỐNG
 const STATIC_ASSETS = [

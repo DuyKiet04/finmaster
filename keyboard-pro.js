@@ -987,9 +987,12 @@
     const tag = el.tagName;
     const type = (el.type || '').toLowerCase();
 
-    // Bỏ qua các loại không cần gõ văn bản
+    // Bỏ qua các loại không cần gõ văn bản hoặc thuộc bộ chọn ngày/tháng/giờ
     if (type === 'file' || type === 'checkbox' || type === 'radio' || type === 'range' ||
-        type === 'button' || type === 'submit' || type === 'reset' || type === 'color') {
+        type === 'button' || type === 'submit' || type === 'reset' || type === 'color' ||
+        type === 'date' || type === 'time' || type === 'datetime-local' || type === 'month' || type === 'week' ||
+        el.classList.contains('flatpickr-input') || el.hasAttribute('data-no-keyboard') ||
+        el.id === 'dash-date-picker' || el.id === 'tx-date-picker' || el.id === 'm-date') {
       return;
     }
 
@@ -1049,6 +1052,12 @@
       // Nếu click vào một ô input
       if (input) {
         const type = (input.type || '').toLowerCase();
+        // BỎ QUA HOÀN TOÀN CÁC INPUT CHỌN NGÀY GIỜ VÀ FLATPICKR
+        if (type === 'date' || type === 'time' || type === 'datetime-local' || type === 'month' || type === 'week' ||
+            input.classList.contains('flatpickr-input') || input.hasAttribute('data-no-keyboard') ||
+            input.id === 'dash-date-picker' || input.id === 'tx-date-picker' || input.id === 'm-date') {
+          return;
+        }
         if (type !== 'file' && type !== 'checkbox' && type !== 'radio' && type !== 'range' &&
             type !== 'button' && type !== 'submit' && type !== 'reset') {
           // Ngăn bàn phím mặc định
@@ -1072,6 +1081,11 @@
       const target = e.target;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
         const type = (target.type || '').toLowerCase();
+        if (type === 'date' || type === 'time' || type === 'datetime-local' || type === 'month' || type === 'week' ||
+            target.classList.contains('flatpickr-input') || target.hasAttribute('data-no-keyboard') ||
+            target.id === 'dash-date-picker' || target.id === 'tx-date-picker' || target.id === 'm-date') {
+          return;
+        }
         if (type !== 'file' && type !== 'checkbox' && type !== 'radio' && type !== 'button') {
           if (STATE.customKeyboardEnabled && !STATE.isOpen) {
             target.setAttribute('inputmode', 'none');

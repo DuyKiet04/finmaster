@@ -1,11 +1,13 @@
 // ==========================================
-// FINMASTER WORK & JOURNAL CENTER - LIQUID GLASS EDITION
-// Spatial Depth, Bento KPIs, Tactile Calendar, Story Timeline
+// FINMASTER WORK & JOURNAL CENTER - SPATIAL LIQUID GLASS 2.0
+// Next-Gen Spatial Depth, Bento KPIs, Unified Date Picker, Tactical Insights
 // ==========================================
 
 (function () {
     const uid = () => typeof generateId === 'function' ? generateId() : Math.random().toString(36).substring(2, 9);
     const normalizeStr = str => str ? str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+
+    window.workChartType = window.workChartType || 'bar';
 
     // ==========================================
     // 1. TỰ ĐỘNG BƠM GIAO DIỆN CHÍNH (SPATIAL LIQUID GLASS UI)
@@ -14,20 +16,20 @@
         if (document.getElementById("view-work")) return;
 
         const workHtml = `
-        <div id="view-work" class="view-section hidden pt-3 pb-28 relative min-h-screen font-sans">
+        <div id="view-work" class="view-section hidden pt-2 sm:pt-3 pb-28 relative min-h-screen font-sans">
             
             <!-- THANH ĐIỀU HƯỚNG TABS (FLOATING HERO ISLAND) -->
-            <div class="px-2 mb-4 sticky top-2 z-40 max-w-4xl mx-auto">
-                <div class="work-hero-glass p-1.5 rounded-full flex items-center justify-between gap-1 shadow-xl">
-                    <button onclick="workSwitchTab('tab-overview')" id="btn-tab-overview" class="work-tab-btn active flex-1 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-black text-white flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-calendar-check"></i>
+            <div class="px-2 mb-3.5 sticky top-2 z-40 max-w-4xl mx-auto">
+                <div class="work-hero-glass p-1 sm:p-1.5 rounded-full flex items-center justify-between gap-1 shadow-xl">
+                    <button onclick="workSwitchTab('tab-overview')" id="btn-tab-overview" class="work-tab-btn active flex-1 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-black text-white flex items-center justify-center gap-1.5 sm:gap-2 transition-all">
+                        <i class="fa-solid fa-calendar-check text-[11px] sm:text-xs"></i>
                         <span>Lịch Trình</span>
-                        <span id="work-badge-today" class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold backdrop-blur-sm">Tháng này</span>
+                        <span id="work-badge-today" class="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold backdrop-blur-sm whitespace-nowrap">Tháng này</span>
                     </button>
-                    <button onclick="workSwitchTab('tab-stats')" id="btn-tab-stats" class="work-tab-btn flex-1 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold custom-text-secondary flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-chart-pie"></i>
+                    <button onclick="workSwitchTab('tab-stats')" id="btn-tab-stats" class="work-tab-btn flex-1 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold custom-text-secondary flex items-center justify-center gap-1.5 sm:gap-2 transition-all">
+                        <i class="fa-solid fa-chart-pie text-[11px] sm:text-xs"></i>
                         <span>Thống Kê</span>
-                        <span id="work-badge-stats-count" class="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-bold">Báo cáo</span>
+                        <span id="work-badge-stats-count" class="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-bold whitespace-nowrap">Báo cáo</span>
                     </button>
                 </div>
             </div>
@@ -35,79 +37,86 @@
             <!-- ============================== -->
             <!-- TAB 1: TỔNG QUAN (CALENDAR + TIMELINE) -->
             <!-- ============================== -->
-            <div id="tab-overview" class="work-tab-content animate-fadeIn block px-2 space-y-4 max-w-4xl mx-auto">
+            <div id="tab-overview" class="work-tab-content animate-fadeIn block px-2 space-y-3.5 max-w-4xl mx-auto">
                 
                 <!-- MONTHLY 4-METRIC BENTO RIBBON -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     <!-- KPI 1: Tổng chi tháng -->
-                    <div class="work-kpi-card p-3.5 sm:p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-rose-500">Chi tháng</span>
-                            <div class="w-7 h-7 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-xs">
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-rose-500">Chi tháng</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-[11px] shadow-sm">
                                 <i class="fa-solid fa-receipt"></i>
                             </div>
                         </div>
-                        <div id="work-kpi-total" class="text-base sm:text-lg font-black text-rose-500 truncate">0 ₫</div>
+                        <div id="work-kpi-total" class="text-sm sm:text-base font-black text-rose-500 truncate tabular-nums">0 ₫</div>
                         <div class="text-[9px] font-semibold custom-text-secondary mt-0.5">Khoản chi công sở</div>
                     </div>
 
                     <!-- KPI 2: Ngày làm việc -->
-                    <div class="work-kpi-card p-3.5 sm:p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-blue-500">Ngày làm</span>
-                            <div class="w-7 h-7 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-xs">
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-blue-500">Ngày làm</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-[11px] shadow-sm">
                                 <i class="fa-solid fa-briefcase"></i>
                             </div>
                         </div>
-                        <div id="work-kpi-days" class="text-base sm:text-lg font-black custom-text truncate">0 ngày</div>
+                        <div id="work-kpi-days" class="text-sm sm:text-base font-black custom-text truncate tabular-nums">0 ngày</div>
                         <div class="text-[9px] font-semibold custom-text-secondary mt-0.5">Có hoạt động/chi</div>
                     </div>
 
                     <!-- KPI 3: Ký sự -->
-                    <div class="work-kpi-card p-3.5 sm:p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-500">Ký sự</span>
-                            <div class="w-7 h-7 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-xs">
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-500">Ký sự</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-[11px] shadow-sm">
                                 <i class="fa-solid fa-book-open"></i>
                             </div>
                         </div>
-                        <div id="work-kpi-logs" class="text-base sm:text-lg font-black text-amber-500 truncate">0 bài</div>
+                        <div id="work-kpi-logs" class="text-sm sm:text-base font-black text-amber-500 truncate tabular-nums">0 bài</div>
                         <div class="text-[9px] font-semibold custom-text-secondary mt-0.5">Nhật ký đã ghi</div>
                     </div>
 
                     <!-- KPI 4: Trung bình/ngày -->
-                    <div class="work-kpi-card p-3.5 sm:p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-500">TB/ngày</span>
-                            <div class="w-7 h-7 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-xs">
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-500">TB/ngày</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-[11px] shadow-sm">
                                 <i class="fa-solid fa-chart-simple"></i>
                             </div>
                         </div>
-                        <div id="work-kpi-avg" class="text-base sm:text-lg font-black text-emerald-500 truncate">0 ₫</div>
+                        <div id="work-kpi-avg" class="text-sm sm:text-base font-black text-emerald-500 truncate tabular-nums">0 ₫</div>
                         <div class="text-[9px] font-semibold custom-text-secondary mt-0.5">Chi bình quân</div>
                     </div>
                 </div>
 
                 <!-- SMART CALENDAR CARD (SPATIAL GLASS) -->
-                <div class="work-cal-card p-5 sm:p-6 relative overflow-hidden">
-                    <div class="flex justify-between items-center mb-5 relative z-10">
-                        <button onclick="workChangeMonth(-1)" class="w-10 h-10 flex items-center justify-center rounded-2xl custom-bg-input custom-text hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm" title="Tháng trước">
+                <div class="work-cal-card p-4 sm:p-5 relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-4 relative z-10">
+                        <button onclick="workChangeMonth(-1)" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-2xl custom-bg-input custom-text hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm" title="Tháng trước">
                             <i class="fa-solid fa-chevron-left text-xs"></i>
                         </button>
                         
-                        <div class="flex items-center gap-2 sm:gap-3">
-                            <span id="work-calendar-title" class="text-base sm:text-lg font-black custom-text tracking-wider uppercase">THÁNG --/----</span>
-                            <button onclick="window.workJumpToToday()" class="px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider bg-primary-500/15 text-primary-500 hover:bg-primary-500/25 transition-colors border border-primary-500/30 active:scale-95 shadow-sm">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <!-- Nút chọn ngày qua Modal lịch hệ thống -->
+                            <button onclick="window.openFinDatePicker('work-cal-quick-jump')" class="px-3 py-1.5 rounded-xl custom-bg-input hover:border-primary-500/40 border custom-border flex items-center gap-1.5 transition-all active:scale-95 shadow-sm group" title="Chạm để mở lịch chọn nhanh ngày bất kỳ">
+                                <i class="fa-solid fa-calendar-day text-xs text-primary-500 group-hover:scale-110 transition-transform"></i>
+                                <span id="work-calendar-title" class="text-sm sm:text-base font-black custom-text tracking-wider uppercase">THÁNG --/----</span>
+                                <i class="fa-solid fa-chevron-down text-[8px] custom-text-secondary"></i>
+                            </button>
+                            <input type="hidden" id="work-cal-quick-jump" value="">
+
+                            <button onclick="window.workJumpToToday()" class="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-primary-500/15 text-primary-500 hover:bg-primary-500/25 transition-colors border border-primary-500/30 active:scale-95 shadow-sm">
                                 Hôm nay
                             </button>
                         </div>
 
-                        <button onclick="workChangeMonth(1)" class="w-10 h-10 flex items-center justify-center rounded-2xl custom-bg-input custom-text hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm" title="Tháng sau">
+                        <button onclick="workChangeMonth(1)" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-2xl custom-bg-input custom-text hover:text-primary-500 transition-all active:scale-90 border custom-border shadow-sm" title="Tháng sau">
                             <i class="fa-solid fa-chevron-right text-xs"></i>
                         </button>
                     </div>
                     
-                    <div class="grid grid-cols-7 gap-1 mb-3 text-center text-[11px] font-black uppercase tracking-wider relative z-10">
+                    <div class="grid grid-cols-7 gap-1 mb-2 text-center text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10">
                         <div class="custom-text-secondary">T2</div>
                         <div class="custom-text-secondary">T3</div>
                         <div class="custom-text-secondary">T4</div>
@@ -117,69 +126,99 @@
                         <div class="text-rose-500">CN</div>
                     </div>
                     
-                    <div id="work-calendar-grid" class="grid grid-cols-7 gap-y-3.5 gap-x-1 sm:gap-x-2 text-center mb-4 relative z-10"></div>
+                    <div id="work-calendar-grid" class="grid grid-cols-7 gap-y-2.5 sm:gap-y-3.5 gap-x-1 sm:gap-x-2 text-center mb-3 relative z-10"></div>
                     
-                    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 border-t border-dashed custom-border text-[11px] font-bold custom-text-secondary uppercase tracking-wider relative z-10">
-                        <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full work-dot-expense"></div> Chi tiêu</span>
-                        <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full work-dot-journal"></div> Ký sự</span>
-                        <span class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded-md border-2 border-primary-500 flex items-center justify-center text-[8px] font-black text-primary-500">H</div> Hôm nay</span>
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2 pt-3 border-t border-dashed custom-border text-[10px] sm:text-[11px] font-bold custom-text-secondary uppercase tracking-wider relative z-10">
+                        <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full work-dot-expense"></div> Chi tiêu</span>
+                        <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full work-dot-journal"></div> Ký sự</span>
+                        <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 rounded-md border-2 border-primary-500 flex items-center justify-center text-[8px] font-black text-primary-500">H</div> Hôm nay</span>
                     </div>
                 </div>
 
                 <!-- LỊCH TRÌNH CHI TIẾT (TIMELINE FEED) -->
-                <div class="relative pt-2 pb-10">
+                <div class="relative pt-1 pb-10">
                     <div class="absolute left-6 sm:left-[3.25rem] top-6 bottom-0 w-0.5 bg-gradient-to-b from-primary-500/50 via-gray-300 dark:via-gray-700 to-transparent"></div>
-                    <div id="work-daily-feed" class="space-y-4 relative z-10"></div>
+                    <div id="work-daily-feed" class="space-y-3.5 relative z-10"></div>
                 </div>
             </div>
 
             <!-- ============================== -->
             <!-- TAB 2: THỐNG KÊ (STATS & TOP CATEGORIES) -->
             <!-- ============================== -->
-            <div id="tab-stats" class="work-tab-content animate-fadeIn hidden px-2 space-y-4 max-w-4xl mx-auto">
+            <div id="tab-stats" class="work-tab-content animate-fadeIn hidden px-2 space-y-3.5 max-w-4xl mx-auto">
                 
-                <!-- Box Tổng kết Bento -->
-                <div class="work-cal-card p-5 sm:p-6 relative overflow-hidden" id="work-stats-container">
+                <!-- Box Tổng kết Bento & Bộ lọc ngày Đồng bộ -->
+                <div class="work-cal-card p-4 sm:p-5 relative overflow-hidden" id="work-stats-container">
                     <!-- JS Bơm thống kê vào đây -->
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Box Biểu đồ cột -->
-                    <div class="work-cal-card p-5 sm:p-6 flex flex-col">
-                        <div class="flex items-center gap-3 border-b border-dashed custom-border pb-3.5 mb-4">
-                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center text-base shadow-md shadow-rose-500/30">
-                                <i class="fa-solid fa-chart-column"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <!-- Box Biểu đồ cột / đường -->
+                    <div class="work-cal-card p-4 sm:p-5 flex flex-col">
+                        <div class="flex items-center justify-between border-b border-dashed custom-border pb-3 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center text-sm shadow-md shadow-rose-500/30">
+                                    <i class="fa-solid fa-chart-column"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black custom-text uppercase tracking-wider">Biểu Đồ Chi Tiêu</p>
+                                    <p class="text-[9px] font-semibold custom-text-secondary">Phân bổ chi theo từng ngày</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs font-black custom-text uppercase tracking-wider">Biểu Đồ Chi Tiêu</p>
-                                <p class="text-[10px] font-semibold custom-text-secondary">Phân bổ chi theo từng ngày</p>
+
+                            <!-- Switcher Chuyển đổi Cột / Đường -->
+                            <div class="flex items-center p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border custom-border">
+                                <button onclick="window.workToggleChartType('bar')" class="px-2 py-1 rounded-lg text-[10px] font-black ${window.workChartType !== 'line' ? 'bg-primary-500 text-white shadow-sm' : 'custom-text-secondary hover:text-white'} transition-all" title="Dạng cột">
+                                    <i class="fa-solid fa-chart-column"></i> Cột
+                                </button>
+                                <button onclick="window.workToggleChartType('line')" class="px-2 py-1 rounded-lg text-[10px] font-black ${window.workChartType === 'line' ? 'bg-primary-500 text-white shadow-sm' : 'custom-text-secondary hover:text-white'} transition-all" title="Dạng đường mượt">
+                                    <i class="fa-solid fa-chart-line"></i> Xu hướng
+                                </button>
                             </div>
                         </div>
-                        <div class="flex-1 min-h-[220px] relative">
+                        <div class="flex-1 min-h-[200px] sm:min-h-[220px] relative">
                             <canvas id="workChartExpense"></canvas>
                         </div>
                     </div>
 
                     <!-- BẢNG XẾP HẠNG TOP DANH MỤC CÔNG VIỆC -->
-                    <div class="work-cal-card p-5 sm:p-6 flex flex-col">
-                        <div class="flex items-center gap-3 border-b border-dashed custom-border pb-3.5 mb-4">
-                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center text-base shadow-md shadow-amber-500/30">
-                                <i class="fa-solid fa-trophy"></i>
+                    <div class="work-cal-card p-4 sm:p-5 flex flex-col">
+                        <div class="flex items-center justify-between border-b border-dashed custom-border pb-3 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center text-sm shadow-md shadow-amber-500/30">
+                                    <i class="fa-solid fa-trophy"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black custom-text uppercase tracking-wider">Cơ Cấu Danh Mục</p>
+                                    <p class="text-[9px] font-semibold custom-text-secondary">Xếp hạng chi phí công sở</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs font-black custom-text uppercase tracking-wider">Cơ Cấu Danh Mục</p>
-                                <p class="text-[10px] font-semibold custom-text-secondary">Xếp hạng chi phí công sở</p>
-                            </div>
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">Chạm để soi sâu</span>
                         </div>
-                        <div id="work-cat-list" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[260px]"></div>
+                        <div id="work-cat-list" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1 max-h-[260px]"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- NÚT ĐĂNG NHẬT KÝ (FAB GLOW) -->
-            <button onclick="workOpenJournalForm()" class="work-fab-glow fixed bottom-24 right-5 sm:right-8 w-14 h-14 text-white rounded-full flex items-center justify-center text-xl z-40 border-2 border-white/40 shadow-2xl group active:scale-95" title="Viết ký sự mới">
-                <i class="fa-solid fa-pen-nib group-hover:rotate-12 transition-transform duration-300"></i>
-            </button>
+            <!-- NÚT FAB MỞ RỘNG (QUICK ACTIONS DOCK) -->
+            <div class="fixed bottom-24 right-4 sm:right-7 z-40 flex flex-col items-end gap-2.5">
+                <!-- Mini Quick Actions (Expandable) -->
+                <div id="work-fab-menu" class="hidden flex-col items-end gap-2 transition-all duration-300">
+                    <button onclick="window.workAddQuickExpense(); window.workToggleFabMenu(false);" class="px-3.5 py-2 rounded-2xl custom-bg-card border custom-border text-xs font-black text-rose-500 hover:bg-rose-500 hover:text-white flex items-center gap-2 shadow-xl backdrop-blur-md active:scale-95 transition-all">
+                        <i class="fa-solid fa-plus-circle text-sm"></i>
+                        <span>Ghi Khoản Chi</span>
+                    </button>
+                    <button onclick="window.workOpenJournalForm(); window.workToggleFabMenu(false);" class="px-3.5 py-2 rounded-2xl custom-bg-card border custom-border text-xs font-black text-amber-500 hover:bg-amber-500 hover:text-white flex items-center gap-2 shadow-xl backdrop-blur-md active:scale-95 transition-all">
+                        <i class="fa-solid fa-pen-nib text-sm"></i>
+                        <span>Viết Ký Sự</span>
+                    </button>
+                </div>
+
+                <!-- Main FAB button -->
+                <button onclick="window.workToggleFabMenu()" id="btn-work-fab" class="work-fab-glow w-13 h-13 sm:w-14 sm:h-14 text-white rounded-full flex items-center justify-center text-xl border-2 border-white/40 shadow-2xl active:scale-90 transition-transform" title="Hành động nhanh">
+                    <i id="work-fab-icon" class="fa-solid fa-pen-nib transition-transform duration-300"></i>
+                </button>
+            </div>
         </div>
         `;
         
@@ -257,6 +296,17 @@
         window.renderWorkDashboard();
     };
 
+    window.workJumpToDate = (dateStr) => {
+        if (!dateStr) return;
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            window.workViewYear = parseInt(parts[0]);
+            window.workViewMonth = parseInt(parts[1]) - 1;
+            window.workSelectedDate = dateStr;
+            window.renderWorkDashboard();
+        }
+    };
+
     window.workAddQuickExpense = () => {
         if (typeof openModal === 'function') {
             openModal("transaction");
@@ -278,19 +328,124 @@
     window.workApplyFilter = () => {
         const s = document.getElementById('work-filter-start')?.value;
         const e = document.getElementById('work-filter-end')?.value;
-        window.workFilterStart = s;
-        window.workFilterEnd = e;
+        window.workFilterStart = s || "";
+        window.workFilterEnd = e || "";
         if (s && e) {
-            if (new Date(s) > new Date(e)) return alert("Ngày bắt đầu không được lớn hơn ngày kết thúc đại ka ơi!");
-            window.renderWorkDashboard();
+            if (new Date(s) > new Date(e)) {
+                alert("Ngày bắt đầu không được lớn hơn ngày kết thúc đại ca ơi!");
+                return;
+            }
         }
+        window.renderWorkDashboard();
     };
 
     window.workClearFilter = () => {
         window.workFilterStart = "";
         window.workFilterEnd = "";
+        const sEl = document.getElementById('work-filter-start');
+        const eEl = document.getElementById('work-filter-end');
+        if (sEl) sEl.value = "";
+        if (eEl) eEl.value = "";
         window.renderWorkDashboard();
     };
+
+    window.workSetPresetRange = (preset) => {
+        const todayStr = (typeof getToday === 'function' ? getToday() : new Date().toISOString()).slice(0, 10);
+        const todayObj = new Date(todayStr + "T00:00:00");
+        const curY = todayObj.getFullYear();
+        const curM = todayObj.getMonth();
+
+        const fmtDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+        if (preset === 'today') {
+            window.workFilterStart = todayStr;
+            window.workFilterEnd = todayStr;
+        } else if (preset === 'last_7') {
+            const past7 = new Date(todayObj);
+            past7.setDate(past7.getDate() - 6);
+            window.workFilterStart = fmtDate(past7);
+            window.workFilterEnd = todayStr;
+        } else if (preset === 'this_month') {
+            const firstD = new Date(curY, curM, 1);
+            const lastD = new Date(curY, curM + 1, 0);
+            window.workFilterStart = fmtDate(firstD);
+            window.workFilterEnd = fmtDate(lastD);
+        } else if (preset === 'last_month') {
+            const firstD = new Date(curY, curM - 1, 1);
+            const lastD = new Date(curY, curM, 0);
+            window.workFilterStart = fmtDate(firstD);
+            window.workFilterEnd = fmtDate(lastD);
+        } else if (preset === 'all') {
+            window.workFilterStart = "";
+            window.workFilterEnd = "";
+        }
+
+        const sEl = document.getElementById('work-filter-start');
+        const eEl = document.getElementById('work-filter-end');
+        if (sEl) sEl.value = window.workFilterStart;
+        if (eEl) eEl.value = window.workFilterEnd;
+
+        window.renderWorkDashboard();
+        if (typeof playSound === 'function') playSound("click");
+    };
+
+    window.workToggleChartType = (type) => {
+        window.workChartType = type || (window.workChartType === 'bar' ? 'line' : 'bar');
+        window.renderWorkDashboard();
+        if (typeof playSound === 'function') playSound("click");
+    };
+
+    window.workToggleFabMenu = (forcedState) => {
+        const menu = document.getElementById("work-fab-menu");
+        const icon = document.getElementById("work-fab-icon");
+        if (!menu) return;
+
+        const isCurrentlyHidden = menu.classList.contains("hidden");
+        const shouldShow = forcedState !== undefined ? forcedState : isCurrentlyHidden;
+
+        if (shouldShow) {
+            menu.classList.remove("hidden");
+            menu.classList.add("flex");
+            if (icon) icon.className = "fa-solid fa-times rotate-90 transition-transform duration-300";
+        } else {
+            menu.classList.add("hidden");
+            menu.classList.remove("flex");
+            if (icon) icon.className = "fa-solid fa-pen-nib transition-transform duration-300";
+        }
+    };
+
+    window.workCopySummaryReport = () => {
+        const statsContainer = document.getElementById("work-stats-container");
+        if (!statsContainer) return;
+        const title = statsContainer.getAttribute("data-stats-title") || "Báo Cáo Công Sở";
+        const total = statsContainer.getAttribute("data-total-exp") || "0 ₫";
+        const txCount = statsContainer.getAttribute("data-tx-count") || "0";
+        const logCount = statsContainer.getAttribute("data-log-count") || "0";
+        const topCat = statsContainer.getAttribute("data-top-cat") || "Chưa có";
+
+        const text = `📊 BÁO CÁO CÔNG SỞ & KÝ SỰ\n📌 Kỳ: ${title}\n💰 Tổng chi tiêu: ${total} (${txCount} lượt giao dịch)\n📝 Ký sự công việc: ${logCount} bài ghi chú\n🏆 Danh mục chi lớn nhất: ${topCat}\n⚡ FinMaster Spatial Liquid Glass`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                if (typeof showToast === 'function') showToast("Đã sao chép báo cáo vào bộ nhớ tạm!", "success");
+                else alert("Đã sao chép tóm tắt báo cáo vào bộ nhớ tạm!");
+                if (typeof playSound === 'function') playSound("success");
+            });
+        } else {
+            prompt("Sao chép báo cáo:", text);
+        }
+    };
+
+    // Helper format ngày cho trigger pill
+    function formatPillDate(dateStr, fallbackText) {
+        if (!dateStr) return fallbackText;
+        if (typeof window.formatVietnameseDatePill === 'function') {
+            return window.formatVietnameseDatePill(dateStr);
+        }
+        const parts = dateStr.split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dateStr;
+    }
 
     // ==========================================
     // 3. RENDER MASTER ENGINE
@@ -321,7 +476,7 @@
         const monthLogs = (data.logs || []).filter(l => l.date && l.date.startsWith(monthStr) && (l.journalImages?.length > 0 || l.journalNote || l.journalMood));
 
         // ==========================================
-        // CẬP NHẬT 4 THẺ BENTO MONTHLY RIBBON
+        // CẬP NHẬT 4 THẺ BENTO MONTHLY RIBBON (TAB 1)
         // ==========================================
         const totalMonthExpense = workTransInMonth.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
         const activeDaysSet = new Set();
@@ -339,8 +494,11 @@
         if (kpiLogs) kpiLogs.innerText = `${monthLogsCount} bài`;
         const kpiAvg = document.getElementById("work-kpi-avg");
         if (kpiAvg) kpiAvg.innerText = formatMoney(avgPerActiveDay);
+        
+        const badgeToday = document.getElementById("work-badge-today");
+        if (badgeToday) badgeToday.innerText = `Tháng ${curM + 1}`;
         const badgeStats = document.getElementById("work-badge-stats-count");
-        if (badgeStats) badgeStats.innerText = `${activeDaysCount} ngày hoạt động`;
+        if (badgeStats) badgeStats.innerText = activeDaysCount > 0 ? `${activeDaysCount} ngày có chi` : `Báo cáo`;
 
         // ==========================================
         // VẼ SMART CALENDAR GRID
@@ -400,21 +558,21 @@
             const isToday = window.workSelectedDate === todayDateStr;
             
             let feedHtml = `
-            <div class="flex items-center justify-between mb-4 pl-12 sm:pl-16 pr-2">
+            <div class="flex items-center justify-between mb-3.5 pl-12 sm:pl-16 pr-1">
                 <div>
                     <div class="flex items-center gap-2">
-                        <h4 class="font-black text-base sm:text-lg custom-text tracking-tight">${vnDayName}, ${displayDateStr}</h4>
+                        <h4 class="font-black text-sm sm:text-base custom-text tracking-tight">${vnDayName}, ${displayDateStr}</h4>
                         ${isToday ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-primary-500 text-white shadow-sm shadow-primary-500/30">Hôm nay</span>` : ''}
                     </div>
-                    <p class="text-[10px] font-bold custom-text-secondary uppercase tracking-widest mt-0.5">Dòng thời gian hoạt động</p>
+                    <p class="text-[9px] font-bold custom-text-secondary uppercase tracking-widest mt-0.5">Dòng thời gian hoạt động</p>
                 </div>
                 <div class="flex items-center gap-1.5 sm:gap-2">
                     <button onclick="window.workOpenJournalForm()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-500 hover:bg-amber-500/25 border border-amber-500/30 text-xs font-black flex items-center gap-1.5 active:scale-95 transition-all shadow-sm" title="Viết ký sự cho ngày này">
-                        <i class="fa-solid fa-pen-nib text-[11px]"></i>
+                        <i class="fa-solid fa-pen-nib text-[10px]"></i>
                         <span class="hidden sm:inline">Ký sự</span>
                     </button>
                     <button onclick="window.workAddQuickExpense()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-500 hover:bg-rose-500/25 border border-rose-500/30 text-xs font-black flex items-center gap-1.5 active:scale-95 transition-all shadow-sm" title="Thêm chi tiêu công sở">
-                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <i class="fa-solid fa-plus text-[10px]"></i>
                         <span class="hidden sm:inline">Chi tiêu</span>
                     </button>
                 </div>
@@ -425,20 +583,20 @@
 
             if (dayTrans.length === 0 && dayLogs.length === 0) {
                 feedHtml += `
-                    <div class="pl-12 sm:pl-16 pr-2">
-                        <div class="work-empty-glass p-8 text-center flex flex-col items-center justify-center gap-4 mt-2">
-                            <div class="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-3xl shadow-inner work-coffee-float">
+                    <div class="pl-12 sm:pl-16 pr-1">
+                        <div class="work-empty-glass p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 mt-1">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl shadow-inner work-coffee-float">
                                 <i class="fa-solid fa-mug-hot"></i>
                             </div>
                             <div>
-                                <p class="text-base font-black custom-text">Ngày bình yên & thảnh thơi!</p>
-                                <p class="text-xs font-semibold custom-text-secondary mt-1">Chưa có chi tiêu công sở hay ký sự nào trong ngày này.</p>
+                                <p class="text-sm sm:text-base font-black custom-text">Ngày bình yên & thảnh thơi!</p>
+                                <p class="text-[11px] font-semibold custom-text-secondary mt-0.5">Chưa có chi tiêu công sở hay ký sự nào trong ngày này.</p>
                             </div>
-                            <div class="flex items-center gap-3 pt-2">
-                                <button onclick="window.workOpenJournalForm()" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md shadow-amber-500/25 active:scale-95 transition-all flex items-center gap-1.5">
+                            <div class="flex items-center gap-2.5 pt-1">
+                                <button onclick="window.workOpenJournalForm()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md shadow-amber-500/25 active:scale-95 transition-all flex items-center gap-1.5">
                                     <i class="fa-solid fa-pen-nib"></i> Viết ký sự
                                 </button>
-                                <button onclick="window.workAddQuickExpense()" class="px-4 py-2.5 rounded-2xl custom-bg-input border custom-border font-black text-xs custom-text hover:text-rose-500 active:scale-95 transition-all flex items-center gap-1.5 shadow-sm">
+                                <button onclick="window.workAddQuickExpense()" class="px-3.5 py-2 rounded-xl custom-bg-input border custom-border font-black text-xs custom-text hover:text-rose-500 active:scale-95 transition-all flex items-center gap-1.5 shadow-sm">
                                     <i class="fa-solid fa-plus"></i> Ghi chi tiêu
                                 </button>
                             </div>
@@ -448,115 +606,94 @@
             } else {
                 // 1. Giao dịch đi làm (Chi phí)
                 dayTrans.forEach(t => {
-                    const cat = (state.categories || []).find(c => c.id === t.category) || { name: 'Khác', icon: '🌟', color: 'bg-gray-100 text-gray-500' };
-                    const timeStr = t.date.split(" ")[1] ? t.date.split(" ")[1].substring(0,5) : "--:--";
-                    
-                    let iconContent = cat.icon || '🌟';
-                    if (iconContent.startsWith('fa-')) {
-                        iconContent = `<i class="fa-solid ${iconContent}"></i>`;
-                    } else if (/^[a-zA-Z0-9-]+$/.test(iconContent) && iconContent.length > 2) {
-                        iconContent = `<i class="fa-solid fa-${iconContent}"></i>`;
-                    }
-
-                    const fallbackHtml = `<div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl ${cat.color} flex items-center justify-center text-xl sm:text-2xl shadow-sm border custom-border shrink-0">${iconContent}</div>`;
-                    let visualHtml = fallbackHtml;
-
-                    if (t.image && typeof t.image === 'string' && t.image.length > 20 && t.image !== "null" && t.image !== "undefined") {
-                        const imgSrc = window.getFastImage ? window.getFastImage(t.image) : t.image;
-                        visualHtml = `
-                        <div class="relative w-11 h-11 sm:w-12 sm:h-12 shrink-0">
-                            ${fallbackHtml}
-                            <img src="${imgSrc}" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full rounded-2xl object-cover shadow-sm border custom-border cursor-pointer hover:opacity-85 z-10 bg-white dark:bg-gray-800" onclick="window.workViewImageFullScreen(this.src)" title="Xem ảnh">
-                        </div>`;
-                    }
-
-                    const walletObj = state.wallets ? state.wallets.find(w => w.id === t.walletId) : null;
+                    const cat = (state.categories || []).find(c => c.id === t.category) || { name: "Công sở", icon: "💼", color: "bg-blue-500/15 text-blue-500" };
+                    const timeStr = t.date.includes(" ") ? t.date.split(" ")[1].slice(0,5) : "--:--";
+                    const imgSrc = window.getFastImage ? window.getFastImage(t.image) : t.image;
 
                     feedHtml += `
-                        <div class="relative pl-12 sm:pl-16 pr-1 sm:pr-2 mb-4 group">
-                            <!-- Glowing Pin Node on Timeline -->
-                            <div class="absolute left-[1.05rem] sm:left-[2.8rem] top-5 w-4 h-4 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 border-2 border-white dark:border-gray-900 shadow-md shadow-rose-500/40 z-20 flex items-center justify-center text-[7px] text-white group-hover:scale-125 transition-transform">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            
-                            <div class="work-feed-card p-4 sm:p-5 relative overflow-hidden">
-                                <div class="flex items-center justify-between gap-3 mb-2">
-                                    <div class="flex items-center gap-3 min-w-0">
-                                        ${visualHtml}
-                                        <div class="min-w-0">
-                                            <p class="text-sm sm:text-base font-black custom-text truncate leading-tight">${cat.name}</p>
-                                            <p class="text-[11px] font-semibold custom-text-secondary mt-1 flex items-center gap-1.5">
-                                                <i class="fa-regular fa-clock text-[10px] opacity-70"></i> ${timeStr}
-                                                ${walletObj ? `<span class="opacity-40">•</span><span>${walletObj.name}</span>` : ''}
-                                            </p>
+                    <div class="relative pl-12 sm:pl-16 group">
+                        <div class="absolute left-6 sm:left-[3.25rem] top-4 -translate-x-1/2 w-4 h-4 rounded-full bg-rose-500 border-4 border-white dark:border-slate-900 shadow-md group-hover:scale-125 transition-transform z-10"></div>
+                        
+                        <div class="work-feed-card p-3.5 sm:p-4 flex flex-col gap-2.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl ${cat.color} flex items-center justify-center text-sm shadow-sm shrink-0">
+                                        ${cat.icon}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-xs custom-text truncate">${t.note || cat.name}</p>
+                                        <div class="flex items-center gap-2 text-[10px] custom-text-secondary mt-0.5">
+                                            <span><i class="fa-regular fa-clock text-[9px] mr-0.5"></i>${timeStr}</span>
+                                            <span class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 font-bold">${cat.name}</span>
                                         </div>
                                     </div>
-                                    <div class="text-right shrink-0">
-                                        <span class="inline-block text-sm sm:text-base font-black text-rose-500 px-3 py-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 shadow-sm">
-                                            -${formatMoney(t.amount)}
-                                        </span>
-                                    </div>
                                 </div>
-                                ${(t.note || t.locationName) ? `
-                                <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-dashed custom-border text-xs">
-                                    ${t.note ? `<span class="px-2.5 py-1 rounded-xl bg-black/5 dark:bg-white/5 font-medium custom-text-secondary flex items-center gap-1.5 border custom-border"><i class="fa-solid fa-align-left text-gray-400 text-[10px]"></i> ${t.note}</span>` : ''}
-                                    ${t.locationName ? `<span class="px-2.5 py-1 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5 border border-rose-500/20"><i class="fa-solid fa-location-dot text-[10px]"></i> ${window.formatShortAddress ? window.formatShortAddress(t.locationName) : t.locationName}</span>` : ''}
-                                </div>` : ''}
+                                <div class="text-right shrink-0">
+                                    <p class="font-black text-sm text-rose-500 tabular-nums">-${formatMoney(t.amount)}</p>
+                                    <button onclick="openModal('transaction', '${t.id}')" class="text-[10px] font-bold text-gray-400 hover:text-amber-500 transition-colors mt-0.5">Sửa</button>
+                                </div>
                             </div>
+
+                            ${imgSrc ? `
+                            <div class="relative rounded-xl overflow-hidden max-h-36 border custom-border group/img cursor-pointer" onclick="window.workViewImageFullScreen('${imgSrc}')">
+                                <img src="${imgSrc}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.parentElement.style.display='none'">
+                                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
+                                    <i class="fa-solid fa-expand mr-1"></i> Xem hóa đơn
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
+                    </div>
                     `;
                 });
 
                 // 2. Ký sự (Logs)
-                if (dayLogs.length > 0) {
-                    const sortedLogs = [...dayLogs].reverse();
-                    sortedLogs.forEach(logItem => {
-                        let imagesHtml = '';
-                        const currentImages = logItem.journalImages || (logItem.journalImage ? [logItem.journalImage] : []);
-                        if (currentImages.length > 0) {
-                            imagesHtml = `<div class="flex gap-2.5 mb-3 overflow-x-auto custom-scrollbar snap-x pb-2">` + 
-                                currentImages.map(img => `<img src="${window.getFastImage ? window.getFastImage(img) : img}" onclick="window.workViewImageFullScreen('${img}')" class="h-32 sm:h-36 w-auto min-w-[120px] object-cover rounded-2xl border custom-border shadow-sm snap-center cursor-pointer hover:brightness-90 active:scale-95 transition-all">`).join('') +
-                                `</div>`;
-                        }
+                dayLogs.forEach(l => {
+                    const moodEmoji = l.journalMood || "✍️";
+                    const images = l.journalImages || (l.journalImage ? [l.journalImage] : []);
 
-                        feedHtml += `
-                            <div class="relative pl-12 sm:pl-16 pr-1 sm:pr-2 mb-4 group">
-                                <!-- Glowing Pin Node on Timeline -->
-                                <div class="absolute left-[1.05rem] sm:left-[2.8rem] top-5 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 border-2 border-white dark:border-gray-900 shadow-md shadow-amber-500/40 z-20 flex items-center justify-center text-[7px] text-white group-hover:scale-125 transition-transform">
-                                    <i class="fa-solid fa-book-open"></i>
-                                </div>
-                                
-                                <div class="work-feed-card p-4 sm:p-5 relative overflow-hidden">
-                                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-dashed custom-border">
-                                        <div class="flex items-center gap-2.5">
-                                            <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-sm shadow-inner">
-                                                <i class="fa-solid fa-feather-pointed"></i>
-                                            </div>
-                                            <div>
-                                                <span class="text-xs font-black uppercase text-amber-500 tracking-wider">Ký Sự Công Sở</span>
-                                                <p class="text-[10px] font-semibold custom-text-secondary">Ghi lại cảm xúc & trải nghiệm</p>
-                                            </div>
-                                        </div>
-                                        <button onclick="window.workOpenJournalForm('${logItem.id}')" class="w-8 h-8 rounded-xl custom-bg-input custom-text-secondary hover:text-amber-500 hover:border-amber-500/40 flex items-center justify-center border custom-border active:scale-90 transition-all" title="Chỉnh sửa ký sự">
-                                            <i class="fa-solid fa-pen text-xs"></i>
-                                        </button>
+                    feedHtml += `
+                    <div class="relative pl-12 sm:pl-16 group">
+                        <div class="absolute left-6 sm:left-[3.25rem] top-4 -translate-x-1/2 w-4 h-4 rounded-full bg-amber-500 border-4 border-white dark:border-slate-900 shadow-md group-hover:scale-125 transition-transform z-10"></div>
+                        
+                        <div class="work-feed-card p-3.5 sm:p-4 flex flex-col gap-2.5 border-amber-500/20">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-base shadow-sm">
+                                        ${moodEmoji}
                                     </div>
-                                    
-                                    ${imagesHtml}
-                                    
-                                    ${(logItem.journalMood || logItem.journalNote) ? `
-                                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border custom-border mt-2">
-                                        ${logItem.journalMood ? `<span class="text-3xl leading-none drop-shadow-sm shrink-0 hover:scale-125 transition-transform cursor-pointer select-none">${logItem.journalMood}</span>` : ''}
-                                        <p class="flex-1 min-w-0 text-sm font-medium custom-text leading-relaxed italic break-words">
-                                            "${logItem.journalNote || ''}"
-                                        </p>
+                                    <div>
+                                        <p class="font-black text-xs text-amber-500 uppercase tracking-wider">Ký Sự Công Việc</p>
+                                        <p class="text-[9px] font-semibold custom-text-secondary">Nhật ký cảm xúc & bài học</p>
                                     </div>
-                                    ` : ''}
                                 </div>
+                                <button onclick="window.workOpenJournalForm('${l.id}')" class="px-2 py-1 rounded-lg bg-amber-500/15 text-amber-500 hover:bg-amber-500/25 text-[10px] font-bold transition-colors">
+                                    <i class="fa-solid fa-pen mr-1"></i>Sửa
+                                </button>
                             </div>
-                        `;
-                    });
-                }
+
+                            ${l.journalNote ? `
+                            <blockquote class="text-xs font-medium custom-text leading-relaxed italic bg-black/5 dark:bg-white/5 p-2.5 rounded-xl border-l-2 border-amber-500">
+                                "${l.journalNote}"
+                            </blockquote>
+                            ` : ''}
+
+                            ${images.length > 0 ? `
+                            <div class="flex flex-wrap gap-1.5 mt-1">
+                                ${images.map(img => `
+                                <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border custom-border group/gal cursor-pointer shadow-sm" onclick="window.workViewImageFullScreen('${img}')">
+                                    <img src="${window.getFastImage ? window.getFastImage(img) : img}" class="w-full h-full object-cover group-hover/gal:scale-110 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-black/25 opacity-0 group-hover/gal:opacity-100 flex items-center justify-center text-white text-[10px] transition-opacity">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </div>
+                                </div>
+                                `).join('')}
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    `;
+                });
             }
             feedContainer.innerHTML = feedHtml;
         }
@@ -571,7 +708,7 @@
 
             let filteredTrans = [];
             let filteredLogs = [];
-            let statsTitle = `Tháng ${curM+1}/${curY}`;
+            let statsTitle = `Tháng ${curM + 1}/${curY}`;
 
             const isDateInRange = (dateStr, start, end) => {
                 const d = new Date(dateStr.split(' ')[0] + "T00:00:00");
@@ -580,7 +717,9 @@
                 return d >= s && d <= e;
             };
 
-            if (window.workFilterStart && window.workFilterEnd) {
+            const hasActiveCustomRange = !!(window.workFilterStart && window.workFilterEnd);
+
+            if (hasActiveCustomRange) {
                 statsTitle = `Tùy chỉnh (${window.workFilterStart.split('-').reverse().join('/')} - ${window.workFilterEnd.split('-').reverse().join('/')})`;
                 filteredTrans = workTransAll.filter(t => isDateInRange(t.date, window.workFilterStart, window.workFilterEnd));
                 filteredLogs = data.logs.filter(l => isDateInRange(l.date, window.workFilterStart, window.workFilterEnd) && (l.journalImages?.length > 0 || l.journalNote || l.journalMood));
@@ -592,77 +731,209 @@
             const totalExpense = filteredTrans.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
             const avgPerTx = filteredTrans.length > 0 ? Math.round(totalExpense / filteredTrans.length) : 0;
 
+            // Tính toán insights nhanh
+            let maxExpenseTx = null;
+            let peakDayStr = "Chưa có";
+            let peakDayAmt = 0;
+            const daySumMap = {};
+
+            filteredTrans.forEach(t => {
+                const amt = Number(t.amount) || 0;
+                if (!maxExpenseTx || amt > Number(maxExpenseTx.amount)) {
+                    maxExpenseTx = t;
+                }
+                const dayKey = t.date.split(' ')[0];
+                daySumMap[dayKey] = (daySumMap[dayKey] || 0) + amt;
+                if (daySumMap[dayKey] > peakDayAmt) {
+                    peakDayAmt = daySumMap[dayKey];
+                    peakDayStr = dayKey;
+                }
+            });
+
+            const uniqueActiveSpendDays = Object.keys(daySumMap).length;
+            const topCategoryEntry = filteredTrans.reduce((acc, t) => {
+                acc[t.category] = (acc[t.category] || 0) + (Number(t.amount) || 0);
+                return acc;
+            }, {});
+            const sortedTopCats = Object.entries(topCategoryEntry).sort((a,b) => b[1] - a[1]);
+            const topCatObj = sortedTopCats.length > 0 ? (state.categories || []).find(c => c.id === sortedTopCats[0][0]) : null;
+            const topCatName = topCatObj ? `${topCatObj.name} (${formatMoney(sortedTopCats[0][1])})` : (sortedTopCats.length > 0 ? formatMoney(sortedTopCats[0][1]) : 'Chưa có');
+
+            // Format date text for trigger buttons
+            const defaultStartStr = `${curY}-${String(curM + 1).padStart(2, '0')}-01`;
+            const defaultEndStr = `${curY}-${String(curM + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+            
+            const startDisplay = formatPillDate(window.workFilterStart || defaultStartStr, "Chọn từ ngày");
+            const endDisplay = formatPillDate(window.workFilterEnd || defaultEndStr, "Chọn đến ngày");
+
+            // Xác định preset active
+            const isTodayPreset = window.workFilterStart === todayDateStr && window.workFilterEnd === todayDateStr;
+            const isMonthPreset = !hasActiveCustomRange || (window.workFilterStart === defaultStartStr && window.workFilterEnd === defaultEndStr);
+
+            // Gán data attribute để phục vụ xuất báo cáo
+            statsContainer.setAttribute("data-stats-title", statsTitle);
+            statsContainer.setAttribute("data-total-exp", formatMoney(totalExpense));
+            statsContainer.setAttribute("data-tx-count", filteredTrans.length);
+            statsContainer.setAttribute("data-log-count", filteredLogs.length);
+            statsContainer.setAttribute("data-top-cat", topCatName);
+
             statsContainer.innerHTML = `
-                <div class="flex items-center justify-between mb-5 border-b border-dashed custom-border pb-4 relative z-10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 text-white flex items-center justify-center text-xl shadow-lg shadow-primary-500/30">
+                <!-- HEADER BÁO CÁO TỔNG HỢP -->
+                <div class="flex items-center justify-between mb-3.5 border-b border-dashed custom-border pb-3 relative z-10">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 text-white flex items-center justify-center text-lg shadow-md shadow-primary-500/30 shrink-0">
                             <i class="fa-solid fa-chart-pie"></i>
                         </div>
-                        <div>
-                            <p class="text-base font-black custom-text tracking-tight leading-tight">Báo Cáo Tổng Hợp</p>
-                            <p class="text-[10px] font-bold custom-text-secondary uppercase tracking-widest mt-0.5">${statsTitle}</p>
+                        <div class="min-w-0">
+                            <p class="text-sm sm:text-base font-black custom-text tracking-tight truncate leading-tight">Báo Cáo Tổng Hợp</p>
+                            <p class="text-[9px] sm:text-[10px] font-bold custom-text-secondary uppercase tracking-widest truncate mt-0.5">${statsTitle}</p>
                         </div>
                     </div>
-                    ${(window.workFilterStart && window.workFilterEnd) ? `
-                    <button onclick="window.workClearFilter()" class="px-3 py-1.5 bg-rose-500/15 text-rose-500 hover:bg-rose-500/25 transition-colors rounded-xl flex items-center gap-1.5 text-xs font-bold active:scale-90 border border-rose-500/30 shadow-sm">
-                        <i class="fa-solid fa-rotate-left"></i> Đặt lại
-                    </button>` : ''}
-                </div>
-
-                <!-- Date Range Filter Pill -->
-                <div class="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-2 rounded-2xl border custom-border mb-5 relative z-10 shadow-inner">
-                    <div class="flex-1 flex items-center gap-1.5 px-2">
-                        <i class="fa-regular fa-calendar text-[11px] custom-text-secondary"></i>
-                        <input type="date" id="work-filter-start" value="${window.workFilterStart}" onchange="window.workApplyFilter()" class="w-full bg-transparent text-[11px] font-bold custom-text outline-none cursor-pointer uppercase tracking-wider">
-                    </div>
-                    <span class="custom-text-secondary bg-black/5 dark:bg-white/10 w-7 h-7 rounded-xl flex items-center justify-center text-[10px] shadow-sm shrink-0"><i class="fa-solid fa-arrow-right"></i></span>
-                    <div class="flex-1 flex items-center gap-1.5 px-2">
-                        <i class="fa-regular fa-calendar-check text-[11px] custom-text-secondary"></i>
-                        <input type="date" id="work-filter-end" value="${window.workFilterEnd}" onchange="window.workApplyFilter()" class="w-full bg-transparent text-[11px] font-bold custom-text outline-none cursor-pointer uppercase tracking-wider">
+                    
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="window.workCopySummaryReport()" class="px-2.5 py-1.5 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs font-bold custom-text rounded-xl flex items-center gap-1.5 transition-all active:scale-90 border custom-border shadow-sm" title="Sao chép báo cáo tóm tắt">
+                            <i class="fa-solid fa-share-nodes text-[10px] text-amber-500"></i>
+                            <span class="hidden sm:inline">Xuất tóm tắt</span>
+                        </button>
+                        ${hasActiveCustomRange ? `
+                        <button onclick="window.workClearFilter()" class="px-2.5 py-1.5 bg-rose-500/15 text-rose-500 hover:bg-rose-500/25 transition-colors rounded-xl flex items-center gap-1 text-xs font-bold active:scale-90 border border-rose-500/30 shadow-sm" title="Đặt lại bộ lọc về tháng hiện tại">
+                            <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                            <span>Đặt lại</span>
+                        </button>` : ''}
                     </div>
                 </div>
 
-                <!-- Bento KPI 4-Card Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
-                    <div class="work-kpi-card p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-black uppercase text-rose-500 tracking-wider">Tổng chi</span>
-                            <div class="w-7 h-7 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                <!-- PRESETS CHỌN NHANH KỲ BÁO CÁO -->
+                <div class="flex items-center gap-1.5 mb-2.5 overflow-x-auto no-scrollbar py-0.5 relative z-10">
+                    <button type="button" onclick="window.workSetPresetRange('this_month')" class="work-range-chip ${isMonthPreset ? 'active' : ''} shrink-0 px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all border active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-calendar-week mr-1 text-[9px]"></i>Tháng này
+                    </button>
+                    <button type="button" onclick="window.workSetPresetRange('today')" class="work-range-chip ${isTodayPreset ? 'active' : ''} shrink-0 px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all border active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-sun mr-1 text-[9px]"></i>Hôm nay
+                    </button>
+                    <button type="button" onclick="window.workSetPresetRange('last_7')" class="work-range-chip shrink-0 px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all border active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-clock-rotate-left mr-1 text-[9px]"></i>7 ngày qua
+                    </button>
+                    <button type="button" onclick="window.workSetPresetRange('last_month')" class="work-range-chip shrink-0 px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all border active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-backward-step mr-1 text-[9px]"></i>Tháng trước
+                    </button>
+                    <button type="button" onclick="window.workSetPresetRange('all')" class="work-range-chip shrink-0 px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all border active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-infinity mr-1 text-[9px]"></i>Tất cả
+                    </button>
+                </div>
+
+                <!-- DATE RANGE PICKER PILLS (ĐỒNG BỘ TOÀN DIỆN VỚI FORM LỊCH HỆ THỐNG - KHÔNG VỠ TRÊN IPHONE) -->
+                <div class="grid grid-cols-11 items-center gap-1 sm:gap-2 bg-black/5 dark:bg-white/5 p-1.5 sm:p-2 rounded-2xl border custom-border mb-3.5 relative z-10 shadow-inner">
+                    <!-- Nút Từ ngày -->
+                    <button type="button" 
+                            onclick="window.openFinDatePicker('work-filter-start')" 
+                            class="col-span-5 flex items-center gap-1.5 p-1.5 sm:p-2 rounded-xl custom-bg-card hover:bg-white/10 border custom-border transition-all active:scale-95 text-left min-w-0 shadow-sm"
+                            title="Chạm để mở lịch chọn ngày bắt đầu">
+                        <div class="w-7 h-7 rounded-lg bg-primary-500/15 text-primary-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-calendar text-[11px]"></i>
                         </div>
-                        <p class="text-base sm:text-lg font-black text-rose-500 truncate">${formatMoney(totalExpense)}</p>
+                        <div class="min-w-0 flex-1">
+                            <span class="block text-[8px] font-black uppercase tracking-wider custom-text-secondary leading-none mb-0.5">Từ ngày</span>
+                            <span id="work-filter-start-text" class="text-[10px] sm:text-xs font-black custom-text truncate block leading-tight">
+                                ${startDisplay}
+                            </span>
+                        </div>
+                    </button>
+                    <input type="hidden" id="work-filter-start" value="${window.workFilterStart}" onchange="window.workApplyFilter()">
+
+                    <!-- Mũi tên phân cách ở giữa -->
+                    <div class="col-span-1 flex items-center justify-center">
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[9px] text-gray-400 shadow-sm">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Nút Đến ngày -->
+                    <button type="button" 
+                            onclick="window.openFinDatePicker('work-filter-end')" 
+                            class="col-span-5 flex items-center gap-1.5 p-1.5 sm:p-2 rounded-xl custom-bg-card hover:bg-white/10 border custom-border transition-all active:scale-95 text-left min-w-0 shadow-sm"
+                            title="Chạm để mở lịch chọn ngày kết thúc">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-calendar-check text-[11px]"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <span class="block text-[8px] font-black uppercase tracking-wider custom-text-secondary leading-none mb-0.5">Đến ngày</span>
+                            <span id="work-filter-end-text" class="text-[10px] sm:text-xs font-black custom-text truncate block leading-tight">
+                                ${endDisplay}
+                            </span>
+                        </div>
+                    </button>
+                    <input type="hidden" id="work-filter-end" value="${window.workFilterEnd}" onchange="window.workApplyFilter()">
+                </div>
+
+                <!-- BENTO KPI 4-CARD GRID -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 relative z-10 mb-3">
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase text-rose-500 tracking-wider">Tổng chi</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-[11px] shadow-sm"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        </div>
+                        <p class="text-sm sm:text-base font-black text-rose-500 truncate tabular-nums">${formatMoney(totalExpense)}</p>
                         <p class="text-[9px] font-semibold custom-text-secondary mt-0.5">Tổng phát sinh</p>
                     </div>
 
-                    <div class="work-kpi-card p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-black uppercase text-blue-500 tracking-wider">Giao dịch</span>
-                            <div class="w-7 h-7 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-xs"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase text-blue-500 tracking-wider">Giao dịch</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-[11px] shadow-sm"><i class="fa-solid fa-receipt"></i></div>
                         </div>
-                        <p class="text-base sm:text-lg font-black custom-text">${filteredTrans.length} <span class="text-xs font-bold text-blue-500">lượt</span></p>
+                        <p class="text-sm sm:text-base font-black custom-text tabular-nums">${filteredTrans.length} <span class="text-[10px] font-bold text-blue-500">lượt</span></p>
                         <p class="text-[9px] font-semibold custom-text-secondary mt-0.5">Khoản chi đã ghi</p>
                     </div>
 
-                    <div class="work-kpi-card p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-black uppercase text-amber-500 tracking-wider">Ký sự</span>
-                            <div class="w-7 h-7 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-xs"><i class="fa-solid fa-book-open"></i></div>
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase text-amber-500 tracking-wider">Ký sự</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-[11px] shadow-sm"><i class="fa-solid fa-book-open"></i></div>
                         </div>
-                        <p class="text-base sm:text-lg font-black text-amber-500">${filteredLogs.length} <span class="text-xs font-bold">bài</span></p>
+                        <p class="text-sm sm:text-base font-black text-amber-500 tabular-nums">${filteredLogs.length} <span class="text-[10px] font-bold">bài</span></p>
                         <p class="text-[9px] font-semibold custom-text-secondary mt-0.5">Nhật ký công việc</p>
                     </div>
 
-                    <div class="work-kpi-card p-4 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-black uppercase text-emerald-500 tracking-wider">TB/lượt chi</span>
-                            <div class="w-7 h-7 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-xs"><i class="fa-solid fa-calculator"></i></div>
+                    <div class="work-kpi-card p-3 sm:p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase text-emerald-500 tracking-wider">TB/lượt chi</span>
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-[11px] shadow-sm"><i class="fa-solid fa-calculator"></i></div>
                         </div>
-                        <p class="text-base sm:text-lg font-black text-emerald-500 truncate">${formatMoney(avgPerTx)}</p>
+                        <p class="text-sm sm:text-base font-black text-emerald-500 truncate tabular-nums">${formatMoney(avgPerTx)}</p>
                         <p class="text-[9px] font-semibold custom-text-secondary mt-0.5">Chi bình quân</p>
+                    </div>
+                </div>
+
+                <!-- TÍNH NĂNG MỚI: RIBBON PHÂN TÍCH CHUYÊN SÂU NHANH (QUICK INSIGHTS) -->
+                <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 p-2 sm:p-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border custom-border relative z-10 text-center">
+                    <div class="p-1.5 min-w-0">
+                        <span class="block text-[8px] sm:text-[9px] font-bold custom-text-secondary uppercase truncate">Ngày chi nhiều nhất</span>
+                        <span class="text-[11px] sm:text-xs font-black custom-text truncate block mt-0.5">
+                            ${peakDayStr !== "Chưa có" ? peakDayStr.split('-').reverse().slice(0, 2).join('/') : '--'}
+                        </span>
+                        <span class="text-[8px] font-semibold text-rose-500 truncate block">${peakDayAmt > 0 ? formatMoney(peakDayAmt) : '0 ₫'}</span>
+                    </div>
+
+                    <div class="p-1.5 border-x custom-border min-w-0">
+                        <span class="block text-[8px] sm:text-[9px] font-bold custom-text-secondary uppercase truncate">Khoản chi lớn nhất</span>
+                        <span class="text-[11px] sm:text-xs font-black text-rose-500 truncate block mt-0.5">
+                            ${maxExpenseTx ? formatMoney(maxExpenseTx.amount) : '--'}
+                        </span>
+                        <span class="text-[8px] font-semibold custom-text-secondary truncate block">${maxExpenseTx ? (maxExpenseTx.note || 'Chi công sở') : 'Chưa có'}</span>
+                    </div>
+
+                    <div class="p-1.5 min-w-0">
+                        <span class="block text-[8px] sm:text-[9px] font-bold custom-text-secondary uppercase truncate">Tỉ lệ ngày có chi</span>
+                        <span class="text-[11px] sm:text-xs font-black text-blue-400 truncate block mt-0.5">
+                            ${uniqueActiveSpendDays} ngày
+                        </span>
+                        <span class="text-[8px] font-semibold custom-text-secondary truncate block">hoạt động</span>
                     </div>
                 </div>
             `;
 
-            // Draw Chart.js
+            // Draw Chart.js (Chế độ Bar hoặc Line)
             if (typeof Chart !== 'undefined' && document.getElementById('tab-stats') && !document.getElementById('tab-stats').classList.contains('hidden')) {
                 const dailyExp = {};
                 
@@ -671,13 +942,13 @@
                         const dateObj = new Date(t.date.split(' ')[0] + "T00:00:00");
                         const label = `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}`;
                         if(!dailyExp[label]) dailyExp[label] = 0;
-                        dailyExp[label] += t.amount;
+                        dailyExp[label] += Number(t.amount) || 0;
                     });
                 } else {
                     for(let d=1; d<=daysInMonth; d++) dailyExp[d] = 0;
                     filteredTrans.forEach(t => {
                         const day = parseInt(t.date.substring(8, 10));
-                        if (dailyExp[day] !== undefined) dailyExp[day] += t.amount;
+                        if (dailyExp[day] !== undefined) dailyExp[day] += Number(t.amount) || 0;
                     });
                 }
 
@@ -685,28 +956,43 @@
                 const chartCanvas = document.getElementById('workChartExpense');
                 if (chartCanvas) {
                     const ctx = chartCanvas.getContext('2d');
+                    const isLine = window.workChartType === 'line';
+
                     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                    gradient.addColorStop(0, '#f43f5e');
-                    gradient.addColorStop(1, 'rgba(244, 63, 94, 0.25)');
+                    if (isLine) {
+                        gradient.addColorStop(0, 'rgba(244, 63, 94, 0.45)');
+                        gradient.addColorStop(1, 'rgba(244, 63, 94, 0.0)');
+                    } else {
+                        gradient.addColorStop(0, '#f43f5e');
+                        gradient.addColorStop(1, 'rgba(244, 63, 94, 0.25)');
+                    }
 
                     window.workChartExp = new Chart(ctx, {
-                        type: 'bar', 
+                        type: isLine ? 'line' : 'bar', 
                         data: { 
                             labels: Object.keys(dailyExp), 
                             datasets: [{ 
                                 label: 'Chi tiêu', 
                                 data: Object.values(dailyExp), 
                                 backgroundColor: gradient, 
-                                borderRadius: 6,
+                                borderColor: isLine ? '#f43f5e' : undefined,
+                                borderWidth: isLine ? 2.5 : 0,
+                                fill: isLine ? true : undefined,
+                                tension: isLine ? 0.4 : undefined,
+                                pointBackgroundColor: isLine ? '#f43f5e' : undefined,
+                                pointRadius: isLine ? 3 : undefined,
+                                pointHoverRadius: isLine ? 6 : undefined,
+                                borderRadius: isLine ? undefined : 6,
                                 borderSkipped: false
                             }] 
                         },
                         options: { 
+                            responsive: true,
                             maintainAspectRatio: false,
                             plugins: { 
                                 legend: { display: false },
                                 tooltip: {
-                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
                                     titleFont: { weight: 'bold', size: 12 },
                                     bodyFont: { weight: 'bold', size: 12 },
                                     padding: 10,
@@ -720,7 +1006,20 @@
                             }, 
                             scales: { 
                                 y: { display: false }, 
-                                x: { grid: { display: false }, ticks: { font: {size: 9, weight: 'bold'}, color: '#94a3b8' } } 
+                                x: { 
+                                    grid: { display: false }, 
+                                    ticks: { 
+                                        font: { size: 9, weight: 'bold' }, 
+                                        color: '#94a3b8',
+                                        maxRotation: 0,
+                                        autoSkip: true,
+                                        maxTicksLimit: 7,
+                                        callback: function(val, index) {
+                                            const label = this.getLabelForValue(val);
+                                            return String(label).includes('/') ? label : `N${label}`;
+                                        }
+                                    } 
+                                } 
                             } 
                         }
                     });
@@ -731,7 +1030,7 @@
             const workCatListContainer = document.getElementById("work-cat-list");
             if (workCatListContainer) {
                 if (filteredTrans.length === 0) {
-                    workCatListContainer.innerHTML = `<div class="text-center py-8 opacity-60"><i class="fa-solid fa-box-open text-4xl mb-2 text-gray-400"></i><p class="text-xs font-bold custom-text-secondary">Chưa có dữ liệu danh mục trong kỳ này</p></div>`;
+                    workCatListContainer.innerHTML = `<div class="text-center py-6 opacity-60"><i class="fa-solid fa-box-open text-3xl mb-2 text-gray-400"></i><p class="text-xs font-bold custom-text-secondary">Chưa có dữ liệu danh mục trong kỳ này</p></div>`;
                 } else {
                     const catGroup = filteredTrans.reduce((acc, t) => {
                         acc[t.category] = (acc[t.category] || 0) + (Number(t.amount) || 0);
@@ -751,25 +1050,24 @@
 
                         catHtml += `
                         <div onclick="window.openWorkCategoryAnalytics('${catId}', 'work')" 
-                             class="flex items-center gap-3 p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-amber-500/30 transition-all group cursor-pointer active:scale-[0.98] shadow-sm hover:shadow-md"
+                             class="flex items-center gap-2.5 p-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-amber-500/30 transition-all group cursor-pointer active:scale-[0.98] shadow-sm"
                              title="Chạm để xem phân tích toàn bộ chi tiêu danh mục ${cat.name}">
-                            <div class="w-6 text-center shrink-0 font-bold text-sm">${medal}</div>
-                            <div class="w-10 h-10 rounded-xl ${cat.color} flex items-center justify-center text-lg border border-white/20 shadow-sm shrink-0 transition-transform group-hover:scale-110">${cat.icon}</div>
+                            <div class="w-5 text-center shrink-0 font-bold text-xs">${medal}</div>
+                            <div class="w-8 h-8 rounded-xl ${cat.color} flex items-center justify-center text-sm border border-white/20 shadow-sm shrink-0 transition-transform group-hover:scale-110">${cat.icon}</div>
                             <div class="flex-1 min-w-0">
-                                <div class="flex justify-between items-center mb-1">
+                                <div class="flex justify-between items-center mb-0.5">
                                     <span class="text-xs font-bold custom-text truncate pr-2 group-hover:text-amber-500 transition-colors">${cat.name}</span>
-                                    <span class="text-xs font-black custom-text">${formatMoney(amt)}</span>
+                                    <span class="text-xs font-black custom-text tabular-nums">${formatMoney(amt)}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="h-1.5 flex-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
-                                        <div class="h-full rounded-full transition-all duration-1000" style="width: ${pct}%; background-color: ${barColor}"></div>
+                                        <div class="h-full rounded-full transition-all duration-700" style="width: ${pct}%; background-color: ${barColor}"></div>
                                     </div>
-                                    <span class="text-[10px] font-black custom-text-secondary w-9 text-right">${pct}%</span>
+                                    <span class="text-[9px] font-black custom-text-secondary w-8 text-right">${pct}%</span>
                                 </div>
                             </div>
-                            <div class="text-[10px] font-black text-amber-500/80 group-hover:text-amber-400 flex items-center gap-1 shrink-0 pl-1">
-                                <span class="hidden sm:inline">Phân tích</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                            <div class="text-[10px] font-black text-amber-500/80 group-hover:text-amber-400 flex items-center gap-0.5 shrink-0 pl-1">
+                                <i class="fa-solid fa-chevron-right text-[9px] group-hover:translate-x-0.5 transition-transform"></i>
                             </div>
                         </div>`;
                     });
@@ -808,7 +1106,7 @@
         if (!modalBody) return;
 
         modalBody.innerHTML = `
-            <form id="frm-journal" class="space-y-4">
+            <form id="frm-journal" class="space-y-4 font-sans">
                 <div class="custom-bg-card p-4 rounded-3xl border custom-border shadow-sm">
                     <label class="block text-[10px] font-black custom-text-secondary uppercase mb-2.5 text-center tracking-widest"><i class="fa-solid fa-face-smile text-amber-500 mr-1"></i> Cảm xúc hôm nay</label>
                     <div class="grid grid-cols-4 gap-2">
@@ -912,7 +1210,7 @@
     };
 
     // ==========================================
-    // CÔNG CỤ XEM ẢNH FULL MÀN HÌNH (RẠP CHIẾU PHIM)
+    // 5. CÔNG CỤ XEM ẢNH FULL MÀN HÌNH (RẠP CHIẾU PHIM)
     // ==========================================
     window.workViewImageFullScreen = (src) => {
         const overlay = document.createElement('div');
@@ -955,7 +1253,7 @@
         if (document.getElementById("work-cat-analytics-modal")) return;
 
         const modalHtml = `
-        <div id="work-cat-analytics-modal" class="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center transition-all duration-300 opacity-0 pointer-events-none p-0 sm:p-4">
+        <div id="work-cat-analytics-modal" class="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center transition-all duration-300 opacity-0 pointer-events-none p-0 sm:p-4 font-sans">
             <div class="absolute inset-0" onclick="window.closeWorkCategoryAnalytics()"></div>
             <div id="work-cat-analytics-content" class="relative z-10 w-full max-w-2xl max-h-[92vh] sm:max-h-[88vh] custom-bg-card border custom-border rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 overflow-hidden font-sans">
                 <!-- Nội dung được bơm động bằng renderWorkCategoryAnalyticsContent() -->
@@ -1152,7 +1450,7 @@
                             <span class="text-[10px] font-bold custom-text-secondary">${txCount} giao dịch</span>
                         </div>
 
-                        <div class="text-2xl sm:text-3xl font-black text-rose-500 drop-shadow-sm tracking-tight">
+                        <div class="text-2xl sm:text-3xl font-black text-rose-500 drop-shadow-sm tracking-tight tabular-nums">
                             ${formatMoney(totalAmt)}
                         </div>
 
@@ -1178,7 +1476,7 @@
                             <span class="text-[9px] font-black uppercase text-blue-400">Số Lượt Chi</span>
                             <i class="fa-solid fa-receipt text-blue-400 text-xs"></i>
                         </div>
-                        <div class="text-base font-black custom-text">${txCount} <span class="text-xs font-bold text-blue-400">lần</span></div>
+                        <div class="text-base font-black custom-text tabular-nums">${txCount} <span class="text-xs font-bold text-blue-400">lần</span></div>
                         <div class="text-[9px] custom-text-secondary mt-0.5">Giao dịch đã lưu</div>
                     </div>
 
@@ -1187,7 +1485,7 @@
                             <span class="text-[9px] font-black uppercase text-rose-400">Lớn Nhất</span>
                             <i class="fa-solid fa-crown text-rose-400 text-xs"></i>
                         </div>
-                        <div class="text-base font-black text-rose-400 truncate">${maxTx ? formatMoney(maxTx.amount) : '0 ₫'}</div>
+                        <div class="text-base font-black text-rose-400 truncate tabular-nums">${maxTx ? formatMoney(maxTx.amount) : '0 ₫'}</div>
                         <div class="text-[9px] custom-text-secondary truncate mt-0.5">${maxTx ? maxTx.date.split(' ')[0].split('-').reverse().join('/') : 'Chưa có'}</div>
                     </div>
 
@@ -1196,7 +1494,7 @@
                             <span class="text-[9px] font-black uppercase text-emerald-400">Bình Quân</span>
                             <i class="fa-solid fa-calculator text-emerald-400 text-xs"></i>
                         </div>
-                        <div class="text-base font-black text-emerald-400 truncate">${formatMoney(avgAmt)}</div>
+                        <div class="text-base font-black text-emerald-400 truncate tabular-nums">${formatMoney(avgAmt)}</div>
                         <div class="text-[9px] custom-text-secondary mt-0.5">Mỗi lần giao dịch</div>
                     </div>
 
@@ -1205,7 +1503,7 @@
                             <span class="text-[9px] font-black uppercase text-purple-400">Số Ngày</span>
                             <i class="fa-solid fa-calendar-check text-purple-400 text-xs"></i>
                         </div>
-                        <div class="text-base font-black custom-text">${uniqueDays} <span class="text-xs font-bold text-purple-400">ngày</span></div>
+                        <div class="text-base font-black custom-text tabular-nums">${uniqueDays} <span class="text-xs font-bold text-purple-400">ngày</span></div>
                         <div class="text-[9px] custom-text-secondary mt-0.5">Có phát sinh chi</div>
                     </div>
                 </div>
@@ -1226,7 +1524,7 @@
                             <div class="space-y-1">
                                 <div class="flex justify-between text-[11px] font-bold">
                                     <span class="custom-text-secondary">${fmtDay}</span>
-                                    <span class="custom-text font-black">${formatMoney(dayAmt)}</span>
+                                    <span class="custom-text font-black tabular-nums">${formatMoney(dayAmt)}</span>
                                 </div>
                                 <div class="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                                     <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full transition-all duration-500" style="width: ${barPct}%;"></div>
@@ -1343,8 +1641,8 @@
 
         if (txs.length === 0) {
             listContainer.innerHTML = `
-                <div class="text-center py-10 opacity-70 p-6 rounded-2xl border border-dashed custom-border">
-                    <i class="fa-solid fa-folder-open text-4xl mb-2 text-gray-400"></i>
+                <div class="text-center py-8 opacity-70 p-5 rounded-2xl border border-dashed custom-border">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 text-gray-400"></i>
                     <p class="text-xs font-bold custom-text">Không tìm thấy khoản chi nào phù hợp</p>
                     <p class="text-[10px] custom-text-secondary mt-1">Hãy thử đổi phạm vi hoặc thêm khoản chi mới</p>
                 </div>
@@ -1361,15 +1659,15 @@
 
             return `
             <div onclick="window.openWorkCatTxDetail('${t.id}')" 
-                 class="p-3.5 rounded-2xl custom-bg-card border custom-border hover:border-amber-500/40 transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-md cursor-pointer active:scale-[0.99] group">
-                <div class="flex items-center gap-3 min-w-0 flex-1">
+                 class="p-3 rounded-2xl custom-bg-card border custom-border hover:border-amber-500/40 transition-all flex items-center justify-between gap-3 shadow-sm hover:shadow-md cursor-pointer active:scale-[0.99] group">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
                     ${hasImg ? `
-                        <div class="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 border custom-border group/img" onclick="event.stopPropagation(); window.workViewImageFullScreen('${t.image}')" title="Phóng to ảnh">
+                        <div class="relative w-10 h-10 rounded-xl overflow-hidden shrink-0 border custom-border group/img" onclick="event.stopPropagation(); window.workViewImageFullScreen('${t.image}')" title="Phóng to ảnh">
                             <img src="${t.image}" class="w-full h-full object-cover transition-transform group-hover/img:scale-110">
                             <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity text-white text-[10px]"><i class="fa-solid fa-expand"></i></div>
                         </div>
                     ` : `
-                        <div class="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-base border border-rose-500/20 shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-sm border border-rose-500/20 shrink-0">
                             <i class="fa-solid fa-receipt"></i>
                         </div>
                     `}
@@ -1377,16 +1675,16 @@
                         <div class="text-xs font-bold custom-text truncate group-hover:text-amber-500 transition-colors">
                             ${t.note || cat.name}
                         </div>
-                        <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[10px] custom-text-secondary">
-                            <span><i class="fa-regular fa-calendar text-[9px]"></i> ${dateDisplay} ${timeDisplay ? '• ' + timeDisplay : ''}</span>
-                            <span class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[9px] font-semibold border custom-border truncate max-w-[120px]"><i class="fa-solid fa-wallet text-[8px] mr-1"></i>${wallet.name}</span>
-                            ${t.isWork ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500 text-[9px] font-black border border-amber-500/25">💼 Công sở</span>` : ''}
+                        <div class="flex flex-wrap items-center gap-1.5 mt-0.5 text-[9px] custom-text-secondary">
+                            <span><i class="fa-regular fa-calendar text-[8px]"></i> ${dateDisplay} ${timeDisplay ? '• ' + timeDisplay : ''}</span>
+                            <span class="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 font-semibold border custom-border truncate max-w-[110px]"><i class="fa-solid fa-wallet text-[8px] mr-1"></i>${wallet.name}</span>
+                            ${t.isWork ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500 font-black border border-amber-500/25">💼 Công sở</span>` : ''}
                         </div>
                     </div>
                 </div>
 
                 <div class="text-right shrink-0">
-                    <div class="text-sm font-black text-rose-500">
+                    <div class="text-xs sm:text-sm font-black text-rose-500 tabular-nums">
                         ${formatMoney(t.amount)}
                     </div>
                     <div class="text-[9px] font-bold text-gray-400 group-hover:text-amber-400 transition-colors flex items-center justify-end gap-1 mt-0.5">

@@ -1010,68 +1010,68 @@
 
         <div
           id="view-dashboard"
-          class="view-section active space-y-6 max-w-7xl mx-auto pt-1 pb-6"
+          class="view-section active space-y-4 sm:space-y-6 max-w-7xl mx-auto pt-1 pb-6"
         >
           <!-- ========================================================
                1. FLAGSHIP HERO SPATIAL WEALTH HUB (TÂM ĐIỂM TÀI CHÍNH THƯỢNG LƯU)
                ======================================================== -->
-          <div class="dash-hero-hub p-6 sm:p-8">
-            <div class="relative z-10 flex flex-col gap-6">
+          <div class="dash-hero-hub p-4 sm:p-6 lg:p-7">
+            <div class="relative z-10 flex flex-col gap-4 sm:gap-6">
               <!-- Top Row: Luxury Brand Badge & Executive Controls -->
-              <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                  <div class="px-3.5 py-1.5 rounded-full text-xs font-black custom-bg-primary-soft custom-icon-active flex items-center gap-2 border custom-border shadow-sm">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-black custom-bg-primary-soft custom-icon-active flex items-center gap-1.5 sm:gap-2 border custom-border shadow-sm shrink-0">
                     <span class="relative flex h-2 w-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                    <i class="fa-solid fa-sparkles text-[11px]"></i>
+                    <i class="fa-solid fa-sparkles text-[10px] sm:text-[11px]"></i>
                     <span class="tracking-wide">Spatial Financial Hub</span>
                   </div>
-                  <span class="hidden sm:inline-flex px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 items-center gap-1.5 backdrop-blur-md">
+                  <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 items-center gap-1.5 backdrop-blur-md">
                     <i class="fa-solid fa-shield-check text-[11px]"></i>
                     <span>Bảo mật Cấp Ngân hàng</span>
                   </span>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 shrink-0">
                   <!-- Eye Privacy Toggle -->
                   <button
                     onclick="toggleBalancePrivacy()"
-                    class="h-9 px-3.5 rounded-xl border custom-border bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-xs font-bold custom-text flex items-center gap-2 shadow-sm backdrop-blur-md"
+                    class="h-8 px-2.5 sm:px-3 rounded-xl border custom-border bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-xs font-bold custom-text flex items-center gap-1.5 shadow-sm backdrop-blur-md"
                     title="Ẩn / Hiện số dư bảo mật"
                   >
                     <i class="fa-solid fa-eye balance-eye-icon text-xs"></i>
                     <span class="hidden sm:inline">Bảo mật</span>
                   </button>
-                  <div class="h-9 px-3.5 rounded-xl bg-white/5 border custom-border text-xs font-black custom-text-secondary tracking-widest flex items-center justify-center shadow-sm backdrop-blur-md">
+                  <div class="h-8 px-2 sm:px-3 rounded-xl bg-white/5 border custom-border text-[10px] sm:text-xs font-black custom-text-secondary tracking-widest flex items-center justify-center shadow-sm backdrop-blur-md">
                     VND ₫
                   </div>
                 </div>
               </div>
 
               <!-- Center: Master Net Worth & Real-time Cashflow Cockpit -->
-              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-center">
                 <!-- Left: Grand Typography & Portfolio Label -->
                 <div class="lg:col-span-7 flex flex-col justify-center">
-                  <div class="flex items-center gap-2 mb-1.5">
+                  <div class="flex items-center gap-1.5 mb-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <p class="text-xs sm:text-sm font-black uppercase tracking-widest custom-text-secondary">
+                    <p class="text-[11px] sm:text-xs font-black uppercase tracking-widest custom-text-secondary">
                       Tổng Tài Sản Ròng Khả Dụng
                     </p>
                   </div>
                   <h2
                     id="dash-hero-balance"
-                    class="dash-hero-number text-4xl sm:text-5xl md:text-6xl font-black tracking-tight custom-text my-1.5 select-all"
+                    class="dash-hero-number font-black tracking-tight custom-text my-1 select-all"
                   >
                     0 ₫
                   </h2>
-                  <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
-                    <span class="text-xs font-semibold custom-text-secondary flex items-center gap-1.5">
+                  <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
+                    <span class="text-[11px] sm:text-xs font-semibold custom-text-secondary flex items-center gap-1.5">
                       <i class="fa-solid fa-circle-check text-emerald-400"></i>
                       Đồng bộ mã hoá tự động
                     </span>
-                    <span class="text-xs font-semibold custom-text-secondary hidden sm:flex items-center gap-1.5">
+                    <span class="text-[11px] sm:text-xs font-semibold custom-text-secondary hidden sm:flex items-center gap-1.5">
                       <i class="fa-solid fa-bolt-lightning text-amber-400"></i>
                       Dòng tiền trực tiếp
                     </span>
@@ -1079,92 +1079,100 @@
                 </div>
 
                 <!-- Right: Cockpit Liquid Balance Ratio Hub -->
-                <div class="lg:col-span-5 dash-flow-cockpit p-4 sm:p-5 flex flex-col justify-between gap-3.5">
-                  <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="custom-text flex items-center gap-2">
-                      <div class="w-6 h-6 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[10px]">
+                <div class="lg:col-span-5 dash-flow-cockpit p-3.5 sm:p-4.5 flex flex-col justify-between gap-2.5 sm:gap-3">
+                  <div class="flex items-center justify-between text-xs font-bold gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <div class="w-6 h-6 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[10px] shrink-0">
                         <i class="fa-solid fa-arrows-split-up-and-left"></i>
                       </div>
-                      Cân bằng Dòng Tiền Kỳ Này
-                    </span>
-                    <span id="hero-flow-status" class="text-emerald-400 font-extrabold text-[11px] px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shadow-sm">
+                      <span class="custom-text truncate">Cân bằng Dòng Tiền</span>
+                    </div>
+                    <span id="hero-flow-status" class="text-emerald-400 font-extrabold text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shadow-sm shrink-0 whitespace-nowrap">
                       Cân bằng
                     </span>
                   </div>
 
                   <!-- Liquid Flow Progress Track -->
-                  <div class="relative w-full h-3.5 rounded-full bg-black/20 dark:bg-white/5 overflow-hidden flex p-0.5 gap-1 border border-white/10 shadow-inner">
+                  <div class="relative w-full h-2.5 sm:h-3 rounded-full bg-black/20 dark:bg-white/5 overflow-hidden flex p-0.5 gap-1 border border-white/10 shadow-inner">
                     <div id="hero-income-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-700 shadow-sm" style="width: 50%"></div>
                     <div id="hero-expense-bar" class="h-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 rounded-full transition-all duration-700 shadow-sm" style="width: 50%"></div>
                   </div>
 
-                  <!-- Legend Numbers Pill Box -->
-                  <div class="flex items-center justify-between text-xs font-semibold pt-1">
-                    <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                      <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]"></span>
-                      <span class="custom-text-secondary text-[11px] font-bold">Thu:</span>
-                      <span id="hero-inc-text" class="text-emerald-400 font-black">0 ₫</span>
+                  <!-- Legend Numbers 2-Column Grid -->
+                  <div class="grid grid-cols-2 gap-2 pt-0.5">
+                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 min-w-0">
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]"></span>
+                        <span class="custom-text-secondary text-[11px] font-bold">Thu</span>
+                      </div>
+                      <span id="hero-inc-text" class="text-emerald-400 font-black text-xs sm:text-sm tabular-nums truncate ml-1">0 ₫</span>
                     </div>
-                    <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-rose-500/10 border border-rose-500/20">
-                      <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span>
-                      <span class="custom-text-secondary text-[11px] font-bold">Chi:</span>
-                      <span id="hero-exp-text" class="text-rose-400 font-black">0 ₫</span>
+                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 min-w-0">
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_6px_#f43f5e]"></span>
+                        <span class="custom-text-secondary text-[11px] font-bold">Chi</span>
+                      </div>
+                      <span id="hero-exp-text" class="text-rose-400 font-black text-xs sm:text-sm tabular-nums truncate ml-1">0 ₫</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Bottom Row: Fast Action Executive Dock -->
-              <div class="pt-3 border-t custom-border grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
+              <!-- Bottom Row: Fast Action 4-Col Dock -->
+              <div class="pt-3 border-t custom-border grid grid-cols-4 gap-2 sm:gap-3">
                 <button
                   onclick="handleFabClick()"
-                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
+                  class="dash-dock-pill p-2 sm:py-2.5 sm:px-3 flex flex-col sm:flex-row items-center sm:gap-2.5 text-center sm:text-left group cursor-pointer"
+                  title="Ghi chép nhanh"
                 >
-                  <div class="w-9 h-9 rounded-xl custom-primary flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
+                  <div class="w-9 h-9 sm:w-8 sm:h-8 rounded-xl custom-primary flex items-center justify-center text-white text-xs sm:text-sm shadow-md group-hover:scale-110 group-active:scale-95 transition-transform shrink-0">
                     <i class="fa-solid fa-plus"></i>
                   </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-black custom-text truncate">Ghi chép nhanh</p>
-                    <p class="text-[10px] custom-text-secondary font-medium truncate">Thu / Chi tức thì</p>
+                  <div class="min-w-0 w-full mt-1 sm:mt-0">
+                    <p class="text-[11px] sm:text-xs font-black custom-text truncate">Ghi chép</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate hidden sm:block">Thu / Chi nhanh</p>
                   </div>
                 </button>
 
                 <button
                   onclick="triggerQuickScan()"
-                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
+                  class="dash-dock-pill p-2 sm:py-2.5 sm:px-3 flex flex-col sm:flex-row items-center sm:gap-2.5 text-center sm:text-left group cursor-pointer"
+                  title="Quét hoá đơn AI"
                 >
-                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
+                  <div class="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xs sm:text-sm shadow-md group-hover:scale-110 group-active:scale-95 transition-transform shrink-0">
                     <i class="fa-solid fa-camera"></i>
                   </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-black custom-text truncate">Quét hoá đơn AI</p>
-                    <p class="text-[10px] custom-text-secondary font-medium truncate">OCR tự động</p>
+                  <div class="min-w-0 w-full mt-1 sm:mt-0">
+                    <p class="text-[11px] sm:text-xs font-black custom-text truncate">Quét bill</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate hidden sm:block">OCR hoá đơn</p>
                   </div>
                 </button>
 
                 <button
                   onclick="switchView('budgets')"
-                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
+                  class="dash-dock-pill p-2 sm:py-2.5 sm:px-3 flex flex-col sm:flex-row items-center sm:gap-2.5 text-center sm:text-left group cursor-pointer"
+                  title="Hạn mức ngân sách"
                 >
-                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
+                  <div class="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs sm:text-sm shadow-md group-hover:scale-110 group-active:scale-95 transition-transform shrink-0">
                     <i class="fa-solid fa-bullseye"></i>
                   </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-black custom-text truncate">Hạn mức ngân sách</p>
-                    <p class="text-[10px] custom-text-secondary font-medium truncate">Kiểm soát chi tiêu</p>
+                  <div class="min-w-0 w-full mt-1 sm:mt-0">
+                    <p class="text-[11px] sm:text-xs font-black custom-text truncate">Ngân sách</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate hidden sm:block">Kiểm soát ví</p>
                   </div>
                 </button>
 
                 <button
                   onclick="switchView('map')"
-                  class="dash-dock-pill py-3 px-3.5 flex items-center gap-3 text-left group"
+                  class="dash-dock-pill p-2 sm:py-2.5 sm:px-3 flex flex-col sm:flex-row items-center sm:gap-2.5 text-center sm:text-left group cursor-pointer"
+                  title="Bản đồ chi tiêu"
                 >
-                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm shadow-md group-hover:scale-110 group-hover:rotate-6 transition-transform shrink-0">
+                  <div class="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs sm:text-sm shadow-md group-hover:scale-110 group-active:scale-95 transition-transform shrink-0">
                     <i class="fa-solid fa-map-location-dot"></i>
                   </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-black custom-text truncate">Bản đồ chi tiêu</p>
-                    <p class="text-[10px] custom-text-secondary font-medium truncate">Định vị GPS ví</p>
+                  <div class="min-w-0 w-full mt-1 sm:mt-0">
+                    <p class="text-[11px] sm:text-xs font-black custom-text truncate">Bản đồ</p>
+                    <p class="text-[10px] custom-text-secondary font-medium truncate hidden sm:block">Định vị GPS ví</p>
                   </div>
                 </button>
               </div>
@@ -1174,34 +1182,34 @@
           <!-- ========================================================
                2. DÒNG 4 THẺ CHỈ SỐ KIM CƯƠNG (DIAMOND METRIC TILES)
                ======================================================== -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <!-- Thẻ 1: Tổng thu -->
-            <div class="dash-kpi-card dash-kpi-income p-4 sm:p-5 flex flex-col justify-between h-36">
-              <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-kpi-card dash-kpi-income p-3 sm:p-4 flex flex-col justify-between min-h-[108px] sm:min-h-[125px]">
+              <div class="flex justify-between items-center z-10 mb-1">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-[10px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-arrow-down-left"></i>
                   </div>
-                  <p class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+                  <p class="text-[11px] sm:text-xs font-extrabold text-emerald-400 uppercase tracking-wider truncate">
                     Tổng thu
                   </p>
                 </div>
-                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors" title="Ẩn/Hiện">
-                  <i class="fa-solid fa-eye balance-eye-icon text-xs"></i>
+                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors p-1" title="Ẩn/Hiện">
+                  <i class="fa-solid fa-eye balance-eye-icon text-[11px]"></i>
                 </button>
               </div>
-              <div class="z-10 my-1">
+              <div class="z-10 my-0.5 min-w-0">
                 <h3
                   id="dash-inc-num"
-                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val font-black custom-text tracking-tight select-all leading-tight"
                 >
                   0 ₫
                 </h3>
                 <p
                   id="dash-inc-pct"
-                  class="text-[10px] sm:text-xs font-bold text-emerald-400 flex items-center gap-1 truncate mt-0.5"
+                  class="text-[10px] sm:text-[11px] font-bold text-emerald-400 flex items-center gap-1 truncate mt-0.5"
                 >
-                  <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
+                  <i class="fa-solid fa-caret-up text-[9px]"></i> 0% kỳ trước
                 </p>
               </div>
               <div class="dash-sparkline-wrap">
@@ -1210,32 +1218,32 @@
             </div>
 
             <!-- Thẻ 2: Tổng chi -->
-            <div class="dash-kpi-card dash-kpi-expense p-4 sm:p-5 flex flex-col justify-between h-36">
-              <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-kpi-card dash-kpi-expense p-3 sm:p-4 flex flex-col justify-between min-h-[108px] sm:min-h-[125px]">
+              <div class="flex justify-between items-center z-10 mb-1">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-[10px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-arrow-up-right"></i>
                   </div>
-                  <p class="text-xs font-extrabold text-rose-400 uppercase tracking-wider">
+                  <p class="text-[11px] sm:text-xs font-extrabold text-rose-400 uppercase tracking-wider truncate">
                     Tổng chi
                   </p>
                 </div>
-                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors" title="Ẩn/Hiện">
-                  <i class="fa-solid fa-eye balance-eye-icon text-xs"></i>
+                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors p-1" title="Ẩn/Hiện">
+                  <i class="fa-solid fa-eye balance-eye-icon text-[11px]"></i>
                 </button>
               </div>
-              <div class="z-10 my-1">
+              <div class="z-10 my-0.5 min-w-0">
                 <h3
                   id="dash-exp-num"
-                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val font-black custom-text tracking-tight select-all leading-tight"
                 >
                   0 ₫
                 </h3>
                 <p
                   id="dash-exp-pct"
-                  class="text-[10px] sm:text-xs font-bold text-rose-400 flex items-center gap-1 truncate mt-0.5"
+                  class="text-[10px] sm:text-[11px] font-bold text-rose-400 flex items-center gap-1 truncate mt-0.5"
                 >
-                  <i class="fa-solid fa-caret-down"></i> 0% so với kỳ trước
+                  <i class="fa-solid fa-caret-down text-[9px]"></i> 0% kỳ trước
                 </p>
               </div>
               <div class="dash-sparkline-wrap">
@@ -1244,32 +1252,32 @@
             </div>
 
             <!-- Thẻ 3: Số dư ròng -->
-            <div class="dash-kpi-card dash-kpi-balance p-4 sm:p-5 flex flex-col justify-between h-36">
-              <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-kpi-card dash-kpi-balance p-3 sm:p-4 flex flex-col justify-between min-h-[108px] sm:min-h-[125px]">
+              <div class="flex justify-between items-center z-10 mb-1">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-[10px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-scale-balanced"></i>
                   </div>
-                  <p class="text-xs font-extrabold text-sky-400 uppercase tracking-wider">
+                  <p class="text-[11px] sm:text-xs font-extrabold text-sky-400 uppercase tracking-wider truncate">
                     Số dư ròng
                   </p>
                 </div>
-                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors" title="Ẩn/Hiện">
-                  <i class="fa-solid fa-eye balance-eye-icon text-xs"></i>
+                <button onclick="toggleBalancePrivacy()" class="text-gray-400 hover:text-white transition-colors p-1" title="Ẩn/Hiện">
+                  <i class="fa-solid fa-eye balance-eye-icon text-[11px]"></i>
                 </button>
               </div>
-              <div class="z-10 my-1">
+              <div class="z-10 my-0.5 min-w-0">
                 <h3
                   id="dash-bal-num"
-                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val font-black custom-text tracking-tight select-all leading-tight"
                 >
                   0 ₫
                 </h3>
                 <p
                   id="dash-bal-pct"
-                  class="text-[10px] sm:text-xs font-bold text-sky-400 flex items-center gap-1 truncate mt-0.5"
+                  class="text-[10px] sm:text-[11px] font-bold text-sky-400 flex items-center gap-1 truncate mt-0.5"
                 >
-                  <i class="fa-solid fa-caret-up"></i> 0% so với kỳ trước
+                  <i class="fa-solid fa-caret-up text-[9px]"></i> 0% kỳ trước
                 </p>
               </div>
               <div class="dash-sparkline-wrap">
@@ -1278,35 +1286,35 @@
             </div>
 
             <!-- Thẻ 4: Giao dịch & Nhịp độ -->
-            <div class="dash-kpi-card dash-kpi-tx p-4 sm:p-5 flex flex-col justify-between h-36">
-              <div class="flex justify-between items-start z-10">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-kpi-card dash-kpi-tx p-3 sm:p-4 flex flex-col justify-between min-h-[108px] sm:min-h-[125px]">
+              <div class="flex justify-between items-center z-10 mb-1">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center text-[10px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-bolt-lightning"></i>
                   </div>
-                  <p class="text-xs font-extrabold text-purple-400 uppercase tracking-wider">
+                  <p class="text-[11px] sm:text-xs font-extrabold text-purple-400 uppercase tracking-wider truncate">
                     Giao dịch
                   </p>
                 </div>
                 <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
               </div>
-              <div class="z-10 my-1">
+              <div class="z-10 my-0.5 min-w-0">
                 <h3
                   id="dash-tx-num"
-                  class="dash-kpi-val text-xl sm:text-2xl font-black custom-text truncate tracking-tight"
+                  class="dash-kpi-val font-black custom-text tracking-tight select-all leading-tight"
                 >
                   0
                 </h3>
                 <p
                   id="dash-tx-pct"
-                  class="text-[10px] sm:text-xs font-bold text-emerald-400 flex items-center gap-1 truncate mt-0.5"
+                  class="text-[10px] sm:text-[11px] font-bold text-emerald-400 flex items-center gap-1 truncate mt-0.5"
                 >
-                  <i class="fa-solid fa-caret-up"></i> 0 gd so với kỳ trước
+                  <i class="fa-solid fa-caret-up text-[9px]"></i> 0 gd kỳ trước
                 </p>
               </div>
               <div
                 id="dash-bar-mini"
-                class="absolute bottom-2 left-4 right-4 flex items-end justify-between h-9 opacity-60 z-0 gap-1 pointer-events-none"
+                class="absolute bottom-1.5 left-3 right-3 flex items-end justify-between h-7 opacity-35 z-0 gap-1 pointer-events-none"
               >
                 <!-- Render bằng JS -->
               </div>
@@ -1316,171 +1324,175 @@
           <!-- ========================================================
                3. BENTO GRID: PHÂN TÍCH CHUYÊN SÂU & THÔNG MINH
                ======================================================== -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-5">
             <!-- MAIN CHART SUITE (Span 8 trên Desktop) -->
-            <div class="lg:col-span-8 dash-bento-card p-6 sm:p-7 flex flex-col justify-between">
-              <!-- Chart Header -->
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-                <div>
-                  <h3 class="text-lg font-black custom-text flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
-                      <i class="fa-solid fa-chart-pie"></i>
-                    </div>
+            <div class="lg:col-span-8 dash-bento-card p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between">
+              <!-- Row 1: Header (Title on left, Date Picker on right) -->
+              <div class="flex items-center justify-between gap-2.5 mb-2.5">
+                <div class="min-w-0 flex items-center gap-2">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[11px] sm:text-xs shadow-sm shrink-0">
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <h3 class="text-xs sm:text-base font-black custom-text truncate">
                     Cơ cấu Chi Tiêu theo Danh Mục
                   </h3>
-                  <p class="text-xs custom-text-secondary mt-1">Trực quan hoá tỷ trọng tiêu dùng theo từng phân loại</p>
                 </div>
 
-                <!-- Controls: Date Picker & Chart Types -->
-                <div class="flex flex-wrap items-center gap-2">
-                  <!-- Date Picker Pill -->
-                  <div class="relative custom-bg-input px-3 py-1.5 rounded-xl border custom-border flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-calendar-day text-xs custom-icon-active pointer-events-none"></i>
-                    <input
-                      type="date"
-                      id="dash-date-picker"
-                      onchange="updateAllViews()"
-                      class="bg-transparent text-xs font-bold custom-text outline-none cursor-pointer"
-                    />
-                  </div>
-
-                  <!-- Chart Type Switcher Capsule -->
-                  <div class="flex custom-bg-input p-1 rounded-xl gap-1 border custom-border shadow-sm">
-                    <button
-                      onclick="setChartType('doughnut')"
-                      id="btn-chart-doughnut"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Vành khuyên (Doughnut)"
-                    >
-                      <i class="fa-solid fa-circle-notch text-xs"></i>
-                    </button>
-                    <button
-                      onclick="setChartType('pie')"
-                      id="btn-chart-pie"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Hình tròn (Pie)"
-                    >
-                      <i class="fa-solid fa-chart-pie text-xs"></i>
-                    </button>
-                    <button
-                      onclick="setChartType('bar')"
-                      id="btn-chart-bar"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Biểu đồ cột (Bar)"
-                    >
-                      <i class="fa-solid fa-chart-simple text-xs"></i>
-                    </button>
-                    <button
-                      onclick="setChartType('line')"
-                      id="btn-chart-line"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Biểu đồ đường (Line)"
-                    >
-                      <i class="fa-solid fa-chart-line text-xs"></i>
-                    </button>
-                    <button
-                      onclick="setChartType('polarArea')"
-                      id="btn-chart-polarArea"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Phân cực (Polar Area)"
-                    >
-                      <i class="fa-solid fa-bullseye text-xs"></i>
-                    </button>
-                    <button
-                      onclick="setChartType('radar')"
-                      id="btn-chart-radar"
-                      class="p-1.5 rounded-lg custom-text-secondary transition-colors"
-                      title="Mạng nhện (Radar)"
-                    >
-                      <i class="fa-solid fa-draw-polygon text-xs"></i>
-                    </button>
-                  </div>
+                <!-- Nút Thứ & Ngày Siêu Đẹp (Click mở Form chọn thứ ngày, không mở bàn phím) -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    id="btn-dash-date-display"
+                    onclick="openFinDatePicker('dash-date-picker')"
+                    class="relative custom-bg-input px-2.5 py-1 rounded-xl border custom-border flex items-center gap-1.5 shadow-sm h-7 sm:h-8 shrink-0 cursor-pointer hover:border-white/30 transition-all active:scale-95"
+                    title="Nhấn để chọn thứ ngày"
+                  >
+                    <i class="fa-solid fa-calendar-day text-[11px] custom-icon-active pointer-events-none"></i>
+                    <span id="dash-date-text" class="text-[11px] sm:text-xs font-black custom-text pointer-events-none">Hôm nay</span>
+                    <i class="fa-solid fa-chevron-down text-[8px] custom-text-secondary ml-0.5 pointer-events-none"></i>
+                  </button>
+                  <input type="hidden" id="dash-date-picker" value="" onchange="updateAllViews()" />
                 </div>
               </div>
 
-              <!-- Time Granularity Filter Bar -->
-              <div class="flex items-center w-full custom-bg-input p-1 rounded-xl mb-4 border custom-border shadow-sm">
-                <button
-                  onclick="setDashTime('day')"
-                  id="btn-time-day"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
-                >
-                  Ngày
-                </button>
-                <button
-                  onclick="setDashTime('week')"
-                  id="btn-time-week"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
-                >
-                  Tuần
-                </button>
-                <button
-                  onclick="setDashTime('month')"
-                  id="btn-time-month"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
-                >
-                  Tháng
-                </button>
-                <button
-                  onclick="setDashTime('year')"
-                  id="btn-time-year"
-                  class="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-bold custom-text-secondary transition-all"
-                >
-                  Năm
-                </button>
+              <!-- Row 2: Unified Toolbar (Time Filter on left, Chart Type Switcher on right) -->
+              <div class="flex items-center justify-between gap-2 mb-3 flex-wrap sm:flex-nowrap">
+                <!-- Time Granularity Filter Bar -->
+                <div class="flex items-center flex-1 min-w-[190px] custom-bg-input p-0.5 rounded-xl border custom-border shadow-sm h-7 sm:h-8">
+                  <button
+                    onclick="setDashTime('day')"
+                    id="btn-time-day"
+                    class="flex-1 py-1 rounded-lg text-[11px] sm:text-xs font-bold custom-text-secondary transition-all"
+                  >
+                    Ngày
+                  </button>
+                  <button
+                    onclick="setDashTime('week')"
+                    id="btn-time-week"
+                    class="flex-1 py-1 rounded-lg text-[11px] sm:text-xs font-bold custom-text-secondary transition-all"
+                  >
+                    Tuần
+                  </button>
+                  <button
+                    onclick="setDashTime('month')"
+                    id="btn-time-month"
+                    class="flex-1 py-1 rounded-lg text-[11px] sm:text-xs font-bold custom-text-secondary transition-all"
+                  >
+                    Tháng
+                  </button>
+                  <button
+                    onclick="setDashTime('year')"
+                    id="btn-time-year"
+                    class="flex-1 py-1 rounded-lg text-[11px] sm:text-xs font-bold custom-text-secondary transition-all"
+                  >
+                    Năm
+                  </button>
+                </div>
+
+                <!-- Chart Type Switcher Capsule -->
+                <div class="flex items-center custom-bg-input p-0.5 rounded-xl gap-0.5 border custom-border shadow-sm h-7 sm:h-8 shrink-0">
+                  <button
+                    onclick="setChartType('doughnut')"
+                    id="btn-chart-doughnut"
+                    class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Vành khuyên (Doughnut)"
+                  >
+                    <i class="fa-solid fa-circle-notch text-[10px]"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('pie')"
+                    id="btn-chart-pie"
+                    class="w-7 h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Hình tròn (Pie)"
+                  >
+                    <i class="fa-solid fa-chart-pie text-[10px]"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('bar')"
+                    id="btn-chart-bar"
+                    class="w-7 h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Biểu đồ cột (Bar)"
+                  >
+                    <i class="fa-solid fa-chart-simple text-[10px]"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('line')"
+                    id="btn-chart-line"
+                    class="w-7 h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Biểu đồ đường (Line)"
+                  >
+                    <i class="fa-solid fa-chart-line text-[10px]"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('polarArea')"
+                    id="btn-chart-polarArea"
+                    class="w-7 h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Phân cực (Polar Area)"
+                  >
+                    <i class="fa-solid fa-bullseye text-[10px]"></i>
+                  </button>
+                  <button
+                    onclick="setChartType('radar')"
+                    id="btn-chart-radar"
+                    class="w-7 h-7 rounded-lg custom-text-secondary hover:text-white flex items-center justify-center transition-colors"
+                    title="Mạng nhện (Radar)"
+                  >
+                    <i class="fa-solid fa-draw-polygon text-[10px]"></i>
+                  </button>
+                </div>
               </div>
 
               <!-- Canvas Khung Vẽ -->
-              <div class="h-64 sm:h-72 relative w-full flex items-center justify-center" id="chart-container">
+              <div class="h-56 sm:h-64 md:h-72 relative w-full flex items-center justify-center" id="chart-container">
                 <canvas id="expenseChart"></canvas>
               </div>
             </div>
 
             <!-- RIGHT COMPANION BENTO (Span 4 trên Desktop) -->
-            <div class="lg:col-span-4 flex flex-col gap-5 sm:gap-6">
+            <div class="lg:col-span-4 flex flex-col gap-3.5 sm:gap-5">
               <!-- Spatial Mini Radar Map Card -->
               <div
-                class="dash-radar-card relative w-full h-52 overflow-hidden shadow-sm group cursor-pointer"
+                class="dash-radar-card relative w-full h-44 sm:h-52 overflow-hidden shadow-sm group cursor-pointer"
                 onclick="switchView('map')"
                 title="Nhấn để mở bản đồ định vị chi tiêu toàn màn hình"
               >
                 <div id="dash-mini-map" class="absolute inset-0 z-0 pointer-events-none"></div>
-                <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-10 pointer-events-none"></div>
-                <div class="absolute top-3.5 right-3.5 z-20">
-                  <span class="px-3 py-1 rounded-full text-[10px] font-black bg-black/70 backdrop-blur-md text-sky-400 border border-sky-400/40 flex items-center gap-1.5 shadow-md">
+                <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute top-3 right-3 z-20">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-black/70 backdrop-blur-md text-sky-400 border border-sky-400/40 flex items-center gap-1.5 shadow-md">
                     <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping"></span>
                     <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
                     GPS Tracking
                   </span>
                 </div>
-                <div class="absolute bottom-3.5 left-4 right-4 z-20 pointer-events-none flex justify-between items-end">
+                <div class="absolute bottom-3 left-3.5 right-3.5 z-20 pointer-events-none flex justify-between items-end">
                   <div class="min-w-0 flex-1 pr-2">
                     <p class="text-[10px] font-bold text-white/80 uppercase tracking-widest drop-shadow-md mb-0.5 flex items-center gap-1.5">
-                      <i class="fa-solid fa-map-pin text-rose-400"></i>
+                      <i class="fa-solid fa-map-pin text-rose-400 text-[10px]"></i>
                       Điểm nóng tiêu dùng
                     </p>
-                    <p id="dash-map-top-area" class="text-sm font-black text-white drop-shadow-md truncate w-full">
+                    <p id="dash-map-top-area" class="text-xs sm:text-sm font-black text-white drop-shadow-md truncate w-full">
                       Đang phân tích toạ độ...
                     </p>
                   </div>
-                  <div class="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs group-hover:scale-110 group-hover:bg-white/20 transition-all shrink-0">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs group-hover:scale-110 group-hover:bg-white/20 transition-all shrink-0">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                   </div>
                 </div>
               </div>
 
               <!-- FinAI Smart Companion Card -->
-              <div class="dash-bento-card p-5 flex flex-col justify-between flex-1">
-                <div class="flex items-center justify-between mb-3.5">
-                  <h4 class="font-black text-sm custom-text flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs">
+              <div class="dash-bento-card p-3.5 sm:p-4.5 flex flex-col justify-between flex-1">
+                <div class="flex items-center justify-between mb-2.5">
+                  <h4 class="font-black text-xs sm:text-sm custom-text flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs shrink-0">
                       <i class="fa-solid fa-microchip-ai"></i>
                     </div>
-                    Trợ lý FinAI
+                    <span>Trợ lý FinAI</span>
                   </h4>
-                  <span class="text-[10px] font-extrabold custom-bg-primary-soft custom-icon-active px-2.5 py-0.5 rounded-full border custom-border">Smart Insights</span>
+                  <span class="text-[10px] font-extrabold custom-bg-primary-soft custom-icon-active px-2 py-0.5 rounded-full border custom-border">Smart Insights</span>
                 </div>
-                <div id="dash-smart-alerts" class="flex flex-nowrap overflow-x-auto gap-3.5 pb-2 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
+                <div id="dash-smart-alerts" class="flex flex-nowrap overflow-x-auto gap-2.5 pb-1 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
                   <!-- JS sẽ bơm các widget vuông thông minh vào đây -->
                 </div>
               </div>
@@ -1490,68 +1502,68 @@
           <!-- ========================================================
                4. TOP DANH MỤC & TOP ĐỊA ĐIỂM CHI TIÊU
                ======================================================== -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
             <!-- Top Danh Mục -->
-            <div class="dash-bento-card rounded-3xl p-6 flex flex-col">
-              <div class="flex justify-between items-center mb-5">
-                <h4 class="font-black text-sm custom-text flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-bento-card p-3.5 sm:p-5 flex flex-col">
+              <div class="flex justify-between items-center mb-3.5">
+                <h4 class="font-black text-xs sm:text-sm custom-text flex items-center gap-2">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[11px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-ranking-star"></i>
                   </div>
-                  Top Danh Mục Tiêu Dùng
+                  <span>Top Danh Mục Tiêu Dùng</span>
                 </h4>
                 <button
                   onclick="openAnalytics()"
-                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3.5 py-1.5 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
+                  class="text-[10px] sm:text-[11px] font-bold custom-text-secondary custom-bg-input px-2.5 py-1 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
                 >
                   <span>Xem phân tích</span>
-                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                  <i class="fa-solid fa-arrow-right text-[9px]"></i>
                 </button>
               </div>
-              <div id="dash-top-categories" class="flex-1 space-y-3.5"></div>
+              <div id="dash-top-categories" class="flex-1 space-y-2 sm:space-y-2.5"></div>
             </div>
 
             <!-- Top Địa Điểm -->
-            <div class="dash-bento-card rounded-3xl p-6 flex flex-col">
-              <div class="flex justify-between items-center mb-5">
-                <h4 class="font-black text-sm custom-text flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+            <div class="dash-bento-card p-3.5 sm:p-5 flex flex-col">
+              <div class="flex justify-between items-center mb-3.5">
+                <h4 class="font-black text-xs sm:text-sm custom-text flex items-center gap-2">
+                  <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[11px] sm:text-xs shadow-sm shrink-0">
                     <i class="fa-solid fa-shop"></i>
                   </div>
-                  Top Địa Điểm / Quán Xá
+                  <span>Top Địa Điểm / Quán Xá</span>
                 </h4>
                 <button
                   onclick="openLocAnalytics()"
-                  class="text-[11px] font-bold custom-text-secondary custom-bg-input px-3.5 py-1.5 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
+                  class="text-[10px] sm:text-[11px] font-bold custom-text-secondary custom-bg-input px-2.5 py-1 rounded-xl border custom-border hover:brightness-110 active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
                 >
                   <span>Xem địa điểm</span>
-                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                  <i class="fa-solid fa-arrow-right text-[9px]"></i>
                 </button>
               </div>
-              <div id="dash-top-locations" class="flex-1 space-y-3"></div>
+              <div id="dash-top-locations" class="flex-1 space-y-2 sm:space-y-2.5"></div>
             </div>
           </div>
 
           <!-- ========================================================
                5. BIỂU ĐỒ XU HƯỚNG THU CHI & GIAO DỊCH GẦN ĐÂY
                ======================================================== -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-5">
             <!-- Trend Line Chart (Span 7) -->
-            <div class="lg:col-span-7 dash-bento-card rounded-3xl p-6 flex flex-col justify-between">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div>
-                  <h4 class="font-black text-base custom-text flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs shadow-sm">
+            <div class="lg:col-span-7 dash-bento-card p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+                <div class="min-w-0">
+                  <h4 class="font-black text-xs sm:text-base custom-text flex items-center gap-2">
+                    <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-[11px] sm:text-xs shadow-sm shrink-0">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                     </div>
-                    Quỹ Đạo Thu & Chi Theo Thời Gian
+                    <span class="truncate">Quỹ Đạo Thu & Chi Theo Thời Gian</span>
                   </h4>
-                  <p class="text-xs custom-text-secondary mt-1">Biểu đồ trực quan hoá nhịp độ và xu hướng dòng tiền</p>
+                  <p class="text-[11px] custom-text-secondary mt-0.5 hidden xs:block truncate">Biểu đồ trực quan hoá nhịp độ và xu hướng dòng tiền</p>
                 </div>
                 <select
                   id="dash-trend-time"
                   onchange="renderDashboard()"
-                  class="text-xs font-bold custom-text-secondary custom-bg-input px-3.5 py-2 rounded-xl border custom-border outline-none cursor-pointer hover:brightness-105 transition-all shadow-sm"
+                  class="text-xs font-bold custom-text-secondary custom-bg-input px-2.5 py-1.5 rounded-xl border custom-border outline-none cursor-pointer hover:brightness-105 transition-all shadow-sm self-start sm:self-auto"
                 >
                   <option value="month">Theo ngày (Tháng này)</option>
                   <option value="year">Theo tháng (Năm này)</option>
@@ -1559,25 +1571,25 @@
               </div>
 
               <!-- Chú thích Legend Capsule -->
-              <div class="flex gap-4 mb-3.5 pl-1">
-                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+              <div class="flex gap-2.5 mb-2.5 pl-0.5">
+                <span class="text-[11px] font-bold custom-text-secondary flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]"></span>
                   Thu nhập
                 </span>
-                <span class="text-xs font-bold custom-text-secondary flex items-center gap-2 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20">
-                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></span>
+                <span class="text-[11px] font-bold custom-text-secondary flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-rose-500/10 border border-rose-500/20">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></span>
                   Chi tiêu
                 </span>
               </div>
 
               <!-- Khung vẽ Chart -->
-              <div class="flex-1 h-64 w-full relative">
+              <div class="flex-1 h-56 sm:h-64 w-full relative">
                 <canvas id="dash-trend-chart"></canvas>
               </div>
 
               <button
                 onclick="openTrendAnalytics()"
-                class="mt-4 w-full py-3 custom-bg-input rounded-xl text-xs font-bold custom-text transition-all border custom-border hover:brightness-110 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2"
+                class="mt-3 w-full py-2.5 custom-bg-input rounded-xl text-xs font-bold custom-text transition-all border custom-border hover:brightness-110 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Mở báo cáo xu hướng toàn diện</span>
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -1585,28 +1597,28 @@
             </div>
 
             <!-- Recent Transactions Stream (Span 5) -->
-            <div class="lg:col-span-5 dash-bento-card p-6 rounded-3xl flex flex-col">
-              <div class="flex justify-between items-center mb-5">
-                <div>
-                  <h3 class="font-black text-base custom-text flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+            <div class="lg:col-span-5 dash-bento-card p-3.5 sm:p-5 flex flex-col">
+              <div class="flex justify-between items-center mb-3.5">
+                <div class="min-w-0">
+                  <h3 class="font-black text-xs sm:text-base custom-text flex items-center gap-2">
+                    <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-bg-primary-soft custom-icon-active flex items-center justify-center text-[11px] sm:text-xs shadow-sm shrink-0">
                       <i class="fa-solid fa-receipt"></i>
                     </div>
-                    Giao Dịch Gần Đây
+                    <span class="truncate">Giao Dịch Gần Đây</span>
                   </h3>
-                  <p class="text-xs custom-text-secondary mt-1">Các khoản thu chi phát sinh mới nhất</p>
+                  <p class="text-[11px] custom-text-secondary mt-0.5 hidden xs:block truncate">Các khoản thu chi phát sinh mới nhất</p>
                 </div>
                 <button
                   onclick="switchView('transactions')"
-                  class="text-xs font-bold custom-icon-active hover:underline flex items-center gap-1.5"
+                  class="text-[11px] sm:text-xs font-bold custom-icon-active hover:underline flex items-center gap-1 shrink-0 ml-2"
                 >
                   <span>Xem tất cả</span>
-                  <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                  <i class="fa-solid fa-chevron-right text-[9px]"></i>
                 </button>
               </div>
               <div
                 id="dash-recent-tx"
-                class="space-y-3.5 flex-1 overflow-y-auto max-h-[360px] pr-1"
+                class="space-y-2 sm:space-y-2.5 flex-1 overflow-y-auto max-h-[340px] pr-0.5"
               ></div>
             </div>
           </div>
@@ -3918,6 +3930,130 @@
       </button>
     </div>
 
+    
+    <!-- ============================================================== -->
+    <!-- FINMASTER NATIVE DATE & DAY PICKER MODAL (FORM CHỌN THỨ NGÀY) -->
+    <!-- ============================================================== -->
+    <div
+      id="fin-datepicker-modal"
+      class="hidden fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-md transition-opacity duration-300 p-0 sm:p-4"
+      onclick="if(event.target === this) closeFinDatePicker()"
+    >
+      <div
+        id="fin-datepicker-sheet"
+        class="relative custom-bg-card w-full sm:max-w-md rounded-t-[2.25rem] sm:rounded-3xl border custom-border shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 max-h-[92vh] overflow-y-auto animate-slideUpSheet sm:animate-popIn"
+      >
+        <!-- Pull Bar Mobile -->
+        <div class="w-12 h-1 bg-white/20 rounded-full mx-auto sm:hidden -mt-1 mb-1"></div>
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between pb-2 border-b custom-border">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl custom-bg-primary-soft custom-icon-active flex items-center justify-center text-xs shadow-sm">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-sm sm:text-base custom-text">Chọn Thứ & Ngày</h3>
+              <p class="text-[10px] custom-text-secondary">Bộ lọc lịch chuẩn hóa toàn hệ thống</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick="closeFinDatePicker()"
+            class="w-7 h-7 rounded-full bg-white/5 border custom-border flex items-center justify-center text-gray-400 hover:text-white transition-all text-xs active:scale-90"
+            title="Đóng"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Phím chọn nhanh (Hôm nay, Hôm qua, Đầu tháng, 7 ngày qua) -->
+        <div class="grid grid-cols-4 gap-1.5">
+          <button
+            type="button"
+            onclick="finDatePickerSelectQuick('today')"
+            class="py-1.5 px-1.5 rounded-xl text-[11px] font-bold custom-bg-input border custom-border hover:brightness-110 active:scale-95 transition-all text-center custom-text truncate"
+          >
+            Hôm nay
+          </button>
+          <button
+            type="button"
+            onclick="finDatePickerSelectQuick('yesterday')"
+            class="py-1.5 px-1.5 rounded-xl text-[11px] font-bold custom-bg-input border custom-border hover:brightness-110 active:scale-95 transition-all text-center custom-text truncate"
+          >
+            Hôm qua
+          </button>
+          <button
+            type="button"
+            onclick="finDatePickerSelectQuick('start-month')"
+            class="py-1.5 px-1.5 rounded-xl text-[11px] font-bold custom-bg-input border custom-border hover:brightness-110 active:scale-95 transition-all text-center custom-text truncate"
+          >
+            Đầu tháng
+          </button>
+          <button
+            type="button"
+            onclick="finDatePickerSelectQuick('last-7')"
+            class="py-1.5 px-1.5 rounded-xl text-[11px] font-bold custom-bg-input border custom-border hover:brightness-110 active:scale-95 transition-all text-center custom-text truncate"
+          >
+            7 ngày qua
+          </button>
+        </div>
+
+        <!-- Chuyển Tháng & Năm -->
+        <div class="flex items-center justify-between px-2 pt-1">
+          <button
+            type="button"
+            onclick="finDatePickerChangeMonth(-1)"
+            class="w-8 h-8 rounded-xl bg-white/5 border custom-border flex items-center justify-center text-xs hover:bg-white/10 active:scale-90 transition-all text-gray-300"
+          >
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+          </button>
+          <div class="text-center">
+            <span id="fin-dp-month-title" class="text-xs sm:text-sm font-black custom-text">Tháng 10, 2026</span>
+          </div>
+          <button
+            type="button"
+            onclick="finDatePickerChangeMonth(1)"
+            class="w-8 h-8 rounded-xl bg-white/5 border custom-border flex items-center justify-center text-xs hover:bg-white/10 active:scale-90 transition-all text-gray-300"
+          >
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          </button>
+        </div>
+
+        <!-- Tiêu đề 7 Thứ (T2 -> CN) -->
+        <div class="grid grid-cols-7 gap-1 text-center font-bold text-[10px] uppercase tracking-wider py-1 border-y custom-border">
+          <span class="custom-text-secondary">T2</span>
+          <span class="custom-text-secondary">T3</span>
+          <span class="custom-text-secondary">T4</span>
+          <span class="custom-text-secondary">T5</span>
+          <span class="custom-text-secondary">T6</span>
+          <span class="text-sky-400">T7</span>
+          <span class="text-rose-400">CN</span>
+        </div>
+
+        <!-- Lưới ngày trong tháng -->
+        <div id="fin-dp-days-grid" class="grid grid-cols-7 gap-1 text-center py-1">
+          <!-- Bơm bằng JS -->
+        </div>
+
+        <!-- Footer: Preview & Confirm -->
+        <div class="flex items-center justify-between gap-2 pt-2 border-t custom-border">
+          <div class="min-w-0 flex-1">
+            <p class="text-[10px] font-bold custom-text-secondary uppercase tracking-wider">Đang chọn</p>
+            <p id="fin-dp-preview-text" class="text-xs sm:text-sm font-black custom-icon-active truncate">Thứ Tư, 28/10/2026</p>
+          </div>
+          <button
+            type="button"
+            onclick="finDatePickerConfirm()"
+            class="px-4 py-2 rounded-xl custom-primary text-white text-xs font-black shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
+          >
+            <i class="fa-solid fa-check text-[11px]"></i>
+            <span>Áp dụng</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div
       id="global-modal"
       class="hidden fixed inset-0 z-[9999] flex items-end md:items-center justify-center bg-black/75 backdrop-blur-md transition-opacity"
@@ -4632,7 +4768,12 @@
         const todayStr = getToday().split("T")[0];
         const dashDate = document.getElementById("dash-date-picker");
         const txDate = document.getElementById("tx-date-picker");
-        if (dashDate) dashDate.value = todayStr;
+        if (dashDate) {
+          dashDate.value = todayStr;
+          if (typeof window.updateDashDateButtonText === "function") {
+            window.updateDashDateButtonText(todayStr);
+          }
+        }
         if (txDate) txDate.value = todayStr;
 
         applyTheme();
@@ -5682,6 +5823,10 @@
             ? dashDatePicker.value
             : getToday().split("T")[0];
 
+        if (typeof window.updateDashDateButtonText === "function") {
+          window.updateDashDateButtonText(selectedDateStr);
+        }
+
         const refDate = new Date(selectedDateStr);
         const cm = refDate.getMonth();
         const cy = refDate.getFullYear();
@@ -5851,8 +5996,8 @@
             colorClass = isUp ? "text-rose-500" : "text-emerald-500"; // Đảo màu: Chi tăng là xấu (Đỏ)
           if (cur === 0 && prev === 0) colorClass = "text-gray-500";
 
-          el.innerHTML = `<i class="fa-solid fa-caret-${isUp ? "up" : "down"}"></i> ${pct}% so với kỳ trước`;
-          el.className = `text-[9px] sm:text-[10px] font-bold z-10 flex items-center gap-1 truncate ${colorClass}`;
+          el.innerHTML = `<i class="fa-solid fa-caret-${isUp ? "up" : "down"} text-[9px]"></i> <span>${pct}% kỳ trước</span>`;
+          el.className = `text-[10px] sm:text-[11px] font-bold z-10 flex items-center gap-1 truncate ${colorClass}`;
         };
 
         // GỌI ĐÚNG TÊN BIẾN CỦA ĐẠI KA LÀ inc, exp, netBalance
@@ -5865,8 +6010,8 @@
         if (txPctEl) {
           const txDiff = filteredTx.length - prevTxsKPI.length;
           const txUp = txDiff >= 0;
-          txPctEl.innerHTML = `<i class="fa-solid fa-caret-${txUp ? "up" : "down"}"></i> ${Math.abs(txDiff)} gd so với kỳ trước`;
-          txPctEl.className = `text-[9px] sm:text-[10px] font-bold z-10 flex items-center gap-1 truncate ${txUp ? "text-emerald-500" : "text-rose-500"}`;
+          txPctEl.innerHTML = `<i class="fa-solid fa-caret-${txUp ? "up" : "down"} text-[9px]"></i> <span>${Math.abs(txDiff)} gd kỳ trước</span>`;
+          txPctEl.className = `text-[10px] sm:text-[11px] font-bold z-10 flex items-center gap-1 truncate ${txUp ? "text-emerald-500" : "text-rose-500"}`;
         }
 
         // TÍNH TOÁN DỮ LIỆU 7 NGÀY QUA CHO 4 ĐƯỜNG SPARKLINE CON
@@ -6028,7 +6173,7 @@
 
         // Class CSS xài chung cho 3 cái thẻ vuông (Đã ép thành hình vuông với aspect-square)
         const squareClass =
-          "w-[145px] aspect-square shrink-0 snap-start rounded-[1.75rem] p-4 flex flex-col items-center justify-center text-center shadow-md relative overflow-hidden transition-all duration-300 active:scale-95 cursor-pointer hover:scale-[1.03] backdrop-blur-xl border";
+          "w-[122px] sm:w-[136px] aspect-square shrink-0 snap-start rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden transition-all duration-300 active:scale-95 cursor-pointer hover:scale-[1.02] backdrop-blur-xl border";
 
         // 1. CẢNH BÁO ĐỎ - NGHIỆN QUÁN RUỘT (Thẻ màu Hồng)
         if (state.favorites && state.favorites.length > 0) {
@@ -6275,16 +6420,16 @@
           chartInstance = new Chart(ctx, config);
         } else {
           document.getElementById("chart-container").innerHTML = `
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                  <img
-
-                    src="https://cdn-icons-png.flaticon.com/512/2257/2257295.png"
-                    alt="Chưa có dữ liệu"
-                    class="w-44 h-44 mb-4 opacity-90 pointer-events-none"
-                  />
-                  <p class="custom-text-secondary font-medium">
-                    Chưa có dữ liệu để hiển thị biểu đồ
-                  </p>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                  <div class="w-12 h-12 rounded-2xl bg-white/5 border custom-border flex items-center justify-center text-primary-400 text-lg shadow-inner mb-2.5">
+                    <i class="fa-solid fa-chart-pie opacity-70"></i>
+                  </div>
+                  <p class="font-bold text-xs sm:text-sm custom-text mb-0.5">Chưa có chi tiêu kỳ này</p>
+                  <p class="text-[11px] custom-text-secondary max-w-[240px] mb-3">Biểu đồ cơ cấu sẽ tự động phân tích khi bạn phát sinh giao dịch</p>
+                  <button onclick="handleFabClick()" class="px-3 py-1.5 rounded-xl custom-bg-primary-soft custom-icon-active text-xs font-bold border custom-border hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>Thêm chi tiêu</span>
+                  </button>
                 </div>
                 <canvas id="expenseChart"></canvas>
               `;
@@ -6481,18 +6626,20 @@
         document.getElementById("dash-recent-tx").innerHTML =
           recent.length === 0
             ? `
-                  <div class="flex flex-col items-center justify-center py-8">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/13637/13637588.png"
-                      alt="Chưa có giao dịch"
-                      class="w-32 h-32 mb-3 opacity-90"
-                    />
-                    <p class="custom-text-secondary text-center font-medium">
-                      Chưa có giao dịch nào
+                  <div class="flex flex-col items-center justify-center py-6 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-white/5 border custom-border flex items-center justify-center text-primary-400 text-lg shadow-inner mb-2.5">
+                      <i class="fa-solid fa-receipt opacity-70"></i>
+                    </div>
+                    <p class="custom-text font-bold text-xs sm:text-sm mb-0.5">
+                      Chưa có giao dịch gần đây
                     </p>
-                    <p class="text-xs custom-text-secondary opacity-70 mt-1">
-                      Hãy thêm giao dịch đầu tiên của bạn.
+                    <p class="text-[11px] custom-text-secondary max-w-[220px] mb-2.5">
+                      Ghi chép giao dịch đầu tiên để bắt đầu theo dõi ví
                     </p>
+                    <button onclick="handleFabClick()" class="px-3 py-1.5 rounded-xl custom-bg-primary-soft custom-icon-active text-xs font-bold border custom-border hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+                      <i class="fa-solid fa-plus text-[10px]"></i>
+                      <span>Ghi chép ngay</span>
+                    </button>
                   </div>
                 `
             : recent
@@ -6512,23 +6659,23 @@
                   ) || { name: "Ví đã xóa", icon: "💳" };
 
                   return `
-                <div class="dash-list-row flex items-center justify-between p-2.5 rounded-2xl group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
-                    <div class="flex items-center gap-3.5 min-w-0 flex-1">
-                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border group-hover:scale-105 transition-transform">
+                <div class="dash-list-row flex items-center justify-between p-2 sm:p-2.5 rounded-xl group cursor-pointer" onclick="openEditTransaction('${tx.id}')">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-lg custom-shadow-sm ${cat.color} overflow-hidden shrink-0 border custom-border group-hover:scale-105 transition-transform">
                             ${tx.image && tx.image.startsWith("data:image") ? `<img src="${tx.image}" class="w-full h-full object-cover cursor-pointer" onclick="openImageModal(this.src)">` : `<span>${cat.icon}</span>`}
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2 mb-0.5">
+                            <div class="flex items-center gap-1.5 mb-0.5">
                                 <p class="font-black text-xs sm:text-sm custom-text truncate group-hover:text-primary-400 transition-colors">${cat.name}</p>
                                 <span class="shrink-0 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-white/5 border custom-border custom-text-secondary">${wallet.icon} ${wallet.name}</span>
                             </div>
-                            <p class="text-[11px] custom-text-secondary font-medium truncate">
-                                <i class="fa-regular fa-clock"></i> ${formatDateTime(tx.date)}
-                                ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500"></i> ${formatShortAddress(tx.locationName)}` : ""}
+                            <p class="text-[10px] sm:text-[11px] custom-text-secondary font-medium truncate">
+                                <i class="fa-regular fa-clock text-[9px]"></i> ${formatDateTime(tx.date)}
+                                ${tx.locationName ? `<span class="mx-1">•</span><i class="fa-solid fa-location-dot text-rose-500 text-[9px]"></i> ${formatShortAddress(tx.locationName)}` : ""}
                             </p>
                         </div>
                     </div>
-                    <span class="shrink-0 ml-2 font-black text-sm sm:text-base ${isInc ? "text-emerald-400" : "custom-text"}">
+                    <span class="shrink-0 ml-2 font-black text-xs sm:text-sm ${isInc ? "text-emerald-400" : "custom-text"} tabular-nums">
                         ${isInc ? "+" : "-"}${formatMoney(tx.amount)}
                     </span>
                 </div>`;
@@ -6567,19 +6714,19 @@
             : `<span class="w-6 h-6 rounded-lg bg-white/5 text-gray-400 border border-white/10 font-bold text-xs flex items-center justify-center">${index + 1}</span>`;
 
           topCatHtml += `
-                <div class="dash-list-row flex items-center gap-3.5 mb-2.5 group">
+                <div class="dash-list-row flex items-center gap-2.5 sm:gap-3 p-2 sm:p-2.5 rounded-xl group">
                     <div class="shrink-0">${rankBadge}</div>
-                    <div class="w-10 h-10 rounded-xl bg-white/5 border custom-border flex items-center justify-center text-lg shadow-sm shrink-0" style="color: ${bColor}">${cat.icon}</div>
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 border custom-border flex items-center justify-center text-base sm:text-lg shadow-sm shrink-0" style="color: ${bColor}">${cat.icon}</div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center mb-1.5">
+                        <div class="flex justify-between items-center mb-1">
                             <span class="text-xs sm:text-sm font-black custom-text truncate group-hover:text-primary-400 transition-colors">${cat.name}</span>
-                            <span class="text-xs sm:text-sm font-black text-rose-400 tracking-tight">-${formatMoney(amt)}</span>
+                            <span class="text-xs sm:text-sm font-black text-rose-400 tracking-tight shrink-0 ml-1.5 tabular-nums">-${formatMoney(amt)}</span>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="h-2 flex-1 bg-white/10 dark:bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
-                                <div class="h-full rounded-full transition-all duration-700" style="width: ${pct}%; background: linear-gradient(90deg, ${bColor}, color-mix(in srgb, ${bColor} 70%, white)); box-shadow: 0 0 8px ${bColor}80"></div>
+                        <div class="flex items-center gap-2">
+                            <div class="h-1.5 sm:h-2 flex-1 bg-white/10 dark:bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                <div class="h-full rounded-full transition-all duration-700" style="width: ${pct}%; background: linear-gradient(90deg, ${bColor}, color-mix(in srgb, ${bColor} 70%, white)); box-shadow: 0 0 6px ${bColor}80"></div>
                             </div>
-                            <span class="text-[11px] font-black custom-text-secondary w-7 text-right">${pct}%</span>
+                            <span class="text-[10px] sm:text-[11px] font-black custom-text-secondary w-7 text-right">${pct}%</span>
                         </div>
                     </div>
                 </div>`;
@@ -6660,25 +6807,25 @@
         let topLocHtml = "";
         sortedLocs.forEach(([shopName, data]) => {
           topLocHtml += `
-                <div class="dash-list-row flex items-center justify-between p-2.5 rounded-2xl group cursor-pointer" onclick="viewTransactionOnMap('dummy', ${data.lat}, ${data.lng})">
-                    <div class="flex items-center gap-3.5 min-w-0 flex-1">
-                        <div class="w-11 h-11 rounded-2xl overflow-hidden bg-white shrink-0 border border-white/20 shadow-sm flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
+                <div class="dash-list-row flex items-center justify-between p-2 sm:p-2.5 rounded-xl group cursor-pointer" onclick="viewTransactionOnMap('dummy', ${data.lat}, ${data.lng})">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-white shrink-0 border border-white/20 shadow-sm flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
                             ${getBrandLogo(shopName)}
                         </div>
-                        <div class="min-w-0 pr-2">
+                        <div class="min-w-0 pr-1.5">
                             <p class="text-xs sm:text-sm font-black custom-text truncate group-hover:text-primary-400 transition-colors">${shopName}</p>
                             <p class="text-[10px] font-semibold custom-text-secondary truncate mt-0.5 flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                                <span>${data.catName}</span>
-                                <span>•</span>
-                                <span>${data.district}</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
+                                <span class="truncate">${data.catName}</span>
+                                <span class="text-white/30">•</span>
+                                <span class="truncate">${data.district}</span>
                             </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0">
-                        <p class="text-xs sm:text-sm font-black text-rose-400 tracking-tight">-${formatMoney(data.amt)}</p>
-                        <div class="w-7 h-7 rounded-lg custom-bg-input border custom-border flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-location-dot text-amber-500 text-xs"></i>
+                    <div class="flex items-center gap-2 shrink-0 ml-2">
+                        <p class="text-xs sm:text-sm font-black text-rose-400 tracking-tight tabular-nums">-${formatMoney(data.amt)}</p>
+                        <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg custom-bg-input border custom-border flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-location-dot text-amber-500 text-[10px]"></i>
                         </div>
                     </div>
                 </div>`;
@@ -17742,5 +17889,234 @@
     <script src="theme-pro.js"></script>
 
     <!-- CHÍNH LÀ NÓ ĐÂY -->
+  
+    <!-- ============================================================== -->
+    <!-- FINMASTER DATEPICKER SYSTEM CONTROLLER -->
+    <!-- ============================================================== -->
+    <script>
+      (function initFinDatePickerSystem() {
+        const VIETNAMESE_DAYS = [
+          "Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"
+        ];
+        const VIETNAMESE_DAYS_SHORT = [
+          "CN", "T2", "T3", "T4", "T5", "T6", "T7"
+        ];
+
+        let currentTargetInputId = "dash-date-picker";
+        let selectedDateObj = new Date();
+        let viewYear = selectedDateObj.getFullYear();
+        let viewMonth = selectedDateObj.getMonth();
+
+        function formatDateYYYYMMDD(d) {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+
+        function getDayInfo(dateObj) {
+          return {
+            fullDay: VIETNAMESE_DAYS[dateObj.getDay()],
+            shortDay: VIETNAMESE_DAYS_SHORT[dateObj.getDay()],
+            d: dateObj.getDate(),
+            m: dateObj.getMonth() + 1,
+            y: dateObj.getFullYear()
+          };
+        }
+
+        window.formatVietnameseDatePill = function(dateStr) {
+          if (!dateStr) return "Hôm nay";
+          const parts = dateStr.split("-").map(Number);
+          if (parts.length < 3) return "Hôm nay";
+          const [y, m, d] = parts;
+          const dateObj = new Date(y, m - 1, d);
+          if (isNaN(dateObj.getTime())) return "Hôm nay";
+          const info = getDayInfo(dateObj);
+
+          const now = new Date();
+          const isToday =
+            dateObj.getFullYear() === now.getFullYear() &&
+            dateObj.getMonth() === now.getMonth() &&
+            dateObj.getDate() === now.getDate();
+
+          if (isToday) {
+            return `${info.shortDay}, ${String(info.d).padStart(2, "0")}/${String(info.m).padStart(2, "0")} (Hôm nay)`;
+          }
+          return `${info.shortDay}, ${String(info.d).padStart(2, "0")}/${String(info.m).padStart(2, "0")}/${info.y}`;
+        };
+
+        window.updateDashDateButtonText = function(dateStr) {
+          const textEl = document.getElementById("dash-date-text");
+          if (textEl) {
+            textEl.innerText = window.formatVietnameseDatePill(dateStr);
+          }
+        };
+
+        window.openFinDatePicker = function(targetInputId) {
+          currentTargetInputId = targetInputId || "dash-date-picker";
+          const targetInput = document.getElementById(currentTargetInputId);
+          let dateStr = targetInput && targetInput.value ? targetInput.value : formatDateYYYYMMDD(new Date());
+
+          const parts = dateStr.split("-").map(Number);
+          if (parts.length === 3) {
+            selectedDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+          } else {
+            selectedDateObj = new Date();
+          }
+          if (isNaN(selectedDateObj.getTime())) selectedDateObj = new Date();
+
+          viewYear = selectedDateObj.getFullYear();
+          viewMonth = selectedDateObj.getMonth();
+
+          renderFinDatePickerCalendar();
+
+          const modal = document.getElementById("fin-datepicker-modal");
+          if (modal) {
+            modal.classList.remove("hidden");
+          }
+        };
+
+        window.closeFinDatePicker = function() {
+          const modal = document.getElementById("fin-datepicker-modal");
+          if (modal) {
+            modal.classList.add("hidden");
+          }
+        };
+
+        window.finDatePickerChangeMonth = function(offset) {
+          viewMonth += offset;
+          if (viewMonth < 0) {
+            viewMonth = 11;
+            viewYear--;
+          } else if (viewMonth > 11) {
+            viewMonth = 0;
+            viewYear++;
+          }
+          renderFinDatePickerCalendar();
+        };
+
+        window.finDatePickerSelectQuick = function(type) {
+          const now = new Date();
+          let targetDate = new Date();
+          if (type === "today") {
+            targetDate = new Date();
+          } else if (type === "yesterday") {
+            targetDate.setDate(now.getDate() - 1);
+          } else if (type === "start-month") {
+            targetDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          } else if (type === "last-7") {
+            targetDate.setDate(now.getDate() - 7);
+          }
+          selectedDateObj = targetDate;
+          viewYear = selectedDateObj.getFullYear();
+          viewMonth = selectedDateObj.getMonth();
+          renderFinDatePickerCalendar();
+          finDatePickerConfirm();
+        };
+
+        window.finDatePickerSelectDay = function(y, m, d) {
+          selectedDateObj = new Date(y, m, d);
+          renderFinDatePickerCalendar();
+          finDatePickerConfirm();
+        };
+
+        window.finDatePickerConfirm = function() {
+          const dateStr = formatDateYYYYMMDD(selectedDateObj);
+          const targetInput = document.getElementById(currentTargetInputId);
+          if (targetInput) {
+            targetInput.value = dateStr;
+            targetInput.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          if (currentTargetInputId === "dash-date-picker") {
+            window.updateDashDateButtonText(dateStr);
+            if (typeof updateAllViews === "function") {
+              updateAllViews();
+            }
+          } else if (currentTargetInputId === "tx-date-picker") {
+            if (typeof setTxFilter === "function") {
+              setTxFilter("date");
+            }
+          } else if (currentTargetInputId === "work-filter-start" || currentTargetInputId === "work-filter-end") {
+            if (typeof window.workApplyFilter === "function") {
+              window.workApplyFilter();
+            }
+          } else if (currentTargetInputId === "work-cal-quick-jump") {
+            if (typeof window.workJumpToDate === "function") {
+              window.workJumpToDate(dateStr);
+            }
+          }
+          closeFinDatePicker();
+        };
+
+        function renderFinDatePickerCalendar() {
+          const titleEl = document.getElementById("fin-dp-month-title");
+          if (titleEl) {
+            titleEl.innerText = `Tháng ${viewMonth + 1}, ${viewYear}`;
+          }
+
+          const previewEl = document.getElementById("fin-dp-preview-text");
+          if (previewEl) {
+            const info = getDayInfo(selectedDateObj);
+            previewEl.innerText = `${info.fullDay}, ${String(info.d).padStart(2, "0")}/${String(info.m).padStart(2, "0")}/${info.y}`;
+          }
+
+          const gridEl = document.getElementById("fin-dp-days-grid");
+          if (!gridEl) return;
+
+          const firstDay = new Date(viewYear, viewMonth, 1);
+          let startingCol = (firstDay.getDay() + 6) % 7;
+
+          const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+          const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+
+          const today = new Date();
+          const isCurrentMonthView = today.getFullYear() === viewYear && today.getMonth() === viewMonth;
+          const todayDate = today.getDate();
+
+          const isSelectedMonthView = selectedDateObj.getFullYear() === viewYear && selectedDateObj.getMonth() === viewMonth;
+          const selectedDate = selectedDateObj.getDate();
+
+          let h = "";
+
+          for (let i = startingCol - 1; i >= 0; i--) {
+            const d = prevMonthDays - i;
+            h += `<div class="h-9 flex items-center justify-center text-xs font-medium text-white/20 select-none">${d}</div>`;
+          }
+
+          for (let d = 1; d <= daysInMonth; d++) {
+            const isSel = isSelectedMonthView && d === selectedDate;
+            const isTod = isCurrentMonthView && d === todayDate;
+
+            let classes = "h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all cursor-pointer select-none active:scale-90 ";
+            if (isSel) {
+              classes += "custom-primary text-white shadow-lg font-black scale-105";
+            } else if (isTod) {
+              classes += "bg-white/10 text-emerald-400 border border-emerald-400/40 font-black hover:bg-white/15";
+            } else {
+              classes += "hover:bg-white/10 custom-text";
+            }
+
+            h += `<div onclick="finDatePickerSelectDay(${viewYear}, ${viewMonth}, ${d})" class="${classes}">${d}</div>`;
+          }
+
+          const totalCells = startingCol + daysInMonth;
+          const remainingCols = (7 - (totalCells % 7)) % 7;
+          for (let d = 1; d <= remainingCols; d++) {
+            h += `<div class="h-9 flex items-center justify-center text-xs font-medium text-white/20 select-none">${d}</div>`;
+          }
+
+          gridEl.innerHTML = h;
+        }
+
+        // Tự động khởi tạo giá trị ngày ban đầu
+        window.addEventListener("DOMContentLoaded", function() {
+          const dashDate = document.getElementById("dash-date-picker");
+          const initDate = dashDate && dashDate.value ? dashDate.value : formatDateYYYYMMDD(new Date());
+          if (dashDate && !dashDate.value) dashDate.value = initDate;
+          window.updateDashDateButtonText(initDate);
+        });
+      })();
+    </script>
+
   </body>
 </html>
